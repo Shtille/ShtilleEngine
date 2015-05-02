@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <SHT_PATH>$(SolutionDir)..\..\sht\</SHT_PATH>
+    <SHT_BIN>$(SolutionDir)..\..\bin\</SHT_BIN>
+    <SHT_LIB>$(SolutionDir)\..\..\lib\</SHT_LIB>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LibraryPath>$(SHT_LIB);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SHT_BIN)</OutDir>
+    <IncludePath>$(SHT_PATH)\thirdparty\freeimage\include\;$(SHT_PATH);$(IncludePath)</IncludePath>
+    <IntDir>$(SHT_PATH)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="SHT_PATH">
+      <Value>$(SHT_PATH)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SHT_BIN">
+      <Value>$(SHT_BIN)</Value>
+    </BuildMacro>
+    <BuildMacro Include="SHT_LIB">
+      <Value>$(SHT_LIB)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

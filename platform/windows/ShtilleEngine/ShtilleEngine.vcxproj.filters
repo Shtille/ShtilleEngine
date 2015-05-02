@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="common">
+      <UniqueIdentifier>{743ad573-6700-4b81-a8dc-88920128e31c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="containers">
+      <UniqueIdentifier>{6a8f8880-0ce3-4ecf-b8dd-db5e3412bb16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{8202c772-421c-4b8f-a5c9-8e6719841ab7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application">
+      <UniqueIdentifier>{a7a55666-19b1-4dcc-86e6-b8d23a41dff5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\opengl">
+      <UniqueIdentifier>{e73870c3-b754-4537-a63c-10efa6a60d96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application\directx">
+      <UniqueIdentifier>{8e173aed-6d0f-4989-9456-3771cf7bc711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{bb4672ac-4da2-4a54-8ee0-cfad0de1a0b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{09794882-bab6-4b1d-9b4a-e06c07ff4d81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{a54be973-5992-4dc9-99df-e2fb53aebb26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system\stream">
+      <UniqueIdentifier>{ee9a2a6b-b1a5-43dc-91db-8cbde53013c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\image">
+      <UniqueIdentifier>{18cbbd20-5f11-464a-b65a-c483385a2132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\renderer">
+      <UniqueIdentifier>{17d6edfe-9944-4ff9-91d6-7405f345c9a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\renderer\opengl">
+      <UniqueIdentifier>{eff9a779-ab40-4754-9945-4d2c8649b4a8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\sht\common\platform.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\common\singleton.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\common\types.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\containers\sht_hash.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\containers\sht_map.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\containers\sht_pair.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\containers\sht_utility.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\containers\sht_vector.h">
+      <Filter>containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\include\sht.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\application\application.h">
+      <Filter>application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\application\opengl\opengl_application.h">
+      <Filter>application\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\math\vector.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\math\matrix.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\math\quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\math\sht_math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\time.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\stream\file_stream.h">
+      <Filter>system\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\stream\memory_stream.h">
+      <Filter>system\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\stream\stream.h">
+      <Filter>system\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\image\image.h">
+      <Filter>graphics\image</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\renderer.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_renderer.h">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\vertex_format.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\texture.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_texture.h">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\sht\application\application.cpp">
+      <Filter>application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\application\opengl\opengl_application.cpp">
+      <Filter>application\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\math\vector.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\math\matrix.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\math\quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\math\sht_math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\memory_leaks.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\time.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\stream\file_stream.cpp">
+      <Filter>system\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp">
+      <Filter>system\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp">
+      <Filter>system\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\renderer.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_renderer.cpp">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\vertex_format.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\texture.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ShtilleEngine.props" />
+    <None Include="Libs.props" />
+  </ItemGroup>
+</Project>
