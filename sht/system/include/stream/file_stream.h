@@ -3,8 +3,8 @@
 #define __SHT_SYSTEM_STREAM_FILE_STREAM_H__
 
 #include "stream.h"
-
-struct _iobuf;
+#include "../../../common/platform.h"
+#include <stdio.h> // for FILE
 
 namespace sht {
 	namespace system {
@@ -32,7 +32,7 @@ namespace sht {
 			void operator = (const FileStream&) {}
 
 		private:
-			_iobuf *file_;
+			FILE *file_;
 		};
 
 	} // namespace system

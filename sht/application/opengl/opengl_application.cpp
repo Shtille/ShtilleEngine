@@ -9,7 +9,7 @@
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
 #else
-#error Choose OpenGL libraries for the project.
+//#error Choose OpenGL libraries for the project.
 #endif
 
 namespace sht {
@@ -28,10 +28,10 @@ namespace sht {
 	}
 	bool OpenGlApplication::InitApi()
 	{
+#ifdef TARGET_WINDOWS
 		const int kContextMajorVersion = 3;
 		const int kContextMinorVersion = 3;
 
-#ifdef TARGET_WINDOWS
 		PIXELFORMATDESCRIPTOR pfd =
 		{
 			sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
@@ -119,6 +119,8 @@ namespace sht {
 			// Use old context
 			rc_ = temp_rc;
 		}
+#else
+        //static_assert(false, "Do we need InitAPI under Mac ?");
 #endif
 
 		sht::graphics::OpenGlRenderer * renderer = new sht::graphics::OpenGlRenderer(width_, height_);

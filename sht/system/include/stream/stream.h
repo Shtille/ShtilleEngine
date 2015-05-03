@@ -2,6 +2,8 @@
 #ifndef __SHT_SYSTEM_STREAM_STREAM_H__
 #define __SHT_SYSTEM_STREAM_STREAM_H__
 
+#include <stddef.h>
+
 namespace sht {
 	namespace system {
 

@@ -1,4 +1,5 @@
 #include "../../include/stream/stream.h"
+#include "../../../common/platform.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -21,7 +22,7 @@ namespace sht {
 		bool Stream::ReadLine(char string[256])
 		{
 			bool b;
-			while (b = ReadString(string, 255) && (string[0] == '\n'));
+			while ((b = ReadString(string, 255) && (string[0] == '\n')));
 			char& c = string[strlen(string) - 1];
 			if (c == '\n') c = '\0';
 			return b;
@@ -29,7 +30,7 @@ namespace sht {
 		bool Stream::ReadCodeLine(char string[256])
 		{
 			bool b;
-			while (b = ReadString(string, 255) && ((string[0] == '/') || (string[0] == '\n')));
+			while ((b = ReadString(string, 255) && ((string[0] == '/') || (string[0] == '\n'))));
 			char& c = string[strlen(string) - 1];
 			if (c == '\n') c = '\0';
 			return b;
@@ -40,7 +41,11 @@ namespace sht {
 			va_list		ap;				// Pointer To List Of Arguments
 
 			va_start(ap, string);				// Parses The String For Variables
+#ifdef TARGET_WINDOWS
 			vsprintf_s(text, string, ap);		// And Converts Symbols To Actual Numbers
+#else
+            vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers
+#endif
 			va_end(ap);							// Results Are Stored In Text
 
 			return WriteText(text);

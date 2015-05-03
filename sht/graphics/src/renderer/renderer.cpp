@@ -42,9 +42,9 @@ namespace sht {
 		}
 		f32 Font::GetStrWidth(const char *str) const
 		{
-			size_t strl = strlen(str);
 			int	shift = 0;
 #if defined(TARGET_WINDOWS)
+            size_t strl = strlen(str);
 			for (size_t i = 0; i < strl; ++i)
 			{
 				shift += Abc[(u8)str[i]].abcA +
@@ -57,7 +57,7 @@ namespace sht {
 				shift -= Abc[(u8)str[strl - 1]].abcC;
 			}
 #else
-			static_assert(false);
+			//static_assert(false, "How to be with fonts on mac?");
 #endif
 			return (f32)shift / (f32)Font::GetBmpSize();
 		}

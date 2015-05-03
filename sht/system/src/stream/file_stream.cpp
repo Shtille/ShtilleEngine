@@ -1,6 +1,5 @@
 #include "../../include/stream/file_stream.h"
-#include <stdio.h>
-#include <string.h>
+#include "../../../common/sht_string.h"
 
 namespace sht {
 	namespace system {
@@ -36,8 +35,13 @@ namespace sht {
 			if (stream_has_mode(mode, StreamAccess::kText))
 				strcat_s(mode_str, "t");
 
+#ifdef TARGET_WINDOWS
 			errno_t err = fopen_s(&file_, filename, mode_str);
-			return err == 0;
+            return err == 0;
+#else
+            file_ = fopen(filename, mode_str);
+            return file_ != nullptr;
+#endif
 		}
 		void FileStream::Close()
 		{

@@ -1,7 +1,7 @@
 #include "application.h"
 #include <memory.h>
 #include "../graphics/include/renderer/renderer.h"
-#include "../system/include/time.h"
+#include "../system/include/sht_time.h"
 #include "../system/include/stream/file_stream.h"
 #include <stdlib.h>
 
@@ -11,7 +11,9 @@ namespace sht {
 
 	Application::Application()
 	{
+#ifdef TARGET_WINDOWS
 		hwnd_ = nullptr;
+#endif
 		visible_ = false;
 		fullscreen_ = false;
 		color_bits_ = 32;
@@ -332,9 +334,9 @@ namespace sht {
 #if defined(TARGET_WINDOWS)
 		PostMessage((HWND)hwnd_, WM_CLOSE, 0, 0);
 #elif defined(TARGET_MAC)
-		static_assert(false);
+		//static_assert(false, "Application::Terminate has not been defined");
 #elif defined(TARGET_UNIX)
-		static_assert(false);
+		static_assert(false, "Application::Terminate has not been defined");
 #endif
 	}
 	const char* Application::GetIniFilePath()
@@ -467,7 +469,7 @@ namespace sht {
 	}
 	void Application::ComputeFramebufferSize()
 	{
-		int size = max(width_, height_);
+		int size = std::max(width_, height_);
 		if (size <= 1024)
 			framebuffer_size_ = 1024;
 		else if (size <= 2048)
@@ -489,8 +491,8 @@ namespace sht {
 	}
 	void Application::Update()
 	{
-		if (keys_.key_down[VK_ESCAPE])
-			Application::Terminate();
+		//if (keys_.key_down[VK_ESCAPE])
+		//	Application::Terminate();
 	}
 	void Application::Render()
 	{
