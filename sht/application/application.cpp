@@ -4,6 +4,10 @@
 #include "../system/include/sht_time.h"
 #include "../system/include/stream/file_stream.h"
 #include <stdlib.h>
+#include <algorithm> // for std::max
+#ifdef TARGET_WINDOWS
+#undef max
+#endif
 
 namespace sht {
 
