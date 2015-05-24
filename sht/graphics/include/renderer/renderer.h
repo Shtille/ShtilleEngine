@@ -10,6 +10,7 @@
 #include "texture.h"
 
 #include <list>
+#include <stack>
 
 namespace sht {
 	namespace graphics {
@@ -203,18 +204,20 @@ namespace sht {
 			virtual inline void ClearColor(void) = 0;
 			virtual inline void ClearColorDepth(void) = 0;
 			virtual inline void ClearDepth(void) = 0;
-
-			virtual inline void ChangeProjectionMatrix(const sht::math::Matrix4& matrix) = 0;
-			virtual inline void ChangeModelViewMatrix(const sht::math::Matrix4& matrix) = 0;
-			virtual inline void LoadProjectionModelViewMatrices(const sht::math::Matrix4& proj, const sht::math::Matrix4& mv) = 0;
-			virtual inline void PushMatrix(void) = 0;
-			virtual inline void PopMatrix(void) = 0;
-			virtual inline void LoadMatrix(const sht::math::Matrix4& matrix) = 0;
-			virtual inline void MultMatrix(const sht::math::Matrix4& matrix) = 0;
-			virtual inline void Translate(f32 x, f32 y, f32 z) = 0;
-			virtual inline void Translate(const sht::math::Vector3& v) = 0;
-			virtual inline void Scale(f32 x, f32 y, f32 z) = 0;
-			virtual inline void Scale(f32 s) = 0;
+            
+            void SetProjectionMatrix(const sht::math::Matrix4& mat);
+            void SetViewMatrix(const sht::math::Matrix4& mat);
+            void SetModelMatrix(const sht::math::Matrix4& mat);
+            void PushMatrix();
+            void PopMatrix();
+            
+            // Obsolete OpenGL analogs
+            void LoadMatrix(const sht::math::Matrix4& matrix);
+            void MultMatrix(const sht::math::Matrix4& matrix);
+            void Translate(f32 x, f32 y, f32 z);
+            void Translate(const sht::math::Vector3& v);
+            void Scale(f32 x, f32 y, f32 z);
+            void Scale(f32 s);
 
 			virtual inline void ChangeBlendFunc(u32 source, u32 dest) = 0;
 			virtual inline void EnableBlend(void) = 0;
@@ -228,18 +231,9 @@ namespace sht {
 			virtual inline void EnableWireframeMode(void) = 0;
 			virtual inline void DisableWireframeMode(void) = 0;
 
-			virtual inline void DrawRect(f32 x1, f32 y1, f32 x2, f32 y2) = 0;
-			virtual inline void DrawRectExt(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2) = 0;
-			virtual inline void DrawRectExtCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2) = 0;
-			virtual inline void DrawRectExtCCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2) = 0;
-			virtual inline void DrawPostProcRect(void) = 0; //!< setups matrices, then render quad
-			virtual inline void DrawHorizontalPlane(f32 tx, f32 ty, f32 sx, f32 sy, f32 ex, f32 ey, f32 h) = 0;
 			virtual inline void DrawElements(u32 mode) = 0;
-			virtual inline void DrawElementsExt(u32 mode, u32 numindices) = 0;
+			virtual inline void DrawElements(u32 mode, u32 numindices) = 0;
 			virtual inline void Viewport(int w, int h) = 0;
-			virtual inline void Begin2D(void) = 0;
-			virtual inline void End2D(void) = 0;
-			virtual inline void DrawFullscreenRect2D() = 0; //!< works only in 2D mode
 
 		protected:
 			void ErrorHandler(const char *message);
@@ -256,6 +250,11 @@ namespace sht {
 			int height_;									//!< owner app's window height
 			float aspect_ratio_;							//!< w/h
 			sht::math::Matrix4 standart_2d_matrix_;			//!< matrix for 2d projection
+            
+            sht::math::Matrix4 projection_matrix_;          //!< projection matrix
+            sht::math::Matrix4 view_matrix_;                //!< view matrix
+            sht::math::Matrix4 model_matrix_;               //!< model matrix
+            std::stack<sht::math::Matrix4> matrices_stack_; //!< matrices stack
 
 			std::list<Texture*> textures_;
 			std::list<Shader*> shaders_;

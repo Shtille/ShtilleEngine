@@ -307,6 +307,20 @@ namespace sht {
 			for (int i = 0; i < 16; ++i)
 				sa[i] *= r;
 		}
+        void Matrix4::operator *= (const Matrix4& m)
+        {
+            // we should i-row multiply by j-column
+            Matrix4 mr;
+            for (int i = 0; i < 4; ++i)
+                for (int j = 0; j < 4; ++j)
+                {
+                    mr.a[j][i] =  a[0][i] * m.a[j][0];
+                    mr.a[j][i] += a[1][i] * m.a[j][1];
+                    mr.a[j][i] += a[2][i] * m.a[j][2];
+                    mr.a[j][i] += a[3][i] * m.a[j][3];
+                }
+            memcpy(sa, mr.sa, sizeof(float) * 16);
+        }
 		Vector4 Matrix4::operator [] (const int ind)
 		{
 			return Vector4(a[ind][0], a[ind][1], a[ind][2], a[ind][3]);

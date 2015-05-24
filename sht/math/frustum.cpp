@@ -1,5 +1,4 @@
 #include "Frustum.h"
-#include <math.h>
 #include <cmath>
 #define FRUSTUM_LEFT   0
 #define FRUSTUM_RIGHT  1

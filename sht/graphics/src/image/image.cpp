@@ -2,6 +2,7 @@
 #include "../../../thirdparty/freeimage/include/freeimage.h"
 #include <assert.h>
 #include <math.h>
+#include <memory.h>
 
 namespace sht {
 	namespace graphics {
@@ -191,14 +192,14 @@ namespace sht {
 		{
 			FIBITMAP *hbmp = (FIBITMAP*)pixels_; // restore pointer
 			FreeImage_SetOutputMessage(FreeImageErrorHandler);
-			__try
+			try
 			{
 				FreeImage_Save(GetDataFormat(fmt), hbmp, filename);
 			}
-			__finally
-			{
-				FreeImage_Unload(hbmp);
-			}
+            catch(...)
+            {
+            }
+            FreeImage_Unload(hbmp);
 			pixels_ = nullptr;
 		}
 		bool Image::LoadFromFile(const char* filename)

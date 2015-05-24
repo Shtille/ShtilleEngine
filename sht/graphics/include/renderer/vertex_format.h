@@ -38,6 +38,8 @@ namespace sht {
 				int offset;
 				int size;
 			};
+            
+            bool operator == (const VertexFormat& vf);
 
 		protected:
 			VertexFormat();
@@ -49,14 +51,9 @@ namespace sht {
 
 		private:
 			Attrib generic_[kMaxGeneric];
-			Attrib texcoord_[kMaxTexcoord];
-			Attrib vertex_;
-			Attrib normal_;
-			Attrib color_;
 
 			u32 vertex_size_;
 			u8 max_generic_;
-			u8 max_texcoord_;
 		};
 
 	} // namespace graphics

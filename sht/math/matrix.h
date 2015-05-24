@@ -86,6 +86,7 @@ namespace sht {
 			Matrix4& operator = (const Matrix4 &m);
 			void operator *= (const float s);
 			void operator /= (const float s);
+            void operator *= (const Matrix4& m);
 			Vector4 operator [] (const int ind);
 
 			friend Matrix4 operator + (const Matrix4 &m1, const Matrix4 &m2);

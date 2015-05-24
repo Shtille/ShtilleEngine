@@ -193,11 +193,15 @@ namespace sht {
 			strftime(duration, _countof(duration), "SS.%Y.%m.%d.%H.%M.%S.jpg", localtime(&now));
 			size_t size = strlen(dir) + strlen(duration) + 1;
 			char *filename = new char[size];
+#ifdef TARGET_WINDOWS
 			strcpy_s(filename, size, dir);
 			strcat_s(filename, size, duration);
 
 			// TODO: exchange CreateDirectory
 			CreateDirectoryA(dir, NULL); // create directory if it doesn't exist
+#else
+            assert(!"Takescreenshot not implemented for this OS");
+#endif
 
 			Image image;
 			// allocate memory and read pixels
@@ -256,6 +260,52 @@ namespace sht {
 		{
 			assert(!message);
 		}
+        void Renderer::SetProjectionMatrix(const sht::math::Matrix4& mat)
+        {
+            projection_matrix_ = mat;
+        }
+        void Renderer::SetViewMatrix(const sht::math::Matrix4& mat)
+        {
+            view_matrix_ = mat;
+        }
+        void Renderer::SetModelMatrix(const sht::math::Matrix4& mat)
+        {
+            model_matrix_ = mat;
+        }
+        void Renderer::PushMatrix()
+        {
+            matrices_stack_.push(model_matrix_);
+        }
+        void Renderer::PopMatrix()
+        {
+            assert(!matrices_stack_.empty());
+            model_matrix_ = matrices_stack_.top();
+            matrices_stack_.pop();
+        }
+        void Renderer::LoadMatrix(const sht::math::Matrix4& matrix)
+        {
+            model_matrix_ = matrix;
+        }
+        void Renderer::MultMatrix(const sht::math::Matrix4& matrix)
+        {
+            model_matrix_ *= matrix;
+        }
+        void Renderer::Translate(f32 x, f32 y, f32 z)
+        {
+            model_matrix_ *= sht::math::Translate(x, y, z);
+        }
+        void Renderer::Translate(const sht::math::Vector3& v)
+        {
+            model_matrix_ *= sht::math::Translate(v);
+        }
+        void Renderer::Scale(f32 x, f32 y, f32 z)
+        {
+            model_matrix_ *= sht::math::Scale4(x, y, z);
+        }
+        void Renderer::Scale(f32 s)
+        {
+            model_matrix_ *= sht::math::Scale4(s);
+        }
 
 	} // namespace graphics
 } // namespace sht
