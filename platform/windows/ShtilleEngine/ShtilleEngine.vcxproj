@@ -59,7 +59,7 @@
     <ClCompile Include="..\..\..\sht\system\src\stream\file_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp" />
-    <ClCompile Include="..\..\..\sht\system\src\time.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\sht_time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Libs.props" />

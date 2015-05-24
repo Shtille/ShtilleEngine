@@ -143,9 +143,6 @@
     <ClCompile Include="..\..\..\sht\system\src\memory_leaks.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sht\system\src\time.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sht\system\src\stream\file_stream.cpp">
       <Filter>system\stream</Filter>
     </ClCompile>
@@ -172,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp">
       <Filter>graphics\renderer\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\sht_time.cpp">
+      <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
