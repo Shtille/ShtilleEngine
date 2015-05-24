@@ -185,7 +185,7 @@ namespace sht {
 		Matrix3 RotationMatrix(const Vector3& dir)
 		{
 			Vector3 up, s;
-			if (abs(dir.y) < 1.0f)
+			if (fabs(dir.y) < 1.0f)
 			{
 				s = (dir ^ UNIT_Y).GetNormalized();
 				up = s ^ dir;

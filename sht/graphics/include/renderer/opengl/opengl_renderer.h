@@ -78,18 +78,6 @@ namespace sht {
 			inline void ClearColorDepth(void);
 			inline void ClearDepth(void);
 
-			inline void ChangeProjectionMatrix(const sht::math::Matrix4& matrix);
-			inline void ChangeModelViewMatrix(const sht::math::Matrix4& matrix);
-			inline void LoadProjectionModelViewMatrices(const sht::math::Matrix4& proj, const sht::math::Matrix4& mv);
-			inline void PushMatrix(void);
-			inline void PopMatrix(void);
-			inline void LoadMatrix(const sht::math::Matrix4& matrix);
-			inline void MultMatrix(const sht::math::Matrix4& matrix);
-			inline void Translate(f32 x, f32 y, f32 z);
-			inline void Translate(const sht::math::Vector3& v);
-			inline void Scale(f32 x, f32 y, f32 z);
-			inline void Scale(f32 s);
-
 			inline void ChangeBlendFunc(u32 source, u32 dest);
 			inline void EnableBlend(void);
 			inline void DisableBlend(void);
@@ -102,18 +90,9 @@ namespace sht {
 			inline void EnableWireframeMode(void);
 			inline void DisableWireframeMode(void);
 
-			inline void DrawRect(f32 x1, f32 y1, f32 x2, f32 y2);
-			inline void DrawRectExt(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2);
-			inline void DrawRectExtCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2);
-			inline void DrawRectExtCCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2);
-			inline void DrawPostProcRect(); //!< setups matrices, then render quad
-			inline void DrawHorizontalPlane(f32 tx, f32 ty, f32 sx, f32 sy, f32 ex, f32 ey, f32 h);
 			inline void DrawElements(u32 mode);
-			inline void DrawElementsExt(u32 mode, u32 numindices);
+			inline void DrawElements(u32 mode, u32 numindices);
 			inline void Viewport(int w, int h);
-			inline void Begin2D(void);
-			inline void End2D(void);
-			inline void DrawFullscreenRect2D(); //!< works only in 2D mode
 
 		private:
 			void SetDefaultStates();

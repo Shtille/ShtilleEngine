@@ -1,8 +1,18 @@
 #include "../../../include/renderer/opengl/opengl_renderer.h"
 #include "../../../include/renderer/opengl/opengl_texture.h"
+#ifdef TARGET_WINDOWS
 #include "../../../../thirdparty/glew/include/GL/glew.h"
+#elif defined(TARGET_MAC)
+#include <OpenGL/gl3.h>
+#include <OpenGL/glext.h>
+#endif
 #include "../../../../system/include/stream/file_stream.h"
+#include "../../../../common/sht_string.h"
 #include <string>
+
+#ifndef GL_CLAMP
+#define GL_CLAMP GL_CLAMP_TO_BORDER
+#endif
 
 namespace sht {
 	namespace graphics {
@@ -17,7 +27,7 @@ namespace sht {
 		OpenGlRenderer::~OpenGlRenderer()
 		{
 			// delete our framebuffer, if it exists
-			if (framebuffer_) glDeleteFramebuffersEXT(1, &framebuffer_);
+			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
 		}
 		void OpenGlRenderer::SetDefaultStates()
 		{
@@ -34,8 +44,7 @@ namespace sht {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 
-			glShadeModel(GL_SMOOTH);
-			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+			glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 		}
 		bool OpenGlRenderer::CheckForErrors()
 		{
@@ -112,17 +121,8 @@ namespace sht {
 		}
 		bool OpenGlRenderer::CheckFunctionalities()
 		{
-			bool is_vbo_supported = glewIsSupported("GL_ARB_vertex_buffer_object");
-
-			bool is_fbo_supported = glewIsSupported("GL_EXT_framebuffer_object");
-
-			bool is_shaders_supported = glewIsSupported("GL_ARB_fragment_shader") &&
-				glewIsSupported("GL_ARB_vertex_shader") &&
-				glewIsSupported("GL_ARB_shader_objects") &&
-				glewIsSupported("GL_ARB_shading_language_100");
-
 			// Base engine functionality requirements:
-			return is_vbo_supported && is_fbo_supported && is_shaders_supported;
+			return true;
 		}
 		f32 OpenGlRenderer::GetStringHeight(f32 scale)
 		{
@@ -185,16 +185,18 @@ namespace sht {
 				glTexParameterf(tex->target_, GL_TEXTURE_MAX_ANISOTROPY_EXT, fAnisoMax);
 				break;
 			}
-			glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 
 			// create texture
-			gluBuild2DMipmaps(tex->target_, // target
+			glTexImage2D(tex->target_, // target
+                0, // mipmap
 				tex->GetInternalFormat(), // the number of color components
 				tex->width_, // texture width
 				tex->height_, // texture height
+                0,              // border
 				tex->GetSrcFormat(), // the format of the pixel data
 				tex->GetSrcType(), // the data type of the pixel data
 				img.pixels());
+            glGenerateMipmap(tex->target_);
 
 			CheckForErrors();
 
@@ -244,12 +246,12 @@ namespace sht {
 			}
 			if (tex->depth_id_)
 			{
-				glDeleteRenderbuffersEXT(1, &tex->depth_id_);
+				glDeleteRenderbuffers(1, &tex->depth_id_);
 				tex->depth_id_ = 0;
 			}
 			if (tex->stencil_id_)
 			{
-				glDeleteRenderbuffersEXT(1, &tex->stencil_id_);
+				glDeleteRenderbuffers(1, &tex->stencil_id_);
 				tex->stencil_id_ = 0;
 			}
 		}
@@ -257,13 +259,13 @@ namespace sht {
 		{
 			if (shd->program_)
 			{
-				glDeleteObjectARB(shd->program_);
+				glDeleteProgram(shd->program_);
 				shd->program_ = 0;
 			}
 		}
 		void OpenGlRenderer::ApiDeleteFont(Font* font)
 		{
-			glDeleteLists(font->base_, 256);
+			//glDeleteLists(font->base_, 256);
 		}
 		void OpenGlRenderer::ApiDeleteVertexFormat(VertexFormat* vf)
 		{
@@ -273,7 +275,7 @@ namespace sht {
 		{
 			if (vb->id_)
 			{
-				glDeleteBuffersARB(1, &vb->id_);
+				glDeleteBuffers(1, &vb->id_);
 				vb->id_ = 0;
 			}
 		}
@@ -281,7 +283,7 @@ namespace sht {
 		{
 			if (ib->id_)
 			{
-				glDeleteBuffersARB(1, &ib->id_);
+				glDeleteBuffers(1, &ib->id_);
 				ib->id_ = 0;
 			}
 		}
@@ -467,7 +469,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddRenderTarget(Texture* &texture, int w, int h, Image::Format fmt, Texture::Filter filt)
 		{
-			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE_EXT && h <= GL_MAX_RENDERBUFFER_SIZE_EXT);
+			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE && h <= GL_MAX_RENDERBUFFER_SIZE);
 
 			texture = new OpenGlTexture();
 			texture->width_ = w;
@@ -511,7 +513,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddRenderDepthStencil(Texture* &texture, int w, int h, u32 depthSize, u32 stencilSize)
 		{
-			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE_EXT && h <= GL_MAX_RENDERBUFFER_SIZE_EXT && depthSize > 0 && stencilSize > 0);
+			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE && h <= GL_MAX_RENDERBUFFER_SIZE && depthSize > 0 && stencilSize > 0);
 
 			texture = new OpenGlTexture();
 			texture->width_ = w;
@@ -534,19 +536,19 @@ namespace sht {
 					break;
 				}
 				// create depth renderbuffer
-				glGenRenderbuffersEXT(1, &texture->depth_id_);
-				glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, texture->depth_id_);
-				glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, texture->GetInternalFormat(), w, h);
+				glGenRenderbuffers(1, &texture->depth_id_);
+				glBindRenderbuffer(GL_RENDERBUFFER, texture->depth_id_);
+				glRenderbufferStorage(GL_RENDERBUFFER, texture->GetInternalFormat(), w, h);
 			}
 			if (stencilSize > 0)
 			{
 				// create stencil renderbuffer
-				glGenRenderbuffersEXT(1, &texture->stencil_id_);
-				glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, texture->stencil_id_);
-				glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, w, h);
+				glGenRenderbuffers(1, &texture->stencil_id_);
+				glBindRenderbuffer(GL_RENDERBUFFER, texture->stencil_id_);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, w, h);
 			}
 			// Restore current renderbuffer
-			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+			glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 			CheckForErrors();
 
@@ -567,7 +569,7 @@ namespace sht {
 		{
 			if (unit != current_image_unit_)
 			{
-				glActiveTextureARB(GL_TEXTURE0 + unit);
+				glActiveTexture(GL_TEXTURE0 + unit);
 				current_image_unit_ = unit;
 			}
 		}
@@ -606,27 +608,27 @@ namespace sht {
 		{
 			if (nTargets == 1 && colorRTs[0] == nullptr && depthRT == nullptr)
 			{
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				glViewport(0, 0, width_, height_);
 			}
 			else
 			{
-				if (framebuffer_ == 0) glGenFramebuffersEXT(1, &framebuffer_);
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuffer_);
+				if (framebuffer_ == 0) glGenFramebuffers(1, &framebuffer_);
+				glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
 				if (depthRT != current_depth_rt_)
 				{
 					if (depthRT == nullptr)
 					{
 						// detach depth renderbuffer
-						glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
+						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
 					}
 					else
 					{
 						if (depthRT->texture_id_) // is depth renderbuffer attached
-							glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depthRT->target_, depthRT->texture_id_, 0);
+							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthRT->target_, depthRT->texture_id_, 0);
 						else // attach depth renderbuffer
-							glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthRT->depth_id_);
+							glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRT->depth_id_);
 					}
 					current_depth_rt_ = depthRT;
 				}
@@ -645,18 +647,18 @@ namespace sht {
 					{
 						if (colorRTs[i] != current_color_rt_[i])
 						{
-							glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
+							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
 								GL_TEXTURE_2D, colorRTs[i]->texture_id_, 0);
 
 							current_color_rt_[i] = colorRTs[i];
 						}
 
-						drawBuffers[i] = GL_COLOR_ATTACHMENT0_EXT + i;
+						drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
 					}
 
 					if (nTargets != current_render_targets_)
 					{
-						glDrawBuffersARB(current_render_targets_ = nTargets, drawBuffers);
+						glDrawBuffers(current_render_targets_ = nTargets, drawBuffers);
 					}
 					//glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 				}
@@ -671,27 +673,27 @@ namespace sht {
 		{
 			if (nTargets == 1 && colorRTs[0] == nullptr && depthRT == nullptr)
 			{
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 				glViewport(0, 0, width_, height_);
 			}
 			else
 			{
-				if (framebuffer_ == 0) glGenFramebuffersEXT(1, &framebuffer_);
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuffer_);
+				if (framebuffer_ == 0) glGenFramebuffers(1, &framebuffer_);
+				glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
 				if (depthRT != current_depth_rt_)
 				{
 					if (depthRT == nullptr)
 					{
 						// detach depth renderbuffer
-						glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
+						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
 					}
 					else
 					{
 						if (depthRT->texture_id_) // is depth renderbuffer attached
-							glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depthRT->target_, depthRT->texture_id_, 0);
+							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthRT->target_, depthRT->texture_id_, 0);
 						else // attach depth renderbuffer
-							glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthRT->depth_id_);
+							glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRT->depth_id_);
 					}
 					current_depth_rt_ = depthRT;
 				}
@@ -708,17 +710,17 @@ namespace sht {
 					GLuint drawBuffers[kMaxMrt];
 					for (u8 i = 0; i < nTargets; i++)
 					{
-						glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i,
+						glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
 							GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, colorRTs[i]->texture_id_, 0);
 
 						current_color_rt_[i] = colorRTs[i];
 
-						drawBuffers[i] = GL_COLOR_ATTACHMENT0_EXT + i;
+						drawBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
 					}
 
 					if (nTargets != current_render_targets_)
 					{
-						glDrawBuffersARB(current_render_targets_ = nTargets, drawBuffers);
+						glDrawBuffers(current_render_targets_ = nTargets, drawBuffers);
 					}
 					//glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 				}
@@ -735,11 +737,11 @@ namespace sht {
 			if (texture != curtex && curtex != nullptr)
 			{
 				glBindTexture(texture->target_, texture->texture_id_);
-				glGenerateMipmapEXT(texture->target_);
+				glGenerateMipmap(texture->target_);
 				glBindTexture(curtex->target_, curtex->texture_id_);
 			}
 			else
-				glGenerateMipmapEXT(texture->target_);
+				glGenerateMipmap(texture->target_);
 		}
 		void OpenGlRenderer::CopyToTexture(Texture* texture, u32 layer)
 		{
@@ -754,7 +756,7 @@ namespace sht {
 
 			// Try to find same format
 			for (auto f : vertex_formats_)
-				if (memcmp(f, vf, sizeof(VertexFormat)) == 0)
+				if (*f == *vf)
 				{
 					vf = f; // format exists and a new one is not need
 					return;
@@ -773,29 +775,11 @@ namespace sht {
 				if (current_vertex_format_ != nullptr) curr = current_vertex_format_;
 				if (vf != nullptr) sel = vf;
 
-				// Change array enables as needed
-				if ( sel->vertex_.size && !curr->vertex_.size) glEnableClientState(GL_VERTEX_ARRAY);
-				if (!sel->vertex_.size &&  curr->vertex_.size) glDisableClientState(GL_VERTEX_ARRAY);
-				if ( sel->normal_.size && !curr->normal_.size) glEnableClientState(GL_NORMAL_ARRAY);
-				if (!sel->normal_.size &&  curr->normal_.size) glDisableClientState(GL_NORMAL_ARRAY);
-				if ( sel->color_.size  && !curr->color_.size)  glEnableClientState(GL_COLOR_ARRAY);
-				if (!sel->color_.size  &&  curr->color_.size)  glDisableClientState(GL_COLOR_ARRAY);
-
 				for (int i = 0; i < kMaxGeneric; ++i)
 				{
-					if ( sel->generic_[i].size && !curr->generic_[i].size) glEnableVertexAttribArrayARB(i);
-					if (!sel->generic_[i].size &&  curr->generic_[i].size) glDisableVertexAttribArrayARB(i);
+					if ( sel->generic_[i].size && !curr->generic_[i].size) glEnableVertexAttribArray(i);
+					if (!sel->generic_[i].size &&  curr->generic_[i].size) glDisableVertexAttribArray(i);
 				}
-
-				for (int i = 0; i < kMaxTexcoord; i++)
-					if ((sel->texcoord_[i].size > 0) ^ (curr->texcoord_[i].size > 0))
-					{
-						glClientActiveTextureARB(GL_TEXTURE0 + i);
-						if (sel->texcoord_[i].size)
-							glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-						else
-							glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-					}
 
 				current_vertex_format_ = vf;
 			}
@@ -817,9 +801,9 @@ namespace sht {
 			vb->size_ = size;
 
 			// Create a vertex buffer and upload the provided data if any
-			glGenBuffersARB(1, &vb->id_);
-			glBindBufferARB(GL_ARRAY_BUFFER, vb->id_);
-			glBufferDataARB(GL_ARRAY_BUFFER, size, data, flags);
+			glGenBuffers(1, &vb->id_);
+			glBindBuffer(GL_ARRAY_BUFFER, vb->id_);
+			glBufferData(GL_ARRAY_BUFFER, size, data, flags);
 
 			CheckForErrors();
 
@@ -827,16 +811,16 @@ namespace sht {
 		}
 		void OpenGlRenderer::SetVertexBufferData(ptrdiff_t offset, u32 size, void *data)
 		{
-			glBufferSubDataARB(GL_ARRAY_BUFFER, offset, size, data);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 		}
 		void* OpenGlRenderer::MapVertexBufferData(u32 size)
 		{
-			glBufferDataARB(GL_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
-			return glMapBufferARB(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+			glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
+			return glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 		}
 		void OpenGlRenderer::UnmapVertexBufferData(void)
 		{
-			glUnmapBufferARB(GL_ARRAY_BUFFER);
+			glUnmapBuffer(GL_ARRAY_BUFFER);
 		}
 		void OpenGlRenderer::ChangeVertexBuffer(VertexBuffer* vb)
 		{
@@ -844,9 +828,9 @@ namespace sht {
 			if (vb != current_vertex_buffer_)
 			{
 				if (vb == nullptr)
-					glBindBufferARB(GL_ARRAY_BUFFER, 0);
+					glBindBuffer(GL_ARRAY_BUFFER, 0);
 				else
-					glBindBufferARB(GL_ARRAY_BUFFER, vb->id_);
+					glBindBuffer(GL_ARRAY_BUFFER, vb->id_);
 			}
 
 			/*
@@ -863,25 +847,9 @@ namespace sht {
 					VertexFormat *cvf = current_vertex_format_;
 					int vertexSize = cvf->vertex_size_;
 
-					if (cvf->vertex_.size)
-						glVertexPointer(cvf->vertex_.size, GL_FLOAT, vertexSize, base + cvf->vertex_.offset);
-
-					if (cvf->normal_.size)
-						glNormalPointer(GL_FLOAT, vertexSize, base + cvf->normal_.offset);
-
-					if (cvf->color_.size)
-						glColorPointer(cvf->color_.size, GL_FLOAT, vertexSize, base + cvf->color_.offset);
-
 					for (int i = 0; i < kMaxGeneric; ++i)
 						if (cvf->generic_[i].size)
-							glVertexAttribPointerARB(i, cvf->generic_[i].size, GL_FLOAT, GL_FALSE, vertexSize, base + cvf->generic_[i].offset);
-
-					for (int i = 0; i < kMaxTexcoord; i++)
-						if (cvf->texcoord_[i].size)
-						{
-							glClientActiveTextureARB(GL_TEXTURE0 + i);
-							glTexCoordPointer(cvf->texcoord_[i].size, GL_FLOAT, vertexSize, base + cvf->texcoord_[i].offset);
-						}
+							glVertexAttribPointer(i, cvf->generic_[i].size, GL_FLOAT, GL_FALSE, vertexSize, base + cvf->generic_[i].offset);
 				}
 
 				current_vertex_buffer_ = vb;
@@ -908,9 +876,9 @@ namespace sht {
 			GLsizeiptr size = nIndices * indexSize;
 
 			// Create an index buffer and upload the provided data if any
-			glGenBuffersARB(1, &ib->id_);
-			glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
-			glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, size, data, flags);
+			glGenBuffers(1, &ib->id_);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, flags);
 
 			CheckForErrors();
 
@@ -918,25 +886,25 @@ namespace sht {
 		}
 		void OpenGlRenderer::SetIndexBufferData(ptrdiff_t offset, u32 size, void *data)
 		{
-			glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
 		}
 		void* OpenGlRenderer::MapIndexBufferData(u32 size)
 		{
-			glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
-			return glMapBufferARB(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
+			return glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
 		}
 		void OpenGlRenderer::UnmapIndexBufferData(void)
 		{
-			glUnmapBufferARB(GL_ELEMENT_ARRAY_BUFFER);
+			glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 		}
 		void OpenGlRenderer::ChangeIndexBuffer(IndexBuffer* ib)
 		{
 			if (ib != current_index_buffer_)
 			{
 				if (ib == nullptr)
-					glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 				else
-					glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
+					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
 
 				current_index_buffer_ = ib;
 			}
@@ -975,20 +943,20 @@ namespace sht {
 				}
 				stream.Close();
 
-				shader->vertex_ = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+				shader->vertex_ = glCreateShader(GL_VERTEX_SHADER);
 				const char * source = shader_source.c_str();
-				glShaderSourceARB(shader->vertex_, 1, &source, NULL);
-				glCompileShaderARB(shader->vertex_);
-				glGetObjectParameterivARB(shader->vertex_, GL_OBJECT_COMPILE_STATUS_ARB, &success);
+				glShaderSource(shader->vertex_, 1, &source, NULL);
+				glCompileShader(shader->vertex_);
+				glGetShaderiv(shader->vertex_, GL_COMPILE_STATUS, &success);
 				if (!success)
 				{
 					char infoLog[2048];
-					glGetInfoLogARB(shader->vertex_, 2048, NULL, infoLog);
+					glGetShaderInfoLog(shader->vertex_, 2048, NULL, infoLog);
 					char temp[100];
 					sprintf_s(temp, "%s %s", "Error in vertex shader compilation in", filename);
 					ErrorHandler(temp);
 					ErrorHandler(infoLog);
-					glDeleteObjectARB(shader->vertex_);
+					glDeleteShader(shader->vertex_);
 					delete shader;
 					return false;
 				}
@@ -1009,21 +977,21 @@ namespace sht {
 				}
 				stream.Close();
 
-				shader->fragment_ = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+				shader->fragment_ = glCreateShader(GL_FRAGMENT_SHADER);
 				const char * source = shader_source.c_str();
-				glShaderSourceARB(shader->fragment_, 1, &source, NULL);
-				glCompileShaderARB(shader->fragment_);
-				glGetObjectParameterivARB(shader->fragment_, GL_OBJECT_COMPILE_STATUS_ARB, &success);
+				glShaderSource(shader->fragment_, 1, &source, NULL);
+				glCompileShader(shader->fragment_);
+				glGetShaderiv(shader->fragment_, GL_COMPILE_STATUS, &success);
 				if (!success)
 				{
 					char infoLog[2048];
-					glGetInfoLogARB(shader->fragment_, 2048, NULL, infoLog);
+					glGetShaderInfoLog(shader->fragment_, 2048, NULL, infoLog);
 					char temp[100];
 					sprintf_s(temp, "%s %s", "Error in fragment shader compilation in", filename);
 					ErrorHandler(temp);
 					ErrorHandler(infoLog);
-					glDeleteObjectARB(shader->fragment_);
-					glDeleteObjectARB(shader->vertex_);
+					glDeleteShader(shader->fragment_);
+					glDeleteShader(shader->vertex_);
 					delete shader;
 					return false;
 				}
@@ -1031,37 +999,37 @@ namespace sht {
 			}
 
 			// Create program object, attach shader, then link
-			shader->program_ = glCreateProgramObjectARB();
-			glAttachObjectARB(shader->program_, shader->vertex_);
-			glAttachObjectARB(shader->program_, shader->fragment_);
+			shader->program_ = glCreateProgram();
+			glAttachShader(shader->program_, shader->vertex_);
+			glAttachShader(shader->program_, shader->fragment_);
 			for (u32 i = 0; i < (u32)nAttribs; ++i)
 			{
 				if (attribs[i])
 				{
-					glBindAttribLocationARB(shader->program_, i, attribs[i]);
+					glBindAttribLocation(shader->program_, i, attribs[i]);
 				}
 			}
-			glLinkProgramARB(shader->program_);
-			glGetObjectParameterivARB(shader->program_, GL_OBJECT_LINK_STATUS_ARB, &success);
+			glLinkProgram(shader->program_);
+			glGetProgramiv(shader->program_, GL_LINK_STATUS, &success);
 			if (!success)
 			{
 				char infoLog[2048];
-				glGetInfoLogARB(shader->program_, 2048, NULL, infoLog);
+				glGetProgramInfoLog(shader->program_, 2048, NULL, infoLog);
 				char temp[100];
 				sprintf_s(temp, "%s %s", "Error in shader linkage in", filename);
 				ErrorHandler(temp);
 				ErrorHandler(infoLog);
-				glDeleteObjectARB(shader->program_);
-				glDeleteObjectARB(shader->vertex_);
-				glDeleteObjectARB(shader->fragment_);
+				glDeleteProgram(shader->program_);
+				glDeleteShader(shader->vertex_);
+				glDeleteShader(shader->fragment_);
 				delete shader;
 				return false;
 			}
 			CheckForErrors();
 
 			// After linkage these objects may be deleted
-			glDeleteObjectARB(shader->vertex_);
-			glDeleteObjectARB(shader->fragment_);
+			glDeleteShader(shader->vertex_);
+			glDeleteShader(shader->fragment_);
 
 			// Done with shader loading
 			shaders_.push_back(shader);
@@ -1082,87 +1050,87 @@ namespace sht {
 		void OpenGlRenderer::ChangeShader(Shader* shader)
 		{
 			if (shader != nullptr)
-				glUseProgramObjectARB(shader->program_);
+				glUseProgram(shader->program_);
 			else
-				glUseProgramObjectARB(0);
+				glUseProgram(0);
 			current_shader_ = shader;
 		}
 		void OpenGlRenderer::ChangeShaderAttribBinding(const char *name)
 		{
-			int ind = glGetAttribLocationARB(current_shader_->program_, name);
-			glBindAttribLocationARB(current_shader_->program_, ind, name);
+			int ind = glGetAttribLocation(current_shader_->program_, name);
+			glBindAttribLocation(current_shader_->program_, ind, name);
 		}
 		void OpenGlRenderer::ChangeShaderUniform1i(const char* name, int num)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform1iARB(location, num);
+			glUniform1i(location, num);
 		}
 		void OpenGlRenderer::ChangeShaderUniform1f(const char* name, float x)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform1fARB(location, x);
+			glUniform1f(location, x);
 		}
 		void OpenGlRenderer::ChangeShaderUniform2f(const char* name, float x, float y)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform2fARB(location, x, y);
+			glUniform2f(location, x, y);
 		}
 		void OpenGlRenderer::ChangeShaderUniform3f(const char* name, float x, float y, float z)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform3fARB(location, x, y, z);
+			glUniform3f(location, x, y, z);
 		}
 		void OpenGlRenderer::ChangeShaderUniform4f(const char* name, float x, float y, float z, float w)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform4fARB(location, x, y, z, w);
+			glUniform4f(location, x, y, z, w);
 		}
 		void OpenGlRenderer::ChangeShaderUniform1fv(const char* name, float *v, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform1fvARB(location, n, v);
+			glUniform1fv(location, n, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniform2fv(const char* name, float *v, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform2fvARB(location, n, v);
+			glUniform2fv(location, n, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniform3fv(const char* name, float *v, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform3fvARB(location, n, v);
+			glUniform3fv(location, n, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniform4fv(const char* name, float *v, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniform4fvARB(location, n, v);
+			glUniform4fv(location, n, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniformMatrix2fvARB(location, n, trans, v);
+			glUniformMatrix2fv(location, n, trans, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniformMatrix3fvARB(location, n, trans, v);
+			glUniformMatrix3fv(location, n, trans, v);
 		}
 		void OpenGlRenderer::ChangeShaderUniformMatrix4fv(const char* name, float *v, bool trans, int n)
 		{
-			int location = glGetUniformLocationARB(current_shader_->program_, name);
+			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);
-			glUniformMatrix4fvARB(location, n, trans, v);
+			glUniformMatrix4fv(location, n, trans, v);
 		}
 		void OpenGlRenderer::AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family)
 		{
@@ -1304,9 +1272,9 @@ namespace sht {
 
 			DeleteObject(hFont);
 #elif defined(TARGET_LINUX)
-			static_assert(false);
+			static_assert(false, "Font creation has not been defined");
 #elif defined(TARGET_MAC)
-			static_assert(false);
+			//static_assert(false, "Font creation has not been defined");
 #endif
 
 			CheckForErrors();
@@ -1337,19 +1305,23 @@ namespace sht {
 			va_list		ap;				// Pointer To List Of Arguments
 
 			va_start(ap, string);				// Parses The String For Variables
+#ifdef TARGET_WINDOWS
 			vsprintf_s(text, string, ap);		// And Converts Symbols To Actual Numbers
+#else
+            vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers
+#endif
 			va_end(ap);							// Results Are Stored In Text
 
-			glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT);
-			ChangeTexture(current_font_->texture_);
-			glPushMatrix();
-			glColor3f(r, g, b);
-			glTranslatef(x, y, 0.0f);
-			glScalef(s, s, 1.0f);
-			glListBase(current_font_->base_);
-			glCallLists((GLsizei)strlen(text), GL_UNSIGNED_BYTE, text);
-			glPopMatrix();
-			glPopAttrib();
+//			glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT);
+//			ChangeTexture(current_font_->texture_);
+//			glPushMatrix();
+//			glColor3f(r, g, b);
+//			glTranslatef(x, y, 0.0f);
+//			glScalef(s, s, 1.0f);
+//			glListBase(current_font_->base_);
+//			glCallLists((GLsizei)strlen(text), GL_UNSIGNED_BYTE, text);
+//			glPopMatrix();
+//			glPopAttrib();
 		}
 		void OpenGlRenderer::ReadPixels(int w, int h, u8 *data)
 		{
@@ -1366,55 +1338,6 @@ namespace sht {
 		inline void OpenGlRenderer::ClearDepth(void)
 		{
 			glClear(GL_DEPTH_BUFFER_BIT);
-		}
-		inline void OpenGlRenderer::ChangeProjectionMatrix(const sht::math::Matrix4& matrix)
-		{
-			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(matrix);
-		}
-		inline void OpenGlRenderer::ChangeModelViewMatrix(const sht::math::Matrix4& matrix)
-		{
-			glMatrixMode(GL_MODELVIEW);
-			glLoadMatrixf(matrix);
-		}
-		inline void OpenGlRenderer::LoadProjectionModelViewMatrices(const sht::math::Matrix4& proj, const sht::math::Matrix4& mv)
-		{
-			glMatrixMode(GL_PROJECTION);
-			glLoadMatrixf(proj);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadMatrixf(mv);
-		}
-		inline void OpenGlRenderer::PushMatrix(void)
-		{
-			glPushMatrix();
-		}
-		inline void OpenGlRenderer::PopMatrix(void)
-		{
-			glPopMatrix();
-		}
-		inline void OpenGlRenderer::LoadMatrix(const sht::math::Matrix4& matrix)
-		{
-			glLoadMatrixf(matrix);
-		}
-		inline void OpenGlRenderer::MultMatrix(const sht::math::Matrix4& matrix)
-		{
-			glMultMatrixf(matrix);
-		}
-		inline void OpenGlRenderer::Translate(f32 x, f32 y, f32 z)
-		{
-			glTranslatef(x, y, z);
-		}
-		inline void OpenGlRenderer::Translate(const sht::math::Vector3& v)
-		{
-			glTranslatef(v.x, v.y, v.z);
-		}
-		inline void OpenGlRenderer::Scale(f32 x, f32 y, f32 z)
-		{
-			glScalef(x, y, z);
-		}
-		inline void OpenGlRenderer::Scale(f32 s)
-		{
-			glScalef(s, s, s);
 		}
 		inline void OpenGlRenderer::ChangeBlendFunc(u32 source, u32 dest)
 		{
@@ -1452,104 +1375,12 @@ namespace sht {
 		{
 			glPolygonMode(GL_FRONT, GL_FILL);
 		}
-		inline void OpenGlRenderer::DrawRect(f32 x1, f32 y1, f32 x2, f32 y2)
-		{
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex2f(x1, y1);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex2f(x2, y1);
-			glTexCoord2f(1.0f, 1.0f);
-			glVertex2f(x2, y2);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex2f(x1, y2);
-			glEnd();
-		}
-		inline void OpenGlRenderer::DrawRectExt(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2)
-		{
-			glBegin(GL_QUADS);
-			glTexCoord2f(u1, v1);
-			glVertex2f(x1, y1);
-			glTexCoord2f(u2, v1);
-			glVertex2f(x2, y1);
-			glTexCoord2f(u2, v2);
-			glVertex2f(x2, y2);
-			glTexCoord2f(u1, v2);
-			glVertex2f(x1, y2);
-			glEnd();
-		}
-		inline void OpenGlRenderer::DrawRectExtCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2)
-		{
-			glBegin(GL_QUADS);
-			glTexCoord2f(u2, v1);
-			glVertex2f(x1, y1);
-			glTexCoord2f(u2, v2);
-			glVertex2f(x2, y1);
-			glTexCoord2f(u1, v2);
-			glVertex2f(x2, y2);
-			glTexCoord2f(u1, v1);
-			glVertex2f(x1, y2);
-			glEnd();
-		}
-		inline void OpenGlRenderer::DrawRectExtCCW(f32 x1, f32 y1, f32 x2, f32 y2, f32 u1, f32 v1, f32 u2, f32 v2)
-		{
-			glBegin(GL_QUADS);
-			glTexCoord2f(u1, v2);
-			glVertex2f(x1, y1);
-			glTexCoord2f(u1, v1);
-			glVertex2f(x2, y1);
-			glTexCoord2f(u2, v1);
-			glVertex2f(x2, y2);
-			glTexCoord2f(u2, v2);
-			glVertex2f(x1, y2);
-			glEnd();
-		}
-		inline void OpenGlRenderer::DrawPostProcRect()
-		{
-			glMatrixMode(GL_PROJECTION);
-			glPushMatrix();
-			glLoadIdentity();
-			glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			glLoadIdentity();
-
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.f, 0.f);
-			glVertex2f(0.f, 0.f);
-			glTexCoord2f(1.f, 0.f);
-			glVertex2f(1.f, 0.f);
-			glTexCoord2f(1.f, 1.f);
-			glVertex2f(1.f, 1.f);
-			glTexCoord2f(0.f, 1.f);
-			glVertex2f(0.f, 1.f);
-			glEnd();
-
-			glMatrixMode(GL_PROJECTION);
-			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
-			glPopMatrix();
-		}
-		inline void OpenGlRenderer::DrawHorizontalPlane(f32 tx, f32 ty, f32 sx, f32 sy, f32 ex, f32 ey, f32 h)
-		{
-			glBegin(GL_QUADS);
-			glNormal3f(0.0f, 1.0f, 0.0f);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(sx, h, sy);
-			glTexCoord2f(tx, 0.0f);
-			glVertex3f(sx, h, ey);
-			glTexCoord2f(tx, ty);
-			glVertex3f(ex, h, ey);
-			glTexCoord2f(0.0f, ty);
-			glVertex3f(ex, h, sy);
-			glEnd();
-		}
 		inline void OpenGlRenderer::DrawElements(u32 mode)
 		{
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 			glDrawElements(mode, current_index_buffer_->index_count_, index_type, 0);
 		}
-		inline void OpenGlRenderer::DrawElementsExt(u32 mode, u32 numindices)
+		inline void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
 		{
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 			glDrawElements(mode, numindices, index_type, 0);
@@ -1557,46 +1388,6 @@ namespace sht {
 		inline void OpenGlRenderer::Viewport(int w, int h)
 		{
 			glViewport(0, 0, w, h);
-		}
-		inline void OpenGlRenderer::Begin2D(void)
-		{
-			glViewport(0, 0, width_, height_);
-			glMatrixMode(GL_PROJECTION);
-			glPushMatrix();
-			glLoadMatrixf(standart_2d_matrix_);
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			glLoadIdentity();
-
-			glDepthMask(GL_FALSE);
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_CULL_FACE);
-		}
-		inline void OpenGlRenderer::End2D(void)
-		{
-			ChangeTexture(nullptr); // all Print calls use textures
-
-			glEnable(GL_CULL_FACE);
-			glEnable(GL_DEPTH_TEST);
-			glDepthMask(GL_TRUE);
-
-			glPopMatrix();
-			glMatrixMode(GL_PROJECTION);
-			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
-		}
-		inline void OpenGlRenderer::DrawFullscreenRect2D()
-		{
-			glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex2f(0.0f, 0.0f);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex2f(aspect_ratio_, 0.0f);
-			glTexCoord2f(1.0f, 1.0f);
-			glVertex2f(aspect_ratio_, 1.0f);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex2f(0.0f, 1.0f);
-			glEnd();
 		}
 
 	} // namespace graphics
