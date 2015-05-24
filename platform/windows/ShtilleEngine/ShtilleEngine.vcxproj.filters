@@ -90,9 +90,6 @@
     <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sht\system\include\time.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sht\system\include\stream\file_stream.h">
       <Filter>system\stream</Filter>
     </ClInclude>
@@ -119,6 +116,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_texture.h">
       <Filter>graphics\renderer\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\math\frustum.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\time.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,7 +173,10 @@
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp">
       <Filter>graphics\renderer\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sht\system\src\sht_time.cpp">
+    <ClCompile Include="..\..\..\sht\math\frustum.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\time.cpp">
       <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>

@@ -32,15 +32,16 @@
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\texture.h" />
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\vertex_format.h" />
     <ClInclude Include="..\..\..\sht\include\sht.h" />
+    <ClInclude Include="..\..\..\sht\math\frustum.h" />
     <ClInclude Include="..\..\..\sht\math\matrix.h" />
     <ClInclude Include="..\..\..\sht\math\quaternion.h" />
     <ClInclude Include="..\..\..\sht\math\sht_math.h" />
     <ClInclude Include="..\..\..\sht\math\vector.h" />
     <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h" />
+    <ClInclude Include="..\..\..\sht\system\include\time.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\file_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\memory_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\stream.h" />
-    <ClInclude Include="..\..\..\sht\system\include\time.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sht\application\application.cpp" />
@@ -51,6 +52,7 @@
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\renderer.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\texture.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\vertex_format.cpp" />
+    <ClCompile Include="..\..\..\sht\math\frustum.cpp" />
     <ClCompile Include="..\..\..\sht\math\matrix.cpp" />
     <ClCompile Include="..\..\..\sht\math\quaternion.cpp" />
     <ClCompile Include="..\..\..\sht\math\sht_math.cpp" />
@@ -59,7 +61,7 @@
     <ClCompile Include="..\..\..\sht\system\src\stream\file_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp" />
-    <ClCompile Include="..\..\..\sht\system\src\sht_time.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Libs.props" />
