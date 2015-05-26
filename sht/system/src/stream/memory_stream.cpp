@@ -4,7 +4,7 @@
 namespace sht {
 	namespace system {
 
-		MemoryStream::MemoryStream() : buffer_(nullptr), size_(0U), ptr_(nullptr)
+		MemoryStream::MemoryStream() : size_(0U), buffer_(nullptr), ptr_(nullptr)
 		{
 		}
 		MemoryStream::~MemoryStream()

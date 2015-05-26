@@ -6,9 +6,9 @@ SHT_BIN = ../../bin
 
 SOURCES = ../../TestProject/Source.cpp
 
-include ../makefile-sources
+INCLUDE = -I$(SHT_PATH)
 
-CC = C:/MinGW/bin/g++
+CC = g++
 CFLAGS = -g -Wall -std=c++11
 CFLAGS += $(INCLUDE)
 LDFLAGS = -g
@@ -19,15 +19,15 @@ EXECUTABLE = $(TARGET).exe
 
 LIBRARIES = \
 	-lstdc++ \
-	-lShtilleEngine
+	-lShtilleEngine -lglew -lopengl32 -lgdi32
 
 all: $(SOURCES) $(EXECUTABLE)
 	echo All is done!
 	
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES) -L $(SHT_BIN)
+	$(CC) $(LDFLAGS) -o $@ -Wl,--start-group $^ -Wl,--end-group $(LIBRARIES) -L$(SHT_BIN) 2> link$(TARGET).txt
 	copy /Y $(EXECUTABLE) $(TARGET_PATH)\$(EXECUTABLE)
 	del /Q $(EXECUTABLE)
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ 2> cp$(TARGET).txt

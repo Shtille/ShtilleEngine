@@ -7,43 +7,43 @@
 namespace sht {
 	namespace graphics {
 
-		static int GetChanels(Image::Format fmt)
-		{
-			switch (fmt)
-			{
-			case Image::Format::kRGBA8:
-			case Image::Format::kRGBA16:
-			case Image::Format::kRGBA32:
-				return 4;
-			case Image::Format::kRGB8:
-			case Image::Format::kRGB16:
-			case Image::Format::kRGB32:
-				return 3;
-			case Image::Format::kA8:
-			case Image::Format::kA16:
-			case Image::Format::kA32:
-			case Image::Format::kI8:
-			case Image::Format::kI16:
-			case Image::Format::kI32:
-			case Image::Format::kL8:
-			case Image::Format::kL16:
-			case Image::Format::kL32:
-			case Image::Format::kR8:
-			case Image::Format::kR16:
-			case Image::Format::kR32:
-				return 1;
-			case Image::Format::kRG8:
-			case Image::Format::kRG16:
-			case Image::Format::kRG32:
-			case Image::Format::kLA8:
-			case Image::Format::kLA16:
-			case Image::Format::kLA32:
-				return 2;
-			default:
-				assert(false && "unknown image format");
-				return 3;
-			}
-		}
+		// static int GetChanels(Image::Format fmt)
+		// {
+			// switch (fmt)
+			// {
+			// case Image::Format::kRGBA8:
+			// case Image::Format::kRGBA16:
+			// case Image::Format::kRGBA32:
+				// return 4;
+			// case Image::Format::kRGB8:
+			// case Image::Format::kRGB16:
+			// case Image::Format::kRGB32:
+				// return 3;
+			// case Image::Format::kA8:
+			// case Image::Format::kA16:
+			// case Image::Format::kA32:
+			// case Image::Format::kI8:
+			// case Image::Format::kI16:
+			// case Image::Format::kI32:
+			// case Image::Format::kL8:
+			// case Image::Format::kL16:
+			// case Image::Format::kL32:
+			// case Image::Format::kR8:
+			// case Image::Format::kR16:
+			// case Image::Format::kR32:
+				// return 1;
+			// case Image::Format::kRG8:
+			// case Image::Format::kRG16:
+			// case Image::Format::kRG32:
+			// case Image::Format::kLA8:
+			// case Image::Format::kLA16:
+			// case Image::Format::kLA32:
+				// return 2;
+			// default:
+				// assert(false && "unknown image format");
+				// return 3;
+			// }
+		// }
 		static int GetBpp(Image::Format fmt)
 			// Number of bits per pixel
 		{
@@ -184,7 +184,7 @@ namespace sht {
 			int bpp = GetBpp(fmt);
 			bpp_ = bpp >> 3; // bits to bytes
 			FREE_IMAGE_TYPE type = GetDataType(fmt);
-			FIBITMAP *hbmp = hbmp = FreeImage_AllocateT(type, w, h, bpp);
+			FIBITMAP *hbmp = FreeImage_AllocateT(type, w, h, bpp);
 			pixels_ = (u8*)hbmp; // store freeimage bitmap object pointer
 			return FreeImage_GetBits(hbmp);
 		}
@@ -207,7 +207,7 @@ namespace sht {
 			FIBITMAP *hbmp;
 			FREE_IMAGE_TYPE fit;
 			BYTE *imageData;
-			int imageSize, nChanels, unit_size, pitch;
+			int imageSize, nChanels, unit_size;
 
 			hbmp = FreeImage_Load(FreeImage_GetFileType(filename), filename);
 
@@ -215,7 +215,6 @@ namespace sht {
 			width_ = FreeImage_GetWidth(hbmp);
 			height_ = FreeImage_GetHeight(hbmp);
 
-			pitch = FreeImage_GetPitch(hbmp);
 			bpp_ = FreeImage_GetBPP(hbmp) / 8; // convert bits to bytes; bpp = nChanels * unit_size
 			imageSize = width_ * height_ * bpp_;
 

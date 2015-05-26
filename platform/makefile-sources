@@ -1,9 +1,0 @@
-# Shtille Engine sources makefile
-
-SHT_PATH ?= ../../sht
-SHT_BIN ?= ../../bin
-
-SOURCES ?= \
-	$(SHT_PATH)/system/src/time.cpp
-
-INCLUDE = -I$(SHT_PATH)

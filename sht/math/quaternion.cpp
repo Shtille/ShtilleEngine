@@ -63,7 +63,7 @@ namespace sht {
 		{
 			Vector3 v1 = Vector3(q1.x, q1.y, q1.z);
 			Vector3 v2 = Vector3(q2.x, q2.y, q2.z);
-			return Quaternion(v1^v2 + q1.w*v2 + q2.w*v1, q1.w*q2.w - v1&v2);
+			return Quaternion((v1^v2) + q1.w*v2 + q2.w*v1, q1.w*q2.w - (v1&v2));
 		}
 		Quaternion operator * (const float s, const Quaternion &q)
 		{

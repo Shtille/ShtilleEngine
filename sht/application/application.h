@@ -101,8 +101,8 @@ namespace sht {
 		int width_;						//!< width of the window
 		int height_;					//!< height of the window
 		float aspect_ratio_;			//!< aspect ratio of window
-		int color_bits_;				//!< number of bits for color buffer
-		int depth_bits_;				//!< number of bits for depth buffer
+		unsigned char color_bits_;				//!< number of bits for color buffer
+		unsigned char depth_bits_;				//!< number of bits for depth buffer
 		float time_;					//!< total time elapsed from application start
 		float frame_time_;				//!< time elapsed since last update
 		float frame_rate_;				//!< frames per second (FPS)

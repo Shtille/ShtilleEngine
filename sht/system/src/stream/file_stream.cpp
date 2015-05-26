@@ -35,7 +35,7 @@ namespace sht {
 			if (stream_has_mode(mode, StreamAccess::kText))
 				strcat_s(mode_str, "t");
 
-#ifdef TARGET_WINDOWS
+#ifdef _MFC_VER
 			errno_t err = fopen_s(&file_, filename, mode_str);
             return err == 0;
 #else

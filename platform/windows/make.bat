@@ -1,4 +1,4 @@
 mkdir ..\..\bin
-c:\mingw\bin\mingw32-make.exe -f makefile-shtille-engine
-c:\mingw\bin\mingw32-make.exe -f makefile-testproject
+c:\mingw\bin\mingw32-make.exe -f shtille-engine.mk
+c:\mingw\bin\mingw32-make.exe -f testproject.mk
 pause
