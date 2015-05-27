@@ -194,8 +194,13 @@ namespace sht {
 			size_t size = strlen(dir) + strlen(duration) + 1;
 			char *filename = new char[size];
 #ifdef TARGET_WINDOWS
+#ifdef _MFC_VER
 			strcpy_s(filename, size, dir);
 			strcat_s(filename, size, duration);
+#else
+			strcpy(filename, dir);
+			strcat(filename, duration);
+#endif
 
 			// TODO: exchange CreateDirectory
 			CreateDirectoryA(dir, NULL); // create directory if it doesn't exist

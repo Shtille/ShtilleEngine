@@ -143,7 +143,7 @@ namespace sht {
 	bool Application::RegisterWindowClass(HINSTANCE inst, const char* appclassname)
 	{
 		// This is the way to change window icon manually:
-		app_->icon_ = LoadIcon(NULL, MAKEINTRESOURCE(IDI_WINLOGO));
+		app_->icon_ = LoadIcon(NULL, IDI_APPLICATION);
 		if (app_->icon_ == nullptr)
 		{
 			MessageBox(HWND_DESKTOP, TEXT("Icon loading failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);

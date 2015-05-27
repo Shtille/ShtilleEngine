@@ -5,7 +5,7 @@
 #include "platform.h"
 #include <string.h>
 
-#ifndef TARGET_WINDOWS
+#ifndef _MFC_VER
 
 #define strcpy_s strcpy
 #define strcat_s strcat

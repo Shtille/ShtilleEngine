@@ -184,7 +184,7 @@ namespace sht {
 			int bpp = GetBpp(fmt);
 			bpp_ = bpp >> 3; // bits to bytes
 			FREE_IMAGE_TYPE type = GetDataType(fmt);
-			FIBITMAP *hbmp = hbmp = FreeImage_AllocateT(type, w, h, bpp);
+			FIBITMAP *hbmp = FreeImage_AllocateT(type, w, h, bpp);
 			pixels_ = (u8*)hbmp; // store freeimage bitmap object pointer
 			return FreeImage_GetBits(hbmp);
 		}
@@ -207,7 +207,7 @@ namespace sht {
 			FIBITMAP *hbmp;
 			FREE_IMAGE_TYPE fit;
 			BYTE *imageData;
-			int imageSize, nChanels, unit_size, pitch;
+			int imageSize, nChanels, unit_size;
 
 			hbmp = FreeImage_Load(FreeImage_GetFileType(filename), filename);
 
@@ -215,7 +215,6 @@ namespace sht {
 			width_ = FreeImage_GetWidth(hbmp);
 			height_ = FreeImage_GetHeight(hbmp);
 
-			pitch = FreeImage_GetPitch(hbmp);
 			bpp_ = FreeImage_GetBPP(hbmp) / 8; // convert bits to bytes; bpp = nChanels * unit_size
 			imageSize = width_ * height_ * bpp_;
 

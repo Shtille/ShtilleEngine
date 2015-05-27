@@ -4,10 +4,11 @@
 #ifdef TARGET_WINDOWS
 #include "../../thirdparty/glew/include/GL/wglew.h"
 #endif
+#include <cstdio>
 
 #if defined(TARGET_WINDOWS)
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glu32.lib")
+//#pragma comment(lib, "opengl32.lib")
+//#pragma comment(lib, "glu32.lib")
 #else
 //#error Choose OpenGL libraries for the project.
 #endif
