@@ -60,10 +60,11 @@
 
 //================================================================
 //#ifdef WIN32
-//#if defined(WIN32) && !defined(UNDER_CE)   // WIN32 seems to be defined always in VS2005 for ARM platform
-//#define PLATFORM_X86
-//#include "../x86/x86.h"
-//#endif
+#if defined(win32) && !defined(under_ce)   // win32 seems to be defined always in vs2005 for arm platform
+#define platform_x86
+#include "../x86/x86.h"
+#include <tchar.h>
+#endif
 
 #ifndef UNREFERENCED_PARAMETER
 #define UNREFERENCED_PARAMETER(P) { (P) = (P); }
@@ -453,11 +454,11 @@ typedef struct CWMImageStrCodec {
 
     struct WMPStream ** ppWStream;
 
-//#ifdef WIN32
-//    TCHAR **ppTempFile;
-//#else
+#ifdef WIN32
+    TCHAR **ppTempFile;
+#else
     char **ppTempFile;
-//#endif
+#endif
 
     // interleaved alpha support - linked structure for Alpha channel
     struct CWMImageStrCodec *m_pNextSC;

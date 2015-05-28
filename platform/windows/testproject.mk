@@ -11,7 +11,7 @@ INCLUDE = -I$(SHT_PATH)
 CC = g++
 CFLAGS = -g -Wall -std=c++11
 CFLAGS += $(INCLUDE)
-LDFLAGS = -g
+LDFLAGS = -s -static -Wl,--subsystem,windows -mwindows
 OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = TestProject
 TARGET_PATH = ..\..\bin
@@ -19,7 +19,7 @@ EXECUTABLE = $(TARGET).exe
 
 LIBRARIES = \
 	-lstdc++ \
-	-lShtilleEngine -lglew -lopengl32 -lgdi32 -lfreeimage -lws2_32
+	-lShtilleEngine -lglew -lopengl32 -lgdi32 ..\..\bin\freeimage.lib -lws2_32
 
 all: $(SOURCES) $(EXECUTABLE)
 	echo All is done!

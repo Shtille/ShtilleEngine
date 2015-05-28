@@ -1,0 +1,2 @@
+..\..\bin\TestProject.exe
+pause

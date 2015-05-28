@@ -7,16 +7,16 @@ CC = gcc
 CXX = g++
 AR = ar
 
-CFLAGS ?= -O3 -fPIC -fexceptions -fvisibility=hidden
+CFLAGS ?= -O3 -fexceptions -DNDEBUG -DDISABLE_PERF_MEASUREMENT -DWINVER=0x0500 $(LIB_TYPE_FLAGS) -DOPJ_STATIC
 CFLAGS += $(INCLUDE)
-CFLAGS += $(DEFINES)
+#CFLAGS += $(DEFINES)
 
-CXXFLAGS ?= -O3 -fPIC -fexceptions -fvisibility=hidden -Wno-ctor-dtor-privacy
+CXXFLAGS ?= -O3 -fexceptions -Wno-ctor-dtor-privacy -DNDEBUG -DWINVER=0x0500 $(LIB_TYPE_FLAGS) -DOPJ_STATIC -DLIBRAW_NODLL -include stdexcept
 
 CXXFLAGS += $(INCLUDE)
-CXXFLAGS += $(DEFINES)
+#CXXFLAGS += $(DEFINES)
 
-LDFLAGS ?= -g
+LDFLAGS ?= 
 OBJECTS = $(SOURCES:.c=.o)
 OBJECTS := $(OBJECTS:.cpp=.o)
 TARGET = FreeImage
@@ -24,7 +24,7 @@ TARGET_PATH = ..\..\bin
 STATIC_LIB = lib$(TARGET).a
 SHARED_LIB = lib$(TARGET).so
 
-LIBRARIES = -lstdc++
+LIBRARIES = -lws2_32
 
 all: $(SOURCES) FreeImage
 	echo All is done!
@@ -35,7 +35,7 @@ create_dir:
 	if not exist $(TARGET_PATH) mkdir $(TARGET_PATH)
     
 $(STATIC_LIB): $(OBJECTS)
-	$(AR) rcs $@ $(OBJECTS)
+	$(AR) rs $@ $(OBJECTS)
 	copy /Y $(STATIC_LIB) $(TARGET_PATH)\$(STATIC_LIB)
 	del /Q $(STATIC_LIB)
 	

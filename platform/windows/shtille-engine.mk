@@ -3,7 +3,7 @@
 
 include ../shtille-engine-sources.mk
 
-DEFINES = -DGLEW_STATIC -DFREEIMAGE_LIB
+DEFINES = -DGLEW_STATIC -DFREEIMAGE_EXPORTS
 
 CC = g++
 AR = ar
@@ -18,7 +18,7 @@ STATIC_LIB = lib$(TARGET).a
 SHARED_LIB = lib$(TARGET).so
 LIBRARY_PATH = -L$(SHT_BIN)
 
-LIBRARIES = -lstdc++ -lglew -lopengl32 -lgdi32 -lfreeimage
+LIBRARIES = -lstdc++ -lglew -lopengl32 -lgdi32 freeimage.lib
 
 all: $(SOURCES) ShtilleEngine
 	echo All is done!
