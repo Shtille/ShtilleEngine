@@ -19,15 +19,15 @@ EXECUTABLE = $(TARGET).exe
 
 LIBRARIES = \
 	-lstdc++ \
-	-lShtilleEngine -lglew -lopengl32 -lgdi32
+	-lShtilleEngine -lglew -lopengl32 -lgdi32 -lfreeimage -lws2_32
 
 all: $(SOURCES) $(EXECUTABLE)
 	echo All is done!
 	
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ -Wl,--start-group $^ -Wl,--end-group $(LIBRARIES) -L$(SHT_BIN) 2> link$(TARGET).txt
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBRARIES) -L$(SHT_BIN)
 	copy /Y $(EXECUTABLE) $(TARGET_PATH)\$(EXECUTABLE)
 	del /Q $(EXECUTABLE)
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ 2> cp$(TARGET).txt
+	$(CC) $(CFLAGS) -c $< -o $@

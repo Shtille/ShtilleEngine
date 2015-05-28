@@ -18,12 +18,16 @@ STATIC_LIB = lib$(TARGET).a
 SHARED_LIB = lib$(TARGET).so
 LIBRARY_PATH = -L$(SHT_BIN)
 
-LIBRARIES = -lstdc++ -lglew -lopengl32 -lgdi32
+LIBRARIES = -lstdc++ -lglew -lopengl32 -lgdi32 -lfreeimage
 
 all: $(SOURCES) ShtilleEngine
 	echo All is done!
 
-ShtilleEngine: $(STATIC_LIB) $(SHARED_LIB)
+clean:
+	del ..\..\sht\*.o /s
+	echo Clean is done!
+
+ShtilleEngine: $(STATIC_LIB)
     
 $(STATIC_LIB): $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)

@@ -3,12 +3,20 @@
 
 include ../freeimage-sources.mk
 
-CC = g++
+CC = gcc
+CXX = g++
 AR = ar
-CFLAGS = -g -Wall -std=c++11
+
+CFLAGS ?= -O3 -fPIC -fexceptions -fvisibility=hidden
 CFLAGS += $(INCLUDE)
 CFLAGS += $(DEFINES)
-LDFLAGS = -g
+
+CXXFLAGS ?= -O3 -fPIC -fexceptions -fvisibility=hidden -Wno-ctor-dtor-privacy
+
+CXXFLAGS += $(INCLUDE)
+CXXFLAGS += $(DEFINES)
+
+LDFLAGS ?= -g
 OBJECTS = $(SOURCES:.c=.o)
 OBJECTS := $(OBJECTS:.cpp=.o)
 TARGET = FreeImage
@@ -18,10 +26,13 @@ SHARED_LIB = lib$(TARGET).so
 
 LIBRARIES = -lstdc++
 
-all: $(SOURCES) ShtilleEngine
+all: $(SOURCES) FreeImage
 	echo All is done!
 
-ShtilleEngine: $(STATIC_LIB) $(SHARED_LIB)
+FreeImage: create_dir $(STATIC_LIB)
+
+create_dir:
+	if not exist $(TARGET_PATH) mkdir $(TARGET_PATH)
     
 $(STATIC_LIB): $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
@@ -34,7 +45,7 @@ $(SHARED_LIB): $(OBJECTS)
 	del /Q $(SHARED_LIB)
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@

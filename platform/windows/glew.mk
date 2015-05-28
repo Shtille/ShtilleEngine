@@ -8,11 +8,15 @@ INCLUDE += -I$(SHT_PATH)/thirdparty/glew/include
 
 CC = gcc
 AR = ar
-CFLAGS = -g -Wall
+
+CFLAGS = -g -Wall -O3
 CFLAGS += $(INCLUDE)
 CFLAGS += -DGLEW_STATIC
+
 LDFLAGS = -g
+
 OBJECTS = $(SOURCES:.c=.o)
+
 TARGET = glew
 TARGET_PATH = ..\..\bin
 STATIC_LIB = lib$(TARGET).a
@@ -23,7 +27,10 @@ LIBRARIES = -lstdc++ -lopengl32 -lglu32
 all: $(SOURCES) glew
 	echo All is done!
 
-glew: $(STATIC_LIB) $(SHARED_LIB)
+glew: create_dir $(STATIC_LIB)
+
+create_dir:
+	if not exist $(TARGET_PATH) mkdir $(TARGET_PATH)
     
 $(STATIC_LIB): $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
