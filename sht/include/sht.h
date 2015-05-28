@@ -4,10 +4,20 @@
 
 #include "../common/platform.h"
 
+#if defined(TARGET_WINDOWS) || defined(TARGET_MAC) || defined(TARGET_LINUX)
+#define RENDERER_OPENGL // other isn't emplemented
+#elif defined(TARGET_IOS) || defined(TARGET_ANDROID)
+#define RENDERER_OPENGLES
+#endif
+
 // Choose renderer
 #if defined(RENDERER_OPENGL)
 
 #include "../application/opengl/opengl_application.h"
+
+#elif defined(RENDERER_OPENGLES)
+
+#include "../application/opengl/opengles_application.h"
 
 #elif defined(RENDERER_DIRECTX)
 

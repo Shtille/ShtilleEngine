@@ -1,6 +1,7 @@
 #include "application.h"
 #include <memory.h>
 #include "../graphics/include/renderer/renderer.h"
+#include "../system/include/memory_leaks.h"
 #include "../system/include/time.h"
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
@@ -185,13 +186,9 @@ namespace sht {
 	{
 		app_ = this;
 
-#if defined(TARGET_WINDOWS)
-		GetLastError(); // skip any upcoming error
-
 		// Enable automatic memory leaks checking
 		sht::system::EnableMemoryLeaksChecking();
 
-		const char* app_class_name = "ShtilleEngine";
 		sht::system::UpdateTimer update_timer;
 
 		// Prestart initialization
@@ -222,6 +219,11 @@ namespace sht {
 			app_->InitWindowSize(1024, 768, false);
 		}
 
+#if defined(TARGET_WINDOWS)
+        const char* app_class_name = "ShtilleEngine";
+        
+        GetLastError(); // skip any upcoming error
+        
 		HINSTANCE instance = GetModuleHandle(NULL);
 		if (!RegisterWindowClass(instance, app_class_name))
 		{
@@ -266,32 +268,40 @@ namespace sht {
 			instance,  // Pass The Window Instance
 			NULL); // pointer to window class
 		app_->SetWindow(hwnd);
+#endif
 
 		if (app_->InitApi())
 		{
 			if (app_->Load())
 			{
 				// Show window
+#if defined(TARGET_WINDOWS)
 				ShowWindow(hwnd, SW_NORMAL);
+#endif
 				app_->set_visible(true);
 
 				//	Some dual core systems have a problem where the different CPUs return different
 				//	QueryPerformanceCounter values. So when this thread is schedule on the other CPU
 				//	in a later frame, we could even get a negative frameTime. To solve this we force
 				//	the main thread to always run on CPU 0.
+#if defined(TARGET_WINDOWS)
 				SetThreadAffinityMask(GetCurrentThread(), 1);
+#endif
 
 				// Start time
 				update_timer.Start();
 
 				// program main loop
+#if defined(TARGET_WINDOWS)
 				MSG	msg;
+#endif
 				bool bQuit = false;
 				while (!bQuit)
 				{
 					// calculate dt
 					app_->SetFrameTime(update_timer.GetElapsedTime());
 
+#if defined(TARGET_WINDOWS)
 					// check for messages
 					while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 					{
@@ -306,6 +316,7 @@ namespace sht {
 							DispatchMessage(&msg);
 						}
 					}
+#endif
 					if (bQuit) break;
 
 					app_->Update();
@@ -323,15 +334,20 @@ namespace sht {
 		}
 		else
 		{
+#if defined(TARGET_WINDOWS)
 			MessageBox(HWND_DESKTOP, TEXT("Failed to init API!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 			DestroyWindow(hwnd);
+#endif
 		}
 
 		if (app_->fullscreen())
 		{
+#if defined(TARGET_WINDOWS)
 			ChangeDisplaySettings(NULL, 0);
+#endif
 		}
 
+#if defined(TARGET_WINDOWS)
 		UnregisterClassA(app_class_name, instance);
 		DestroyIcon(app_->icon_);
 #endif
