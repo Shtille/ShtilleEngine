@@ -19,6 +19,7 @@ SOURCES ?= \
 	$(SHT_PATH)/math/vector.cpp \
 	$(SHT_PATH)/system/src/memory_leaks.cpp \
 	$(SHT_PATH)/system/src/stream/file_stream.cpp \
+	$(SHT_PATH)/system/src/stream/log_stream.cpp \
 	$(SHT_PATH)/system/src/stream/memory_stream.cpp \
 	$(SHT_PATH)/system/src/stream/stream.cpp \
 	$(SHT_PATH)/system/src/time.cpp
