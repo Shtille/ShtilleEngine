@@ -1,2 +1,3 @@
-..\..\bin\TestProject.exe
+cd ..\..\bin
+TestProject.exe
 pause

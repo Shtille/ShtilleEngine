@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\..\sht\math\sht_math.h" />
     <ClInclude Include="..\..\..\sht\math\vector.h" />
     <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h" />
+    <ClInclude Include="..\..\..\sht\system\include\stream\log_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\time.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\file_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\memory_stream.h" />
@@ -47,6 +48,8 @@
     <ClCompile Include="..\..\..\sht\application\application.cpp" />
     <ClCompile Include="..\..\..\sht\application\opengl\opengl_application.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_jpeg.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_png.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_renderer.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\renderer.cpp" />
@@ -59,6 +62,7 @@
     <ClCompile Include="..\..\..\sht\math\vector.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\memory_leaks.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\file_stream.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\stream\log_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\time.cpp" />
@@ -68,14 +72,6 @@
     <None Include="ShtilleEngine.props" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\sht\thirdparty\freeimage\src\FreeImageLib\FreeImageLib.2013.vcxproj">
-      <Project>{9e219df2-315d-478e-8a07-8960c377ce1e}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\sht\thirdparty\glew\build\vc12\glew_static.vcxproj">
       <Project>{664e6f0d-6784-4760-9565-d54f8eb1edf4}</Project>
       <Private>false</Private>
@@ -122,10 +118,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SHT_LIB)</OutDir>
+    <OutDir>$(SHT_BIN)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SHT_LIB)</OutDir>
+    <OutDir>$(SHT_BIN)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

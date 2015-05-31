@@ -9,11 +9,11 @@ INCLUDE += -I$(SHT_PATH)/thirdparty/glew/include
 CC = gcc
 AR = ar
 
-CFLAGS = -g -Wall
+CFLAGS = -g -Wall -O3
 CFLAGS += $(INCLUDE)
 CFLAGS += -DGLEW_STATIC -DGLEW_NO_GLU
 
-LDFLAGS = -g
+LDFLAGS = -s
 
 OBJECTS = $(SOURCES:.c=.o)
 

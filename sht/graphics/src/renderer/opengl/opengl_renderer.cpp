@@ -1306,7 +1306,7 @@ namespace sht {
 			va_list		ap;				// Pointer To List Of Arguments
 
 			va_start(ap, string);				// Parses The String For Variables
-#ifdef _MFC_VER
+#ifdef _MSC_VER
 			vsprintf_s(text, string, ap);		// And Converts Symbols To Actual Numbers
 #else
             vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers

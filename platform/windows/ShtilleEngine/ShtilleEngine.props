@@ -7,12 +7,21 @@
     <SHT_LIB>$(SolutionDir)\..\..\lib\</SHT_LIB>
   </PropertyGroup>
   <PropertyGroup>
-    <LibraryPath>$(SHT_LIB);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SHT_BIN);$(LibraryPath)</LibraryPath>
     <OutDir>$(SHT_BIN)</OutDir>
-    <IncludePath>$(SHT_PATH)\thirdparty\freeimage\include\;$(SHT_PATH);$(IncludePath)</IncludePath>
+    <IncludePath>$(SHT_PATH)\thirdparty\libjpeg\include\;$(SHT_PATH)\thirdparty\libjpeg\src\;$(SHT_PATH);$(IncludePath)</IncludePath>
     <IntDir>$(SHT_PATH)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <Lib>
+      <AdditionalDependencies>glew.lib;libjpeg.lib;libpng.lib;zlib.lib;opengl32.lib</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="SHT_PATH">
       <Value>$(SHT_PATH)</Value>

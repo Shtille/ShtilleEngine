@@ -6,7 +6,7 @@
 
 #define TARGET_WINDOWS
 
-#ifdef _MFC_VER
+#ifdef _MSC_VER
 #include <SDKDDKVer.h>
 #endif
 

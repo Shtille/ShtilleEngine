@@ -7,7 +7,7 @@ namespace sht {
 		{
 #ifdef _DEBUG
 
-#if defined(_WIN32) && defined(_MFC_VER)
+#if defined(_WIN32) && defined(_MSC_VER)
 			// Get current flag
 			int tmpFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 

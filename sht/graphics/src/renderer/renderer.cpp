@@ -194,7 +194,7 @@ namespace sht {
 			size_t size = strlen(dir) + strlen(duration) + 1;
 			char *filename = new char[size];
 #ifdef TARGET_WINDOWS
-#ifdef _MFC_VER
+#ifdef _MSC_VER
 			strcpy_s(filename, size, dir);
 			strcat_s(filename, size, duration);
 #else
@@ -212,7 +212,7 @@ namespace sht {
 			// allocate memory and read pixels
 			u8 *data = image.Allocate(w, h, Image::Format::kRGB8);
 			ReadPixels(w, h, data);
-			image.Save(Image::DataType::kJpg, filename);
+			image.Save(Image::FileFormat::kJpg, filename);
 
 			delete[] filename;
 		}

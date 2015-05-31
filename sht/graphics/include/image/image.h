@@ -24,8 +24,13 @@ namespace sht {
 				kDepth16, kDepth24, kDepth32
 			};
 
-			enum class DataType {
+			enum class FileFormat {
 				kBmp, kJpg, kPng, kTga, kTif
+			};
+
+			enum class DataType {
+				kUint8, kUint16, kUint32,
+				kHalfFloat, kFloat, kDouble
 			};
 
 			Image();
@@ -38,19 +43,36 @@ namespace sht {
 			int bpp();
 
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
-			void Save(DataType fmt, const char* filename);				//!< saves image to file with specified format
+			bool Save(FileFormat fmt, const char* filename);			//!< saves image to file with specified format
 
 			bool LoadFromFile(const char* filename);					//!< loads image from file
 			bool LoadCubemapFromFile(const char* filename, int ind);	//!< loads cubemap part with specified index from file
 			bool LoadNMapFromHMap(const char* filename);				//!< loads normalmap from heightmap file
 			bool LoadNHMapFromHMap(const char* filename);				//!< loads normalheightmap from heightmap file
 
+		protected:
+			void SwapRedBlueChannels();
+
+			// Save routines
+			bool SaveJpeg(const char *filename, int quality = 75);
+			bool SavePng(const char *filename);
+
+			// Load routines
+			bool LoadJpeg(const char *filename);
+			bool LoadPng(const char *filename);
+			//bool LoadBmp(const char *filename);
+			//bool LoadTiff(const char *filename);
+			//bool LoadTga(const char *filename);
+			//bool LoadHdr(const char *filename);
+
 		private:
 
 			u8 *pixels_;		//!< bytes of the source image
 			Format format_;		//!< pixel format of the source image
+			DataType data_type_;//!< type of pixel data of the source image
 			int width_;			//!< width of the source image
 			int height_;		//!< height of the source image
+			int channels_;		//!< number of channels in image
 			int bpp_;			//!< number of BYTES per pixel
 		};
 

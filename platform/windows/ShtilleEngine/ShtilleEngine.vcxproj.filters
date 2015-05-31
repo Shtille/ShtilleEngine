@@ -123,6 +123,9 @@
     <ClInclude Include="..\..\..\sht\system\include\time.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\stream\log_stream.h">
+      <Filter>system\stream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sht\application\application.cpp">
@@ -178,6 +181,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sht\system\src\time.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\stream\log_stream.cpp">
+      <Filter>system\stream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_jpeg.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_png.cpp">
+      <Filter>graphics\image</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
