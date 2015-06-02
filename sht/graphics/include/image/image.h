@@ -49,6 +49,9 @@ namespace sht {
 			bool LoadCubemapFromFile(const char* filename, int ind);	//!< loads cubemap part with specified index from file
 			bool LoadNMapFromHMap(const char* filename);				//!< loads normalmap from heightmap file
 			bool LoadNHMapFromHMap(const char* filename);				//!< loads normalheightmap from heightmap file
+			
+			void Rescale(int w, int h);									//!< rescales stored image
+			void MakePowerOfTwo();										//!< rescales image to be power of two in each size
 
 		protected:
 			void SwapRedBlueChannels();

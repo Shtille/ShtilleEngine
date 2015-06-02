@@ -199,7 +199,7 @@ namespace sht {
 			virtual f32 GetStringHeight(f32 scale) = 0;
 			virtual f32 GetStringWidth(f32 scale, const char *str) = 0;
 
-			virtual void ReadPixels(int w, int h, u8 *data) = 0;
+			virtual void ReadPixels(int w, int h, u8 *data) = 0; //!< reads pixels in R8G8B8 format
 
 			virtual inline void ClearColor(void) = 0;
 			virtual inline void ClearColorDepth(void) = 0;

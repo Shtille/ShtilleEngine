@@ -375,6 +375,14 @@ namespace sht {
 
 			return true;
 		}
+		void Image::Rescale(int w, int h)
+		{
+			assert(!"TODO: Image::Rescale");
+		}
+		void Image::MakePowerOfTwo()
+		{
+			assert(!"TODO: Image::makePowerOfTwo");
+		}
 
 	} // namespace graphics
 } // namespace sht
