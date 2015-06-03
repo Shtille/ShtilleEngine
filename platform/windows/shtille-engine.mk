@@ -21,7 +21,7 @@ LIBRARY_PATH = -L$(SHT_BIN)
 LIBRARIES = -lstdc++ -lgdi32 \
           -lglew -lopengl32 \
           -ljpeg \
-          -lzlib -lpng
+          -lz -lpng
 
 all: $(SOURCES) ShtilleEngine
 	echo All is done!

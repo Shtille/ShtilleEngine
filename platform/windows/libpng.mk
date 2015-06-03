@@ -5,14 +5,18 @@ LIB_PATH = ../../sht/thirdparty/libpng/src
 
 include ../libpng-sources.mk
 
-INCLUDE += -I$(LIB_PATH) -I$(LIB_PATH)/../include -I$(LIB_PATH)/../../zlib/include
+INCLUDE = \
+	-I$(LIB_PATH) \
+	-I$(LIB_PATH)/../include \
+	-I$(LIB_PATH)/../../zlib/include \
+	-I$(LIB_PATH)/../../zlib/src
 
 DEFINES = -DPNG_USER_WIDTH_MAX=16384 -DPNG_USER_HEIGHT_MAX=16384
 
 CC = gcc
 AR = ar
 
-CFLAGS = -g -Wall -O3
+CFLAGS = -g -Wall -O3 -std=c99
 CFLAGS += $(INCLUDE)
 CFLAGS += $(DEFINES)
 
@@ -25,7 +29,7 @@ TARGET_PATH = ..\..\bin
 STATIC_LIB = lib$(TARGET).a
 SHARED_LIB = lib$(TARGET).so
 
-LIBRARIES = -lstdc++ -lzlib
+LIBRARIES = -lstdc++ -lz
 
 all: $(SOURCES) png
 	echo All is done!

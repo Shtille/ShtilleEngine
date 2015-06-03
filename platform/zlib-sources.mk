@@ -13,4 +13,4 @@ SOURCES = \
 	$(LIB_PATH)/gzclose.c  \
 	$(LIB_PATH)/gzlib.c    \
 	$(LIB_PATH)/gzread.c   \
-	$(LIB_PATH)/gzwrite.c 
+	$(LIB_PATH)/gzwrite.c

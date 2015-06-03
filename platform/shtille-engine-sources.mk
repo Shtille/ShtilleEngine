@@ -29,4 +29,6 @@ SOURCES ?= \
 INCLUDE = \
         -I$(SHT_PATH) \
         -I$(SHT_PATH)/thirdparty/libjpeg/include \
-        -I$(SHT_PATH)/thirdparty/libjpeg/src
+        -I$(SHT_PATH)/thirdparty/libjpeg/src \
+	-I$(SHT_PATH)/thirdparty/libpng/include \
+        -I$(SHT_PATH)/thirdparty/libpng/src

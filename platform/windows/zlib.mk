@@ -5,19 +5,21 @@ LIB_PATH = ../../sht/thirdparty/zlib/src
 
 include ../zlib-sources.mk
 
-INCLUDE += -I$(LIB_PATH) -I$(LIB_PATH)/../include
+INCLUDE = \
+	-I$(LIB_PATH) \
+	-I$(LIB_PATH)/../include
 
 CC = gcc
 AR = ar
 
-CFLAGS = -g -Wall -O3
+CFLAGS = -g -Wall -O3 -std=c99
 CFLAGS += $(INCLUDE)
 
 LDFLAGS = -s
 
 OBJECTS = $(SOURCES:.c=.o)
 
-TARGET = zlib
+TARGET = z
 TARGET_PATH = ..\..\bin
 STATIC_LIB = lib$(TARGET).a
 SHARED_LIB = lib$(TARGET).so
