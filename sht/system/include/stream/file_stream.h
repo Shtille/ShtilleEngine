@@ -12,7 +12,7 @@ namespace sht {
 		class FileStream : public Stream {
 		public:
 			FileStream();
-			~FileStream();
+			virtual ~FileStream();
 
 			bool Open(const char *filename, StreamAccess mode);
 			void Close();
@@ -25,6 +25,8 @@ namespace sht {
 			void Seek(long offset, StreamOffsetOrigin origin);
 			void Rewind();
 			size_t Length(); //!< Obtain file size, up to 2Gb (long max)
+            
+            FILE * GetFilePointer();
 
 		private:
 			//! Object copying is not allowed

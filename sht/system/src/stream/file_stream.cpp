@@ -34,6 +34,8 @@ namespace sht {
 			}
 			if (stream_has_mode(mode, StreamAccess::kText))
 				strcat_s(mode_str, "t");
+            if (stream_has_mode(mode, StreamAccess::kBinary))
+                strcat_s(mode_str, "b");
 
 #ifdef _MSC_VER
 			errno_t err = fopen_s(&file_, filename, mode_str);
@@ -84,6 +86,10 @@ namespace sht {
 			fseek(file_, pos, SEEK_SET);
 			return static_cast<size_t>(size);
 		}
+        FILE * FileStream::GetFilePointer()
+        {
+            return file_;
+        }
 
 	} // namespace system
 } // namespace sht

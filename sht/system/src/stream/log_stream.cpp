@@ -3,14 +3,13 @@
 namespace sht {
 	namespace system {
 
-		LogStream::LogStream(const char *filename)
+		ScopeLogStream::ScopeLogStream(const char *filename)
 		{
-			opened_ = Open(filename, StreamAccess::kAppend);
+			bool opened = Open(filename, StreamAccess::kAppend);
+            assert(opened);
 		}
-		LogStream::~LogStream()
+		ScopeLogStream::~ScopeLogStream()
 		{
-			if (opened_)
-				Close();
 		}
 
 	} // namespace system

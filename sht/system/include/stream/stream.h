@@ -9,12 +9,15 @@ namespace sht {
 
 		enum class StreamAccess : int {
 			kText = 0x001,
+            kBinary = 0x002,
 			kRead = 0x010,
 			kWrite = 0x020,
 			kReadWrite = 0x030,
 			kAppend = 0x080,
 			kReadText = 0x011,
-			kWriteText = 0x021
+			kWriteText = 0x021,
+            kReadBinary = 0x012,
+            kWriteBinary = 0x022
 		};
 		enum class StreamOffsetOrigin : int {
 			kBeginning = 0,

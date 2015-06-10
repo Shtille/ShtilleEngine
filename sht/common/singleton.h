@@ -14,10 +14,10 @@ namespace sht {
 		}
 
 	protected:
-		Singleton() {}
-		Singleton(const Singleton&) {}
-		virtual ~Singleton() {}
-		Singleton& operator = (const Singleton&) {}
+        Singleton() = default;
+        Singleton(const Singleton&) = delete;
+		virtual ~Singleton() = default;
+		Singleton& operator = (const Singleton&) = delete;
 	};
 
 	// Singleton which counting references
@@ -51,7 +51,7 @@ namespace sht {
 	template <class T>
 	T* CountingSingleton<T>::instance_ = nullptr;
 	template <class T>
-	T* CountingSingleton<T>::instance_counter_ = 0;
+	int CountingSingleton<T>::instance_counter_ = 0;
 
 } // namespace sht
 

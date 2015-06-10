@@ -2,7 +2,7 @@
 #include <memory.h>
 #include "../graphics/include/renderer/renderer.h"
 #include "../system/include/memory_leaks.h"
-#include "../system/include/time.h"
+#include "../system/include/sht_time.h"
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
 #if defined(TARGET_MAC)

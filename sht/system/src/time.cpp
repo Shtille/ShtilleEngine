@@ -1,4 +1,4 @@
-#include "../include/time.h"
+#include "../include/sht_time.h"
 #include <chrono>
 
 namespace sht {

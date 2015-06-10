@@ -1,15 +1,14 @@
 #include "../../include/image/image.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include "thirdparty/libpng/include/png.h"
+#include "../../../system/include/stream/file_stream.h"
+#include "../../../thirdparty/libpng/include/png.h"
 
 namespace sht {
 	namespace graphics {
 
 		bool Image::SavePng(const char *filename)
 		{
-			FILE *fp = fopen(filename, "wb");
-			if (!fp)
+            sht::system::FileStream stream;
+            if (!stream.Open(filename, sht::system::StreamAccess::kWriteBinary))
 			{
 				// Add some message here
 				return false;
@@ -35,7 +34,7 @@ namespace sht {
 				return false;
 			}
 
-			png_init_io(png, fp);
+			png_init_io(png, stream.GetFilePointer());
 
 			// Output is 8bit depth, RGBA format.
 			png_set_IHDR(
@@ -62,13 +61,18 @@ namespace sht {
 			
 			delete[] row_pointers;
 
-			fclose(fp);
+            stream.Close();
 
 			return true;
 		}
 		bool Image::LoadPng(const char *filename)
 		{
-			FILE *fp = fopen(filename, "rb");
+            sht::system::FileStream stream;
+            if (!stream.Open(filename, sht::system::StreamAccess::kReadBinary))
+            {
+                // Add some message here
+                return false;
+            }
 
 			png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 			if (!png)
@@ -90,7 +94,7 @@ namespace sht {
 				return false;
 			}
 
-			png_init_io(png, fp);
+			png_init_io(png, stream.GetFilePointer());
 
 			png_read_info(png, info);
 
@@ -142,7 +146,7 @@ namespace sht {
 			
 			delete[] row_pointers;
 
-			fclose(fp);
+            stream.Close();
 
 			return true;
 		}

@@ -1,7 +1,6 @@
 #include "../../include/image/image.h"
-#include <stdio.h>
-#include "thirdparty/libjpeg/include/jpeglib.h"
-#include <cassert>
+#include "../../../system/include/stream/file_stream.h"
+#include "../../../thirdparty/libjpeg/include/jpeglib.h"
 
 namespace sht {
 	namespace graphics {
@@ -26,7 +25,7 @@ namespace sht {
 			*/
 			struct jpeg_error_mgr jerr;
 			/* More stuff */
-			FILE * outfile;		/* target file */
+            sht::system::FileStream stream;
 			JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
 			int row_stride;		/* physical row width in image buffer */
 
@@ -49,11 +48,12 @@ namespace sht {
 			* VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
 			* requires it in order to write binary files.
 			*/
-			if ((outfile = fopen(filename, "wb")) == NULL) {
+			if (!stream.Open(filename, sht::system::StreamAccess::kWriteBinary))
+            {
 				fprintf(stderr, "can't open %s\n", filename);
 				return false;
 			}
-			jpeg_stdio_dest(&cinfo, outfile);
+			jpeg_stdio_dest(&cinfo, stream.GetFilePointer());
 
 			/* Step 3: set parameters for compression */
 
@@ -104,7 +104,7 @@ namespace sht {
 
 			jpeg_finish_compress(&cinfo);
 			/* After finish_compress, we can close the output file. */
-			fclose(outfile);
+            stream.Close();
 
 			/* Step 7: release JPEG compression object */
 
@@ -126,7 +126,7 @@ namespace sht {
 			*/
 			struct jpeg_error_mgr jerr;
 			/* More stuff */
-			FILE * infile;		/* source file */
+			sht::system::FileStream stream;
 			unsigned char * rowptr[1];
 			int row_stride;		/* physical row width in output buffer */
 
@@ -136,7 +136,8 @@ namespace sht {
 			* requires it in order to read binary files.
 			*/
 
-			if ((infile = fopen(filename, "rb")) == NULL) {
+			if (!stream.Open(filename, sht::system::StreamAccess::kReadBinary))
+            {
 				fprintf(stderr, "can't open %s\n", filename);
 				return false;
 			}
@@ -151,7 +152,7 @@ namespace sht {
 
 			/* Step 2: specify data source (eg, a file) */
 
-			jpeg_stdio_src(&cinfo, infile);
+			jpeg_stdio_src(&cinfo, stream.GetFilePointer());
 
 			/* Step 3: read file parameters with jpeg_read_header() */
 
@@ -233,7 +234,7 @@ namespace sht {
 			* so as to simplify the setjmp error logic above.  (Actually, I don't
 			* think that jpeg_destroy can do an error exit, but why assume anything...)
 			*/
-			fclose(infile);
+            stream.Close();
 
 			/* At this point you may want to check to see whether any corrupt-data
 			* warnings occurred (test whether jerr.pub.num_warnings is nonzero).
