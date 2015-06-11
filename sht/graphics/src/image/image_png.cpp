@@ -54,7 +54,7 @@ namespace sht {
 			//png_set_filler(png, 0, PNG_FILLER_AFTER);
 			png_bytepp row_pointers = new png_bytep[height_];
 			for(int y = 0; y < height_; ++y)
-				row_pointers[y] = (png_bytep)&pixels_[y*width_];
+				row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
 
 			png_write_image(png, row_pointers);
 			png_write_end(png, NULL);
@@ -98,12 +98,6 @@ namespace sht {
 
 			png_read_info(png, info);
 
-			width_      = png_get_image_width(png, info);
-			height_     = png_get_image_height(png, info);
-			channels_	= 4;
-			data_type_ 	= DataType::kUint8;
-			bpp_ 		= 4;
-			format_ 	= Format::kRGBA8;
 			png_byte color_type = png_get_color_type(png, info);
 			png_byte bit_depth  = png_get_bit_depth(png, info);
 
@@ -134,13 +128,20 @@ namespace sht {
 				png_set_gray_to_rgb(png);
 
 			png_read_update_info(png, info);
+			
+			width_      = png_get_image_width(png, info);
+			height_     = png_get_image_height(png, info);
+			channels_	= 4;
+			data_type_ 	= DataType::kUint8;
+			bpp_ 		= 4;
+			format_ 	= Format::kRGBA8;
 
 			size_t image_size = png_get_rowbytes(png, info) * height_;
 			pixels_ = new u8[image_size];
 			
 			png_bytepp row_pointers = new png_bytep[height_];
 			for(int y = 0; y < height_; ++y)
-				row_pointers[y] = (png_bytep)&pixels_[y*width_];
+				row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
 
 			png_read_image(png, row_pointers);
 			

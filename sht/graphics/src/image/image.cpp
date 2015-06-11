@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <math.h>
 #include <memory.h>
+#include <unordered_map>
 
 namespace sht {
 	namespace graphics {
@@ -51,6 +52,20 @@ namespace sht {
 				assert(false && "unknown image format");
 				return 24;
 			}
+		}
+		static Image::FileFormat ExtractFileFormat(const char* filename)
+		{
+			size_t len = strlen(filename);
+			const char* ext = &filename[len-1];
+			while (*ext != '.' && ext != filename) --ext;
+			assert(ext != filename && "bad file name");
+			++ext;
+			if (strcmp(ext, "jpg") == 0)
+				return Image::FileFormat::kJpg;
+			else if (strcmp(ext, "png") == 0)
+				return Image::FileFormat::kPng;
+			else
+				assert(!"unknown file format");
 		}
 		Image::Image() : pixels_(nullptr)
 		{
@@ -119,14 +134,14 @@ namespace sht {
 				assert(!"not supported yet");
 				break;
 			default:
-				assert(false && "unknown image format");
+				assert(!"unknown image format");
 				return false;
 			}
 			return true;
 		}
 		bool Image::LoadFromFile(const char* filename)
 		{
-			FileFormat fmt = FileFormat::kJpg; // TODO:
+			FileFormat fmt = ExtractFileFormat(filename);
 			switch (fmt)
 			{
 			case Image::FileFormat::kBmp:
@@ -143,7 +158,7 @@ namespace sht {
 				assert(!"not supported yet");
 				break;
 			default:
-				assert(false && "unknown image format");
+				assert(!"unknown image format");
 				return false;
 			}
 			return true;
