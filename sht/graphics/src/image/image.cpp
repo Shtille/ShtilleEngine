@@ -1,8 +1,8 @@
 #include "../../include/image/image.h"
+#include "system/include/string/filename.h"
 #include <assert.h>
 #include <math.h>
 #include <memory.h>
-#include <unordered_map>
 
 namespace sht {
 	namespace graphics {
@@ -55,17 +55,19 @@ namespace sht {
 		}
 		static Image::FileFormat ExtractFileFormat(const char* filename)
 		{
-			size_t len = strlen(filename);
-			const char* ext = &filename[len-1];
-			while (*ext != '.' && ext != filename) --ext;
-			assert(ext != filename && "bad file name");
-			++ext;
-			if (strcmp(ext, "jpg") == 0)
+			sht::system::Filename fn(filename);
+			std::string ext = fn.ExtractExt();
+			if (ext == "bmp")
+				return Image::FileFormat::kBmp;
+			else if (ext == "jpg")
 				return Image::FileFormat::kJpg;
-			else if (strcmp(ext, "png") == 0)
+			else if (ext == "png")
 				return Image::FileFormat::kPng;
-			else
-				assert(!"unknown file format");
+			else if (ext == "tga")
+				return Image::FileFormat::kTga;
+			else if (ext == "tif" || ext == "tiff")
+				return Image::FileFormat::kTif;
+			return Image::FileFormat::kUnknown;
 		}
 		Image::Image() : pixels_(nullptr)
 		{

@@ -25,6 +25,7 @@ namespace sht {
 			};
 
 			enum class FileFormat {
+				kUnknown,
 				kBmp, kJpg, kPng, kTga, kTif
 			};
 
