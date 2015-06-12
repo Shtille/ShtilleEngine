@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>855A686F-775C-4A20-A121-B622A005861E</string>
+	<key>IDESourceControlProjectName</key>
+	<string>project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>C4259D8D62811BFA222255D4383DD6D354DFDC43</key>
+		<string>https://github.com/Shtille/ShtilleEngine</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>platform/macosx/ShtilleEngine/ShtilleEngine.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>C4259D8D62811BFA222255D4383DD6D354DFDC43</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/Shtille/ShtilleEngine</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>C4259D8D62811BFA222255D4383DD6D354DFDC43</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>C4259D8D62811BFA222255D4383DD6D354DFDC43</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ShtilleEngine</string>
+		</dict>
+	</array>
+</dict>
+</plist>

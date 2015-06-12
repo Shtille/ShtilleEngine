@@ -195,6 +195,15 @@ FakesAssemblies/
 .AppleDouble
 .LSOverride
 
+# Xcode files
+*.pcm
+*.idx
+*.timestamp
+*.modulevalidation
+*.xcactivitylog
+*.plist
+*.xcbkptlist
+
 # Thumbnails
 ._*
 
