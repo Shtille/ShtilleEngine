@@ -36,7 +36,7 @@ namespace sht {
             UniqueLogStream()
             {
                 const char* filename = T::GetFilename();
-                bool opened = Open(filename, StreamAccess::kAppend);
+                bool opened = Open(filename, StreamAccess::kWriteText);
                 assert(opened);
             }
             virtual ~UniqueLogStream() {}
@@ -57,6 +57,19 @@ namespace sht {
             CommonLogStream() = default;
             virtual ~CommonLogStream() = default;
         };
+
+		// Error logging class
+		class ErrorLogStream : public UniqueLogStream<ErrorLogStream> {
+			friend class Singleton<ErrorLogStream>;
+		public:
+			static const char* GetFilename()
+			{
+				return "errorlog.txt";
+			}
+		protected:
+			ErrorLogStream() = default;
+			virtual ~ErrorLogStream() = default;
+		};
 
 	} // namespace system
 } // namespace sht

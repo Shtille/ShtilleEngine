@@ -40,6 +40,9 @@
     <Filter Include="graphics\renderer\opengl">
       <UniqueIdentifier>{eff9a779-ab40-4754-9945-4d2c8649b4a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system\string">
+      <UniqueIdentifier>{ddb8145e-41ac-45f2-8d72-63cc26218261}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sht\common\platform.h">
@@ -120,11 +123,14 @@
     <ClInclude Include="..\..\..\sht\math\frustum.h">
       <Filter>math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sht\system\include\time.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\sht\system\include\stream\log_stream.h">
       <Filter>system\stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\string\filename.h">
+      <Filter>system\string</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\sht_time.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -189,6 +195,21 @@
       <Filter>graphics\image</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sht\graphics\src\image\image_png.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\string\filename.cpp">
+      <Filter>system\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_bmp.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_hdr.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_tga.cpp">
+      <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_tif.cpp">
       <Filter>graphics\image</Filter>
     </ClCompile>
   </ItemGroup>

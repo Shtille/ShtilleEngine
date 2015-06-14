@@ -212,7 +212,7 @@ namespace sht {
 			// allocate memory and read pixels
 			u8 *data = image.Allocate(w, h, Image::Format::kRGB8);
 			ReadPixels(w, h, data);
-			image.Save(Image::FileFormat::kJpg, filename);
+			image.Save(filename);
 
 			delete[] filename;
 		}

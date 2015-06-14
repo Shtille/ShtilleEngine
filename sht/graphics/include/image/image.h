@@ -26,7 +26,7 @@ namespace sht {
 
 			enum class FileFormat {
 				kUnknown,
-				kBmp, kJpg, kPng, kTga, kTif
+				kBmp, kJpg, kPng, kTga, kTif, kHdr
 			};
 
 			enum class DataType {
@@ -44,7 +44,7 @@ namespace sht {
 			int bpp();
 
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
-			bool Save(FileFormat fmt, const char* filename);			//!< saves image to file with specified format
+			bool Save(const char* filename);							//!< saves image to file with specified format
 
 			bool LoadFromFile(const char* filename);					//!< loads image from file
 			bool LoadCubemapFromFile(const char* filename, int ind);	//!< loads cubemap part with specified index from file
@@ -60,14 +60,18 @@ namespace sht {
 			// Save routines
 			bool SaveJpeg(const char *filename, int quality = 75);
 			bool SavePng(const char *filename);
+			bool SaveBmp(const char *filename);
+			bool SaveTiff(const char *filename);
+			bool SaveTga(const char *filename);
+			bool SaveHdr(const char *filename);
 
 			// Load routines
 			bool LoadJpeg(const char *filename);
 			bool LoadPng(const char *filename);
-			//bool LoadBmp(const char *filename);
-			//bool LoadTiff(const char *filename);
-			//bool LoadTga(const char *filename);
-			//bool LoadHdr(const char *filename);
+			bool LoadBmp(const char *filename);
+			bool LoadTiff(const char *filename);
+			bool LoadTga(const char *filename);
+			bool LoadHdr(const char *filename);
 
 		private:
 

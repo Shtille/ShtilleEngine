@@ -1,5 +1,6 @@
 #include "../../include/image/image.h"
 #include "../../../system/include/stream/file_stream.h"
+#include "../../../system/include/stream/log_stream.h"
 #include "../../../thirdparty/libpng/include/png.h"
 
 namespace sht {
@@ -7,30 +8,33 @@ namespace sht {
 
 		bool Image::SavePng(const char *filename)
 		{
+			// Get access to error log
+			system::ErrorLogStream * error_log = system::ErrorLogStream::GetInstance();
+
             sht::system::FileStream stream;
             if (!stream.Open(filename, sht::system::StreamAccess::kWriteBinary))
 			{
-				// Add some message here
+				error_log->PrintString("failed to open file '%s' for saving\n", filename);
 				return false;
 			}
 
 			png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 			if (!png)
 			{
-				// Add some message here
+				error_log->PrintString("png_create_write_struct failed during saving '%s'\n", filename);
 				return false;
 			}
 
 			png_infop info = png_create_info_struct(png);
 			if (!info)
 			{
-				// Add some message here
+				error_log->PrintString("png_create_info_struct failed during saving '%s'\n", filename);
 				return false;
 			}
 
 			if (setjmp(png_jmpbuf(png)))
 			{
-				// Add some message here
+				error_log->PrintString("set_jmp failed during saving '%s'\n", filename);
 				return false;
 			}
 
@@ -67,30 +71,33 @@ namespace sht {
 		}
 		bool Image::LoadPng(const char *filename)
 		{
+			// Get access to error log
+			system::ErrorLogStream * error_log = system::ErrorLogStream::GetInstance();
+
             sht::system::FileStream stream;
             if (!stream.Open(filename, sht::system::StreamAccess::kReadBinary))
             {
-                // Add some message here
+				error_log->PrintString("failed to open file '%s' for loading\n", filename);
                 return false;
             }
 
 			png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 			if (!png)
 			{
-				// Add some message here
+				error_log->PrintString("png_create_read_struct failed during loading '%s'\n", filename);
 				return false;
 			}
 
 			png_infop info = png_create_info_struct(png);
 			if (!info)
 			{
-				// Add some message here
+				error_log->PrintString("png_create_info_struct failed during loading '%s'\n", filename);
 				return false;
 			}
 
 			if (setjmp(png_jmpbuf(png)))
 			{
-				// Add some message here
+				error_log->PrintString("setjmp failed during loading '%s'\n", filename);
 				return false;
 			}
 

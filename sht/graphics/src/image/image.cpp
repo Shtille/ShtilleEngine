@@ -118,28 +118,27 @@ namespace sht {
 			pixels_ = new u8[width_ * height_ * bpp_];
 			return pixels_;
 		}
-		bool Image::Save(FileFormat fmt, const char* filename)
+		bool Image::Save(const char* filename)
 		{
+			FileFormat fmt = ExtractFileFormat(filename);
 			switch (fmt)
 			{
 			case Image::FileFormat::kBmp:
-				assert(!"not supported yet");
-				break;
+				return SaveBmp(filename);
 			case Image::FileFormat::kJpg:
 				return SaveJpeg(filename);
 			case Image::FileFormat::kPng:
 				return SavePng(filename);
 			case Image::FileFormat::kTga:
-				assert(!"not supported yet");
-				break;
+				return SaveTga(filename);
 			case Image::FileFormat::kTif:
-				assert(!"not supported yet");
-				break;
+				return SaveTiff(filename);
+			case Image::FileFormat::kHdr:
+				return SaveHdr(filename);
 			default:
 				assert(!"unknown image format");
 				return false;
 			}
-			return true;
 		}
 		bool Image::LoadFromFile(const char* filename)
 		{
@@ -147,23 +146,21 @@ namespace sht {
 			switch (fmt)
 			{
 			case Image::FileFormat::kBmp:
-				assert(!"not supported yet");
-				break;
+				return LoadBmp(filename);
 			case Image::FileFormat::kJpg:
 				return LoadJpeg(filename);
 			case Image::FileFormat::kPng:
 				return LoadPng(filename);
 			case Image::FileFormat::kTga:
-				assert(!"not supported yet");
-				break;
+				return LoadTga(filename);
 			case Image::FileFormat::kTif:
-				assert(!"not supported yet");
-				break;
+				return LoadTiff(filename);
+			case Image::FileFormat::kHdr:
+				return LoadHdr(filename);
 			default:
 				assert(!"unknown image format");
 				return false;
 			}
-			return true;
 		}
 		bool Image::LoadCubemapFromFile(const char* filename, int ind)
 		{

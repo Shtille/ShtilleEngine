@@ -7,7 +7,6 @@
 #include <OpenGL/glext.h>
 #endif
 #include "../../../../system/include/stream/file_stream.h"
-#include "../../../../common/sht_string.h"
 #include <string>
 #include <algorithm>
 

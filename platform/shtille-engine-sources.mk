@@ -7,8 +7,12 @@ SOURCES ?= \
 	$(SHT_PATH)/application/application.cpp \
 	$(SHT_PATH)/application/opengl/opengl_application.cpp \
 	$(SHT_PATH)/graphics/src/image/image.cpp \
+        $(SHT_PATH)/graphics/src/image/image_bmp.cpp \
       	$(SHT_PATH)/graphics/src/image/image_jpeg.cpp \
 	$(SHT_PATH)/graphics/src/image/image_png.cpp \
+        $(SHT_PATH)/graphics/src/image/image_tga.cpp \
+        $(SHT_PATH)/graphics/src/image/image_tif.cpp \
+        $(SHT_PATH)/graphics/src/image/image_hdr.cpp \
 	$(SHT_PATH)/graphics/src/renderer/opengl/opengl_renderer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/opengl/opengl_texture.cpp \
 	$(SHT_PATH)/graphics/src/renderer/renderer.cpp \

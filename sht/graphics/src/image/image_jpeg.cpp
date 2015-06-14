@@ -1,5 +1,6 @@
 #include "../../include/image/image.h"
 #include "../../../system/include/stream/file_stream.h"
+#include "../../../system/include/stream/log_stream.h"
 #include "../../../thirdparty/libjpeg/include/jpeglib.h"
 
 namespace sht {
@@ -8,6 +9,10 @@ namespace sht {
 		bool Image::SaveJpeg(const char *filename, int quality)
 		{
 			assert(bpp_ == 3 && channels_ == 3);
+
+			// Get access to error log
+			system::ErrorLogStream * error_log = system::ErrorLogStream::GetInstance();
+
 			/* This struct contains the JPEG compression parameters and pointers to
 			* working space (which is allocated as needed by the JPEG library).
 			* It is possible to have several such structures, representing multiple
@@ -50,7 +55,7 @@ namespace sht {
 			*/
 			if (!stream.Open(filename, sht::system::StreamAccess::kWriteBinary))
             {
-				fprintf(stderr, "can't open %s\n", filename);
+				error_log->PrintString("can't open %s\n", filename);
 				return false;
 			}
 			jpeg_stdio_dest(&cinfo, stream.GetFilePointer());
@@ -116,6 +121,9 @@ namespace sht {
 		}
 		bool Image::LoadJpeg(const char *filename)
 		{
+			// Get access to error log
+			system::ErrorLogStream * error_log = system::ErrorLogStream::GetInstance();
+
 			/* This struct contains the JPEG decompression parameters and pointers to
 			* working space (which is allocated as needed by the JPEG library).
 			*/
@@ -138,7 +146,7 @@ namespace sht {
 
 			if (!stream.Open(filename, sht::system::StreamAccess::kReadBinary))
             {
-				fprintf(stderr, "can't open %s\n", filename);
+				error_log->PrintString("can't open %s\n", filename);
 				return false;
 			}
 

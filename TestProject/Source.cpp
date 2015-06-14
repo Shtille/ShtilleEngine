@@ -9,7 +9,7 @@ public:
           sht::graphics::Image image;
           if (!image.LoadFromFile("ava.png"))
              return false;
-          if (!image.Save(sht::graphics::Image::FileFormat::kPng, "ava_new.png"))
+          if (!image.Save("ava_new.png"))
              return false;
           return true;
        }

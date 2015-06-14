@@ -38,18 +38,23 @@
     <ClInclude Include="..\..\..\sht\math\sht_math.h" />
     <ClInclude Include="..\..\..\sht\math\vector.h" />
     <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h" />
+    <ClInclude Include="..\..\..\sht\system\include\sht_time.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\log_stream.h" />
-    <ClInclude Include="..\..\..\sht\system\include\time.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\file_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\memory_stream.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\stream.h" />
+    <ClInclude Include="..\..\..\sht\system\include\string\filename.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sht\application\application.cpp" />
     <ClCompile Include="..\..\..\sht\application\opengl\opengl_application.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_bmp.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_hdr.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image_jpeg.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image_png.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_tga.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\image\image_tif.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_renderer.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\renderer.cpp" />
@@ -65,6 +70,7 @@
     <ClCompile Include="..\..\..\sht\system\src\stream\log_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\string\filename.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\time.cpp" />
   </ItemGroup>
   <ItemGroup>
