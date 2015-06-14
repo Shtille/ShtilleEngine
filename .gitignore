@@ -203,6 +203,7 @@ FakesAssemblies/
 *.xcactivitylog
 *.plist
 *.xcbkptlist
+*.xcuserstate
 
 # Thumbnails
 ._*
