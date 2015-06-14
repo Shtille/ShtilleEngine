@@ -1,4 +1,5 @@
 #include "../../include/stream/file_stream.h"
+#include <string.h>
 
 namespace sht {
 	namespace system {
@@ -19,22 +20,22 @@ namespace sht {
 			char mode_str[10] = {};
 			// basic modes
 			if (stream_has_mode(mode, StreamAccess::kRead))
-				strcpy_s(mode_str, "r");
+				strcpy(mode_str, "r");
 			else if (stream_has_mode(mode, StreamAccess::kWrite))
-				strcpy_s(mode_str, "w");
+				strcpy(mode_str, "w");
 			else if (stream_has_mode(mode, StreamAccess::kReadWrite))
-				strcpy_s(mode_str, "r+");
+				strcpy(mode_str, "r+");
 			else if (stream_has_mode(mode, StreamAccess::kAppend))
-				strcpy_s(mode_str, "a");
+				strcpy(mode_str, "a");
 			else
 			{
 				// mode is not selected, choose read write
-				strcpy_s(mode_str, "r+");
+				strcpy(mode_str, "r+");
 			}
 			if (stream_has_mode(mode, StreamAccess::kText))
-				strcat_s(mode_str, "t");
+				strcat(mode_str, "t");
             if (stream_has_mode(mode, StreamAccess::kBinary))
-                strcat_s(mode_str, "b");
+                strcat(mode_str, "b");
 
             file_ = fopen(filename, mode_str);
             return file_ != nullptr;

@@ -953,7 +953,7 @@ namespace sht {
 					char infoLog[2048];
 					glGetShaderInfoLog(shader->vertex_, 2048, NULL, infoLog);
 					char temp[100];
-					sprintf_s(temp, "%s %s", "Error in vertex shader compilation in", filename);
+					sprintf(temp, "%s %s", "Error in vertex shader compilation in", filename);
 					ErrorHandler(temp);
 					ErrorHandler(infoLog);
 					glDeleteShader(shader->vertex_);
@@ -987,7 +987,7 @@ namespace sht {
 					char infoLog[2048];
 					glGetShaderInfoLog(shader->fragment_, 2048, NULL, infoLog);
 					char temp[100];
-					sprintf_s(temp, "%s %s", "Error in fragment shader compilation in", filename);
+					sprintf(temp, "%s %s", "Error in fragment shader compilation in", filename);
 					ErrorHandler(temp);
 					ErrorHandler(infoLog);
 					glDeleteShader(shader->fragment_);
@@ -1016,7 +1016,7 @@ namespace sht {
 				char infoLog[2048];
 				glGetProgramInfoLog(shader->program_, 2048, NULL, infoLog);
 				char temp[100];
-				sprintf_s(temp, "%s %s", "Error in shader linkage in", filename);
+				sprintf(temp, "%s %s", "Error in shader linkage in", filename);
 				ErrorHandler(temp);
 				ErrorHandler(infoLog);
 				glDeleteProgram(shader->program_);
@@ -1305,11 +1305,7 @@ namespace sht {
 			va_list		ap;				// Pointer To List Of Arguments
 
 			va_start(ap, string);				// Parses The String For Variables
-#ifdef _MSC_VER
-			vsprintf_s(text, string, ap);		// And Converts Symbols To Actual Numbers
-#else
             vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers
-#endif
 			va_end(ap);							// Results Are Stored In Text
 
 //			glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT);

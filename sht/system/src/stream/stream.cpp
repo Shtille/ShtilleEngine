@@ -41,11 +41,7 @@ namespace sht {
 			va_list		ap;				// Pointer To List Of Arguments
 
 			va_start(ap, string);				// Parses The String For Variables
-#ifdef _MSC_VER
-			vsprintf_s(text, string, ap);		// And Converts Symbols To Actual Numbers
-#else
             vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers
-#endif
 			va_end(ap);							// Results Are Stored In Text
 
 			return WriteText(text);
