@@ -182,14 +182,16 @@ namespace sht {
 #endif
 	}
 #endif
-	void Application::Run()
+#ifdef TARGET_WINDOWS
+    void Application::Run()
+#else
+    void Application::Run(int argc, const char** argv)
+#endif
 	{
 		app_ = this;
 
 		// Enable automatic memory leaks checking
-		sht::system::EnableMemoryLeaksChecking();
-
-		sht::system::UpdateTimer update_timer;
+        sht::system::EnableMemoryLeaksChecking();
 
 		// Prestart initialization
 		if (!app_->ShowStartupOptions())
@@ -201,6 +203,7 @@ namespace sht {
 			return;
 		}
 
+        // Read window settings from file
 		sht::system::FileStream ini_file;
 		if (ini_file.Open(app_->GetIniFilePath(), sht::system::StreamAccess::kReadText))
 		{
@@ -289,6 +292,7 @@ namespace sht {
 #endif
 
 				// Start time
+                sht::system::UpdateTimer update_timer;
 				update_timer.Start();
 
 				// program main loop

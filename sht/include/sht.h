@@ -51,7 +51,7 @@ return 0;												\
 int main(int argc, const char ** argv)					\
 {														\
 UserApplicationClass *app = new UserApplicationClass();	\
-app->Run();												\
+app->Run(argc, argv);												\
 delete app;												\
 return 0;												\
 }

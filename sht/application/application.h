@@ -24,7 +24,11 @@ namespace sht {
 		Application();
 		virtual ~Application();
 
+#ifdef TARGET_WINDOWS
 		void Run();
+#else
+        void Run(int argc, const char** argv);
+#endif
 		void Terminate();
 
 		const char* GetIniFilePath();

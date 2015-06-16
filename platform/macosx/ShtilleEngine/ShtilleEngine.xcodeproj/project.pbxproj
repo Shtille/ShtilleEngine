@@ -64,7 +64,6 @@
 		52EB31681AF680F700060D0F /* memory_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52EB313B1AF680F500060D0F /* memory_stream.cpp */; };
 		52EB31691AF680F700060D0F /* stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52EB313C1AF680F500060D0F /* stream.cpp */; };
 		52EB316A1AF680F700060D0F /* time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52EB313D1AF680F500060D0F /* time.cpp */; };
-		52EB316C1AF6898100060D0F /* sht_string.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EB316B1AF6898100060D0F /* sht_string.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -159,7 +158,6 @@
 		52EB313B1AF680F500060D0F /* memory_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = memory_stream.cpp; sourceTree = "<group>"; };
 		52EB313C1AF680F500060D0F /* stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stream.cpp; sourceTree = "<group>"; };
 		52EB313D1AF680F500060D0F /* time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = time.cpp; sourceTree = "<group>"; };
-		52EB316B1AF6898100060D0F /* sht_string.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sht_string.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -282,7 +280,6 @@
 		52EB31031AF680F500060D0F /* common */ = {
 			isa = PBXGroup;
 			children = (
-				52EB316B1AF6898100060D0F /* sht_string.h */,
 				52EB31041AF680F500060D0F /* platform.h */,
 				52EB31051AF680F500060D0F /* singleton.h */,
 				52EB31061AF680F500060D0F /* types.h */,
@@ -478,7 +475,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52EB316C1AF6898100060D0F /* sht_string.h in Headers */,
 				523B61021B20BBE400620DDA /* log_stream.h in Headers */,
 				52EB315A1AF680F600060D0F /* matrix.h in Headers */,
 				52EB31431AF680F500060D0F /* singleton.h in Headers */,
