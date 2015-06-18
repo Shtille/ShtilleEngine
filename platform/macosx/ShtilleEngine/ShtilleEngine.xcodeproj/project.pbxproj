@@ -13,7 +13,6 @@
 		523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523B61031B20BBFC00620DDA /* log_stream.cpp */; };
 		5247A9481B201F130000CA04 /* image_jpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5247A9461B201F130000CA04 /* image_jpeg.cpp */; };
 		5247A9491B201F130000CA04 /* image_png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5247A9471B201F130000CA04 /* image_png.cpp */; };
-		5279A20F1B074A0E001B2C7E /* libfreeimage-osx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5279A20E1B074A0E001B2C7E /* libfreeimage-osx.a */; };
 		529AB7C41B12142C00505715 /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 529AB7C21B12142C00505715 /* frustum.cpp */; };
 		529AB7C51B12142C00505715 /* frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C31B12142C00505715 /* frustum.h */; };
 		529AB7C71B12339A00505715 /* sht_time.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C61B12339A00505715 /* sht_time.h */; };
@@ -106,7 +105,6 @@
 		5247A9461B201F130000CA04 /* image_jpeg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_jpeg.cpp; sourceTree = "<group>"; };
 		5247A9471B201F130000CA04 /* image_png.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_png.cpp; sourceTree = "<group>"; };
 		525A77391AF6254F003AF7E7 /* libShtilleEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShtilleEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5279A20E1B074A0E001B2C7E /* libfreeimage-osx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfreeimage-osx.a"; path = "../../../lib/libfreeimage-osx.a"; sourceTree = "<group>"; };
 		529AB7C21B12142C00505715 /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
 		529AB7C31B12142C00505715 /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
 		529AB7C61B12339A00505715 /* sht_time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sht_time.h; sourceTree = "<group>"; };
@@ -172,7 +170,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5279A20F1B074A0E001B2C7E /* libfreeimage-osx.a in Frameworks */,
 				52BA7F361B0401AC00E39529 /* OpenGL.framework in Frameworks */,
 				52BA7F2F1B03FD6C00E39529 /* libShtilleEngine.a in Frameworks */,
 			);
@@ -207,7 +204,6 @@
 		525A77301AF6254F003AF7E7 = {
 			isa = PBXGroup;
 			children = (
-				5279A20E1B074A0E001B2C7E /* libfreeimage-osx.a */,
 				52BA7F331B04005200E39529 /* OpenGL.framework */,
 				52BA7F2E1B03FC8400E39529 /* TestProject */,
 				525A773B1AF6254F003AF7E7 /* ShtilleEngine */,
