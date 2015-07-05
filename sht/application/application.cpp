@@ -448,6 +448,12 @@ namespace sht {
     {
         PlatformWindowResize(width, height);
     }
+    void Application::SetWindowTitle(const char* title)
+    {
+#ifdef TARGET_WINDOWS
+        SetWindowTextA(hwnd_, title);
+#endif
+    }
 	void Application::InitWindowSize(int w, int h, bool fullscr)
 	{
 		width_ = w;
@@ -455,12 +461,6 @@ namespace sht {
 		aspect_ratio_ = (float)width_ / (float)height_;
 		fullscreen_ = fullscr;
 		ComputeFramebufferSize();
-	}
-	void Application::SetWindowTitle(const char* title)
-	{
-#ifdef TARGET_WINDOWS
-		SetWindowTextA(hwnd_, title);
-#endif
 	}
 	void Application::SetFrameTime(float ftime)
 	{

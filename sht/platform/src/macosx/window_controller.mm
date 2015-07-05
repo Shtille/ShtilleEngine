@@ -119,6 +119,10 @@ NSWindow* standardWindow;
         // TODO:
         //[self.window center];
     }
+    // Set window title
+    [self.window setTitle:[NSString stringWithUTF8String:app->GetTitle()]];
+    
+    // Now window may catch messages
     app->set_visible(true);
 }
 
@@ -214,6 +218,10 @@ void PlatformWindowResizeImpl(void *instance, int width, int height)
 {
     if (fullscreenWindow != nil) return;
     [(id) instance doResize:width andHeight:height];
+}
+void PlatformWindowSetTitleImpl(void *instance, const char *title)
+{
+    [(id) instance setTitle:[NSString stringWithUTF8String:title]];
 }
 
 

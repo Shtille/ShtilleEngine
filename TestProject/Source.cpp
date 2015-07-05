@@ -4,6 +4,10 @@
 class UserApp : public sht::OpenGlApplication 
 {
 public:
+    const char* GetTitle(void)
+    {
+        return "Test project";
+    }
     bool Load()
     {
         return true;

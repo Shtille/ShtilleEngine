@@ -5,5 +5,6 @@
 void PlatformWindowMakeWindowed();
 void PlatformWindowMakeFullscreen();
 void PlatformWindowResize(int width, int height);
+void PlatformWindowSetTitle(const char *title);
 
 #endif

@@ -41,12 +41,12 @@ namespace sht {
 		bool MakeFullscreen(void);
 		void MakeWindowed(void);
         void Resize(int width, int height);
+        void SetWindowTitle(const char* title);
 
 		void InitWindowSize(int w, int h, bool fullscr);
 #ifdef TARGET_WINDOWS
 		void SetWindow(HWND wnd) { hwnd_ = wnd; }
 #endif
-		void SetWindowTitle(const char* title);
 		void SetFrameTime(float ftime);
 
 		void GetMousePos(int& x, int& y); // x=[0,w]; y=[0,h]

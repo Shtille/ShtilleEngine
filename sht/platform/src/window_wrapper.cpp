@@ -19,3 +19,7 @@ void PlatformWindowResize(int width, int height)
 {
     PlatformWindowResizeImpl(g_window_controller, width, height);
 }
+void PlatformWindowSetTitle(void *instance, const char *title)
+{
+    PlatformWindowSetTitleImpl(instance, title);
+}
