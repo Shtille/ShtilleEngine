@@ -21,8 +21,15 @@
 
 #elif defined(__APPLE__) && defined(__MACH__) // Mac OS X
 
-#define TARGET_MAC
-
+	#include <TargetConditionals.h>
+	#if TARGET_IPHONE_SIMULATOR == 1
+	/* iOS in Xcode simulator */
+	#elif TARGET_OS_IPHONE == 1
+	/* iOS on iPhone, iPad, etc. */
+	#elif TARGET_OS_MAC == 1
+	/* OSX */
+	#define TARGET_MAC
+	#endif
 #else
 
 #error Unknown target platform

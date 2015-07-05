@@ -4,15 +4,23 @@
 class UserApp : public sht::OpenGlApplication 
 {
 public:
-       bool Load()
-       {
-          sht::graphics::Image image;
-          if (!image.LoadFromFile("ava.png"))
-             return false;
-          if (!image.Save("ava_new.png"))
-             return false;
-          return true;
-       }
+    bool Load()
+    {
+        return true;
+    }
+    void Render()
+    {   
+        renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        renderer_->ClearColorBuffer();
+    }
+    bool OnKeyDown(unsigned short key)
+    {
+        if (key == 'f')
+        {
+            ToggleFullscreen();
+        }
+        return true;
+    }
 };
 
 DECLARE_MAIN(UserApp);

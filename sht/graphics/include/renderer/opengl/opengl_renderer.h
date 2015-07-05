@@ -74,9 +74,10 @@ namespace sht {
 
 			void ReadPixels(int w, int h, u8 *data);
 
-			inline void ClearColor(void);
-			inline void ClearColorDepth(void);
-			inline void ClearDepth(void);
+            inline void ClearColor(f32 r, f32 g, f32 b, f32 a);
+			inline void ClearColorBuffer(void);
+			inline void ClearColorAndDepthBuffers(void);
+			inline void ClearDepthBuffer(void);
 
 			inline void ChangeBlendFunc(u32 source, u32 dest);
 			inline void EnableBlend(void);

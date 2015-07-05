@@ -3,6 +3,7 @@
 #define __SHT_APPLICATION_APPLICATION_H__
 
 #include "../common/platform.h"
+#include "../graphics/include/renderer/renderer.h"
 
 namespace sht {
 
@@ -23,20 +24,23 @@ namespace sht {
 	public:
 		Application();
 		virtual ~Application();
+        
+        static Application* GetInstance(); //!< it's not a singleton function
 
 #ifdef TARGET_WINDOWS
 		void Run();
 #else
-        void Run(int argc, const char** argv);
+        int Run(int argc, const char** argv);
 #endif
 		void Terminate();
 
 		const char* GetIniFilePath();
 
-		// Fullscreen operations
+		// Window operations
 		void ToggleFullscreen(void);
 		bool MakeFullscreen(void);
 		void MakeWindowed(void);
+        void Resize(int width, int height);
 
 		void InitWindowSize(int w, int h, bool fullscr);
 #ifdef TARGET_WINDOWS
@@ -79,7 +83,9 @@ namespace sht {
 		virtual const char* GetTitle(void);
 		virtual const bool IsClampFps(void);
 
-		// Messages
+		// --- Messages ---
+        virtual bool OnKeyDown(unsigned short key); //!< returns true if we don't want key to be handled
+        virtual bool OnKeyUp(unsigned short key);   //!< returns true if we don't want key to be handled
 		virtual void OnLButtonDown(void);
 		virtual void OnLButtonUp(void);
 		virtual void OnMButtonDown(void);
@@ -98,7 +104,7 @@ namespace sht {
 		HWND hwnd_;						//!< window handle
 		HICON icon_;					//!< window icon
 #endif
-		class sht::graphics::Renderer *renderer_;
+		sht::graphics::Renderer *renderer_; //!< our renderer object
 		Keys keys_;						//!< keys information
 		bool visible_;					//!< is window visible
 		bool fullscreen_;				//!< is window fullscreen

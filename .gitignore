@@ -204,6 +204,8 @@ FakesAssemblies/
 *.plist
 *.xcbkptlist
 *.xcuserstate
+*.xcscheme
+*.xcsettings
 
 # Thumbnails
 ._*
@@ -244,3 +246,5 @@ $RECYCLE.BIN/
 # My additional ignores
 bin/*
 lib/*
+
+*.xcscheme

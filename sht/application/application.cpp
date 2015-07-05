@@ -12,10 +12,14 @@
 #ifdef TARGET_WINDOWS
 #undef max
 #endif
+#if defined(TARGET_MAC) || defined(TARGET_IOS)
+#include "../platform/include/main_wrapper.h"
+#include "../platform//include/window_wrapper.h"
+#endif
 
 namespace sht {
 
-	Application *Application::app_ = nullptr;
+	Application * Application::app_ = nullptr;
 
 	Application::Application()
 	{
@@ -40,6 +44,10 @@ namespace sht {
 	{
 
 	}
+    Application* Application::GetInstance()
+    {
+        return app_;
+    }
 #ifdef TARGET_WINDOWS
 	LRESULT CALLBACK Application::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -185,7 +193,7 @@ namespace sht {
 #ifdef TARGET_WINDOWS
     void Application::Run()
 #else
-    void Application::Run(int argc, const char** argv)
+    int Application::Run(int argc, const char** argv)
 #endif
 	{
 		app_ = this;
@@ -194,13 +202,13 @@ namespace sht {
         sht::system::EnableMemoryLeaksChecking();
 
 		// Prestart initialization
-		if (!app_->ShowStartupOptions())
+		if (!app_->ShowStartupOptions()) // TODO: seems like obsolete, delete this
 		{
-			return;
+			return 1;
 		}
 		if (!app_->PreStartInit())
 		{
-			return;
+			return 2;
 		}
 
         // Read window settings from file
@@ -219,9 +227,10 @@ namespace sht {
 		}
 		else
 		{
-			app_->InitWindowSize(1024, 768, false);
+			app_->InitWindowSize(800, 600, false);
 		}
 
+        // Window creation
 #if defined(TARGET_WINDOWS)
         const char* app_class_name = "ShtilleEngine";
         
@@ -273,6 +282,7 @@ namespace sht {
 		app_->SetWindow(hwnd);
 #endif
 
+#if defined(TARGET_WINDOWS)
 		if (app_->InitApi())
 		{
 			if (app_->Load())
@@ -330,11 +340,8 @@ namespace sht {
 					app_->EndFrame();
 				}
 			}
-			else // failed to load
-			{
-				app_->Unload(); // delete allocated objects
-				app_->DeinitApi();
-			}
+            app_->Unload(); // delete allocated objects (may be allocated partially)
+            app_->DeinitApi();
 		}
 		else
 		{
@@ -354,6 +361,14 @@ namespace sht {
 #if defined(TARGET_WINDOWS)
 		UnregisterClassA(app_class_name, instance);
 		DestroyIcon(app_->icon_);
+#endif
+      
+#else
+        // This code is for Mac OS X and iOS.
+        // Under these platforms all initializing code doing in coressponding classes.
+
+        // Wrapper for the Mac OS X and iOS main function
+        return MainWrapper(argc, argv);
 #endif
 	}
 	void Application::Terminate()
@@ -410,6 +425,8 @@ namespace sht {
 		SetWindowLongPtr(hwnd_, GWL_STYLE, WS_POPUP);
 		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
 		ShowWindow(hwnd_, SW_NORMAL);
+#elif defined(TARGET_MAC)
+        PlatformWindowMakeFullscreen();
 #endif
 		return true;
 	}
@@ -417,14 +434,20 @@ namespace sht {
 	{
 		if (!fullscreen_) return;
 
-#ifdef TARGET_WINDOWS
+#if defined(TARGET_WINDOWS)
 		ChangeDisplaySettings(NULL, 0); // restore display settings
 
 		SetWindowLongPtr(hwnd_, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 		SetWindowLongPtr(hwnd_, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME);
 		ShowWindow(hwnd_, SW_NORMAL);
+#elif defined(TARGET_MAC)
+        PlatformWindowMakeWindowed();
 #endif
 	}
+    void Application::Resize(int width, int height)
+    {
+        PlatformWindowResize(width, height);
+    }
 	void Application::InitWindowSize(int w, int h, bool fullscr)
 	{
 		width_ = w;
@@ -532,6 +555,14 @@ namespace sht {
 	{
 		return false;
 	}
+    bool Application::OnKeyDown(unsigned short key)
+    {
+        return false;
+    }
+    bool Application::OnKeyUp(unsigned short key)
+    {
+        return false;
+    }
 	void Application::OnLButtonDown(void)
 	{
 	}
@@ -561,7 +592,8 @@ namespace sht {
 		width_ = w;
 		height_ = h;
 		aspect_ratio_ = (float)width_ / (float)height_;
-		renderer_->UpdateSizes(width_, height_);
+        if (renderer_) // renderer may not be initialized yet
+            renderer_->UpdateSizes(width_, height_);
 	}
 	bool Application::visible()
 	{

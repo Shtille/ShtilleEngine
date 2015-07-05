@@ -201,9 +201,10 @@ namespace sht {
 
 			virtual void ReadPixels(int w, int h, u8 *data) = 0; //!< reads pixels in R8G8B8 format
 
-			virtual inline void ClearColor(void) = 0;
-			virtual inline void ClearColorDepth(void) = 0;
-			virtual inline void ClearDepth(void) = 0;
+            virtual inline void ClearColor(f32 r, f32 g, f32 b, f32 a) = 0;
+			virtual inline void ClearColorBuffer(void) = 0;
+			virtual inline void ClearColorAndDepthBuffers(void) = 0;
+			virtual inline void ClearDepthBuffer(void) = 0;
             
             void SetProjectionMatrix(const sht::math::Matrix4& mat);
             void SetViewMatrix(const sht::math::Matrix4& mat);

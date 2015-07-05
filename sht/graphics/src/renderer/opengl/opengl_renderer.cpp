@@ -1323,15 +1323,19 @@ namespace sht {
 		{
 			glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, data);
 		}
-		inline void OpenGlRenderer::ClearColor(void)
+        inline void OpenGlRenderer::ClearColor(f32 r, f32 g, f32 b, f32 a)
+        {
+            glClearColor(r, g, b, a);
+        }
+		inline void OpenGlRenderer::ClearColorBuffer(void)
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
-		inline void OpenGlRenderer::ClearColorDepth(void)
+		inline void OpenGlRenderer::ClearColorAndDepthBuffers(void)
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
-		inline void OpenGlRenderer::ClearDepth(void)
+		inline void OpenGlRenderer::ClearDepthBuffer(void)
 		{
 			glClear(GL_DEPTH_BUFFER_BIT);
 		}
