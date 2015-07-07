@@ -294,6 +294,30 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	CGLUnlockContext([[self openGLContext] CGLContextObj]);
 }
 
+- (BOOL) isOpaque
+{
+    return YES;
+}
+- (BOOL) canBecomeKeyView
+{
+    return YES;
+}
+- (BOOL) acceptsFirstResponder
+{
+    return YES;
+}
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+    const unichar key = [theEvent keyCode];
+    NSLog(@"Pressed: %x", key);
+    unichar c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    
+    sht::Application * app = sht::Application::GetInstance();
+    if (app->OnKeyDown(c))
+        return;
+}
+
 - (void) dealloc
 {
 	// Stop the display link BEFORE releasing anything in the view

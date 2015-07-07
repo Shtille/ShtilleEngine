@@ -452,6 +452,8 @@ namespace sht {
     {
 #ifdef TARGET_WINDOWS
         SetWindowTextA(hwnd_, title);
+#elif defined(TARGET_MAC)
+        PlatformWindowSetTitle(title);
 #endif
     }
 	void Application::InitWindowSize(int w, int h, bool fullscr)
@@ -497,6 +499,8 @@ namespace sht {
 		GetCursorPos(&p);
 		x = p.x - winrect.left; // [0, w]
 		y = winrect.bottom - p.y; // [0, h]
+#elif defined(TARGET_MAC)
+        PlatformGetCursorPos(x, y);
 #endif
 	}
 	void Application::SetMousePos(int x, int y)
@@ -505,6 +509,8 @@ namespace sht {
 		RECT winrect;
 		GetWindowRect(hwnd_, &winrect);
 		SetCursorPos((int)winrect.left + x, (int)winrect.bottom - y);
+#elif defined(TARGET_MAC)
+        PlatformSetCursorPos(x, y);
 #endif
 	}
 	void Application::MouseToCenter(int &px, int &py)
@@ -515,6 +521,8 @@ namespace sht {
 		px = width_ / 2;
 		py = height_ / 2;
 		SetCursorPos((int)winrect.left + px, (int)winrect.bottom - py);
+#elif defined(TARGET_MAC)
+        PlatformMouseToCenter();
 #endif
 	}
 	void Application::ComputeFramebufferSize()
@@ -541,8 +549,6 @@ namespace sht {
 	}
 	void Application::Update()
 	{
-		//if (keys_.key_down[VK_ESCAPE])
-		//	Application::Terminate();
 	}
 	void Application::Render()
 	{

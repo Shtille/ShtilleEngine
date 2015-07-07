@@ -23,6 +23,10 @@ public:
         {
             ToggleFullscreen();
         }
+        else if (key == 27)
+        {
+            Application::Terminate();
+        }
         return true;
     }
 };

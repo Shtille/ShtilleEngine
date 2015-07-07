@@ -19,7 +19,47 @@ void PlatformWindowResize(int width, int height)
 {
     PlatformWindowResizeImpl(g_window_controller, width, height);
 }
-void PlatformWindowSetTitle(void *instance, const char *title)
+void PlatformWindowSetTitle(const char *title)
 {
-    PlatformWindowSetTitleImpl(instance, title);
+    PlatformWindowSetTitleImpl(g_window_controller, title);
+}
+void PlatformWindowIconify()
+{
+    PlatformWindowIconifyImpl(g_window_controller);
+}
+void PlatformWindowRestore()
+{
+    PlatformWindowRestoreImpl(g_window_controller);
+}
+void PlatformWindowShow()
+{
+    PlatformWindowShowImpl(g_window_controller);
+}
+void PlatformWindowHide()
+{
+    PlatformWindowHideImpl(g_window_controller);
+}
+void PlatformWindowTerminate()
+{
+    PlatformWindowTerminateImpl(g_window_controller);
+}
+void PlatformSetCursorPos(int x, int y)
+{
+    PlatformSetCursorPosImpl(g_window_controller, x, y);
+}
+void PlatformGetCursorPos(int& x, int& y)
+{
+    PlatformGetCursorPosImpl(g_window_controller, x, y);
+}
+void PlatformMouseToCenter()
+{
+    PlatformMouseToCenterImpl(g_window_controller);
+}
+void PlatformSetClipboardText(const char *text)
+{
+    PlatformSetClipboardTextImpl(g_window_controller, text);
+}
+const char* PlatformGetClipboardText()
+{
+    return PlatformGetClipboardTextImpl(g_window_controller);
 }

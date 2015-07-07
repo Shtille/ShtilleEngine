@@ -223,31 +223,108 @@ void PlatformWindowSetTitleImpl(void *instance, const char *title)
 {
     [(id) instance setTitle:[NSString stringWithUTF8String:title]];
 }
-
-
-- (void) keyDown:(NSEvent *)event
+void PlatformWindowIconifyImpl(void *instance)
 {
-    // TODO: take into account key modifiers
-	unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
+    [(id) instance miniaturize:nil];
+}
+void PlatformWindowRestoreImpl(void *instance)
+{
+    [(id) instance deminiaturize:nil];
+}
+void PlatformWindowShowImpl(void *instance)
+{
+    [(id) instance makeKeyAndOrderFront:nil];
+}
+void PlatformWindowHideImpl(void *instance)
+{
+    [(id) instance orderOut:nil];
+}
+void PlatformWindowTerminateImpl(void *instance)
+{
+    [(id) instance performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
+}
+void PlatformSetCursorPosImpl(void *instance, int x, int y)
+{
+    // contentRect is needed when use different coord system
+    //const NSRect contentRect = [(id) instance contentRectForFrameRect:[(id) instance frame]];
+    const NSPoint localPoint = NSMakePoint(x, y);
+    const NSPoint globalPoint = [(id) instance convertBaseToScreen:localPoint];
+    CGWarpMouseCursorPosition(globalPoint);
+}
+void PlatformGetCursorPosImpl(void *instance, int& x, int& y)
+{
+    const NSPoint pos = [(id) instance mouseLocationOutsideOfEventStream];
+    x = pos.x;
+    y = pos.y;
+}
+void PlatformMouseToCenterImpl(void *instance)
+{
+    const NSRect contentRect = [(id) instance contentRectForFrameRect:[(id) instance frame]];
+    const NSPoint localPoint = NSMakePoint(contentRect.origin.x + contentRect.size.width/2,
+                                           contentRect.origin.y + contentRect.size.height/2);
+    const NSPoint globalPoint = [(id) instance convertBaseToScreen:localPoint];
+    CGWarpMouseCursorPosition(globalPoint);
+}
+void PlatformSetClipboardTextImpl(void *instance, const char *text)
+{
+    NSArray* types = [NSArray arrayWithObjects:NSStringPboardType, nil];
     
-    sht::Application * app = sht::Application::GetInstance();
-    if (app->OnKeyDown(c))
-        return;
-
-	// Allow other character to be handled (or not and beep)
-	[super keyDown:event];
+    NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+    [pasteboard declareTypes:types owner:nil];
+    [pasteboard setString:[NSString stringWithUTF8String:text]
+                  forType:NSStringPboardType];
+}
+const char* PlatformGetClipboardTextImpl(void *instance)
+{
+    NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+    
+    if (![[pasteboard types] containsObject:NSStringPboardType])
+    {
+        NSLog(@"Cocoa: Failed to retrieve string from pasteboard");
+        return NULL;
+    }
+    
+    NSString* object = [pasteboard stringForType:NSStringPboardType];
+    if (!object)
+    {
+        NSLog(@"Cocoa: Failed to retrieve object from pasteboard");
+        return NULL;
+    }
+    
+    const char *string = strdup([object UTF8String]);
+    
+    return string;
 }
 
-- (void) keyUp:(NSEvent *)event
-{
-    unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
-    
-    sht::Application * app = sht::Application::GetInstance();
-    if (app->OnKeyUp(c))
-        return;
-    
-    // Allow other character to be handled (or not and beep)
-    [super keyUp:event];
-}
+//- (BOOL) acceptsFirstResponder
+//{
+//    return YES;
+//}
+
+//- (void) keyDown:(NSEvent *)event
+//{
+//    // TODO: take into account key modifiers
+//	unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
+//    //unichar c = [event keyCode];
+//    
+//    sht::Application * app = sht::Application::GetInstance();
+//    if (app->OnKeyDown(c))
+//        return;
+//
+//	// Allow other character to be handled (or not and beep)
+//	[super keyDown:event];
+//}
+//
+//- (void) keyUp:(NSEvent *)event
+//{
+//    unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
+//    
+//    sht::Application * app = sht::Application::GetInstance();
+//    if (app->OnKeyUp(c))
+//        return;
+//    
+//    // Allow other character to be handled (or not and beep)
+//    [super keyUp:event];
+//}
 
 @end
