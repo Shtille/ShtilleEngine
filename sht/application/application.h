@@ -4,6 +4,7 @@
 
 #include "../common/platform.h"
 #include "../graphics/include/renderer/renderer.h"
+#include "../system/include/keys.h"
 
 namespace sht {
 
@@ -63,6 +64,7 @@ namespace sht {
 		bool visible();
 		bool fullscreen();
 		Keys& keys();
+        KeyTable& keyt();
 		int width();
 		int height();
 		int color_bits();
@@ -106,6 +108,7 @@ namespace sht {
 #endif
 		sht::graphics::Renderer *renderer_; //!< our renderer object
 		Keys keys_;						//!< keys information
+        KeyTable keytable_;
 		bool visible_;					//!< is window visible
 		bool fullscreen_;				//!< is window fullscreen
 		int width_;						//!< width of the window

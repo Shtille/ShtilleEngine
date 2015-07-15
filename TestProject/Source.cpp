@@ -19,6 +19,7 @@ public:
     }
     bool OnKeyDown(unsigned short key)
     {
+        const bool down_esc = keyt().key_down(sht::PublicKeys::kEscape);
         if (key == 'f')
         {
             ToggleFullscreen();

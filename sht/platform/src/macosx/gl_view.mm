@@ -48,8 +48,31 @@
 #import "gl_view.h"
 
 #include "../../../application/application.h"
+#include "../../../system/include/keys.h"
 
 #define SUPPORT_RETINA_RESOLUTION 1
+
+//! Translate OS X key modifiers into engine ones
+static int TranslateModifiers(NSUInteger flags)
+{
+    int mod = 0;
+    if (flags & NSShiftKeyMask)
+        mod |= static_cast<int>(sht::ModifierKeys::kShift);
+    if (flags & NSControlKeyMask)
+        mod |= static_cast<int>(sht::ModifierKeys::kControl);
+    if (flags & NSAlternateKeyMask)
+        mod |= static_cast<int>(sht::ModifierKeys::kAlt);
+    if (flags & NSCommandKeyMask)
+        mod |= static_cast<int>(sht::ModifierKeys::kSuper);
+    return mod;
+}
+//! Translate OS X keys into engine ones
+static int TranslateKeys(unsigned int key)
+{
+    // use key table here
+    
+    return 0;
+}
 
 @interface GLEssentialsGLView (PrivateMethods)
 - (void) initGL;
@@ -309,11 +332,24 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (void) keyDown:(NSEvent *)theEvent
 {
-    const unichar key = [theEvent keyCode];
-    NSLog(@"Pressed: %x", key);
+    const unichar key_code = [theEvent keyCode];
+    const unsigned long mods = [theEvent modifierFlags];
+    NSLog(@"Pressed: %x", key_code);
     unichar c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     
     sht::Application * app = sht::Application::GetInstance();
+    sht::PublicKeys translated_key = app->keyt().table(key_code);
+    app->keyt().key_down(translated_key) = true;
+    
+    if (mods & NSShiftKeyMask)
+        app->keyt().key_down(sht::PublicKeys::kLeftShift) = true;
+    if (mods & NSControlKeyMask)
+        app->keyt().key_down(sht::PublicKeys::kLeftControl) = true;
+    if (mods & NSAlternateKeyMask)
+        app->keyt().key_down(sht::PublicKeys::kLeftAlt) = true;
+    if (mods & NSCommandKeyMask)
+        app->keyt().key_down(sht::PublicKeys::kLeftSuper) = true;
+    
     if (app->OnKeyDown(c))
         return;
 }

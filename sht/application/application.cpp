@@ -376,7 +376,7 @@ namespace sht {
 #if defined(TARGET_WINDOWS)
 		PostMessage((HWND)hwnd_, WM_CLOSE, 0, 0);
 #elif defined(TARGET_MAC)
-		//static_assert(false, "Application::Terminate has not been defined");
+        PlatformWindowTerminate();
 #elif defined(TARGET_UNIX)
 		static_assert(false, "Application::Terminate has not been defined");
 #endif
@@ -613,6 +613,10 @@ namespace sht {
 	{
 		return keys_;
 	}
+    KeyTable& Application::keyt()
+    {
+        return keytable_;
+    }
 	void Application::set_visible(bool vis)
 	{
 		visible_ = vis;

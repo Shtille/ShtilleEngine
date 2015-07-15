@@ -241,7 +241,7 @@ void PlatformWindowHideImpl(void *instance)
 }
 void PlatformWindowTerminateImpl(void *instance)
 {
-    [(id) instance performSelector:@selector(terminate:) withObject:nil afterDelay:0.0];
+    [[NSApplication sharedApplication] terminate:nil];
 }
 void PlatformSetCursorPosImpl(void *instance, int x, int y)
 {

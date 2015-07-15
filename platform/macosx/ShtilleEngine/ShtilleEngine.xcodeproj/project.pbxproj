@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		522B13B11B2B634100CE0944 /* filename.h in Headers */ = {isa = PBXBuildFile; fileRef = 522B13B01B2B634100CE0944 /* filename.h */; };
 		522B13B41B2B635400CE0944 /* filename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 522B13B31B2B635400CE0944 /* filename.cpp */; };
+		522BE53F1B4E48D100EA0F52 /* keys.h in Headers */ = {isa = PBXBuildFile; fileRef = 522BE53E1B4E48D100EA0F52 /* keys.h */; };
+		522BE5411B4E48EC00EA0F52 /* keys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 522BE5401B4E48EC00EA0F52 /* keys.cpp */; };
 		52392F491B450D210085A437 /* window_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 52392F481B450D210085A437 /* window_wrapper.h */; };
 		523B61021B20BBE400620DDA /* log_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 523B61011B20BBE400620DDA /* log_stream.h */; };
 		523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523B61031B20BBFC00620DDA /* log_stream.cpp */; };
@@ -219,6 +221,8 @@
 /* Begin PBXFileReference section */
 		522B13B01B2B634100CE0944 /* filename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filename.h; sourceTree = "<group>"; };
 		522B13B31B2B635400CE0944 /* filename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filename.cpp; sourceTree = "<group>"; };
+		522BE53E1B4E48D100EA0F52 /* keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keys.h; sourceTree = "<group>"; };
+		522BE5401B4E48EC00EA0F52 /* keys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keys.cpp; sourceTree = "<group>"; };
 		523608721B3BD48200DD3A5B /* TestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52392F481B450D210085A437 /* window_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_wrapper.h; sourceTree = "<group>"; };
 		523B61011B20BBE400620DDA /* log_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_stream.h; sourceTree = "<group>"; };
@@ -865,6 +869,7 @@
 		52EB31301AF680F500060D0F /* include */ = {
 			isa = PBXGroup;
 			children = (
+				522BE53E1B4E48D100EA0F52 /* keys.h */,
 				522B13AF1B2B634100CE0944 /* string */,
 				52EB31311AF680F500060D0F /* memory_leaks.h */,
 				529AB7C61B12339A00505715 /* sht_time.h */,
@@ -887,6 +892,7 @@
 		52EB31371AF680F500060D0F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				522BE5401B4E48EC00EA0F52 /* keys.cpp */,
 				522B13B21B2B635400CE0944 /* string */,
 				52EB31381AF680F500060D0F /* memory_leaks.cpp */,
 				52EB31391AF680F500060D0F /* stream */,
@@ -958,6 +964,7 @@
 				52EB31631AF680F600060D0F /* memory_stream.h in Headers */,
 				52EB315C1AF680F600060D0F /* quaternion.h in Headers */,
 				52392F491B450D210085A437 /* window_wrapper.h in Headers */,
+				522BE53F1B4E48D100EA0F52 /* keys.h in Headers */,
 				52EB31421AF680F500060D0F /* platform.h in Headers */,
 				52EB31411AF680F500060D0F /* opengl_application.h in Headers */,
 				52EB314C1AF680F500060D0F /* opengl_texture.h in Headers */,
@@ -1242,6 +1249,7 @@
 			files = (
 				52EB31591AF680F600060D0F /* matrix.cpp in Sources */,
 				52EB31541AF680F600060D0F /* opengl_texture.cpp in Sources */,
+				522BE5411B4E48EC00EA0F52 /* keys.cpp in Sources */,
 				52EB316A1AF680F700060D0F /* time.cpp in Sources */,
 				52EB313E1AF680F500060D0F /* application.cpp in Sources */,
 				523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */,
