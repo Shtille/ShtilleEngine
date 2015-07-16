@@ -52,28 +52,6 @@
 
 #define SUPPORT_RETINA_RESOLUTION 1
 
-//! Translate OS X key modifiers into engine ones
-static int TranslateModifiers(NSUInteger flags)
-{
-    int mod = 0;
-    if (flags & NSShiftKeyMask)
-        mod |= static_cast<int>(sht::ModifierKeys::kShift);
-    if (flags & NSControlKeyMask)
-        mod |= static_cast<int>(sht::ModifierKeys::kControl);
-    if (flags & NSAlternateKeyMask)
-        mod |= static_cast<int>(sht::ModifierKeys::kAlt);
-    if (flags & NSCommandKeyMask)
-        mod |= static_cast<int>(sht::ModifierKeys::kSuper);
-    return mod;
-}
-//! Translate OS X keys into engine ones
-static int TranslateKeys(unsigned int key)
-{
-    // use key table here
-    
-    return 0;
-}
-
 @interface GLEssentialsGLView (PrivateMethods)
 - (void) initGL;
 
@@ -335,23 +313,45 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     const unichar key_code = [theEvent keyCode];
     const unsigned long mods = [theEvent modifierFlags];
     NSLog(@"Pressed: %x", key_code);
-    unichar c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+    //unichar c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
     
     sht::Application * app = sht::Application::GetInstance();
-    sht::PublicKeys translated_key = app->keyt().table(key_code);
-    app->keyt().key_down(translated_key) = true;
+    sht::PublicKey translated_key = app->keys().table(key_code);
+    app->keys().key_down(translated_key) = true;
     
+    int modifier = 0;
     if (mods & NSShiftKeyMask)
-        app->keyt().key_down(sht::PublicKeys::kLeftShift) = true;
+        modifier |= sht::ModifierKey::kShift;
     if (mods & NSControlKeyMask)
-        app->keyt().key_down(sht::PublicKeys::kLeftControl) = true;
+        modifier |= sht::ModifierKey::kControl;
     if (mods & NSAlternateKeyMask)
-        app->keyt().key_down(sht::PublicKeys::kLeftAlt) = true;
+        modifier |= sht::ModifierKey::kAlt;
     if (mods & NSCommandKeyMask)
-        app->keyt().key_down(sht::PublicKeys::kLeftSuper) = true;
+        modifier |= sht::ModifierKey::kSuper;
     
-    if (app->OnKeyDown(c))
-        return;
+    app->OnKeyDown(translated_key, modifier);
+}
+
+- (void) keyUp:(NSEvent *)theEvent
+{
+    const unichar key_code = [theEvent keyCode];
+    const unsigned long mods = [theEvent modifierFlags];
+    
+    sht::Application * app = sht::Application::GetInstance();
+    sht::PublicKey translated_key = app->keys().table(key_code);
+    app->keys().key_down(translated_key) = false;
+    
+    int modifier = 0;
+    if (mods & NSShiftKeyMask)
+        modifier |= sht::ModifierKey::kShift;
+    if (mods & NSControlKeyMask)
+        modifier |= sht::ModifierKey::kControl;
+    if (mods & NSAlternateKeyMask)
+        modifier |= sht::ModifierKey::kAlt;
+    if (mods & NSCommandKeyMask)
+        modifier |= sht::ModifierKey::kSuper;
+    
+    app->OnKeyUp(translated_key, modifier);
 }
 
 - (void) dealloc

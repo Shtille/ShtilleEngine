@@ -3,15 +3,14 @@
 
 namespace sht {
 
-    enum class ModifierKeys : int {
-		kShift,
-		kControl,
-		kAlt,
-		kSuper
-	};
+    struct ModifierKey {
+        static const int kShift     = 0x01;
+        static const int kControl   = 0x02;
+        static const int kAlt       = 0x04;
+        static const int kSuper     = 0x08;
+    };
 	
-	// TODO:
-    enum class PublicKeys : int {
+    enum class PublicKey : int {
         kUnknown,
         
         k0,
@@ -141,14 +140,14 @@ namespace sht {
         KeyTable();
         ~KeyTable();
         
-        PublicKeys table(unsigned short key);
-        bool& key_down(PublicKeys key);
-        bool& key_active(PublicKeys key);
+        PublicKey table(unsigned short key);
+        bool& key_down(PublicKey key);
+        bool& key_active(PublicKey key);
         
     private:
         void Fill();
         
-        PublicKeys table_[256];
+        PublicKey table_[256];
         bool *key_down_;
         bool *key_active_;
         char key_queue_[64];

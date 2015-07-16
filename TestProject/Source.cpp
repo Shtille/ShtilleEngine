@@ -8,27 +8,25 @@ public:
     {
         return "Test project";
     }
-    bool Load()
+    bool Load() final
     {
         return true;
     }
-    void Render()
+    void Render() final
     {   
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorBuffer();
     }
-    bool OnKeyDown(unsigned short key)
+    void OnKeyDown(sht::PublicKey key, int mods) final
     {
-        const bool down_esc = keyt().key_down(sht::PublicKeys::kEscape);
-        if (key == 'f')
+        if (key == sht::PublicKey::kF)
         {
             ToggleFullscreen();
         }
-        else if (key == 27)
+        else if (key == sht::PublicKey::kEscape)
         {
             Application::Terminate();
         }
-        return true;
     }
 };
 

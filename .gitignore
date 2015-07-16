@@ -196,16 +196,12 @@ FakesAssemblies/
 .LSOverride
 
 # Xcode files
-*.pcm
-*.idx
-*.timestamp
-*.modulevalidation
-*.xcactivitylog
-*.plist
-*.xcbkptlist
-*.xcuserstate
+*.pbxuser
 *.xcscheme
-*.xcsettings
+xcuserdata/
+*.xcuserdatad
+*.xcworkspace
+DerivedData/
 
 # Thumbnails
 ._*
@@ -246,5 +242,3 @@ $RECYCLE.BIN/
 # My additional ignores
 bin/*
 lib/*
-
-*.xcscheme

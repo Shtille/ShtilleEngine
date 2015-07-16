@@ -2,7 +2,7 @@
 #include <memory.h>
 #include "../graphics/include/renderer/renderer.h"
 #include "../system/include/memory_leaks.h"
-#include "../system/include/sht_time.h"
+#include "../system/include/update_timer.h"
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
 #if defined(TARGET_MAC)
@@ -30,8 +30,6 @@ namespace sht {
 		fullscreen_ = false;
 		color_bits_ = 32;
 		depth_bits_ = 32;
-
-		memset(&keys_, 0, sizeof(keys_));
 
 		time_ = 0.0f;
 		frame_time_ = 0.0f;
@@ -561,13 +559,11 @@ namespace sht {
 	{
 		return false;
 	}
-    bool Application::OnKeyDown(unsigned short key)
+    void Application::OnKeyDown(sht::PublicKey key, int mods)
     {
-        return false;
     }
-    bool Application::OnKeyUp(unsigned short key)
+    void Application::OnKeyUp(sht::PublicKey key, int mods)
     {
-        return false;
     }
 	void Application::OnLButtonDown(void)
 	{
@@ -609,11 +605,7 @@ namespace sht {
 	{
 		return fullscreen_;
 	}
-	Keys& Application::keys()
-	{
-		return keys_;
-	}
-    KeyTable& Application::keyt()
+    KeyTable& Application::keys()
     {
         return keytable_;
     }

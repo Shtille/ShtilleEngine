@@ -13,13 +13,6 @@ namespace sht {
 		class Renderer;
 	}
 
-	struct Keys {
-		bool key_down[256];
-		bool key_active[256];
-		char key_queue[64];
-		int key_queue_size;
-	};
-
 	//! Base class for application
 	class Application {
 	public:
@@ -63,8 +56,7 @@ namespace sht {
 
 		bool visible();
 		bool fullscreen();
-		Keys& keys();
-        KeyTable& keyt();
+        KeyTable& keys();
 		int width();
 		int height();
 		int color_bits();
@@ -86,8 +78,8 @@ namespace sht {
 		virtual const bool IsClampFps(void);
 
 		// --- Messages ---
-        virtual bool OnKeyDown(unsigned short key); //!< returns true if we don't want key to be handled
-        virtual bool OnKeyUp(unsigned short key);   //!< returns true if we don't want key to be handled
+        virtual void OnKeyDown(sht::PublicKey key, int mods);
+        virtual void OnKeyUp(sht::PublicKey key, int mods);
 		virtual void OnLButtonDown(void);
 		virtual void OnLButtonUp(void);
 		virtual void OnMButtonDown(void);
@@ -107,8 +99,7 @@ namespace sht {
 		HICON icon_;					//!< window icon
 #endif
 		sht::graphics::Renderer *renderer_; //!< our renderer object
-		Keys keys_;						//!< keys information
-        KeyTable keytable_;
+        KeyTable keytable_;             //!< keys information
 		bool visible_;					//!< is window visible
 		bool fullscreen_;				//!< is window fullscreen
 		int width_;						//!< width of the window
