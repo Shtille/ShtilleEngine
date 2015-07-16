@@ -52,6 +52,21 @@
 
 #define SUPPORT_RETINA_RESOLUTION 1
 
+// Translates OS X key modifiers to engine ones
+static int TranslateModifiers(NSUInteger mods)
+{
+    int modifier = 0;
+    if (mods & NSShiftKeyMask)
+        modifier |= sht::ModifierKey::kShift;
+    if (mods & NSControlKeyMask)
+        modifier |= sht::ModifierKey::kControl;
+    if (mods & NSAlternateKeyMask)
+        modifier |= sht::ModifierKey::kAlt;
+    if (mods & NSCommandKeyMask)
+        modifier |= sht::ModifierKey::kSuper;
+    return modifier;
+}
+
 @interface GLEssentialsGLView (PrivateMethods)
 - (void) initGL;
 
@@ -295,65 +310,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	CGLUnlockContext([[self openGLContext] CGLContextObj]);
 }
 
-- (BOOL) isOpaque
-{
-    return YES;
-}
-- (BOOL) canBecomeKeyView
-{
-    return YES;
-}
-- (BOOL) acceptsFirstResponder
-{
-    return YES;
-}
-
-- (void) keyDown:(NSEvent *)theEvent
-{
-    const unichar key_code = [theEvent keyCode];
-    const unsigned long mods = [theEvent modifierFlags];
-    NSLog(@"Pressed: %x", key_code);
-    //unichar c = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
-    
-    sht::Application * app = sht::Application::GetInstance();
-    sht::PublicKey translated_key = app->keys().table(key_code);
-    app->keys().key_down(translated_key) = true;
-    
-    int modifier = 0;
-    if (mods & NSShiftKeyMask)
-        modifier |= sht::ModifierKey::kShift;
-    if (mods & NSControlKeyMask)
-        modifier |= sht::ModifierKey::kControl;
-    if (mods & NSAlternateKeyMask)
-        modifier |= sht::ModifierKey::kAlt;
-    if (mods & NSCommandKeyMask)
-        modifier |= sht::ModifierKey::kSuper;
-    
-    app->OnKeyDown(translated_key, modifier);
-}
-
-- (void) keyUp:(NSEvent *)theEvent
-{
-    const unichar key_code = [theEvent keyCode];
-    const unsigned long mods = [theEvent modifierFlags];
-    
-    sht::Application * app = sht::Application::GetInstance();
-    sht::PublicKey translated_key = app->keys().table(key_code);
-    app->keys().key_down(translated_key) = false;
-    
-    int modifier = 0;
-    if (mods & NSShiftKeyMask)
-        modifier |= sht::ModifierKey::kShift;
-    if (mods & NSControlKeyMask)
-        modifier |= sht::ModifierKey::kControl;
-    if (mods & NSAlternateKeyMask)
-        modifier |= sht::ModifierKey::kAlt;
-    if (mods & NSCommandKeyMask)
-        modifier |= sht::ModifierKey::kSuper;
-    
-    app->OnKeyUp(translated_key, modifier);
-}
-
 - (void) dealloc
 {
 	// Stop the display link BEFORE releasing anything in the view
@@ -370,4 +326,71 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	
 	[super dealloc];
 }
+
+- (BOOL) isOpaque
+{
+    return YES;
+}
+- (BOOL) canBecomeKeyView
+{
+    return YES;
+}
+- (BOOL) acceptsFirstResponder
+{
+    return YES;
+}
+
+// ----- Events -----
+
+- (void) keyDown:(NSEvent *)theEvent
+{
+    const unsigned short key_code = [theEvent keyCode];
+    const int modifiers = TranslateModifiers([theEvent modifierFlags]);
+    
+    sht::Application * app = sht::Application::GetInstance();
+    sht::PublicKey translated_key = app->keys().table(key_code);
+    app->keys().key_down(translated_key) = true;
+    app->keys().modifiers() = modifiers;
+    
+    app->OnKeyDown(translated_key, modifiers);
+}
+
+- (void) keyUp:(NSEvent *)theEvent
+{
+    const unsigned short key_code = [theEvent keyCode];
+    const int modifiers = TranslateModifiers([theEvent modifierFlags]);
+    
+    sht::Application * app = sht::Application::GetInstance();
+    sht::PublicKey translated_key = app->keys().table(key_code);
+    app->keys().key_down(translated_key) = false;
+    app->keys().modifiers() = 0;
+    
+    app->OnKeyUp(translated_key, modifiers);
+}
+
+- (void) flagsChanged:(NSEvent *)theEvent
+{
+    const unsigned short key_code = [theEvent keyCode];
+    const int modifiers = TranslateModifiers([theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask);
+    
+    sht::Application * app = sht::Application::GetInstance();
+    sht::PublicKey translated_key = app->keys().table(key_code);
+    
+    bool press;
+    if (app->keys().modifiers() == modifiers)
+    {
+        press = ! app->keys().key_down(translated_key);
+        app->keys().key_down(translated_key) = press;
+    }
+    else
+    {
+        press = modifiers > app->keys().modifiers();
+        app->keys().modifiers() = modifiers;
+    }
+    if (press)
+        app->OnKeyDown(translated_key, modifiers);
+    else
+        app->OnKeyUp(translated_key, modifiers);
+}
+
 @end

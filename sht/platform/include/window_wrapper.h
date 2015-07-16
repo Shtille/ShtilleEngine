@@ -2,6 +2,8 @@
 #ifndef __SHT_PLATFORM_WINDOW_WRAPPER_H__
 #define __SHT_PLATFORM_WINDOW_WRAPPER_H__
 
+#include <string>
+
 // Window functions
 void PlatformWindowMakeWindowed();
 void PlatformWindowMakeFullscreen();
@@ -20,6 +22,6 @@ void PlatformMouseToCenter();
 
 // Clipboard functions
 void PlatformSetClipboardText(const char *text);
-const char* PlatformGetClipboardText(); //!< string should be freed via free() function
+std::string PlatformGetClipboardText(); //!< string should be freed via free() function
 
 #endif

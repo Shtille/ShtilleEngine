@@ -59,7 +59,7 @@ void PlatformSetClipboardText(const char *text)
 {
     PlatformSetClipboardTextImpl(g_window_controller, text);
 }
-const char* PlatformGetClipboardText()
+std::string PlatformGetClipboardText()
 {
     return PlatformGetClipboardTextImpl(g_window_controller);
 }

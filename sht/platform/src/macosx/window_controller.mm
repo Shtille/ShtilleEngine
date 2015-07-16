@@ -274,7 +274,7 @@ void PlatformSetClipboardTextImpl(void *instance, const char *text)
     [pasteboard setString:[NSString stringWithUTF8String:text]
                   forType:NSStringPboardType];
 }
-const char* PlatformGetClipboardTextImpl(void *instance)
+std::string PlatformGetClipboardTextImpl(void *instance)
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
     
@@ -291,7 +291,7 @@ const char* PlatformGetClipboardTextImpl(void *instance)
         return NULL;
     }
     
-    const char *string = strdup([object UTF8String]);
+    std::string string = [object UTF8String];
     
     return string;
 }

@@ -20,32 +20,33 @@ namespace sht {
 		virtual ~Application();
         
         static Application* GetInstance(); //!< it's not a singleton function
+        
+        const char* GetIniFilePath();
 
-#ifdef TARGET_WINDOWS
-		void Run();
-#else
         int Run(int argc, const char** argv);
-#endif
 		void Terminate();
-
-		const char* GetIniFilePath();
 
 		// Window operations
 		void ToggleFullscreen(void);
 		bool MakeFullscreen(void);
 		void MakeWindowed(void);
         void Resize(int width, int height);
-        void SetWindowTitle(const char* title);
+        void SetTitle(const char* title);
+        void Iconify();
+        void Restore();
+        void Show();
+        void Hide();
+        
+        // Cursor operations
+        void GetMousePos(int& x, int& y); // x=[0,w]; y=[0,h]
+        void SetMousePos(int x, int y); // x=[0,a]; y=[0,1]
+        void MouseToCenter(int &px, int &py);
+        
+        // Clipboard operations
+        void SetClipboardText(const char *text);
+        std::string GetClipboardText();
 
-		void InitWindowSize(int w, int h, bool fullscr);
-#ifdef TARGET_WINDOWS
-		void SetWindow(HWND wnd) { hwnd_ = wnd; }
-#endif
 		void SetFrameTime(float ftime);
-
-		void GetMousePos(int& x, int& y); // x=[0,w]; y=[0,h]
-		void SetMousePos(int x, int y); // x=[0,a]; y=[0,1]
-		void MouseToCenter(int &px, int &py);
 
 		// API specific functions
 		virtual bool ShowStartupOptions() = 0;
@@ -94,10 +95,6 @@ namespace sht {
 
 		void ComputeFramebufferSize();
 
-#ifdef TARGET_WINDOWS
-		HWND hwnd_;						//!< window handle
-		HICON icon_;					//!< window icon
-#endif
 		sht::graphics::Renderer *renderer_; //!< our renderer object
         KeyTable keytable_;             //!< keys information
 		bool visible_;					//!< is window visible
@@ -117,11 +114,9 @@ namespace sht {
 		float inv_framebuffer_size_;	//!< inverted framebuffer size for shaders
 
 	private:
-#ifdef TARGET_WINDOWS
-		static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-		static bool RegisterWindowClass(HINSTANCE inst, const char* appclassname);
-		static void WindowsErrorCheck();
-#endif
+        
+        void InitWindowSize(int w, int h, bool fullscr);
+
 		static Application *app_;
 	};
 

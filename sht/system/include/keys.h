@@ -143,6 +143,7 @@ namespace sht {
         PublicKey table(unsigned short key);
         bool& key_down(PublicKey key);
         bool& key_active(PublicKey key);
+        int& modifiers();
         
     private:
         void Fill();
@@ -150,6 +151,7 @@ namespace sht {
         PublicKey table_[256];
         bool *key_down_;
         bool *key_active_;
+        int modifiers_;
         char key_queue_[64];
         int key_queue_size_;
     };
