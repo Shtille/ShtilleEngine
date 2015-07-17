@@ -296,35 +296,4 @@ std::string PlatformGetClipboardTextImpl(void *instance)
     return string;
 }
 
-//- (BOOL) acceptsFirstResponder
-//{
-//    return YES;
-//}
-
-//- (void) keyDown:(NSEvent *)event
-//{
-//    // TODO: take into account key modifiers
-//	unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
-//    //unichar c = [event keyCode];
-//    
-//    sht::Application * app = sht::Application::GetInstance();
-//    if (app->OnKeyDown(c))
-//        return;
-//
-//	// Allow other character to be handled (or not and beep)
-//	[super keyDown:event];
-//}
-//
-//- (void) keyUp:(NSEvent *)event
-//{
-//    unichar c = [[event charactersIgnoringModifiers] characterAtIndex:0];
-//    
-//    sht::Application * app = sht::Application::GetInstance();
-//    if (app->OnKeyUp(c))
-//        return;
-//    
-//    // Allow other character to be handled (or not and beep)
-//    [super keyUp:event];
-//}
-
 @end

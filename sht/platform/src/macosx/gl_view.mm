@@ -67,6 +67,19 @@ static int TranslateModifiers(NSUInteger mods)
     return modifier;
 }
 
+// Translates OS X mouse button numbers to engine ones
+static sht::MouseButton TranslateMouseButton(int button)
+{
+    sht::MouseButton translated = sht::MouseButton::kUnknown;
+    switch (button)
+    {
+        case 2:
+            translated = sht::MouseButton::kMiddle;
+            break;
+    }
+    return translated;
+}
+
 @interface GLEssentialsGLView (PrivateMethods)
 - (void) initGL;
 
@@ -168,6 +181,15 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 											 selector:@selector(windowWillClose:)
 												 name:NSWindowWillCloseNotification
 											   object:[self window]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowDidMiniaturize:)
+                                                 name:NSWindowDidMiniaturizeNotification
+                                               object:[self window]];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowDidDeminiaturize:)
+                                                 name:NSWindowDidDeminiaturizeNotification
+                                               object:[self window]];
 }
 
 - (void) windowWillClose:(NSNotification*)notification
@@ -177,6 +199,18 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	// fire without renderbuffers, OpenGL draw calls will set errors.
 	
 	CVDisplayLinkStop(displayLink);
+}
+
+- (void) windowDidMiniaturize:(NSNotification*)notification
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->set_visible(false);
+}
+
+- (void) windowDidDeminiaturize:(NSNotification*)notification
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->set_visible(true);
 }
 
 - (void) initGL
@@ -266,8 +300,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (void)viewDidUnhide
 {
-    //sht::Application * app = sht::Application::GetInstance();
-    //app->set_visible(true);
 }
 
 - (void)renewGState
@@ -340,7 +372,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     return YES;
 }
 
-// ----- Events -----
+// ----- Keyboard events -----
 
 - (void) keyDown:(NSEvent *)theEvent
 {
@@ -391,6 +423,79 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
         app->OnKeyDown(translated_key, modifiers);
     else
         app->OnKeyUp(translated_key, modifiers);
+}
+
+// ----- Mouse events -----
+
+- (void) mouseDown:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseDown(sht::MouseButton::kLeft, TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) mouseUp:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseUp(sht::MouseButton::kLeft, TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) mouseMoved:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    // We should store new mouse pos and differences
+    app->OnMouseMove();
+}
+
+- (void) mouseDragged:(NSEvent *)theEvent
+{
+    [self mouseMoved:theEvent];
+}
+
+- (void) rightMouseDown:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseDown(sht::MouseButton::kRight, TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) rightMouseUp:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseUp(sht::MouseButton::kRight, TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) rightMouseDragged:(NSEvent *)theEvent
+{
+    [self mouseMoved:theEvent];
+}
+
+- (void) otherMouseDown:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseDown(TranslateMouseButton((int)[theEvent buttonNumber]), TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) otherMouseUp:(NSEvent *)theEvent
+{
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnMouseUp(TranslateMouseButton((int)[theEvent buttonNumber]), TranslateModifiers([theEvent modifierFlags]));
+}
+
+- (void) otherMouseDragged:(NSEvent *)theEvent
+{
+    [self mouseMoved:theEvent];
+}
+
+- (void) scrollWheel:(NSEvent *)theEvent
+{
+    float delta_x = [theEvent scrollingDeltaX];
+    float delta_y = [theEvent scrollingDeltaY];
+    if ([theEvent hasPreciseScrollingDeltas])
+    {
+        delta_x *= 0.1f;
+        delta_y *= 0.1f;
+    }
+    sht::Application * app = sht::Application::GetInstance();
+    app->OnScroll(delta_x, delta_y);
 }
 
 @end

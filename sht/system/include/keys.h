@@ -135,10 +135,10 @@ namespace sht {
         kCount
     };
     
-    class KeyTable {
+    class Keys {
     public:
-        KeyTable();
-        ~KeyTable();
+        Keys();
+        ~Keys();
         
         PublicKey table(unsigned short key);
         bool& key_down(PublicKey key);

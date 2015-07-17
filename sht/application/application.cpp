@@ -234,34 +234,22 @@ namespace sht {
 	{
 		return false;
 	}
-    void Application::OnKeyDown(sht::PublicKey key, int mods)
+    void Application::OnKeyDown(sht::PublicKey key, int modifiers)
     {
     }
-    void Application::OnKeyUp(sht::PublicKey key, int mods)
+    void Application::OnKeyUp(sht::PublicKey key, int modifiers)
     {
     }
-	void Application::OnLButtonDown(void)
+	void Application::OnMouseDown(sht::MouseButton button, int modifiers)
 	{
 	}
-	void Application::OnLButtonUp(void)
-	{
-	}
-	void Application::OnMButtonDown(void)
-	{
-	}
-	void Application::OnMButtonUp(void)
-	{
-	}
-	void Application::OnRButtonDown(void)
-	{
-	}
-	void Application::OnRButtonUp(void)
+	void Application::OnMouseUp(sht::MouseButton button, int modifiers)
 	{
 	}
 	void Application::OnMouseMove(void)
 	{
 	}
-	void Application::OnMouseWheel(int delta)
+	void Application::OnScroll(float delta_x, float delta_y)
 	{
 	}
 	void Application::OnSize(int w, int h)
@@ -280,10 +268,6 @@ namespace sht {
 	{
 		return fullscreen_;
 	}
-    KeyTable& Application::keys()
-    {
-        return keytable_;
-    }
 	void Application::set_visible(bool vis)
 	{
 		visible_ = vis;
@@ -300,5 +284,13 @@ namespace sht {
 	{
 		return color_bits_;
 	}
+    Keys& Application::keys()
+    {
+        return keys_;
+    }
+    Mouse& Application::mouse()
+    {
+        return mouse_;
+    }
 
 } // namespace sht

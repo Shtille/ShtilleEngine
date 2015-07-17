@@ -5,6 +5,7 @@
 #include "../common/platform.h"
 #include "../graphics/include/renderer/renderer.h"
 #include "../system/include/keys.h"
+#include "../system/include/mouse.h"
 
 namespace sht {
 
@@ -57,10 +58,12 @@ namespace sht {
 
 		bool visible();
 		bool fullscreen();
-        KeyTable& keys();
 		int width();
 		int height();
 		int color_bits();
+        
+        Keys& keys();
+        Mouse& mouse();
 
 		void set_visible(bool vis);
 
@@ -79,16 +82,12 @@ namespace sht {
 		virtual const bool IsClampFps(void);
 
 		// --- Messages ---
-        virtual void OnKeyDown(sht::PublicKey key, int mods);
-        virtual void OnKeyUp(sht::PublicKey key, int mods);
-		virtual void OnLButtonDown(void);
-		virtual void OnLButtonUp(void);
-		virtual void OnMButtonDown(void);
-		virtual void OnMButtonUp(void);
-		virtual void OnRButtonDown(void);
-		virtual void OnRButtonUp(void);
+        virtual void OnKeyDown(sht::PublicKey key, int modifiers);
+        virtual void OnKeyUp(sht::PublicKey key, int modifiers);
+        virtual void OnMouseDown(sht::MouseButton button, int modifiers);
+		virtual void OnMouseUp(sht::MouseButton button, int modifiers);
 		virtual void OnMouseMove(void);
-		virtual void OnMouseWheel(int delta);
+		virtual void OnScroll(float delta_x, float delta_y);
 		virtual void OnSize(int w, int h);
 
 	protected:
@@ -96,7 +95,8 @@ namespace sht {
 		void ComputeFramebufferSize();
 
 		sht::graphics::Renderer *renderer_; //!< our renderer object
-        KeyTable keytable_;             //!< keys information
+        Keys keys_;                     //!< keys information
+        Mouse mouse_;                   //!< mouse information
 		bool visible_;					//!< is window visible
 		bool fullscreen_;				//!< is window fullscreen
 		int width_;						//!< width of the window
