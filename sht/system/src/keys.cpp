@@ -23,7 +23,9 @@ namespace sht {
     }
     void Keys::Fill()
     {
-#if defined(TARGET_MAC)
+#if defined(TARGET_WINDOWS)
+
+#elif defined(TARGET_MAC)
         table_[0x1D] = PublicKey::k0;
         table_[0x12] = PublicKey::k1;
         table_[0x13] = PublicKey::k2;
