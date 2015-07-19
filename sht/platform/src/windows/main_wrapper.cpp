@@ -1,4 +1,5 @@
 #include "../../include/main_wrapper.h"
+#include "../window_struct.h"
 #include "../../../common/platform.h"
 #include "../../../application/application.h"
 #include "../../../system/include/update_timer.h"
@@ -52,7 +53,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			return 0;
 
 		case SIZE_RESTORED:
-			app->MakeFullscreen();
+			//app->MakeFullscreen();
 			app->set_visible(true);
 			app->OnSize(LOWORD(lParam), HIWORD(lParam));
 			return 0;
@@ -60,38 +61,38 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CHAR:
-		if (app->keys().key_queue_size < 64)
-			app->keys().key_queue[app->keys().key_queue_size++] = (char)wParam;
+		//if (app->keys().key_queue_size < 64)
+		//	app->keys().key_queue[app->keys().key_queue_size++] = (char)wParam;
 		return 0;
 
 	case WM_KEYDOWN:
-		app->keys().key_down[wParam] = true;
+		app->keys().key_down(app->keys().table(wParam)) = true;
 		return 0;
 
 	case WM_KEYUP:
-		app->keys().key_down[wParam] = false;
-		app->keys().key_active[wParam] = false;
+		app->keys().key_down(app->keys().table(wParam)) = false;
+		app->keys().key_active(app->keys().table(wParam)) = false;
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		app->OnLButtonDown();
+		app->OnMouseDown(sht::MouseButton::kLeft, 0);
 		break;
 	case WM_LBUTTONUP:
-		app->OnLButtonUp();
+		app->OnMouseUp(sht::MouseButton::kLeft, 0);
 		break;
 
 	case WM_MBUTTONDOWN:
-		app->OnMButtonDown();
+		app->OnMouseDown(sht::MouseButton::kMiddle, 0);
 		break;
 	case WM_MBUTTONUP:
-		app->OnMButtonUp();
+		app->OnMouseUp(sht::MouseButton::kMiddle, 0);
 		break;
 
 	case WM_RBUTTONDOWN:
-		app->OnRButtonDown();
+		app->OnMouseDown(sht::MouseButton::kRight, 0);
 		break;
 	case WM_RBUTTONUP:
-		app->OnRButtonUp();
+		app->OnMouseUp(sht::MouseButton::kRight, 0);
 		break;
 
 	case WM_MOUSEMOVE:
@@ -99,7 +100,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_MOUSEWHEEL:
-		app->OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+		app->OnScroll(0.0f, (float)GET_WHEEL_DELTA_WPARAM(wParam));
 		break;
 	}
 
@@ -170,7 +171,8 @@ int MainWrapper(int argc, const char** argv)
 	}
 
 	// Create Window
-	HWND hwnd = CreateWindowExA(windowExtendedStyle,	// Extended Style
+	PlatformWindow window;
+	window.hwnd = CreateWindowExA(windowExtendedStyle,	// Extended Style
 		app_class_name,	        // Class Name
 		app->GetTitle(),		// Window Title
 		windowStyle,			// Window Style
@@ -181,21 +183,21 @@ int MainWrapper(int argc, const char** argv)
 		0,			// No Menu
 		instance,  // Pass The Window Instance
 		NULL); // pointer to window class
-	if (hwnd == NULL)
+	if (window.hwnd == NULL)
 	{
 		// Window creation failed
 		UnregisterClassA(app_class_name, instance);
 		DestroyIcon(icon);
 		return 1;
 	}
-	g_window_controller = reinterpret_cast<void*>(hwnd);
+	g_window_controller = reinterpret_cast<void*>(&window);
 
 	if (app->InitApi())
 	{
 		if (app->Load())
 		{
 			// Show window
-			ShowWindow(hwnd, SW_NORMAL);
+			ShowWindow(window.hwnd, SW_NORMAL);
 			app->set_visible(true);
 
 			//	Some dual core systems have a problem where the different CPUs return different
@@ -245,7 +247,7 @@ int MainWrapper(int argc, const char** argv)
 	else
 	{
 		MessageBox(HWND_DESKTOP, TEXT("Failed to init API!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
-		DestroyWindow(hwnd);
+		DestroyWindow(window.hwnd);
 	}
 
 	if (app->fullscreen())

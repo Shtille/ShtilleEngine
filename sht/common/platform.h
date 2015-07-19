@@ -26,6 +26,7 @@
 	/* iOS in Xcode simulator */
 	#elif TARGET_OS_IPHONE == 1
 	/* iOS on iPhone, iPad, etc. */
+	#define TARGET_IOS
 	#elif TARGET_OS_MAC == 1
 	/* OSX */
 	#define TARGET_MAC
@@ -34,6 +35,12 @@
 
 #error Unknown target platform
 
+#endif
+
+#if defined(TARGET_WINDOWS) || defined(TARGET_LINUX) || defined(TARGET_MAC)
+#define TARGET_DESKTOP
+#else
+#define TARGET_MOBILE
 #endif
 
 #include <assert.h>

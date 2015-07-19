@@ -6,6 +6,7 @@ SHT_BIN ?= ../../bin
 SOURCES ?= \
 	$(SHT_PATH)/application/application.cpp \
 	$(SHT_PATH)/application/opengl/opengl_application.cpp \
+        $(SHT_PATH)/graphics/src/model/model.cpp \
 	$(SHT_PATH)/graphics/src/image/image.cpp \
         $(SHT_PATH)/graphics/src/image/image_bmp.cpp \
       	$(SHT_PATH)/graphics/src/image/image_jpeg.cpp \
@@ -18,6 +19,9 @@ SOURCES ?= \
 	$(SHT_PATH)/graphics/src/renderer/renderer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/texture.cpp \
 	$(SHT_PATH)/graphics/src/renderer/vertex_format.cpp \
+        $(SHT_PATH)/platform/src/window_wrapper.cpp \
+        $(SHT_PATH)/platform/src/windows\main_wrapper.cpp \
+        $(SHT_PATH)/platform/src/windows\window_controller.cpp \
 	$(SHT_PATH)/math/frustum.cpp \
 	$(SHT_PATH)/math/matrix.cpp \
 	$(SHT_PATH)/math/quaternion.cpp \

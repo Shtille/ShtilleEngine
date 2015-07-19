@@ -15,6 +15,11 @@ void PlatformWindowShow();
 void PlatformWindowHide();
 void PlatformWindowTerminate();
 
+// OpenGL context functions
+bool PlatformInitOpenGLContext(int color_bits, int depth_bits);
+void PlatformDeinitOpenGLContext();
+void PlatformSwapBuffers();
+
 // Cursor functions
 void PlatformSetCursorPos(int x, int y);
 void PlatformGetCursorPos(int& x, int& y);

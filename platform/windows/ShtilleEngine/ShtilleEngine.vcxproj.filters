@@ -43,6 +43,12 @@
     <Filter Include="system\string">
       <UniqueIdentifier>{ddb8145e-41ac-45f2-8d72-63cc26218261}</UniqueIdentifier>
     </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{d2925294-a08b-493c-b052-376a78128b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\model">
+      <UniqueIdentifier>{e1e949d2-e53f-42c5-8744-8665bb619fb3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\sht\common\platform.h">
@@ -129,8 +135,20 @@
     <ClInclude Include="..\..\..\sht\system\include\string\filename.h">
       <Filter>system\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\sht\system\include\sht_time.h">
+    <ClInclude Include="..\..\..\sht\graphics\include\model\model.h">
+      <Filter>graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\update_timer.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\mouse.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\system\include\keys.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\platform\src\window_struct.h">
+      <Filter>platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +203,6 @@
     <ClCompile Include="..\..\..\sht\math\frustum.cpp">
       <Filter>math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sht\system\src\time.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sht\system\src\stream\log_stream.cpp">
       <Filter>system\stream</Filter>
     </ClCompile>
@@ -211,6 +226,27 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sht\graphics\src\image\image_tif.cpp">
       <Filter>graphics\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\model\model.cpp">
+      <Filter>graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\update_timer.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\mouse.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\system\src\keys.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\platform\src\window_wrapper.cpp">
+      <Filter>platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\platform\src\windows\main_wrapper.cpp">
+      <Filter>platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\platform\src\windows\window_controller.cpp">
+      <Filter>platform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

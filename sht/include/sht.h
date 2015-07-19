@@ -40,9 +40,9 @@ int WINAPI WinMain(HINSTANCE hInstance,					\
 				   int nCmdShow)						\
 {														\
 UserApplicationClass *app = new UserApplicationClass();	\
-app->Run();												\
+int r = app->Run(0,0);									\
 delete app;												\
-return 0;												\
+return r;												\
 }
 
 #elif defined(TARGET_LINUX) || defined(TARGET_MAC)

@@ -11,10 +11,10 @@
 #ifdef TARGET_WINDOWS
 #undef max
 #endif
-#if defined(TARGET_MAC) || defined(TARGET_IOS)
+//#if defined(TARGET_MAC) || defined(TARGET_IOS)
 #include "../platform/include/main_wrapper.h"
-#include "../platform//include/window_wrapper.h"
-#endif
+#include "../platform/include/window_wrapper.h"
+//#endif
 
 namespace sht {
 

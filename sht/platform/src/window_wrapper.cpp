@@ -1,9 +1,6 @@
 #include "../include/window_wrapper.h"
+#include "../include/window_controller_interface.h"
 #include "../../common/platform.h"
-
-#ifdef TARGET_MAC
-#include "./macosx/window_controller_interface.h"
-#endif
 
 extern void * g_window_controller;
 
@@ -42,6 +39,18 @@ void PlatformWindowHide()
 void PlatformWindowTerminate()
 {
     PlatformWindowTerminateImpl(g_window_controller);
+}
+bool PlatformInitOpenGLContext(int color_bits, int depth_bits)
+{
+	return PlatformInitOpenGLContextImpl(g_window_controller, color_bits, depth_bits);
+}
+void PlatformDeinitOpenGLContext()
+{
+	PlatformDeinitOpenGLContextImpl(g_window_controller);
+}
+void PlatformSwapBuffers()
+{
+	PlatformSwapBuffersImpl(g_window_controller);
 }
 void PlatformSetCursorPos(int x, int y)
 {
