@@ -14,8 +14,8 @@
 		52392F491B450D210085A437 /* window_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 52392F481B450D210085A437 /* window_wrapper.h */; };
 		523B61021B20BBE400620DDA /* log_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 523B61011B20BBE400620DDA /* log_stream.h */; };
 		523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523B61031B20BBFC00620DDA /* log_stream.cpp */; };
+		5243D8311B5CEB7C007A4035 /* window_controller_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243D82F1B5CEB7C007A4035 /* window_controller_interface.h */; };
 		524523EF1B49752900F17104 /* window_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 524523EE1B49752900F17104 /* window_wrapper.cpp */; };
-		524523F11B49777A00F17104 /* window_controller_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 524523F01B49777A00F17104 /* window_controller_interface.h */; };
 		5247A9481B201F130000CA04 /* image_jpeg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5247A9461B201F130000CA04 /* image_jpeg.cpp */; };
 		5247A9491B201F130000CA04 /* image_png.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5247A9471B201F130000CA04 /* image_png.cpp */; };
 		52483ED41B39E131001DD466 /* pngdebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 525D3F311B392CF200E95392 /* pngdebug.h */; };
@@ -231,8 +231,8 @@
 		52392F481B450D210085A437 /* window_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_wrapper.h; sourceTree = "<group>"; };
 		523B61011B20BBE400620DDA /* log_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_stream.h; sourceTree = "<group>"; };
 		523B61031B20BBFC00620DDA /* log_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_stream.cpp; sourceTree = "<group>"; };
+		5243D82F1B5CEB7C007A4035 /* window_controller_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_controller_interface.h; sourceTree = "<group>"; };
 		524523EE1B49752900F17104 /* window_wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = window_wrapper.cpp; sourceTree = "<group>"; };
-		524523F01B49777A00F17104 /* window_controller_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = window_controller_interface.h; path = ../src/macosx/window_controller_interface.h; sourceTree = "<group>"; };
 		5247A9461B201F130000CA04 /* image_jpeg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_jpeg.cpp; sourceTree = "<group>"; };
 		5247A9471B201F130000CA04 /* image_png.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_png.cpp; sourceTree = "<group>"; };
 		52483F0D1B39E27B001DD466 /* libz.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libz.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -534,7 +534,6 @@
 		524F339A1B3329260011AE72 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				524523F01B49777A00F17104 /* window_controller_interface.h */,
 				52392F481B450D210085A437 /* window_wrapper.h */,
 				524F339B1B3329260011AE72 /* main_wrapper.h */,
 			);
@@ -544,6 +543,7 @@
 		524F339C1B3329260011AE72 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5243D82F1B5CEB7C007A4035 /* window_controller_interface.h */,
 				524523EE1B49752900F17104 /* window_wrapper.cpp */,
 				524F33A71B3329260011AE72 /* main_wrapper.mm */,
 			);
@@ -1010,11 +1010,11 @@
 				52EB314E1AF680F500060D0F /* texture.h in Headers */,
 				52EB31641AF680F600060D0F /* stream.h in Headers */,
 				52EB314D1AF680F500060D0F /* renderer.h in Headers */,
+				5243D8311B5CEB7C007A4035 /* window_controller_interface.h in Headers */,
 				52EB314B1AF680F500060D0F /* opengl_renderer.h in Headers */,
 				52EB313F1AF680F500060D0F /* application.h in Headers */,
 				522B13B11B2B634100CE0944 /* filename.h in Headers */,
 				52EB31621AF680F600060D0F /* file_stream.h in Headers */,
-				524523F11B49777A00F17104 /* window_controller_interface.h in Headers */,
 				52EB31611AF680F600060D0F /* memory_leaks.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

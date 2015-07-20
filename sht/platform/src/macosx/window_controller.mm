@@ -243,6 +243,19 @@ void PlatformWindowTerminateImpl(void *instance)
 {
     [[NSApplication sharedApplication] terminate:nil];
 }
+bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits)
+{
+    // We don't need to init context on Mac
+    return true;
+}
+void PlatformDeinitOpenGLContextImpl(void *instance)
+{
+    // We don't need to deinit context on Mac
+}
+void PlatformSwapBuffersImpl(void *instance)
+{
+    // We don't need to swap buffers on Mac
+}
 void PlatformSetCursorPosImpl(void *instance, int x, int y)
 {
     // contentRect is needed when use different coord system

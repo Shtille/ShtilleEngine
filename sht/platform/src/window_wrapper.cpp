@@ -1,5 +1,5 @@
 #include "../include/window_wrapper.h"
-#include "../include/window_controller_interface.h"
+#include "window_controller_interface.h"
 #include "../../common/platform.h"
 
 extern void * g_window_controller;

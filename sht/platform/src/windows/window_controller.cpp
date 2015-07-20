@@ -1,4 +1,4 @@
-#include "../../include/window_controller_interface.h"
+#include "../window_controller_interface.h"
 #include "../window_struct.h"
 #include "../../../common/platform.h"
 #include "../../../application/application.h"
