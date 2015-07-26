@@ -1,5 +1,6 @@
 #include "../../include/renderer/renderer.h"
 #include <ctime>
+#include <algorithm>
 
 namespace sht {
 	namespace graphics {
@@ -128,11 +129,10 @@ namespace sht {
 			fonts_.clear();
 
 			// Clean up vertex formats
-			for (auto &obj : vertex_formats_)
-			{
-				ApiDeleteVertexFormat(obj);
-				delete obj;
-			}
+            for (auto &obj : vertex_formats_)
+            {
+                delete obj.pointer();
+            }
 			vertex_formats_.clear();
 
 			// Clean up vertex buffers

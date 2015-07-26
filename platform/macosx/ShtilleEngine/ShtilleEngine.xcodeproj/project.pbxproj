@@ -337,6 +337,7 @@
 		524F33B31B33294E0011AE72 /* image_hdr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_hdr.cpp; sourceTree = "<group>"; };
 		524F33B41B33294E0011AE72 /* image_tga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_tga.cpp; sourceTree = "<group>"; };
 		524F33B51B33294E0011AE72 /* image_tif.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = image_tif.cpp; sourceTree = "<group>"; };
+		524FCD671B64FC6E000130F5 /* counting_pointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = counting_pointer.h; sourceTree = "<group>"; };
 		525A77391AF6254F003AF7E7 /* libShtilleEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShtilleEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		525D3F271B392B4400E95392 /* libpng.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libpng.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		525D3F301B392CF200E95392 /* png.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = png.c; path = ../../../sht/thirdparty/libpng/src/png.c; sourceTree = "<group>"; };
@@ -742,6 +743,7 @@
 		52EB31031AF680F500060D0F /* common */ = {
 			isa = PBXGroup;
 			children = (
+				524FCD671B64FC6E000130F5 /* counting_pointer.h */,
 				52EB31041AF680F500060D0F /* platform.h */,
 				52EB31051AF680F500060D0F /* singleton.h */,
 				52EB31061AF680F500060D0F /* types.h */,

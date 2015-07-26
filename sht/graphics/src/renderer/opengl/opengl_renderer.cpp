@@ -748,28 +748,34 @@ namespace sht {
 			ChangeTexture(texture, layer);
 			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texture->width_, texture->height_);
 		}
-		void OpenGlRenderer::AddVertexFormat(VertexFormat* &vf, VertexAttribute *attribs, u32 nAttribs)
+        void OpenGlRenderer::AddVertexFormat(VertexFormat* &vf, VertexAttribute *attribs, u32 nAttribs)
 		{
-			vf = new VertexFormat();
+			vf = new VertexFormat(this);
 
 			vf->Fill(attribs, nAttribs);
-
-			// Try to find same format
-			for (auto f : vertex_formats_)
-				if (*f == *vf)
-				{
-					vf = f; // format exists and a new one is not need
-					return;
-				}
+            
+            // Try to find same format
+            for (auto &p : vertex_formats_)
+            {
+                auto ptr = p.pointer();
+                if (*ptr == *vf)
+                {
+                    // format exists and a new one is not need
+                    delete vf;
+                    p.IncreaseCount();
+                    vf = ptr;
+                    return;
+                }
+            }
 
 			// format doesn't exist
-			vertex_formats_.push_back(vf);
+            vertex_formats_.push_back(vf);
 		}
 		void OpenGlRenderer::ChangeVertexFormat(VertexFormat* vf)
 		{
 			if (vf != current_vertex_format_)
 			{
-				static VertexFormat zero;
+				static VertexFormat zero(this);
 				VertexFormat *curr = &zero, *sel = &zero;
 
 				if (current_vertex_format_ != nullptr) curr = current_vertex_format_;
@@ -786,14 +792,18 @@ namespace sht {
 		}
 		void OpenGlRenderer::DeleteVertexFormat(VertexFormat* vf)
 		{
-			assert(vf);
-			ApiDeleteVertexFormat(vf);
-			auto it = std::find(vertex_formats_.begin(), vertex_formats_.end(), vf);
-			if (it != vertex_formats_.end())
-			{
-				vertex_formats_.erase(it);
-				delete vf;
-			}
+            auto it = std::find_if(vertex_formats_.begin(), vertex_formats_.end(), [vf]
+                                   (const sht::CountingPointer<VertexFormat>& format)
+            {
+                return format.pointer() == vf;
+            });
+            if (it != vertex_formats_.end())
+            {
+                it->DecreaseCount();
+                if (it->count() == 0)
+                    delete it->pointer();
+                vertex_formats_.erase(it);
+            }
 		}
 		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, u32 flags)
 		{

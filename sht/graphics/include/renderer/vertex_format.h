@@ -9,6 +9,9 @@ namespace sht {
 
 		const int kMaxGeneric = 16;
 		const int kMaxTexcoord = 8;
+        
+        // Forward declarations
+        class Renderer;
 
 		//! Vertex attribute struct
 		struct VertexAttribute {
@@ -42,8 +45,8 @@ namespace sht {
             bool operator == (const VertexFormat& vf);
 
 		protected:
-			VertexFormat();
-			virtual ~VertexFormat();
+			VertexFormat(Renderer * renderer);
+            virtual ~VertexFormat();
 			VertexFormat(const VertexFormat&) = delete;
 			void operator = (const VertexFormat&) = delete;
 
@@ -54,6 +57,8 @@ namespace sht {
 
 			u32 vertex_size_;
 			u8 max_generic_;
+            
+            Renderer * renderer_; // owner
 		};
 
 	} // namespace graphics

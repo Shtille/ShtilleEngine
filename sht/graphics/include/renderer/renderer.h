@@ -4,6 +4,7 @@
 
 #include "../../../common/types.h"
 #include "../../../common/platform.h"
+#include "../../../common/counting_pointer.h"
 #include "../../../math/sht_math.h"
 
 #include "vertex_format.h"
@@ -104,6 +105,8 @@ namespace sht {
 
 			friend class OpenGlRenderer;
 			friend class DirectXRenderer;
+            
+            friend class VertexFormat;
 
 		public:
 			Renderer(int w, int h);
@@ -260,7 +263,7 @@ namespace sht {
 			std::list<Texture*> textures_;
 			std::list<Shader*> shaders_;
 			std::list<Font*> fonts_;
-			std::list<VertexFormat*> vertex_formats_;
+            std::list<sht::CountingPointer<VertexFormat>> vertex_formats_;
 			std::list<VertexBuffer*> vertex_buffers_;
 			std::list<IndexBuffer*> index_buffers_;
 
