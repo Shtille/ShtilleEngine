@@ -1,6 +1,6 @@
 #include "../../include/renderer/vertex_format.h"
 #include "../../include/renderer/renderer.h"
-#include <memory.h>
+#include <cstring>
 #include <assert.h>
 
 namespace sht {
