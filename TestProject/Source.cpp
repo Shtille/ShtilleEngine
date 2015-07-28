@@ -1,5 +1,6 @@
 #include "../sht/include/sht.h"
 #include "../sht/graphics/include/image/image.h"
+#include "../sht/graphics/include/model/cube_model.h"
 
 class UserApp : public sht::OpenGlApplication 
 {
@@ -10,7 +11,12 @@ public:
     }
     bool Load() final
     {
+        model_ = new sht::graphics::CubeModel(renderer_);
         return true;
+    }
+    void Unload() final
+    {
+        delete model_;
     }
     void Render() final
     {   
@@ -30,6 +36,9 @@ public:
             Application::Terminate();
         }
     }
+    
+private:
+    sht::graphics::CubeModel * model_;
 };
 
 DECLARE_MAIN(UserApp);

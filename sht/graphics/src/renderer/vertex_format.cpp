@@ -19,6 +19,10 @@ namespace sht {
         {
             return memcmp((void*)this, (void*)&vf, sizeof(VertexFormat)) == 0;
         }
+        u32 VertexFormat::vertex_size() const
+        {
+            return vertex_size_;
+        }
 		void VertexFormat::Fill(VertexAttribute *attribs, u32 num_attribs)
 		{
 			/*

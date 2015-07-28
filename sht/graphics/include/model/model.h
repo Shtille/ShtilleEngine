@@ -14,24 +14,29 @@ namespace sht {
             Model(Renderer * renderer);
             virtual ~Model();
             
-            void SetFormat(VertexAttribute *attribs, u32 num_attribs);
+            virtual void Create() = 0;
+            bool MakeRenderable();
             
             void Render();
             
         protected:
+            void SetFormat(VertexAttribute *attribs, u32 num_attribs);
+            u32 vertex_size() const;
+            
+            u32 num_vertices_;
+            u8 * vertices_;
+            u32 num_indices_;
+            u8 * indices_;
+            
+            PrimitiveType primitive_mode_;
+            
+        private:
+            void FreeArrays();
+            
             Renderer * renderer_;
             VertexFormat * vertex_format_;
             VertexBuffer * vertex_buffer_;
             IndexBuffer * index_buffer_;
-            
-            u32 num_vertices_;
-            u32 vertex_size_;
-            u8 * vertices_;
-            u32 num_indices_;
-            u32 index_size_;
-            u8 * indices_;
-            
-            PrimitiveType primitive_mode_;
         };
         
     }

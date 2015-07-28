@@ -43,6 +43,8 @@ namespace sht {
 			};
             
             bool operator == (const VertexFormat& vf);
+            
+            u32 vertex_size() const;
 
 		protected:
 			VertexFormat(Renderer * renderer);
