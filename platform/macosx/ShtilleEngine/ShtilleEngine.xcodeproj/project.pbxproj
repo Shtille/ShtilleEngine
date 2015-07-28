@@ -11,6 +11,8 @@
 		522B13B41B2B635400CE0944 /* filename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 522B13B31B2B635400CE0944 /* filename.cpp */; };
 		522BE53F1B4E48D100EA0F52 /* keys.h in Headers */ = {isa = PBXBuildFile; fileRef = 522BE53E1B4E48D100EA0F52 /* keys.h */; };
 		522BE5411B4E48EC00EA0F52 /* keys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 522BE5401B4E48EC00EA0F52 /* keys.cpp */; };
+		52368B111B67EB64001E7AD3 /* cube_model.h in Headers */ = {isa = PBXBuildFile; fileRef = 52368B101B67EB64001E7AD3 /* cube_model.h */; };
+		52368B131B67EB79001E7AD3 /* cube_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52368B121B67EB79001E7AD3 /* cube_model.cpp */; };
 		52392F491B450D210085A437 /* window_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 52392F481B450D210085A437 /* window_wrapper.h */; };
 		523B61021B20BBE400620DDA /* log_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 523B61011B20BBE400620DDA /* log_stream.h */; };
 		523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523B61031B20BBFC00620DDA /* log_stream.cpp */; };
@@ -228,6 +230,8 @@
 		522BE53E1B4E48D100EA0F52 /* keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keys.h; sourceTree = "<group>"; };
 		522BE5401B4E48EC00EA0F52 /* keys.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keys.cpp; sourceTree = "<group>"; };
 		523608721B3BD48200DD3A5B /* TestProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		52368B101B67EB64001E7AD3 /* cube_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cube_model.h; path = model/cube_model.h; sourceTree = "<group>"; };
+		52368B121B67EB79001E7AD3 /* cube_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cube_model.cpp; path = model/cube_model.cpp; sourceTree = "<group>"; };
 		52392F481B450D210085A437 /* window_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_wrapper.h; sourceTree = "<group>"; };
 		523B61011B20BBE400620DDA /* log_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_stream.h; sourceTree = "<group>"; };
 		523B61031B20BBFC00620DDA /* log_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_stream.cpp; sourceTree = "<group>"; };
@@ -707,6 +711,7 @@
 		52CA9E2F1B59307F00A08AE0 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				52368B101B67EB64001E7AD3 /* cube_model.h */,
 				52CA9E311B5930A400A08AE0 /* model.h */,
 			);
 			name = model;
@@ -715,6 +720,7 @@
 		52CA9E301B59308900A08AE0 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				52368B121B67EB79001E7AD3 /* cube_model.cpp */,
 				52CA9E331B5930B500A08AE0 /* model.cpp */,
 			);
 			name = model;
@@ -1000,6 +1006,7 @@
 				52EB31421AF680F500060D0F /* platform.h in Headers */,
 				52EB31411AF680F500060D0F /* opengl_application.h in Headers */,
 				52EB314C1AF680F500060D0F /* opengl_texture.h in Headers */,
+				52368B111B67EB64001E7AD3 /* cube_model.h in Headers */,
 				52EB314A1AF680F500060D0F /* image.h in Headers */,
 				52EB31491AF680F500060D0F /* sht_vector.h in Headers */,
 				52EB31441AF680F500060D0F /* types.h in Headers */,
@@ -1293,6 +1300,7 @@
 				52EB31681AF680F700060D0F /* memory_stream.cpp in Sources */,
 				52EB31561AF680F600060D0F /* texture.cpp in Sources */,
 				522B13B41B2B635400CE0944 /* filename.cpp in Sources */,
+				52368B131B67EB79001E7AD3 /* cube_model.cpp in Sources */,
 				524F33B61B33294E0011AE72 /* image_bmp.cpp in Sources */,
 				52EB31671AF680F600060D0F /* file_stream.cpp in Sources */,
 				52EB31551AF680F600060D0F /* renderer.cpp in Sources */,
