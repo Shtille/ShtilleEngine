@@ -17,7 +17,13 @@ namespace sht {
 	namespace graphics {
 
 		const int kMaxImageUnit = 16;
-		const int kMaxMrt = 4;		
+		const int kMaxMrt = 4;
+        
+        enum class BufferMode {
+            kStaticDraw,
+            kStreamDraw,
+            kCount
+        };
 
 		//! Vertex buffer class
 		class VertexBuffer {
@@ -99,6 +105,12 @@ namespace sht {
 			u32 base_;
 			Texture* texture_;
 		};
+        
+        enum class PrimitiveType {
+            kTriangles,
+            kTriangleStrip,
+            kCount
+        };
 
 		//! Base renderer class
 		class Renderer {
@@ -235,7 +247,7 @@ namespace sht {
 			virtual inline void EnableWireframeMode(void) = 0;
 			virtual inline void DisableWireframeMode(void) = 0;
 
-			virtual inline void DrawElements(u32 mode) = 0;
+			virtual inline void DrawElements(PrimitiveType mode) = 0;
 			virtual inline void DrawElements(u32 mode, u32 numindices) = 0;
 			virtual inline void Viewport(int w, int h) = 0;
 

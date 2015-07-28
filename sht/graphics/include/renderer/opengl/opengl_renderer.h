@@ -91,7 +91,7 @@ namespace sht {
 			inline void EnableWireframeMode(void);
 			inline void DisableWireframeMode(void);
 
-			inline void DrawElements(u32 mode);
+			inline void DrawElements(PrimitiveType mode);
 			inline void DrawElements(u32 mode, u32 numindices);
 			inline void Viewport(int w, int h);
 

@@ -1,5 +1,4 @@
 #include "../../include/model/model.h"
-#include "../../include/renderer/renderer.h"
 
 namespace sht {
     namespace graphics {
@@ -9,6 +8,7 @@ namespace sht {
         , vertex_format_(nullptr)
         , vertex_buffer_(nullptr)
         , index_buffer_(nullptr)
+        , primitive_mode_(PrimitiveType::kTriangleStrip)
         {
             
         }
@@ -25,7 +25,7 @@ namespace sht {
             renderer_->ChangeVertexFormat(vertex_format_);
             renderer_->ChangeVertexBuffer(vertex_buffer_);
             renderer_->ChangeIndexBuffer(index_buffer_);
-            renderer_->DrawElements(0);
+            renderer_->DrawElements(primitive_mode_);
         }
 
     } // namespace graphics

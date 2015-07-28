@@ -1385,10 +1385,12 @@ namespace sht {
 		{
 			glPolygonMode(GL_FRONT, GL_FILL);
 		}
-		inline void OpenGlRenderer::DrawElements(u32 mode)
+		inline void OpenGlRenderer::DrawElements(PrimitiveType mode)
 		{
+            static u32 primitive_table[(int)PrimitiveType::kCount] = {GL_TRIANGLES, GL_TRIANGLE_STRIP};
+            u32 primitive_mode = primitive_table[(int)mode];
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			glDrawElements(mode, current_index_buffer_->index_count_, index_type, 0);
+			glDrawElements(primitive_mode, current_index_buffer_->index_count_, index_type, 0);
 		}
 		inline void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
 		{
