@@ -972,6 +972,12 @@ namespace sht {
 				}
 				CheckForErrors();
 			}
+            else
+            {
+                ErrorHandler("Failed to open vertex shader file");
+                delete shader;
+                return false;
+            }
 
 			// Fragment program
 			shader_filename = filename;
@@ -1007,6 +1013,12 @@ namespace sht {
 				}
 				CheckForErrors();
 			}
+            else
+            {
+                ErrorHandler("Failed to open fragment shader file");
+                delete shader;
+                return false;
+            }
 
 			// Create program object, attach shader, then link
 			shader->program_ = glCreateProgram();

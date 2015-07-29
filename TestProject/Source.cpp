@@ -5,6 +5,12 @@
 class UserApp : public sht::OpenGlApplication 
 {
 public:
+    UserApp()
+    : model_(nullptr)
+    , shader_(nullptr)
+    {
+        
+    }
     const char* GetTitle(void)
     {
         return "Test project";
@@ -12,6 +18,18 @@ public:
     bool Load() final
     {
         model_ = new sht::graphics::CubeModel(renderer_);
+        model_->Create();
+        if (!model_->MakeRenderable())
+            return false;
+        
+        const char *attribs[] = {"vertex"};
+        if (!renderer_->AddShader(shader_, "./Contents/Resources/shader", const_cast<char**>(attribs), 1))
+            return false;
+        
+        projection_matrix = sht::math::PerspectiveMatrix(1.5f, width(), height(), 0.1f, 100.0f);
+        view_matrix = sht::math::LookAt(vec3(5.0f), vec3(0.0f));
+        model_matrix = sht::math::Identity4();
+        
         return true;
     }
     void Unload() final
@@ -23,7 +41,13 @@ public:
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorBuffer();
         
+        renderer_->ChangeShader(shader_);
+        renderer_->ChangeShaderUniformMatrix4fv("projection", projection_matrix);
+        renderer_->ChangeShaderUniformMatrix4fv("view", view_matrix);
+        renderer_->ChangeShaderUniformMatrix4fv("model", model_matrix);
+        
         // Draw cube model
+        model_->Render();
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
@@ -39,6 +63,11 @@ public:
     
 private:
     sht::graphics::CubeModel * model_;
+    sht::graphics::Shader * shader_;
+    
+    sht::math::Matrix4 projection_matrix;
+    sht::math::Matrix4 view_matrix;
+    sht::math::Matrix4 model_matrix;
 };
 
 DECLARE_MAIN(UserApp);

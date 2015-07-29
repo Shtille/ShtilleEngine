@@ -8,8 +8,10 @@ namespace sht {
 
 		VertexFormat::VertexFormat(Renderer * renderer)
         : renderer_(renderer)
+        , vertex_size_(0)
+        , max_generic_(0)
 		{
-			memset((void*)this, 0, sizeof(VertexFormat));
+			memset((void*)generic_, 0, sizeof(generic_));
 		}
 		VertexFormat::~VertexFormat()
 		{
