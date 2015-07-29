@@ -51,9 +51,9 @@ namespace sht {
                 return false;
             }
             u32 index_size = (num_indices_ > 0xffff) ? sizeof(u32) : sizeof(u16);
-            renderer_->AddVertexBuffer(vertex_buffer_, num_vertices_ * vertex_size(), vertices_);
+            renderer_->AddVertexBuffer(vertex_buffer_, num_vertices_ * vertex_size(), vertices_, BufferUsage::kStaticDraw);
             if (vertex_buffer_ == nullptr) return false;
-            renderer_->AddIndexBuffer(index_buffer_, num_indices_, index_size, indices_);
+            renderer_->AddIndexBuffer(index_buffer_, num_indices_, index_size, indices_, BufferUsage::kStaticDraw);
             if (index_buffer_ == nullptr) return false;
             FreeArrays();
             return true;

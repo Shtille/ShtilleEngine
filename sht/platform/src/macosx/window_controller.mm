@@ -308,5 +308,38 @@ std::string PlatformGetClipboardTextImpl(void *instance)
     
     return string;
 }
+void PlatformChangeDirectoryToResourcesImpl()
+{
+    char resourcesPath[MAXPATHLEN];
+    
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (!bundle)
+        return;
+    
+    CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(bundle);
+    
+    CFStringRef last = CFURLCopyLastPathComponent(resourcesURL);
+    if (CFStringCompare(CFSTR("Resources"), last, 0) != kCFCompareEqualTo)
+    {
+        CFRelease(last);
+        CFRelease(resourcesURL);
+        return;
+    }
+    
+    CFRelease(last);
+    
+    if (!CFURLGetFileSystemRepresentation(resourcesURL,
+                                          true,
+                                          (UInt8*) resourcesPath,
+                                          MAXPATHLEN))
+    {
+        CFRelease(resourcesURL);
+        return;
+    }
+    
+    CFRelease(resourcesURL);
+    
+    chdir(resourcesPath);
+}
 
 @end

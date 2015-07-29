@@ -72,3 +72,7 @@ std::string PlatformGetClipboardText()
 {
     return PlatformGetClipboardTextImpl(g_window_controller);
 }
+void PlatformChangeDirectoryToResources()
+{
+    PlatformChangeDirectoryToResourcesImpl();
+}

@@ -19,9 +19,16 @@ namespace sht {
 		const int kMaxImageUnit = 16;
 		const int kMaxMrt = 4;
         
-        enum class BufferMode {
+        enum class BufferUsage : int {
             kStaticDraw,
+            kStaticRead,
+            kStaticCopy,
             kStreamDraw,
+            kStreamRead,
+            kStreamCopy,
+            kDynamicDraw,
+            kDynamicRead,
+            kDynamicCopy,
             kCount
         };
 
@@ -172,7 +179,7 @@ namespace sht {
 			virtual void DeleteVertexFormat(VertexFormat* vf) = 0;
 
 			// Vertex buffer functions
-			virtual void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, u32 flags = 0) = 0;
+			virtual void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage) = 0;
 			virtual void SetVertexBufferData(ptrdiff_t offset, u32 size, void *data) = 0;
 			virtual void* MapVertexBufferData(u32 size) = 0;
 			virtual void UnmapVertexBufferData(void) = 0;
@@ -180,7 +187,7 @@ namespace sht {
 			virtual void DeleteVertexBuffer(VertexBuffer* vb) = 0;
 
 			// Index buffer functions
-			virtual void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, u32 flags = 0) = 0;
+			virtual void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage) = 0;
 			virtual void SetIndexBufferData(ptrdiff_t offset, u32 size, void *data) = 0;
 			virtual void* MapIndexBufferData(u32 size) = 0;
 			virtual void UnmapIndexBufferData(void) = 0;

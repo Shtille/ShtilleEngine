@@ -80,6 +80,7 @@ namespace sht {
         
         // This code is for Mac OS X and iOS.
         // Under these platforms all initializing code doing in coressponding classes.
+        PlatformChangeDirectoryToResources();
 
         // Wrapper for the Mac OS X and iOS main function
         return MainWrapper(argc, argv);

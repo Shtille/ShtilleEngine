@@ -22,6 +22,7 @@ namespace sht {
 			framebuffer_ = 0;
 			current_image_unit_ = 0;
 			current_render_targets_ = 1;
+            FillBufferUsage();
 			SetDefaultStates();
 		}
 		OpenGlRenderer::~OpenGlRenderer()
@@ -29,6 +30,19 @@ namespace sht {
 			// delete our framebuffer, if it exists
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
 		}
+        void OpenGlRenderer::FillBufferUsage()
+        {
+            static_assert((int)BufferUsage::kCount == 9, "Fill buffer usage");
+            buffer_usage_map_[BufferUsage::kStaticDraw] = GL_STATIC_DRAW;
+            buffer_usage_map_[BufferUsage::kStaticRead] = GL_STATIC_READ;
+            buffer_usage_map_[BufferUsage::kStaticCopy] = GL_STATIC_COPY;
+            buffer_usage_map_[BufferUsage::kDynamicDraw] = GL_DYNAMIC_DRAW;
+            buffer_usage_map_[BufferUsage::kDynamicRead] = GL_DYNAMIC_READ;
+            buffer_usage_map_[BufferUsage::kDynamicCopy] = GL_DYNAMIC_COPY;
+            buffer_usage_map_[BufferUsage::kStreamDraw] = GL_STREAM_DRAW;
+            buffer_usage_map_[BufferUsage::kStreamRead] = GL_STREAM_READ;
+            buffer_usage_map_[BufferUsage::kStreamCopy] = GL_STREAM_COPY;
+        }
 		void OpenGlRenderer::SetDefaultStates()
 		{
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -48,7 +62,7 @@ namespace sht {
 		}
 		bool OpenGlRenderer::CheckForErrors()
 		{
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(DEBUG)
 			int error = glGetError();
 			if (error != GL_NO_ERROR){
 				if (error == GL_INVALID_ENUM)
@@ -61,12 +75,6 @@ namespace sht {
 				else if (error == GL_INVALID_OPERATION){
 					ErrorHandler("GL_INVALID_OPERATION");
 				}
-				else if (error == GL_STACK_OVERFLOW){
-					ErrorHandler("GL_STACK_OVERFLOW");
-				}
-				else if (error == GL_STACK_UNDERFLOW){
-					ErrorHandler("GL_STACK_UNDERFLOW");
-				}
 				else if (error == GL_OUT_OF_MEMORY){
 					ErrorHandler("GL_OUT_OF_MEMORY");
 				}
@@ -75,7 +83,7 @@ namespace sht {
 				}
 				else {
 					char str[32];
-					sprintf_s(str, "Unknown OpenGL error: %d", error);
+					sprintf(str, "Unknown OpenGL error: %d", error);
 					ErrorHandler(str);
 				}
 				return true;
@@ -805,10 +813,12 @@ namespace sht {
                 vertex_formats_.erase(it);
             }
 		}
-		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, u32 flags)
+		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage)
 		{
 			vb = new VertexBuffer();
 			vb->size_ = size;
+            
+            u32 flags = buffer_usage_map_[usage];
 
 			// Create a vertex buffer and upload the provided data if any
 			glGenBuffers(1, &vb->id_);
@@ -877,13 +887,14 @@ namespace sht {
 				delete vb;
 			}
 		}
-		void OpenGlRenderer::AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, u32 flags)
+		void OpenGlRenderer::AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage)
 		{
 			ib = new IndexBuffer();
 			ib->index_count_ = nIndices;
 			ib->index_size_ = indexSize;
 
 			GLsizeiptr size = nIndices * indexSize;
+            u32 flags = buffer_usage_map_[usage];
 
 			// Create an index buffer and upload the provided data if any
 			glGenBuffers(1, &ib->id_);
@@ -1029,6 +1040,7 @@ namespace sht {
 				if (attribs[i])
 				{
 					glBindAttribLocation(shader->program_, i, attribs[i]);
+                    CheckForErrors();
 				}
 			}
 			glLinkProgram(shader->program_);

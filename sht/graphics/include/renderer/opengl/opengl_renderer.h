@@ -3,6 +3,15 @@
 #define __SHT_GRAPHICS_RENDERER_OPENGL_RENDERER_H__
 
 #include "../renderer.h"
+#include <unordered_map>
+
+struct EnumClassHash {
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
 
 namespace sht {
 	namespace graphics {
@@ -36,14 +45,14 @@ namespace sht {
 			void ChangeVertexFormat(VertexFormat* vf);
 			void DeleteVertexFormat(VertexFormat* vf);
 
-			void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, u32 flags = 0);
+			void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage);
 			void SetVertexBufferData(ptrdiff_t offset, u32 size, void *data);
 			void* MapVertexBufferData(u32 size);
 			void UnmapVertexBufferData(void);
 			void ChangeVertexBuffer(VertexBuffer* vb);
 			void DeleteVertexBuffer(VertexBuffer* vb);
 
-			void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, u32 flags = 0);
+			void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage);
 			void SetIndexBufferData(ptrdiff_t offset, u32 size, void *data);
 			void* MapIndexBufferData(u32 size);
 			void UnmapIndexBufferData(void);
@@ -98,6 +107,7 @@ namespace sht {
 		private:
 			void SetDefaultStates();
 			bool CheckFrameBufferStatus();
+            void FillBufferUsage();
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);
@@ -111,6 +121,8 @@ namespace sht {
 			u32 framebuffer_;				//!< OpenGL framebuffer object
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
+            
+            std::unordered_map<BufferUsage, u32, EnumClassHash> buffer_usage_map_; //!< buffer usage map
 		};
 
 	} // namespace graphics

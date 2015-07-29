@@ -23,10 +23,10 @@ public:
             return false;
         
         const char *attribs[] = {"vertex"};
-        if (!renderer_->AddShader(shader_, "./Contents/Resources/shader", const_cast<char**>(attribs), 1))
+        if (!renderer_->AddShader(shader_, "shader", const_cast<char**>(attribs), 1))
             return false;
         
-        projection_matrix = sht::math::PerspectiveMatrix(1.5f, width(), height(), 0.1f, 100.0f);
+        projection_matrix = sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f);
         view_matrix = sht::math::LookAt(vec3(5.0f), vec3(0.0f));
         model_matrix = sht::math::Identity4();
         
@@ -37,9 +37,10 @@ public:
         delete model_;
     }
     void Render() final
-    {   
+    {
+        renderer_->Viewport(width(), height());
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
-        renderer_->ClearColorBuffer();
+        renderer_->ClearColorAndDepthBuffers();
         
         renderer_->ChangeShader(shader_);
         renderer_->ChangeShaderUniformMatrix4fv("projection", projection_matrix);

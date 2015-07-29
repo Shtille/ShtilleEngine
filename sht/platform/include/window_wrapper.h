@@ -29,4 +29,7 @@ void PlatformMouseToCenter();
 void PlatformSetClipboardText(const char *text);
 std::string PlatformGetClipboardText(); //!< string should be freed via free() function
 
+// Other
+void PlatformChangeDirectoryToResources();
+
 #endif

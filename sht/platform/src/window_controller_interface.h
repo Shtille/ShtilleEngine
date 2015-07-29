@@ -29,4 +29,7 @@ void PlatformMouseToCenterImpl(void *instance);
 void PlatformSetClipboardTextImpl(void *instance, const char *text);
 std::string PlatformGetClipboardTextImpl(void *instance);
 
+// Other
+void PlatformChangeDirectoryToResourcesImpl();
+
 #endif
