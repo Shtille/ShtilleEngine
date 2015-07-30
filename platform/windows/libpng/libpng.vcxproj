@@ -40,13 +40,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\..\..\bin</OutDir>
+    <OutDir>$(SolutionDir)\..\..\bin\</OutDir>
     <IntDir>$(SolutionDir)\..\..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>..\..\..\sht\thirdparty\zlib\include;..\..\..\sht\thirdparty\libpng\src;..\..\..\sht\thirdparty\libpng\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\..\..\sht\thirdparty\zlib\include;..\..\..\sht\thirdparty\libpng\include;..\..\..\sht\thirdparty\libpng\src;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)\..\..\bin</OutDir>
+    <OutDir>$(SolutionDir)\..\..\bin\</OutDir>
     <IntDir>$(SolutionDir)\..\..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;PNG_USER_WIDTH_MAX=16384;PNG_USER_HEIGHT_MAX=16384;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;PNG_USER_WIDTH_MAX=16384;PNG_USER_HEIGHT_MAX=16384;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -71,7 +71,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;PNG_USER_WIDTH_MAX=16384;PNG_USER_HEIGHT_MAX=16384;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;PNG_USER_WIDTH_MAX=16384;PNG_USER_HEIGHT_MAX=16384;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -101,7 +101,6 @@
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngrtran.c" />
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngrutil.c" />
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngset.c" />
-    <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngtest.c" />
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngtrans.c" />
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngwio.c" />
     <ClCompile Include="..\..\..\sht\thirdparty\libpng\src\pngwrite.c" />

@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\..\sht\containers\sht_utility.h" />
     <ClInclude Include="..\..\..\sht\containers\sht_vector.h" />
     <ClInclude Include="..\..\..\sht\graphics\include\image\image.h" />
+    <ClInclude Include="..\..\..\sht\graphics\include\model\cube_model.h" />
     <ClInclude Include="..\..\..\sht\graphics\include\model\model.h" />
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_renderer.h" />
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_texture.h" />
@@ -52,6 +53,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\sht\application\application.cpp" />
     <ClCompile Include="..\..\..\sht\application\opengl\opengl_application.cpp" />
+    <ClCompile Include="..\..\..\sht\graphics\src\model\cube_model.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\model\model.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image.cpp" />
     <ClCompile Include="..\..\..\sht\graphics\src\image\image_bmp.cpp" />

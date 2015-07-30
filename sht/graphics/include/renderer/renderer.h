@@ -265,7 +265,6 @@ namespace sht {
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
 			virtual void ApiDeleteShader(Shader* shd) = 0;
 			virtual void ApiDeleteFont(Font* font) = 0;
-			virtual void ApiDeleteVertexFormat(VertexFormat* vf) = 0;
 			virtual void ApiDeleteVertexBuffer(VertexBuffer* vb) = 0;
 			virtual void ApiDeleteIndexBuffer(IndexBuffer* ib) = 0;
 

@@ -150,6 +150,9 @@
     <ClInclude Include="..\..\..\sht\platform\src\window_struct.h">
       <Filter>platform</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\model\cube_model.h">
+      <Filter>graphics\model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sht\application\application.cpp">
@@ -247,6 +250,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\sht\platform\src\windows\window_controller.cpp">
       <Filter>platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\model\cube_model.cpp">
+      <Filter>graphics\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -28,6 +28,7 @@ namespace sht {
 	}
 	void OpenGlApplication::DeinitApi()
 	{
+		renderer_->CleanUp();
 		delete renderer_;
 
 		PlatformDeinitOpenGLContext();

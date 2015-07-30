@@ -113,7 +113,6 @@ namespace sht {
 			void ApiDeleteTexture(Texture* tex);
 			void ApiDeleteShader(Shader* shd);
 			void ApiDeleteFont(Font* font);
-			void ApiDeleteVertexFormat(VertexFormat* vf);
 			void ApiDeleteVertexBuffer(VertexBuffer* vb);
 			void ApiDeleteIndexBuffer(IndexBuffer* ib);
 			void ChangeImageUnit(u32 unit);

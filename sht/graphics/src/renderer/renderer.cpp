@@ -79,7 +79,7 @@ namespace sht {
 		}
 		Renderer::~Renderer()
 		{
-			CleanUp();
+			// Don't call any functions with virtual table here!
 		}
 		void Renderer::UpdateSizes(int w, int h)
 		{

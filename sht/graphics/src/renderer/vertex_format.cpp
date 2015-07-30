@@ -1,21 +1,18 @@
 #include "../../include/renderer/vertex_format.h"
-#include "../../include/renderer/renderer.h"
 #include <cstring>
 #include <assert.h>
 
 namespace sht {
 	namespace graphics {
 
-		VertexFormat::VertexFormat(Renderer * renderer)
-        : renderer_(renderer)
-        , vertex_size_(0)
+		VertexFormat::VertexFormat()
+        : vertex_size_(0)
         , max_generic_(0)
 		{
 			memset((void*)generic_, 0, sizeof(generic_));
 		}
 		VertexFormat::~VertexFormat()
 		{
-            renderer_->ApiDeleteVertexFormat(this);
 		}
         bool VertexFormat::operator == (const VertexFormat& vf)
         {

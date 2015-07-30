@@ -241,3 +241,10 @@ std::string PlatformGetClipboardTextImpl(void *instance)
 	GlobalUnlock(pText);
 	return string;
 }
+void PlatformChangeDirectoryToResourcesImpl()
+{
+	char buffer[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, buffer);
+	lstrcat(buffer, TEXT("\\..\\TestProject"));
+	SetCurrentDirectory(buffer);
+}

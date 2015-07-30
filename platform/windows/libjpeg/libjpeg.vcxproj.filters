@@ -173,9 +173,6 @@
     <ClCompile Include="..\..\..\sht\thirdparty\libjpeg\src\jmemnobs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\sht\thirdparty\libjpeg\src\jpegtran.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\sht\thirdparty\libjpeg\src\jquant1.c">
       <Filter>Source Files</Filter>
     </ClCompile>

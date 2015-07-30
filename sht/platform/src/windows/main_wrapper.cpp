@@ -27,8 +27,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_CLOSE:	// Closing The Window
-		app->Unload();
-		app->DeinitApi();
 		DestroyWindow(hWnd);
 		return 0;
 

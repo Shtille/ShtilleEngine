@@ -283,10 +283,6 @@ namespace sht {
 		{
 			//glDeleteLists(font->base_, 256);
 		}
-		void OpenGlRenderer::ApiDeleteVertexFormat(VertexFormat* vf)
-		{
-			// there is nothing to free
-		}
 		void OpenGlRenderer::ApiDeleteVertexBuffer(VertexBuffer* vb)
 		{
 			if (vb->id_)
@@ -766,7 +762,7 @@ namespace sht {
 		}
         void OpenGlRenderer::AddVertexFormat(VertexFormat* &vf, VertexAttribute *attribs, u32 nAttribs)
 		{
-			vf = new VertexFormat(this);
+			vf = new VertexFormat();
 
 			vf->Fill(attribs, nAttribs);
             
@@ -791,7 +787,7 @@ namespace sht {
 		{
 			if (vf != current_vertex_format_)
 			{
-				static VertexFormat zero(this);
+				static VertexFormat zero;
 				VertexFormat *curr = &zero, *sel = &zero;
 
 				if (current_vertex_format_ != nullptr) curr = current_vertex_format_;
@@ -961,7 +957,7 @@ namespace sht {
 			// Vertex program
 			shader_filename = filename;
 			shader_filename += ".vs";
-			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadText))
+			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadBinary))
 			{
 				shader_source.resize(stream.Length());
 				if (!stream.Read(&shader_source[0], shader_source.size()))
@@ -1001,7 +997,7 @@ namespace sht {
 			// Fragment program
 			shader_filename = filename;
 			shader_filename += ".fs";
-			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadText))
+			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadBinary))
 			{
 				shader_source.resize(stream.Length());
 				if (!stream.Read(&shader_source[0], shader_source.size()))

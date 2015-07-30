@@ -16,12 +16,6 @@ namespace sht {
 		void DeinitApi() final;
 		void BeginFrame() final;
 		void EndFrame() final;
-
-	protected:
-#ifdef TARGET_WINDOWS
-		HDC dc_;	//!< device context
-		HGLRC rc_;	//!< rendering context
-#endif
 	};
 
 } // namespace sht
