@@ -23,12 +23,20 @@ namespace sht {
 			current_image_unit_ = 0;
 			current_render_targets_ = 1;
             FillBufferUsage();
+            
+            // Create global vertex array object (for core profile)
+            glGenVertexArrays(1, &vertex_array_object_);
+            glBindVertexArray(vertex_array_object_);
+            
 			SetDefaultStates();
 		}
 		OpenGlRenderer::~OpenGlRenderer()
 		{
 			// delete our framebuffer, if it exists
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
+            
+            // Delete global vertex array object
+            glDeleteVertexArrays(1, &vertex_array_object_);
 		}
         void OpenGlRenderer::FillBufferUsage()
         {
@@ -1092,6 +1100,7 @@ namespace sht {
 		void OpenGlRenderer::ChangeShaderAttribBinding(const char *name)
 		{
 			int ind = glGetAttribLocation(current_shader_->program_, name);
+            assert(ind != -1);
 			glBindAttribLocation(current_shader_->program_, ind, name);
 		}
 		void OpenGlRenderer::ChangeShaderUniform1i(const char* name, int num)

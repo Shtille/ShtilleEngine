@@ -119,6 +119,7 @@ namespace sht {
 			void ChangeImageUnit(u32 unit);
 
 			u32 framebuffer_;				//!< OpenGL framebuffer object
+            u32 vertex_array_object_;       //!< OpenGL vertex array object
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
             

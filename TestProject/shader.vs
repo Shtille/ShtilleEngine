@@ -1,4 +1,7 @@
-attribute vec3 vertex;
+#version 330 core
+
+layout(location = 0) in vec3 vertex;
+//attribute vec4 vertex;
 
 uniform mat4 projection;
 uniform mat4 view;

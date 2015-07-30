@@ -259,7 +259,10 @@ namespace sht {
 		height_ = h;
 		aspect_ratio_ = (float)width_ / (float)height_;
         if (renderer_) // renderer may not be initialized yet
+        {
             renderer_->UpdateSizes(width_, height_);
+            renderer_->Viewport(width_, height_);
+        }
 	}
 	bool Application::visible()
 	{

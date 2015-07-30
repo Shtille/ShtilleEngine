@@ -51,6 +51,7 @@
 #include "../../../system/include/keys.h"
 
 #define SUPPORT_RETINA_RESOLUTION 1
+#define ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 1
 
 // Translates OS X key modifiers to engine ones
 static int TranslateModifiers(NSUInteger mods)
@@ -336,7 +337,10 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
     sht::Application * app = sht::Application::GetInstance();
     if (app->visible()) // make sure context is created
+    {
+        app->Update();
         app->Render();
+    }
 
 	CGLFlushDrawable([[self openGLContext] CGLContextObj]);
 	CGLUnlockContext([[self openGLContext] CGLContextObj]);

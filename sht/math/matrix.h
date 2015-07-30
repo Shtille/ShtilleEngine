@@ -64,9 +64,11 @@ namespace sht {
 			union {
 				float sa[9];			//!< 1D array
 				float a[3][3];			//!< 2D array
-				float e11, e12, e13,
-					e21, e22, e23,
-					e31, e32, e33;		//!< elements
+                struct {
+                    float e11, e12, e13,
+                        e21, e22, e23,
+                        e31, e32, e33;
+                }; //!< elements
 			};
 		};
 
@@ -114,10 +116,12 @@ namespace sht {
 			union {
 				float sa[16];			//!< 1D array
 				float a[4][4];			//!< 2D array
-				float e11, e12, e13, e14,
-					e21, e22, e23, e24,
-					e31, e32, e33, e34,
-					e41, e42, e43, e44;		//!< elements
+                struct {
+                    float e11, e12, e13, e14,
+                        e21, e22, e23, e24,
+                        e31, e32, e33, e34,
+                        e41, e42, e43, e44;
+                }; //!< elements
 			};
 		};
 

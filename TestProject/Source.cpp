@@ -1,6 +1,7 @@
 #include "../sht/include/sht.h"
 #include "../sht/graphics/include/image/image.h"
 #include "../sht/graphics/include/model/cube_model.h"
+#include <cmath>
 
 class UserApp : public sht::OpenGlApplication 
 {
@@ -28,7 +29,6 @@ public:
         
         projection_matrix = sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f);
         view_matrix = sht::math::LookAt(vec3(5.0f), vec3(0.0f));
-        model_matrix = sht::math::Identity4();
         
         return true;
     }
@@ -36,9 +36,12 @@ public:
     {
         delete model_;
     }
+    void Update() final
+    {
+        model_matrix = sht::math::Rotate4(cos(0.5f), sin(0.5f), 0.0f, 1.0f, 0.0f);
+    }
     void Render() final
     {
-        renderer_->Viewport(width(), height());
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
