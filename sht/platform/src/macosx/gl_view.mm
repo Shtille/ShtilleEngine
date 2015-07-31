@@ -94,8 +94,10 @@ static sht::MouseButton TranslateMouseButton(int button)
 	// because it will be called from a background thread.
 	// It's important to create one or app can leak objects.
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    double deltaTime = 1.0 / (outputTime->rateScalar * (double)outputTime->videoTimeScale / (double)outputTime->videoRefreshPeriod);
 	
-	[self drawView];
+    [self drawView:deltaTime];
 	
 	[pool release];
 	return kCVReturnSuccess;
@@ -322,10 +324,10 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	// Called during resize operations
 	
 	// Avoid flickering during resize by drawiing	
-	[self drawView];
+    [self drawView:0.0];
 }
 
-- (void) drawView
+- (void) drawView: (double) deltaTime
 {	 
 	[[self openGLContext] makeCurrentContext];
 
@@ -338,6 +340,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     sht::Application * app = sht::Application::GetInstance();
     if (app->visible()) // make sure context is created
     {
+        app->SetFrameTime((float)deltaTime);
         app->Update();
         app->Render();
     }

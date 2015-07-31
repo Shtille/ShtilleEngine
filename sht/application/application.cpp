@@ -160,7 +160,7 @@ namespace sht {
 		// Set value
 		frame_time_ = ftime;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(DEBUG)
 		// Clamp update value when debugging step by step
 		if (frame_time_ > 1.0f)
 			frame_time_ = 0.0166f;

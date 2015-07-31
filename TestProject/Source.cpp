@@ -9,6 +9,7 @@ public:
     UserApp()
     : model_(nullptr)
     , shader_(nullptr)
+    , angle_(0.0f)
     {
         
     }
@@ -38,7 +39,8 @@ public:
     }
     void Update() final
     {
-        model_matrix = sht::math::Rotate4(cos(0.5f), sin(0.5f), 0.0f, 1.0f, 0.0f);
+        angle_ += 0.5f * frame_time_;
+        model_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
     }
     void Render() final
     {
@@ -72,6 +74,8 @@ private:
     sht::math::Matrix4 projection_matrix;
     sht::math::Matrix4 view_matrix;
     sht::math::Matrix4 model_matrix;
+    
+    float angle_; //!< rotation angle of cube
 };
 
 DECLARE_MAIN(UserApp);
