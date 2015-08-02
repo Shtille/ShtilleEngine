@@ -1165,7 +1165,7 @@ namespace sht {
 			assert(location != -1);
 			glUniformMatrix3fv(location, n, trans, v);
 		}
-		void OpenGlRenderer::ChangeShaderUniformMatrix4fv(const char* name, float *v, bool trans, int n)
+		void OpenGlRenderer::ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans, int n)
 		{
 			int location = glGetUniformLocation(current_shader_->program_, name);
 			assert(location != -1);

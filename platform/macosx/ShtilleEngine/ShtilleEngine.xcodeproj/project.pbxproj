@@ -227,6 +227,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		521F127C1B6D5E9F00D7D735 /* table.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = table.h; sourceTree = "<group>"; };
+		521F127D1B6D68FE00D7D735 /* vertex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vertex.h; path = model/vertex.h; sourceTree = "<group>"; };
 		522B13B01B2B634100CE0944 /* filename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filename.h; sourceTree = "<group>"; };
 		522B13B31B2B635400CE0944 /* filename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filename.cpp; sourceTree = "<group>"; };
 		522BE53E1B4E48D100EA0F52 /* keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keys.h; sourceTree = "<group>"; };
@@ -717,6 +719,7 @@
 		52CA9E2F1B59307F00A08AE0 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				521F127D1B6D68FE00D7D735 /* vertex.h */,
 				52368B101B67EB64001E7AD3 /* cube_model.h */,
 				52CA9E311B5930A400A08AE0 /* model.h */,
 			);
@@ -755,6 +758,7 @@
 		52EB31031AF680F500060D0F /* common */ = {
 			isa = PBXGroup;
 			children = (
+				521F127C1B6D5E9F00D7D735 /* table.h */,
 				524FCD671B64FC6E000130F5 /* counting_pointer.h */,
 				52EB31041AF680F500060D0F /* platform.h */,
 				52EB31051AF680F500060D0F /* singleton.h */,

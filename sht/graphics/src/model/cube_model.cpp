@@ -6,10 +6,6 @@ namespace sht {
         CubeModel::CubeModel(Renderer * renderer)
         : Model(renderer)
         {
-            VertexAttribute attribs[] = {
-                {VertexAttribute::kVertex, 3}
-            };
-            SetFormat(attribs, _countof(attribs));
         }
         CubeModel::~CubeModel()
         {
@@ -17,64 +13,77 @@ namespace sht {
         }
         void CubeModel::Create()
         {
-            num_vertices_ = 8;
-            // vertex size = 12
-            vertices_ = new u8[num_vertices_ * vertex_size()];
+            vertices_.resize(24);
             
-            float * vertices = reinterpret_cast<float*>(vertices_);
-            vertices[0] = 1.0f;
-            vertices[1] = -1.0f;
-            vertices[2] = 1.0f;
+            // +X side
+            vertices_[0].position.Set(1.0f,  1.0f,  1.0f);
+            vertices_[0].normal.Set(1.0f,  0.0f,  0.0f);
+            vertices_[1].position.Set(1.0f, -1.0f,  1.0f);
+            vertices_[1].normal.Set(1.0f,  0.0f,  0.0f);
+            vertices_[2].position.Set(1.0f,  1.0f, -1.0f);
+            vertices_[2].normal.Set(1.0f,  0.0f,  0.0f);
+            vertices_[3].position.Set(1.0f, -1.0f, -1.0f);
+            vertices_[3].normal.Set(1.0f,  0.0f,  0.0f);
             
-            vertices[3] = 1.0f;
-            vertices[4] = -1.0f;
-            vertices[5] = -1.0f;
+            // -Z side
+            vertices_[4].position.Set( 1.0f,  1.0f, -1.0f);
+            vertices_[4].normal.Set(0.0f,  0.0f, -1.0f);
+            vertices_[5].position.Set( 1.0f, -1.0f, -1.0f);
+            vertices_[5].normal.Set(0.0f,  0.0f, -1.0f);
+            vertices_[6].position.Set(-1.0f,  1.0f, -1.0f);
+            vertices_[6].normal.Set(0.0f,  0.0f, -1.0f);
+            vertices_[7].position.Set(-1.0f, -1.0f, -1.0f);
+            vertices_[7].normal.Set(0.0f,  0.0f, -1.0f);
             
-            vertices[6] = -1.0f;
-            vertices[7] = -1.0f;
-            vertices[8] = -1.0f;
+            // -X side
+            vertices_[8 ].position.Set(-1.0f,  1.0f, -1.0f);
+            vertices_[8 ].normal.Set(-1.0f,  0.0f,  0.0f);
+            vertices_[9 ].position.Set(-1.0f, -1.0f, -1.0f);
+            vertices_[9 ].normal.Set(-1.0f,  0.0f,  0.0f);
+            vertices_[10].position.Set(-1.0f,  1.0f,  1.0f);
+            vertices_[10].normal.Set(-1.0f,  0.0f,  0.0f);
+            vertices_[11].position.Set(-1.0f, -1.0f,  1.0f);
+            vertices_[11].normal.Set(-1.0f,  0.0f,  0.0f);
             
-            vertices[9] = -1.0f;
-            vertices[10] = -1.0f;
-            vertices[11] = 1.0f;
+            // +Z side
+            vertices_[12].position.Set(-1.0f,  1.0f,  1.0f);
+            vertices_[12].normal.Set(0.0f,  0.0f,  1.0f);
+            vertices_[13].position.Set(-1.0f, -1.0f,  1.0f);
+            vertices_[13].normal.Set(0.0f,  0.0f,  1.0f);
+            vertices_[14].position.Set( 1.0f,  1.0f,  1.0f);
+            vertices_[14].normal.Set(0.0f,  0.0f,  1.0f);
+            vertices_[15].position.Set( 1.0f, -1.0f,  1.0f);
+            vertices_[15].normal.Set(0.0f,  0.0f,  1.0f);
             
-            vertices[12] = 1.0f;
-            vertices[13] = 1.0f;
-            vertices[14] = 1.0f;
+            // +Y side
+            vertices_[16].position.Set( 1.0f,  1.0f,  1.0f);
+            vertices_[16].normal.Set(0.0f,  1.0f,  0.0f);
+            vertices_[17].position.Set( 1.0f,  1.0f, -1.0f);
+            vertices_[17].normal.Set(0.0f,  1.0f,  0.0f);
+            vertices_[18].position.Set(-1.0f,  1.0f,  1.0f);
+            vertices_[18].normal.Set(0.0f,  1.0f,  0.0f);
+            vertices_[19].position.Set(-1.0f,  1.0f, -1.0f);
+            vertices_[19].normal.Set(0.0f,  1.0f,  0.0f);
             
-            vertices[15] = 1.0f;
-            vertices[16] = 1.0f;
-            vertices[17] = -1.0f;
+            // -Y side
+            vertices_[20].position.Set( 1.0f, -1.0f, -1.0f);
+            vertices_[20].normal.Set(0.0f, -1.0f,  0.0f);
+            vertices_[21].position.Set( 1.0f, -1.0f,  1.0f);
+            vertices_[21].normal.Set(0.0f, -1.0f,  0.0f);
+            vertices_[22].position.Set(-1.0f, -1.0f, -1.0f);
+            vertices_[22].normal.Set(0.0f, -1.0f,  0.0f);
+            vertices_[23].position.Set(-1.0f, -1.0f,  1.0f);
+            vertices_[23].normal.Set(0.0f, -1.0f,  0.0f);
             
-            vertices[18] = -1.0f;
-            vertices[19] = 1.0f;
-            vertices[20] = -1.0f;
-            
-            vertices[21] = -1.0f;
-            vertices[22] = 1.0f;
-            vertices[23] = 1.0f;
-            
-            num_indices_ = 18;
-            indices_ = new u8[num_indices_ * sizeof(u16)];
-            u16 * indices = reinterpret_cast<u16*>(indices_);
-            indices[0] = 4;
-            indices[1] = 0;
-            indices[2] = 5;
-            indices[3] = 1;
-            indices[4] = 6;
-            indices[5] = 2;
-            indices[6] = 7;
-            indices[7] = 3;
-            indices[8] = 4;
-            indices[9] = 0;
-            indices[10] = 4;
-            indices[11] = 5;
-            indices[12] = 7;
-            indices[13] = 6;
-            indices[14] = 1;
-            indices[15] = 0;
-            indices[16] = 2;
-            indices[17] = 3;
+            indices_.resize(34);
+            indices_ = {
+                0,1,2,3, 3,4,
+                4,5,6,7, 7,8,
+                8,9,10,11, 11,12,
+                12,13,14,15, 15,16,
+                16,17,18,19, 19,20,
+                20,21,22,23
+            };
         }
         
     } // namespace graphics

@@ -3,15 +3,7 @@
 #define __SHT_GRAPHICS_RENDERER_OPENGL_RENDERER_H__
 
 #include "../renderer.h"
-#include <unordered_map>
-
-struct EnumClassHash {
-    template <typename T>
-    std::size_t operator()(T t) const
-    {
-        return static_cast<std::size_t>(t);
-    }
-};
+#include "../../../../common/table.h"
 
 namespace sht {
 	namespace graphics {
@@ -74,7 +66,7 @@ namespace sht {
 			void ChangeShaderUniform4fv(const char* name, float *v, int n = 1);
 			void ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans = false, int n = 1);
 			void ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans = false, int n = 1);
-			void ChangeShaderUniformMatrix4fv(const char* name, float *v, bool trans = false, int n = 1);
+			void ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans = false, int n = 1);
 
 			void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0);
 			void DeleteFont(Font* font);
@@ -122,7 +114,7 @@ namespace sht {
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
             
-            std::unordered_map<BufferUsage, u32, EnumClassHash> buffer_usage_map_; //!< buffer usage map
+            EnumTable<BufferUsage, u32> buffer_usage_map_; //!< buffer usage map
 		};
 
 	} // namespace graphics

@@ -2,8 +2,10 @@
 #ifndef __SHT_GRAPHICS_MODEL_H__
 #define __SHT_GRAPHICS_MODEL_H__
 
+#include "vertex.h"
 #include "../renderer/vertex_format.h"
 #include "../renderer/renderer.h"
+#include <vector>
 
 namespace sht {
     namespace graphics {
@@ -15,28 +17,33 @@ namespace sht {
             virtual ~Model();
             
             virtual void Create() = 0;
+            void AddFormat(const VertexAttribute& attrib);
             bool MakeRenderable();
             
             void Render();
             
-        protected:
-            void SetFormat(VertexAttribute *attribs, u32 num_attribs);
-            u32 vertex_size() const;
-            
-            u32 num_vertices_;
-            u8 * vertices_;
-            u32 num_indices_;
-            u8 * indices_;
+        protected:            
+            std::vector<Vertex> vertices_;
+            std::vector<u32> indices_;
             
             PrimitiveType primitive_mode_;
             
         private:
             void FreeArrays();
+            void TransformVertices();
             
             Renderer * renderer_;
             VertexFormat * vertex_format_;
             VertexBuffer * vertex_buffer_;
             IndexBuffer * index_buffer_;
+            
+            u32 num_vertices_;
+            u8 * vertices_array_;
+            u32 num_indices_;
+            u32 index_size_;
+            u8 * indices_array_;
+            
+            std::vector<VertexAttribute> attribs_;
         };
         
     }

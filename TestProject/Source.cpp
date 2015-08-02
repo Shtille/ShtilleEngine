@@ -7,7 +7,8 @@ class UserApp : public sht::OpenGlApplication
 {
 public:
     UserApp()
-    : model_(nullptr)
+    : model1_(nullptr)
+    , model2_(nullptr)
     , shader_(nullptr)
     , angle_(0.0f)
     {
@@ -19,28 +20,41 @@ public:
     }
     bool Load() final
     {
-        model_ = new sht::graphics::CubeModel(renderer_);
-        model_->Create();
-        if (!model_->MakeRenderable())
+        // First model
+        model1_ = new sht::graphics::CubeModel(renderer_);
+        model1_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+        model1_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        model1_->Create();
+        if (!model1_->MakeRenderable())
             return false;
         
-        const char *attribs[] = {"vertex"};
+        // Second model
+        model2_ = new sht::graphics::CubeModel(renderer_);
+        model2_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+        model2_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        model2_->Create();
+        if (!model2_->MakeRenderable())
+            return false;
+        
+        const char *attribs[] = {"a_position", "a_normal"};
         if (!renderer_->AddShader(shader_, "shader", const_cast<char**>(attribs), 1))
             return false;
         
-        projection_matrix = sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f);
-        view_matrix = sht::math::LookAt(vec3(5.0f), vec3(0.0f));
+        renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+        renderer_->SetViewMatrix(sht::math::LookAt(vec3(5.0f), vec3(0.0f)));
+        renderer_->SetModelMatrix(sht::math::Identity4());
         
         return true;
     }
     void Unload() final
     {
-        delete model_;
+        delete model1_;
+        delete model2_;
     }
     void Update() final
     {
         angle_ += 0.5f * frame_time_;
-        model_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
+        rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
     }
     void Render() final
     {
@@ -48,12 +62,26 @@ public:
         renderer_->ClearColorAndDepthBuffers();
         
         renderer_->ChangeShader(shader_);
-        renderer_->ChangeShaderUniformMatrix4fv("projection", projection_matrix);
-        renderer_->ChangeShaderUniformMatrix4fv("view", view_matrix);
-        renderer_->ChangeShaderUniformMatrix4fv("model", model_matrix);
+        renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         
-        // Draw cube model
-        model_->Render();
+        // TODO: unfirom different matrices !!!
+        
+        // Draw first model
+        renderer_->PushMatrix();
+        renderer_->Translate(2.0f, 0.0f, 0.0f);
+        renderer_->MultMatrix(rotate_matrix);
+        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+        model1_->Render();
+        renderer_->PopMatrix();
+        
+        // Draw second model
+        renderer_->PushMatrix();
+        renderer_->Translate(0.0f, 0.0f, 2.0f);
+        renderer_->MultMatrix(rotate_matrix);
+        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+        model2_->Render();
+        renderer_->PopMatrix();
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
@@ -68,12 +96,11 @@ public:
     }
     
 private:
-    sht::graphics::CubeModel * model_;
+    sht::graphics::CubeModel * model1_;
+    sht::graphics::CubeModel * model2_;
     sht::graphics::Shader * shader_;
     
-    sht::math::Matrix4 projection_matrix;
-    sht::math::Matrix4 view_matrix;
-    sht::math::Matrix4 model_matrix;
+    sht::math::Matrix4 rotate_matrix;
     
     float angle_; //!< rotation angle of cube
 };

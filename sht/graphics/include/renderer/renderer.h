@@ -210,7 +210,7 @@ namespace sht {
 			virtual void ChangeShaderUniform4fv(const char* name, float *v, int n = 1) = 0;
 			virtual void ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans = false, int n = 1) = 0;
 			virtual void ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans = false, int n = 1) = 0;
-			virtual void ChangeShaderUniformMatrix4fv(const char* name, float *v, bool trans = false, int n = 1) = 0;
+			virtual void ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans = false, int n = 1) = 0;
 
 			// Font functions
 			virtual void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0) = 0;
@@ -228,11 +228,16 @@ namespace sht {
 			virtual inline void ClearColorAndDepthBuffers(void) = 0;
 			virtual inline void ClearDepthBuffer(void) = 0;
             
+            // Matrices functions
             void SetProjectionMatrix(const sht::math::Matrix4& mat);
             void SetViewMatrix(const sht::math::Matrix4& mat);
             void SetModelMatrix(const sht::math::Matrix4& mat);
             void PushMatrix();
             void PopMatrix();
+            
+            const sht::math::Matrix4& projection_matrix() const;
+            const sht::math::Matrix4& view_matrix() const;
+            const sht::math::Matrix4& model_matrix() const;
             
             // Obsolete OpenGL analogs
             void LoadMatrix(const sht::math::Matrix4& matrix);

@@ -282,6 +282,18 @@ namespace sht {
             model_matrix_ = matrices_stack_.top();
             matrices_stack_.pop();
         }
+        const sht::math::Matrix4& Renderer::projection_matrix() const
+        {
+            return projection_matrix_;
+        }
+        const sht::math::Matrix4& Renderer::view_matrix() const
+        {
+            return view_matrix_;
+        }
+        const sht::math::Matrix4& Renderer::model_matrix() const
+        {
+            return model_matrix_;
+        }
         void Renderer::LoadMatrix(const sht::math::Matrix4& matrix)
         {
             model_matrix_ = matrix;

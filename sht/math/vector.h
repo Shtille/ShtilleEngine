@@ -57,6 +57,8 @@ namespace sht {
 			Vector3(const float iv);
 			Vector3(const Vector2 &xy, const float iz);
 			Vector3(const float ix, const float iy, const float iz);
+            
+            void Set(const float ix, const float iy, const float iz);
 
 			operator float *();
 			operator const float *() const;

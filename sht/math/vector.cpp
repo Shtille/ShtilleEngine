@@ -7,6 +7,11 @@ namespace sht {
 		Vector2::Vector2()
 		{
 		}
+        Vector2::Vector2(const Vector2& v)
+        {
+            x = v.x;
+            y = v.y;
+        }
 		Vector2::Vector2(const float iv)
 		{
 			x = y = iv;
@@ -271,6 +276,12 @@ namespace sht {
 			y /= v.y;
 			z /= v.z;
 		}
+        void Vector3::Set(const float ix, const float iy, const float iz)
+        {
+            x = ix;
+            y = iy;
+            z = iz;
+        }
 		void Vector3::Null()
 		{
 			x = y = z = 0.0f;

@@ -23,6 +23,12 @@ namespace sht {
 				kTangent,
 				kBinormal
 			};
+            
+            VertexAttribute(Type type, u32 size)
+            : type(type)
+            , size(size)
+            {
+            }
 
 			Type type;			//!< Specifies the vertex type.
 			u32 size;			//!< Specifies the vertex format size.
