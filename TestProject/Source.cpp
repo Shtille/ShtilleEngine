@@ -1,14 +1,15 @@
 #include "../sht/include/sht.h"
 #include "../sht/graphics/include/image/image.h"
 #include "../sht/graphics/include/model/cube_model.h"
+#include "../sht/graphics/include/model/tetrahedron_model.h"
 #include <cmath>
 
 class UserApp : public sht::OpenGlApplication 
 {
 public:
     UserApp()
-    : model1_(nullptr)
-    , model2_(nullptr)
+    : cube_(nullptr)
+    , tetrahedron_(nullptr)
     , shader_(nullptr)
     , angle_(0.0f)
     {
@@ -21,19 +22,19 @@ public:
     bool Load() final
     {
         // First model
-        model1_ = new sht::graphics::CubeModel(renderer_);
-        model1_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        model1_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-        model1_->Create();
-        if (!model1_->MakeRenderable())
+        cube_ = new sht::graphics::CubeModel(renderer_);
+        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        cube_->Create();
+        if (!cube_->MakeRenderable())
             return false;
         
         // Second model
-        model2_ = new sht::graphics::CubeModel(renderer_);
-        model2_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        model2_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-        model2_->Create();
-        if (!model2_->MakeRenderable())
+        tetrahedron_ = new sht::graphics::TetrahedronModel(renderer_);
+        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        tetrahedron_->Create();
+        if (!tetrahedron_->MakeRenderable())
             return false;
         
         const char *attribs[] = {"a_position", "a_normal"};
@@ -48,8 +49,8 @@ public:
     }
     void Unload() final
     {
-        delete model1_;
-        delete model2_;
+        delete cube_;
+        delete tetrahedron_;
     }
     void Update() final
     {
@@ -65,14 +66,12 @@ public:
         renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         
-        // TODO: unfirom different matrices !!!
-        
         // Draw first model
         renderer_->PushMatrix();
         renderer_->Translate(2.0f, 0.0f, 0.0f);
         renderer_->MultMatrix(rotate_matrix);
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
-        model1_->Render();
+        cube_->Render();
         renderer_->PopMatrix();
         
         // Draw second model
@@ -80,7 +79,7 @@ public:
         renderer_->Translate(0.0f, 0.0f, 2.0f);
         renderer_->MultMatrix(rotate_matrix);
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
-        model2_->Render();
+        tetrahedron_->Render();
         renderer_->PopMatrix();
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
@@ -96,8 +95,8 @@ public:
     }
     
 private:
-    sht::graphics::CubeModel * model1_;
-    sht::graphics::CubeModel * model2_;
+    sht::graphics::CubeModel * cube_;
+    sht::graphics::TetrahedronModel * tetrahedron_;
     sht::graphics::Shader * shader_;
     
     sht::math::Matrix4 rotate_matrix;

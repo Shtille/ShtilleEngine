@@ -145,6 +145,7 @@
 		529AB7C41B12142C00505715 /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 529AB7C21B12142C00505715 /* frustum.cpp */; };
 		529AB7C51B12142C00505715 /* frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C31B12142C00505715 /* frustum.h */; };
 		529AB7C71B12339A00505715 /* update_timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C61B12339A00505715 /* update_timer.h */; };
+		52A3F4651B70FC49004B433D /* tetrahedron_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52A3F4641B70FC49004B433D /* tetrahedron_model.cpp */; };
 		52C97C4A1B690A7A00484FFF /* shader.fs in Resources */ = {isa = PBXBuildFile; fileRef = 52C97C481B68FD5400484FFF /* shader.fs */; };
 		52C97C4B1B690A7A00484FFF /* shader.vs in Resources */ = {isa = PBXBuildFile; fileRef = 52C97C491B68FD5400484FFF /* shader.vs */; };
 		52CA9E2C1B58F5BD00A08AE0 /* mouse.h in Headers */ = {isa = PBXBuildFile; fileRef = 52CA9E2B1B58F5BD00A08AE0 /* mouse.h */; };
@@ -368,6 +369,8 @@
 		529AB7C21B12142C00505715 /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
 		529AB7C31B12142C00505715 /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
 		529AB7C61B12339A00505715 /* update_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = update_timer.h; sourceTree = "<group>"; };
+		52A3F4631B70FC3C004B433D /* tetrahedron_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tetrahedron_model.h; path = model/tetrahedron_model.h; sourceTree = "<group>"; };
+		52A3F4641B70FC49004B433D /* tetrahedron_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tetrahedron_model.cpp; path = model/tetrahedron_model.cpp; sourceTree = "<group>"; };
 		52BA7F2C1B03FC6900E39529 /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Source.cpp; path = ../../../TestProject/Source.cpp; sourceTree = "<group>"; };
 		52BA7F331B04005200E39529 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		52C97C481B68FD5400484FFF /* shader.fs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = shader.fs; path = ../../../TestProject/shader.fs; sourceTree = "<group>"; };
@@ -517,6 +520,8 @@
 		524DB8351B404C3400EAB364 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				52C97C481B68FD5400484FFF /* shader.fs */,
+				52C97C491B68FD5400484FFF /* shader.vs */,
 				524DB8361B404C6500EAB364 /* Info.plist */,
 				524DB8371B404C6500EAB364 /* MainMenu.xib */,
 			);
@@ -706,8 +711,6 @@
 		52BA7F2E1B03FC8400E39529 /* TestProject */ = {
 			isa = PBXGroup;
 			children = (
-				52C97C481B68FD5400484FFF /* shader.fs */,
-				52C97C491B68FD5400484FFF /* shader.vs */,
 				524DB8621B405EF500EAB364 /* fullscreen_window.m */,
 				524DB8631B405EF500EAB364 /* gl_view.mm */,
 				524DB8641B405EF500EAB364 /* window_controller.mm */,
@@ -719,6 +722,7 @@
 		52CA9E2F1B59307F00A08AE0 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				52A3F4631B70FC3C004B433D /* tetrahedron_model.h */,
 				521F127D1B6D68FE00D7D735 /* vertex.h */,
 				52368B101B67EB64001E7AD3 /* cube_model.h */,
 				52CA9E311B5930A400A08AE0 /* model.h */,
@@ -729,6 +733,7 @@
 		52CA9E301B59308900A08AE0 /* model */ = {
 			isa = PBXGroup;
 			children = (
+				52A3F4641B70FC49004B433D /* tetrahedron_model.cpp */,
 				52368B121B67EB79001E7AD3 /* cube_model.cpp */,
 				52CA9E331B5930B500A08AE0 /* model.cpp */,
 			);
@@ -1308,6 +1313,7 @@
 				52EB31531AF680F600060D0F /* opengl_renderer.cpp in Sources */,
 				524523EF1B49752900F17104 /* window_wrapper.cpp in Sources */,
 				52EB31691AF680F700060D0F /* stream.cpp in Sources */,
+				52A3F4651B70FC49004B433D /* tetrahedron_model.cpp in Sources */,
 				524F33B91B33294E0011AE72 /* image_tif.cpp in Sources */,
 				52EB31681AF680F700060D0F /* memory_stream.cpp in Sources */,
 				52EB31561AF680F600060D0F /* texture.cpp in Sources */,
