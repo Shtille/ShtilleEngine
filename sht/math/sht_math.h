@@ -40,6 +40,8 @@ namespace sht {
 		Matrix4 Scale4(float x, float y, float z);
 		Matrix3 Rotate3(float c, float s, float x, float y, float z);
 		Matrix4 Rotate4(float c, float s, float x, float y, float z);
+        
+        Matrix3 NormalMatrix(const Matrix4& modelview);
 
 		void TransformVectorByQuaternion(Vector3& res, const Vector3& v, const Quaternion& q);
 		void MatrixToQuaternion(Quaternion &q, const Matrix3 &m);

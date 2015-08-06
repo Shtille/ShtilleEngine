@@ -356,6 +356,11 @@ namespace sht {
 
 			return mat;
 		}
+        Matrix3 NormalMatrix(const Matrix4& modelview)
+        {
+            Matrix4 mat = modelview.GetInverse().GetTransposed();
+            return Matrix3(mat.e11, mat.e12, mat.e13, mat.e21, mat.e22, mat.e23, mat.e31, mat.e32, mat.e33);
+        }
 		void TransformVectorByQuaternion(Vector3& res, const Vector3& v, const Quaternion& q)
 		{
 			res = (q * Quaternion(v.x, v.y, v.z, 0.0f) * q.GetInverse()).xyz();

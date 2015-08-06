@@ -13,7 +13,7 @@ public:
     , shader_(nullptr)
     , angle_(0.0f)
     {
-        
+        light_position.Set(5.0f, 5.0f, 5.0f);
     }
     const char* GetTitle(void)
     {
@@ -32,13 +32,16 @@ public:
         // Second model
         tetrahedron_ = new sht::graphics::TetrahedronModel(renderer_);
         tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        //tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
         tetrahedron_->Create();
         if (!tetrahedron_->MakeRenderable())
             return false;
         
         const char *attribs[] = {"a_position", "a_normal"};
-        if (!renderer_->AddShader(shader_, "data/shaders/shader", const_cast<char**>(attribs), 1))
+        if (!renderer_->AddShader(shader_, "data/shaders/shader", const_cast<char**>(attribs), 2))
+            return false;
+        
+        if (!renderer_->AddShader(shader2_, "data/shaders/shader2", const_cast<char**>(attribs), 1))
             return false;
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
@@ -59,20 +62,29 @@ public:
     }
     void Render() final
     {
+        vec3 light_pos_eye = renderer_->view_matrix() * light_position;
+        
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
         renderer_->ChangeShader(shader_);
         renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
+        renderer_->ChangeShaderUniform3fv("u_light_pos", light_pos_eye);
         
         // Draw first model
         renderer_->PushMatrix();
         renderer_->Translate(2.0f, 0.0f, 0.0f);
         renderer_->MultMatrix(rotate_matrix);
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+        normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        renderer_->ChangeShaderUniformMatrix3fv("u_normal_matrix", normal_matrix);
         cube_->Render();
         renderer_->PopMatrix();
+        
+        renderer_->ChangeShader(shader2_);
+        renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         
         // Draw second model
         renderer_->PushMatrix();
@@ -81,6 +93,8 @@ public:
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
         tetrahedron_->Render();
         renderer_->PopMatrix();
+        
+        renderer_->ChangeShader(nullptr);
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
@@ -98,10 +112,14 @@ private:
     sht::graphics::CubeModel * cube_;
     sht::graphics::TetrahedronModel * tetrahedron_;
     sht::graphics::Shader * shader_;
+    sht::graphics::Shader * shader2_;
     
     sht::math::Matrix4 rotate_matrix;
+    sht::math::Matrix3 normal_matrix;
     
     float angle_; //!< rotation angle of cube
+    
+    sht::math::Vector3 light_position;
 };
 
 DECLARE_MAIN(UserApp);
