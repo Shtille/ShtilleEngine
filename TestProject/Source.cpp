@@ -38,7 +38,7 @@ public:
             return false;
         
         const char *attribs[] = {"a_position", "a_normal"};
-        if (!renderer_->AddShader(shader_, "shader", const_cast<char**>(attribs), 1))
+        if (!renderer_->AddShader(shader_, "data/shaders/shader", const_cast<char**>(attribs), 1))
             return false;
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
