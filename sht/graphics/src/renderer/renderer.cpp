@@ -75,6 +75,11 @@ namespace sht {
 		{
 			UpdateSizes(w, h);
 			Setup2DMatrix();
+            
+            projection_matrix_ = sht::math::Identity4();
+            view_matrix_ = sht::math::Identity4();
+            model_matrix_ = sht::math::Identity4();
+            
 			Defaults();
 		}
 		Renderer::~Renderer()
