@@ -4,6 +4,8 @@
 #include "../sht/graphics/include/model/tetrahedron_model.h"
 #include <cmath>
 
+#include <OpenGL/gl3.h>
+
 class UserApp : public sht::OpenGlApplication 
 {
 public:
@@ -26,18 +28,18 @@ public:
     {
         // First model
         cube_ = new sht::graphics::CubeModel(renderer_);
-        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-        cube_->Create();
-        if (!cube_->MakeRenderable())
-            return false;
+//        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+//        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+//        cube_->Create();
+//        if (!cube_->MakeRenderable())
+//            return false;
         
         // Second model
         tetrahedron_ = new sht::graphics::TetrahedronModel(renderer_);
-        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        tetrahedron_->Create();
-        if (!tetrahedron_->MakeRenderable())
-            return false;
+//        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+//        tetrahedron_->Create();
+//        if (!tetrahedron_->MakeRenderable())
+//            return false;
         
         const char *attribs[] = {"a_position", "a_normal"};
         if (!renderer_->AddShader(shader_, "data/shaders/shader", const_cast<char**>(attribs), 2))
@@ -48,10 +50,46 @@ public:
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
+        glGenVertexArrays(1, &vao1);
+        glBindVertexArray(vao1);
+        
+        float vertices1[] = {
+            3,0,0, 1,0,0,
+            0,3,0, 1,0,0,
+            0,0,3, 1,0,0};
+        
+        const char *base = (char*)0;
+        glGenBuffers(1, &vbo1);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo1);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*18, vertices1, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, base);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, base + 12);
+        glEnableVertexAttribArray(1);
+        
+        glBindVertexArray(0);
+        
+        glGenVertexArrays(1, &vao2);
+        glBindVertexArray(vao2);
+        
+        float vertices2[] = {1,0,0, 0,1,0, 0,0,1};
+        
+        glGenBuffers(1, &vbo2);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo2);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, vertices2, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, 0);
+        glEnableVertexAttribArray(0);
+        
+        glBindVertexArray(0);
+        
         return true;
     }
     void Unload() final
     {
+        glDeleteBuffers(1, &vbo1);
+        glDeleteVertexArrays(1, &vao1);
+        glDeleteBuffers(1, &vbo2);
+        glDeleteVertexArrays(1, &vao2);
         delete cube_;
         delete tetrahedron_;
     }
@@ -80,28 +118,40 @@ public:
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         renderer_->ChangeShaderUniform3fv("u_light_pos", light_pos_eye);
         
-        // Draw first model
-        renderer_->PushMatrix();
-        renderer_->Translate(2.0f, 0.0f, 0.0f);
-        renderer_->MultMatrix(rotate_matrix);
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
         renderer_->ChangeShaderUniformMatrix3fv("u_normal_matrix", normal_matrix);
-        cube_->Render();
-        renderer_->PopMatrix();
+        glBindVertexArray(vao1);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
+        
+//        // Draw first model
+//        renderer_->PushMatrix();
+//        renderer_->Translate(2.0f, 0.0f, 0.0f);
+//        renderer_->MultMatrix(rotate_matrix);
+//        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+//        normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+//        renderer_->ChangeShaderUniformMatrix3fv("u_normal_matrix", normal_matrix);
+//        cube_->Render();
+//        renderer_->PopMatrix();
         
         renderer_->ChangeShader(shader2_);
         renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         
-        // Draw second model
-        renderer_->PushMatrix();
-        renderer_->Translate(light_position);
-        renderer_->Scale(0.2f);
-        renderer_->MultMatrix(rotate_matrix);
         renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
-        tetrahedron_->Render();
-        renderer_->PopMatrix();
+        glBindVertexArray(vao2);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
+        
+//        // Draw second model
+//        renderer_->PushMatrix();
+//        renderer_->Translate(light_position);
+//        renderer_->Scale(0.2f);
+//        renderer_->MultMatrix(rotate_matrix);
+//        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+//        tetrahedron_->Render();
+//        renderer_->PopMatrix();
         
         renderer_->ChangeShader(nullptr);
     }
@@ -151,6 +201,9 @@ private:
     vec3 camera_position;
     float view_alpha;
     float view_theta;
+    
+    u32 vao1, vao2;
+    u32 vbo1, vbo2;
 };
 
 DECLARE_MAIN(UserApp);

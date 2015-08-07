@@ -25,8 +25,8 @@ namespace sht {
             FillBufferUsage();
             
             // Create global vertex array object (for core profile)
-            glGenVertexArrays(1, &vertex_array_object_);
-            glBindVertexArray(vertex_array_object_);
+            //glGenVertexArrays(1, &vertex_array_object_);
+            //glBindVertexArray(vertex_array_object_);
             
 			SetDefaultStates();
 		}
@@ -36,7 +36,7 @@ namespace sht {
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
             
             // Delete global vertex array object
-            glDeleteVertexArrays(1, &vertex_array_object_);
+            //glDeleteVertexArrays(1, &vertex_array_object_);
 		}
         void OpenGlRenderer::FillBufferUsage()
         {
