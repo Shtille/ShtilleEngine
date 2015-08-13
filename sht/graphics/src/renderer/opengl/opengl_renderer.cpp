@@ -1,11 +1,6 @@
 #include "../../../include/renderer/opengl/opengl_renderer.h"
 #include "../../../include/renderer/opengl/opengl_texture.h"
-#ifdef TARGET_WINDOWS
-#include "../../../../thirdparty/glew/include/GL/glew.h"
-#elif defined(TARGET_MAC)
-#include <OpenGL/gl3.h>
-#include <OpenGL/glext.h>
-#endif
+#include "opengl_include.h"
 #include "../../../../system/include/stream/file_stream.h"
 #include <string>
 #include <algorithm>
@@ -17,7 +12,9 @@
 namespace sht {
 	namespace graphics {
 
-		OpenGlRenderer::OpenGlRenderer(int w, int h) : Renderer(w, h)
+		OpenGlRenderer::OpenGlRenderer(int w, int h)
+        : Renderer(w, h)
+        , context()
 		{
 			framebuffer_ = 0;
 			current_image_unit_ = 0;
@@ -1362,73 +1359,73 @@ namespace sht {
 		{
 			glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, data);
 		}
-        inline void OpenGlRenderer::ClearColor(f32 r, f32 g, f32 b, f32 a)
+        void OpenGlRenderer::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {
-            glClearColor(r, g, b, a);
+            context.ClearColor(r, g, b, a);
         }
-		inline void OpenGlRenderer::ClearColorBuffer(void)
+		void OpenGlRenderer::ClearColorBuffer(void)
 		{
-			glClear(GL_COLOR_BUFFER_BIT);
+            context.ClearColorBuffer();
 		}
-		inline void OpenGlRenderer::ClearColorAndDepthBuffers(void)
+		void OpenGlRenderer::ClearColorAndDepthBuffers(void)
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            context.ClearColorAndDepthBuffers();
 		}
-		inline void OpenGlRenderer::ClearDepthBuffer(void)
+		void OpenGlRenderer::ClearDepthBuffer(void)
 		{
-			glClear(GL_DEPTH_BUFFER_BIT);
+            context.ClearDepthBuffer();
 		}
-		inline void OpenGlRenderer::ChangeBlendFunc(u32 source, u32 dest)
+		void OpenGlRenderer::ChangeBlendFunc(u32 source, u32 dest)
 		{
 			glBlendFunc(source, dest);
 		}
-		inline void OpenGlRenderer::EnableBlend(void)
+		void OpenGlRenderer::EnableBlend(void)
 		{
-			glEnable(GL_BLEND);
+            context.EnableBlend();
 		}
-		inline void OpenGlRenderer::DisableBlend(void)
+		void OpenGlRenderer::DisableBlend(void)
 		{
-			glDisable(GL_BLEND);
+            context.DisableBlend();
 		}
-		inline void OpenGlRenderer::EnableDepthTest(void)
+		void OpenGlRenderer::EnableDepthTest(void)
 		{
-			glEnable(GL_DEPTH_TEST);
+            context.EnableDepthTest();
 		}
-		inline void OpenGlRenderer::DisableDepthTest(void)
+		void OpenGlRenderer::DisableDepthTest(void)
 		{
-			glDisable(GL_DEPTH_TEST);
+            context.DisableDepthTest();
 		}
-		inline void OpenGlRenderer::EnableDepthWrite(void)
+		void OpenGlRenderer::EnableDepthWrite(void)
 		{
-			glDepthMask(GL_TRUE);
+            context.EnableDepthWrite();
 		}
-		inline void OpenGlRenderer::DisableDepthWrite(void)
+		void OpenGlRenderer::DisableDepthWrite(void)
 		{
-			glDepthMask(GL_FALSE);
+            context.DisableDepthWrite();
 		}
-		inline void OpenGlRenderer::EnableWireframeMode(void)
+		void OpenGlRenderer::EnableWireframeMode(void)
 		{
-			glPolygonMode(GL_FRONT, GL_LINE);
+            context.EnableWireframeMode();
 		}
-		inline void OpenGlRenderer::DisableWireframeMode(void)
+		void OpenGlRenderer::DisableWireframeMode(void)
 		{
-			glPolygonMode(GL_FRONT, GL_FILL);
+            context.DisableWireframeMode();
 		}
-		inline void OpenGlRenderer::DrawElements(PrimitiveType mode)
+		void OpenGlRenderer::DrawElements(PrimitiveType mode)
 		{
             static u32 primitive_table[(int)PrimitiveType::kCount] = {GL_TRIANGLES, GL_TRIANGLE_STRIP};
             u32 primitive_mode = primitive_table[(int)mode];
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			glDrawElements(primitive_mode, current_index_buffer_->index_count_, index_type, 0);
+            context.DrawElements(primitive_mode, current_index_buffer_->index_count_, index_type);
 		}
-		inline void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
+		void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
 		{
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-			glDrawElements(mode, numindices, index_type, 0);
+            context.DrawElements(mode, numindices, index_type);
 		}
-		inline void OpenGlRenderer::Viewport(int w, int h)
+		void OpenGlRenderer::Viewport(int w, int h)
 		{
-			glViewport(0, 0, w, h);
+            context.Viewport(w, h);
 		}
 
 	} // namespace graphics

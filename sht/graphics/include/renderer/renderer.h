@@ -8,6 +8,8 @@
 #include "../../../math/sht_math.h"
 
 #include "vertex_format.h"
+#include "vertex_buffer.h"
+#include "index_buffer.h"
 #include "texture.h"
 
 #include <list>
@@ -18,56 +20,6 @@ namespace sht {
 
 		const int kMaxImageUnit = 16;
 		const int kMaxMrt = 4;
-        
-        enum class BufferUsage : int {
-            kStaticDraw,
-            kStaticRead,
-            kStaticCopy,
-            kStreamDraw,
-            kStreamRead,
-            kStreamCopy,
-            kDynamicDraw,
-            kDynamicRead,
-            kDynamicCopy,
-            kCount
-        };
-
-		//! Vertex buffer class
-		class VertexBuffer {
-			friend class Renderer;
-			friend class OpenGlRenderer;
-
-		protected:
-			VertexBuffer();
-			~VertexBuffer();
-			VertexBuffer(const VertexBuffer&) = delete;
-			void operator = (const VertexBuffer&) = delete;
-
-			u32 GetSize();
-
-		private:
-			u32 id_;
-			u32 size_;
-		};
-
-		//! Index buffer class
-		class IndexBuffer {
-			friend class Renderer;
-			friend class OpenGlRenderer;
-
-		protected:
-			IndexBuffer();
-			~IndexBuffer();
-			IndexBuffer(const IndexBuffer&) = delete;
-			void operator = (const IndexBuffer&) = delete;
-
-			u32 GetSize();
-
-		private:
-			u32 id_;
-			u32 index_count_;
-			u32 index_size_;
-		};
 
 		//! Shader class
 		class Shader {
@@ -223,10 +175,10 @@ namespace sht {
 
 			virtual void ReadPixels(int w, int h, u8 *data) = 0; //!< reads pixels in R8G8B8 format
 
-            virtual inline void ClearColor(f32 r, f32 g, f32 b, f32 a) = 0;
-			virtual inline void ClearColorBuffer(void) = 0;
-			virtual inline void ClearColorAndDepthBuffers(void) = 0;
-			virtual inline void ClearDepthBuffer(void) = 0;
+            virtual void ClearColor(f32 r, f32 g, f32 b, f32 a) = 0;
+			virtual void ClearColorBuffer(void) = 0;
+			virtual void ClearColorAndDepthBuffers(void) = 0;
+			virtual void ClearDepthBuffer(void) = 0;
             
             // Matrices functions
             void SetProjectionMatrix(const sht::math::Matrix4& mat);
@@ -247,21 +199,21 @@ namespace sht {
             void Scale(f32 x, f32 y, f32 z);
             void Scale(f32 s);
 
-			virtual inline void ChangeBlendFunc(u32 source, u32 dest) = 0;
-			virtual inline void EnableBlend(void) = 0;
-			virtual inline void DisableBlend(void) = 0;
+			virtual void ChangeBlendFunc(u32 source, u32 dest) = 0;
+			virtual void EnableBlend(void) = 0;
+			virtual void DisableBlend(void) = 0;
 
-			virtual inline void EnableDepthTest(void) = 0;
-			virtual inline void DisableDepthTest(void) = 0;
-			virtual inline void EnableDepthWrite(void) = 0;
-			virtual inline void DisableDepthWrite(void) = 0;
+			virtual void EnableDepthTest(void) = 0;
+			virtual void DisableDepthTest(void) = 0;
+			virtual void EnableDepthWrite(void) = 0;
+			virtual void DisableDepthWrite(void) = 0;
 
-			virtual inline void EnableWireframeMode(void) = 0;
-			virtual inline void DisableWireframeMode(void) = 0;
+			virtual void EnableWireframeMode(void) = 0;
+			virtual void DisableWireframeMode(void) = 0;
 
-			virtual inline void DrawElements(PrimitiveType mode) = 0;
-			virtual inline void DrawElements(u32 mode, u32 numindices) = 0;
-			virtual inline void Viewport(int w, int h) = 0;
+			virtual void DrawElements(PrimitiveType mode) = 0;
+			virtual void DrawElements(u32 mode, u32 numindices) = 0;
+			virtual void Viewport(int w, int h) = 0;
 
 		protected:
 			void ErrorHandler(const char *message);

@@ -5,26 +5,6 @@
 namespace sht {
 	namespace graphics {
 
-		VertexBuffer::VertexBuffer()
-		{
-		}
-		VertexBuffer::~VertexBuffer()
-		{
-		}
-		u32 VertexBuffer::GetSize()
-		{
-			return size_;
-		}
-		IndexBuffer::IndexBuffer()
-		{
-		}
-		IndexBuffer::~IndexBuffer()
-		{
-		}
-		u32 IndexBuffer::GetSize()
-		{
-			return index_count_ * index_size_;
-		}
 		Shader::Shader()
 		{
 		}

@@ -3,6 +3,7 @@
 #define __SHT_GRAPHICS_RENDERER_OPENGL_RENDERER_H__
 
 #include "../renderer.h"
+#include "opengl_context.h"
 #include "../../../../common/table.h"
 
 namespace sht {
@@ -75,26 +76,26 @@ namespace sht {
 
 			void ReadPixels(int w, int h, u8 *data);
 
-            inline void ClearColor(f32 r, f32 g, f32 b, f32 a);
-			inline void ClearColorBuffer(void);
-			inline void ClearColorAndDepthBuffers(void);
-			inline void ClearDepthBuffer(void);
+            void ClearColor(f32 r, f32 g, f32 b, f32 a);
+			void ClearColorBuffer(void);
+			void ClearColorAndDepthBuffers(void);
+			void ClearDepthBuffer(void);
 
-			inline void ChangeBlendFunc(u32 source, u32 dest);
-			inline void EnableBlend(void);
-			inline void DisableBlend(void);
+			void ChangeBlendFunc(u32 source, u32 dest);
+			void EnableBlend(void);
+			void DisableBlend(void);
 
-			inline void EnableDepthTest(void);
-			inline void DisableDepthTest(void);
-			inline void EnableDepthWrite(void);
-			inline void DisableDepthWrite(void);
+			void EnableDepthTest(void);
+			void DisableDepthTest(void);
+			void EnableDepthWrite(void);
+			void DisableDepthWrite(void);
 
-			inline void EnableWireframeMode(void);
-			inline void DisableWireframeMode(void);
+			void EnableWireframeMode(void);
+			void DisableWireframeMode(void);
 
-			inline void DrawElements(PrimitiveType mode);
-			inline void DrawElements(u32 mode, u32 numindices);
-			inline void Viewport(int w, int h);
+			void DrawElements(PrimitiveType mode);
+			void DrawElements(u32 mode, u32 numindices);
+			void Viewport(int w, int h);
 
 		private:
 			void SetDefaultStates();
@@ -113,6 +114,8 @@ namespace sht {
             u32 vertex_array_object_;       //!< OpenGL vertex array object
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
+            
+            OpenGlContext context;
             
             EnumTable<BufferUsage, u32> buffer_usage_map_; //!< buffer usage map
 		};
