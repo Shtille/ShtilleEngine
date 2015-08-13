@@ -11,6 +11,7 @@
 #include "vertex_buffer.h"
 #include "index_buffer.h"
 #include "texture.h"
+#include "context.h"
 
 #include <list>
 #include <stack>
@@ -64,12 +65,6 @@ namespace sht {
 			u32 base_;
 			Texture* texture_;
 		};
-        
-        enum class PrimitiveType {
-            kTriangles,
-            kTriangleStrip,
-            kCount
-        };
 
 		//! Base renderer class
 		class Renderer {
@@ -82,6 +77,8 @@ namespace sht {
 		public:
 			Renderer(int w, int h);
 			virtual ~Renderer();
+            
+            Context * context();
 
 			void UpdateSizes(int w, int h);
 
@@ -224,6 +221,8 @@ namespace sht {
 			virtual void ApiDeleteFont(Font* font) = 0;
 			virtual void ApiDeleteVertexBuffer(VertexBuffer* vb) = 0;
 			virtual void ApiDeleteIndexBuffer(IndexBuffer* ib) = 0;
+            
+            Context * context_;
 
 			int width_;										//!< owner app's window width
 			int height_;									//!< owner app's window height

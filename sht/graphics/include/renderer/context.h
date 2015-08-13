@@ -3,9 +3,24 @@
 #define __SHT_GRAPHICS_CONTEXT_H__
 
 #include "../../../common/types.h"
+#include "../../../common/table.h"
 
 namespace sht {
     namespace graphics {
+        
+        enum class PrimitiveType {
+            kLines,
+            kLineStrip,
+            kTriangles,
+            kTriangleStrip,
+            kCount
+        };
+        
+        enum class DataType {
+            kUnsignedShort,
+            kUnsignedInt,
+            kCount
+        };
         
         class Context {
         public:
@@ -30,8 +45,24 @@ namespace sht {
             virtual void EnableWireframeMode() = 0;
             virtual void DisableWireframeMode() = 0;
             
-            virtual void DrawArrays(u32 mode, s32 first, u32 count) = 0;
-            virtual void DrawElements(u32 mode, u32 num_indices, u32 index_type) = 0;
+            virtual void DrawArrays(PrimitiveType mode, s32 first, u32 count) = 0;
+            virtual void DrawElements(PrimitiveType mode, u32 num_indices, DataType index_type) = 0;
+            
+            // Vertex array object
+            virtual void GenVertexArrayObject(u32 &obj) = 0;
+            virtual void DeleteVertexArrayObject(u32 &obj) = 0;
+            virtual void BindVertexArrayObject(u32 obj) = 0;
+            
+            // Vertex buffer object
+            virtual void GenVertexBuffer(u32& obj) = 0;
+            virtual void DeleteVertexBuffer(u32& obj) = 0;
+            virtual void BindVertexBuffer(u32 obj) = 0;
+            
+        protected:
+            virtual void FillTables() = 0;
+            
+            EnumTable<PrimitiveType, u32> primitive_type_map_;  //!< primitive type map
+            EnumTable<DataType, u32> data_type_map_;            //!< primitive type map
         };
         
     }

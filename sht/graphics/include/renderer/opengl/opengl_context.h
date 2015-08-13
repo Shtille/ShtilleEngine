@@ -30,8 +30,21 @@ namespace sht {
             void EnableWireframeMode();
             void DisableWireframeMode();
             
-            void DrawArrays(u32 mode, s32 first, u32 count);
-            void DrawElements(u32 mode, u32 num_indices, u32 index_type);
+            void DrawArrays(PrimitiveType mode, s32 first, u32 count);
+            void DrawElements(PrimitiveType mode, u32 num_indices, DataType index_type);
+            
+            // Vertex array object
+            void GenVertexArrayObject(u32 &obj);
+            void DeleteVertexArrayObject(u32 &obj);
+            void BindVertexArrayObject(u32 obj);
+            
+            // Vertex buffer object
+            void GenVertexBuffer(u32& obj);
+            void DeleteVertexBuffer(u32& obj);
+            void BindVertexBuffer(u32 obj);
+            
+        protected:
+            void FillTables();
         };
         
     }

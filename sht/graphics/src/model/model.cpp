@@ -14,6 +14,7 @@ namespace sht {
         , num_indices_(0)
         , index_size_(0)
         , indices_array_(nullptr)
+        , vertex_array_object_(0)
         {
             
         }
@@ -112,6 +113,9 @@ namespace sht {
             
             TransformVertices();
             
+            renderer_->context()->GenVertexArrayObject(vertex_array_object_);
+            renderer_->context()->BindVertexArrayObject(vertex_array_object_);
+            
             renderer_->AddVertexBuffer(vertex_buffer_, num_vertices_ * vertex_format_->vertex_size(), vertices_array_, BufferUsage::kStaticDraw);
             if (vertex_buffer_ == nullptr) return false;
             
@@ -128,6 +132,9 @@ namespace sht {
             renderer_->ChangeVertexBuffer(vertex_buffer_);
             renderer_->ChangeIndexBuffer(index_buffer_);
             renderer_->DrawElements(primitive_mode_);
+            //
+            renderer_->context()->BindVertexArrayObject(vertex_array_object_);
+            renderer_->context()->DrawElements(primitive_mode_, num_indices_, DataType::kUnsignedInt);
         }
 
     } // namespace graphics

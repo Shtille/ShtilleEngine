@@ -36,6 +36,7 @@ namespace sht {
             VertexFormat * vertex_format_;
             VertexBuffer * vertex_buffer_;
             IndexBuffer * index_buffer_;
+            u32 vertex_array_object_;
             
             u32 num_vertices_;
             u8 * vertices_array_;

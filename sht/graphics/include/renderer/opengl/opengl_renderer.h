@@ -3,7 +3,6 @@
 #define __SHT_GRAPHICS_RENDERER_OPENGL_RENDERER_H__
 
 #include "../renderer.h"
-#include "opengl_context.h"
 #include "../../../../common/table.h"
 
 namespace sht {
@@ -114,8 +113,6 @@ namespace sht {
             u32 vertex_array_object_;       //!< OpenGL vertex array object
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
-            
-            OpenGlContext context;
             
             EnumTable<BufferUsage, u32> buffer_usage_map_; //!< buffer usage map
 		};

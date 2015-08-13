@@ -66,6 +66,10 @@ namespace sht {
 		{
 			// Don't call any functions with virtual table here!
 		}
+        Context * Renderer::context()
+        {
+            return context_;
+        }
 		void Renderer::UpdateSizes(int w, int h)
 		{
 			width_ = w;

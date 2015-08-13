@@ -1,5 +1,6 @@
 #include "../../../include/renderer/opengl/opengl_renderer.h"
 #include "../../../include/renderer/opengl/opengl_texture.h"
+#include "../../../include/renderer/opengl/opengl_context.h"
 #include "opengl_include.h"
 #include "../../../../system/include/stream/file_stream.h"
 #include <string>
@@ -14,8 +15,9 @@ namespace sht {
 
 		OpenGlRenderer::OpenGlRenderer(int w, int h)
         : Renderer(w, h)
-        , context()
 		{
+            context_ = new OpenGlContext();
+            
 			framebuffer_ = 0;
 			current_image_unit_ = 0;
 			current_render_targets_ = 1;
@@ -29,6 +31,8 @@ namespace sht {
 		}
 		OpenGlRenderer::~OpenGlRenderer()
 		{
+            delete context_;
+            
 			// delete our framebuffer, if it exists
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
             
@@ -1361,19 +1365,19 @@ namespace sht {
 		}
         void OpenGlRenderer::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {
-            context.ClearColor(r, g, b, a);
+            context_->ClearColor(r, g, b, a);
         }
 		void OpenGlRenderer::ClearColorBuffer(void)
 		{
-            context.ClearColorBuffer();
+            context_->ClearColorBuffer();
 		}
 		void OpenGlRenderer::ClearColorAndDepthBuffers(void)
 		{
-            context.ClearColorAndDepthBuffers();
+            context_->ClearColorAndDepthBuffers();
 		}
 		void OpenGlRenderer::ClearDepthBuffer(void)
 		{
-            context.ClearDepthBuffer();
+            context_->ClearDepthBuffer();
 		}
 		void OpenGlRenderer::ChangeBlendFunc(u32 source, u32 dest)
 		{
@@ -1381,51 +1385,51 @@ namespace sht {
 		}
 		void OpenGlRenderer::EnableBlend(void)
 		{
-            context.EnableBlend();
+            context_->EnableBlend();
 		}
 		void OpenGlRenderer::DisableBlend(void)
 		{
-            context.DisableBlend();
+            context_->DisableBlend();
 		}
 		void OpenGlRenderer::EnableDepthTest(void)
 		{
-            context.EnableDepthTest();
+            context_->EnableDepthTest();
 		}
 		void OpenGlRenderer::DisableDepthTest(void)
 		{
-            context.DisableDepthTest();
+            context_->DisableDepthTest();
 		}
 		void OpenGlRenderer::EnableDepthWrite(void)
 		{
-            context.EnableDepthWrite();
+            context_->EnableDepthWrite();
 		}
 		void OpenGlRenderer::DisableDepthWrite(void)
 		{
-            context.DisableDepthWrite();
+            context_->DisableDepthWrite();
 		}
 		void OpenGlRenderer::EnableWireframeMode(void)
 		{
-            context.EnableWireframeMode();
+            context_->EnableWireframeMode();
 		}
 		void OpenGlRenderer::DisableWireframeMode(void)
 		{
-            context.DisableWireframeMode();
+            context_->DisableWireframeMode();
 		}
 		void OpenGlRenderer::DrawElements(PrimitiveType mode)
 		{
             static u32 primitive_table[(int)PrimitiveType::kCount] = {GL_TRIANGLES, GL_TRIANGLE_STRIP};
             u32 primitive_mode = primitive_table[(int)mode];
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-            context.DrawElements(primitive_mode, current_index_buffer_->index_count_, index_type);
+            context_->DrawElements(primitive_mode, current_index_buffer_->index_count_, index_type);
 		}
 		void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
 		{
 			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-            context.DrawElements(mode, numindices, index_type);
+            context_->DrawElements(mode, numindices, index_type);
 		}
 		void OpenGlRenderer::Viewport(int w, int h)
 		{
-            context.Viewport(w, h);
+            context_->Viewport(w, h);
 		}
 
 	} // namespace graphics
