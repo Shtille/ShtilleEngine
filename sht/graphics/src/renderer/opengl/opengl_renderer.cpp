@@ -1417,15 +1417,11 @@ namespace sht {
 		}
 		void OpenGlRenderer::DrawElements(PrimitiveType mode)
 		{
-            static u32 primitive_table[(int)PrimitiveType::kCount] = {GL_TRIANGLES, GL_TRIANGLE_STRIP};
-            u32 primitive_mode = primitive_table[(int)mode];
-			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-            context_->DrawElements(primitive_mode, current_index_buffer_->index_count_, index_type);
+            DataType index_type = (current_index_buffer_->index_size_ == 2) ? DataType::kUnsignedShort : DataType::kUnsignedInt;
+            context_->DrawElements(mode, current_index_buffer_->index_count_, index_type);
 		}
 		void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
 		{
-			GLenum index_type = (current_index_buffer_->index_size_ == 2) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-            context_->DrawElements(mode, numindices, index_type);
 		}
 		void OpenGlRenderer::Viewport(int w, int h)
 		{

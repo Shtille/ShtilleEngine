@@ -38,6 +38,8 @@ namespace sht {
 		class VertexFormat {
 			friend class Renderer;
 			friend class OpenGlRenderer;
+            
+            friend class Model;
 
 		public:
 			struct Attrib {

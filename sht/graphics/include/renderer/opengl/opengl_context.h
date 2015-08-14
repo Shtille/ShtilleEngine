@@ -43,6 +43,9 @@ namespace sht {
             void DeleteVertexBuffer(u32& obj);
             void BindVertexBuffer(u32 obj);
             
+            void VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr);
+            void EnableVertexAttribArray(u32 index);
+            
         protected:
             void FillTables();
         };

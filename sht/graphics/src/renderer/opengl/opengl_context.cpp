@@ -22,6 +22,7 @@ namespace sht {
             
             data_type_map_[DataType::kUnsignedShort] = GL_UNSIGNED_SHORT;
             data_type_map_[DataType::kUnsignedInt] = GL_UNSIGNED_INT;
+            data_type_map_[DataType::kFloat] = GL_FLOAT;
             assert(data_type_map_.size() == (size_t)DataType::kCount);
         }
         void OpenGlContext::ClearColor(f32 r, f32 g, f32 b, f32 a)
@@ -110,6 +111,15 @@ namespace sht {
         void OpenGlContext::BindVertexBuffer(u32 obj)
         {
             glBindBuffer(GL_ARRAY_BUFFER, obj);
+        }
+        void OpenGlContext::VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr)
+        {
+            u32 data_type = data_type_map_[type];
+            glVertexAttribPointer(index, size, data_type, GL_FALSE, stride, ptr);
+        }
+        void OpenGlContext::EnableVertexAttribArray(u32 index)
+        {
+            glEnableVertexAttribArray(index);
         }
         
     } // namespace graphics

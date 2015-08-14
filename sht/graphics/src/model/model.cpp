@@ -122,19 +122,24 @@ namespace sht {
             renderer_->AddIndexBuffer(index_buffer_, num_indices_, index_size_, indices_array_, BufferUsage::kStaticDraw);
             if (index_buffer_ == nullptr) return false;
             
+            const char* base = (char*)0;
+            for (u32 i = 0; i < attribs_.size(); ++i)
+            {
+                renderer_->context()->VertexAttribPointer(i, vertex_format_->generic_[i].size, DataType::kFloat, vertex_format_->vertex_size(), base + vertex_format_->generic_[i].offset);
+                renderer_->context()->EnableVertexAttribArray(i);
+            }
+            
+            renderer_->context()->BindVertexArrayObject(0);
+            
             FreeArrays();
             
             return true;
         }
         void Model::Render()
         {
-            renderer_->ChangeVertexFormat(vertex_format_);
-            renderer_->ChangeVertexBuffer(vertex_buffer_);
-            renderer_->ChangeIndexBuffer(index_buffer_);
-            renderer_->DrawElements(primitive_mode_);
-            //
+            DataType data_type = (num_indices_ > 0xffff) ? DataType::kUnsignedInt : DataType::kUnsignedShort;
             renderer_->context()->BindVertexArrayObject(vertex_array_object_);
-            renderer_->context()->DrawElements(primitive_mode_, num_indices_, DataType::kUnsignedInt);
+            renderer_->context()->DrawElements(primitive_mode_, num_indices_, data_type);
         }
 
     } // namespace graphics
