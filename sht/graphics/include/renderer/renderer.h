@@ -208,8 +208,6 @@ namespace sht {
 			virtual void EnableWireframeMode(void) = 0;
 			virtual void DisableWireframeMode(void) = 0;
 
-			virtual void DrawElements(PrimitiveType mode) = 0;
-			virtual void DrawElements(u32 mode, u32 numindices) = 0;
 			virtual void Viewport(int w, int h) = 0;
 
 		protected:

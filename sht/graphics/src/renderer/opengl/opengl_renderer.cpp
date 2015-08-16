@@ -23,10 +23,6 @@ namespace sht {
 			current_render_targets_ = 1;
             FillBufferUsage();
             
-            // Create global vertex array object (for core profile)
-            //glGenVertexArrays(1, &vertex_array_object_);
-            //glBindVertexArray(vertex_array_object_);
-            
 			SetDefaultStates();
 		}
 		OpenGlRenderer::~OpenGlRenderer()
@@ -35,9 +31,6 @@ namespace sht {
             
 			// delete our framebuffer, if it exists
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
-            
-            // Delete global vertex array object
-            //glDeleteVertexArrays(1, &vertex_array_object_);
 		}
         void OpenGlRenderer::FillBufferUsage()
         {
@@ -1414,14 +1407,6 @@ namespace sht {
 		void OpenGlRenderer::DisableWireframeMode(void)
 		{
             context_->DisableWireframeMode();
-		}
-		void OpenGlRenderer::DrawElements(PrimitiveType mode)
-		{
-            DataType index_type = (current_index_buffer_->index_size_ == 2) ? DataType::kUnsignedShort : DataType::kUnsignedInt;
-            context_->DrawElements(mode, current_index_buffer_->index_count_, index_type);
-		}
-		void OpenGlRenderer::DrawElements(u32 mode, u32 numindices)
-		{
 		}
 		void OpenGlRenderer::Viewport(int w, int h)
 		{

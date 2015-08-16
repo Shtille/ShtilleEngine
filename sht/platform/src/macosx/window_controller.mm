@@ -55,11 +55,15 @@
 
 #include "../../../application/application.h"
 
+#include <mutex>
+
 #ifdef __cplusplus
 void * g_window_controller;
 #else
 GLEssentialsWindowController * g_window_controller;
 #endif
+
+std::mutex g_app_mutex;
 
 @interface GLEssentialsWindowController ()
 
@@ -97,6 +101,7 @@ NSWindow* standardWindow;
     // Make window non-resizable (!!! it's important, without this resize won't work)
     [self.window setStyleMask:[self.window styleMask] & ~NSResizableWindowMask];
     
+    std::lock_guard<std::mutex> locker(g_app_mutex);
     sht::Application * app = sht::Application::GetInstance();
     NSRect viewRect;
     viewRect.origin.x = 0;

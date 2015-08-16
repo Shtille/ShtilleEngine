@@ -58,6 +58,7 @@ namespace sht {
             virtual void GenVertexBuffer(u32& obj) = 0;
             virtual void DeleteVertexBuffer(u32& obj) = 0;
             virtual void BindVertexBuffer(u32 obj) = 0;
+            virtual void VertexBufferData(u32 size, const void *data, u32 usage) = 0;
             
             virtual void VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr) = 0;
             virtual void EnableVertexAttribArray(u32 index) = 0;

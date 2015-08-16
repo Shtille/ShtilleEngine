@@ -112,6 +112,14 @@ namespace sht {
         {
             glBindBuffer(GL_ARRAY_BUFFER, obj);
         }
+        void OpenGlContext::VertexBufferData(u32 size, const void *data, u32 usage)
+        {
+            glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+        }
+//        void* OpenGlContext::MapVertexBufferData(u32 size)
+//        {
+//            glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+//        }
         void OpenGlContext::VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr)
         {
             u32 data_type = data_type_map_[type];

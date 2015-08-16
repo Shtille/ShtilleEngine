@@ -1,5 +1,7 @@
 #include "../../include/model/model.h"
 
+#include <OpenGL/gl3.h>
+
 namespace sht {
     namespace graphics {
         
@@ -119,6 +121,10 @@ namespace sht {
             renderer_->AddVertexBuffer(vertex_buffer_, num_vertices_ * vertex_format_->vertex_size(), vertices_array_, BufferUsage::kStaticDraw);
             if (vertex_buffer_ == nullptr) return false;
             
+            void* data = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+            assert(memcmp(data, vertices_array_, num_vertices_ * vertex_format_->vertex_size()) == 0);
+            glUnmapBuffer(GL_ARRAY_BUFFER);
+            
             renderer_->AddIndexBuffer(index_buffer_, num_indices_, index_size_, indices_array_, BufferUsage::kStaticDraw);
             if (index_buffer_ == nullptr) return false;
             
@@ -131,7 +137,7 @@ namespace sht {
             
             renderer_->context()->BindVertexArrayObject(0);
             
-            FreeArrays();
+            //FreeArrays();
             
             return true;
         }

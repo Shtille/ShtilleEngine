@@ -50,6 +50,10 @@
 #include "../../../application/application.h"
 #include "../../../system/include/keys.h"
 
+#include <mutex>
+
+extern std::mutex g_app_mutex;
+
 #define SUPPORT_RETINA_RESOLUTION 1
 #define ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 1
 
@@ -206,12 +210,14 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (void) windowDidMiniaturize:(NSNotification*)notification
 {
+    std::lock_guard<std::mutex> locker(g_app_mutex);
     sht::Application * app = sht::Application::GetInstance();
     app->set_visible(false);
 }
 
 - (void) windowDidDeminiaturize:(NSNotification*)notification
 {
+    std::lock_guard<std::mutex> locker(g_app_mutex);
     sht::Application * app = sht::Application::GetInstance();
     app->set_visible(true);
 }
@@ -233,6 +239,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	// OSX (but not iOS since iOS apps must create their own FBO)
     //[self doInitWindowSize];
     
+    std::lock_guard<std::mutex> locker(g_app_mutex);
     sht::Application * app = sht::Application::GetInstance();
     if (app->InitApi()) // context is already created, but we also need a renderer
     {
@@ -294,9 +301,11 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 #endif // !SUPPORT_RETINA_RESOLUTION
     
 	// Set the new dimensions in our renderer
+    g_app_mutex.lock();
     sht::Application * app = sht::Application::GetInstance();
     if (app->visible()) // make sure context is created
         app->OnSize(viewRectPixels.size.width, viewRectPixels.size.height);
+    g_app_mutex.unlock();
 	
 	CGLUnlockContext([[self openGLContext] CGLContextObj]);
 }
@@ -337,6 +346,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	// simultaneously when resizing
 	CGLLockContext([[self openGLContext] CGLContextObj]);
 
+    g_app_mutex.lock();
     sht::Application * app = sht::Application::GetInstance();
     if (app->visible()) // make sure context is created
     {
@@ -344,6 +354,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
         app->Update();
         app->Render();
     }
+    g_app_mutex.unlock();
 
 	CGLFlushDrawable([[self openGLContext] CGLContextObj]);
 	CGLUnlockContext([[self openGLContext] CGLContextObj]);
@@ -358,10 +369,12 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 	CVDisplayLinkRelease(displayLink);
 
+    g_app_mutex.lock();
 	// Release the display link AFTER display link has been released
     sht::Application * app = sht::Application::GetInstance();
     app->Unload();
     app->DeinitApi();
+    g_app_mutex.unlock();
 	
 	[super dealloc];
 }

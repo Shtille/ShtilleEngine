@@ -50,46 +50,10 @@ public:
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
-//        glGenVertexArrays(1, &vao1);
-//        glBindVertexArray(vao1);
-//        
-//        float vertices1[] = {
-//            3,0,0, 1,0,0,
-//            0,3,0, 1,0,0,
-//            0,0,3, 1,0,0};
-//        
-//        const char *base = (char*)0;
-//        glGenBuffers(1, &vbo1);
-//        glBindBuffer(GL_ARRAY_BUFFER, vbo1);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*18, vertices1, GL_STATIC_DRAW);
-//        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, base);
-//        glEnableVertexAttribArray(0);
-//        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, base + 12);
-//        glEnableVertexAttribArray(1);
-//        
-//        glBindVertexArray(0);
-//        
-//        glGenVertexArrays(1, &vao2);
-//        glBindVertexArray(vao2);
-//        
-//        float vertices2[] = {1,0,0, 0,1,0, 0,0,1};
-//        
-//        glGenBuffers(1, &vbo2);
-//        glBindBuffer(GL_ARRAY_BUFFER, vbo2);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*9, vertices2, GL_STATIC_DRAW);
-//        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, 0);
-//        glEnableVertexAttribArray(0);
-//        
-//        glBindVertexArray(0);
-        
         return true;
     }
     void Unload() final
     {
-//        glDeleteBuffers(1, &vbo1);
-//        glDeleteVertexArrays(1, &vao1);
-//        glDeleteBuffers(1, &vbo2);
-//        glDeleteVertexArrays(1, &vao2);
         delete cube_;
         delete tetrahedron_;
     }
@@ -110,6 +74,8 @@ public:
     {
         vec3 light_pos_eye = renderer_->view_matrix() * light_position;
         
+        renderer_->Viewport(width_, height_);
+        
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
@@ -117,13 +83,6 @@ public:
         renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
         renderer_->ChangeShaderUniform3fv("u_light_pos", light_pos_eye);
-        
-//        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
-//        normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-//        renderer_->ChangeShaderUniformMatrix3fv("u_normal_matrix", normal_matrix);
-//        glBindVertexArray(vao1);
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
-//        glBindVertexArray(0);
         
         // Draw first model
         renderer_->PushMatrix();
@@ -138,11 +97,6 @@ public:
         renderer_->ChangeShader(shader2_);
         renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
         renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
-        
-//        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
-//        glBindVertexArray(vao2);
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
-//        glBindVertexArray(0);
         
         // Draw second model
         renderer_->PushMatrix();
