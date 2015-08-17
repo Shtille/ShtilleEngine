@@ -4,8 +4,6 @@
 #include "../sht/graphics/include/model/tetrahedron_model.h"
 #include <cmath>
 
-#include <OpenGL/gl3.h>
-
 class UserApp : public sht::OpenGlApplication 
 {
 public:
