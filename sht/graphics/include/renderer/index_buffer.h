@@ -19,6 +19,9 @@ namespace sht {
             
             u32 GetSize();
             
+            void* Lock(DataAccessType access);
+            void Unlock();
+            
         private:
             u32 id_;
             u32 index_count_;

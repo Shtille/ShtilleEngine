@@ -14,6 +14,14 @@ namespace sht {
         {
             return index_count_ * index_size_;
         }
+        void* IndexBuffer::Lock(DataAccessType access)
+        {
+            return context_->MapIndexBufferData(access);
+        }
+        void IndexBuffer::Unlock()
+        {
+            context_->UnmapIndexBufferData();
+        }
         
     } // namespace graphics
 } // namespace sht

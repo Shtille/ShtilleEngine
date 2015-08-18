@@ -813,7 +813,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage)
 		{
-			vb = new VertexBuffer();
+			vb = new VertexBuffer(context_);
 			vb->size_ = size;
             
             u32 flags = buffer_usage_map_[usage];
@@ -887,7 +887,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage)
 		{
-			ib = new IndexBuffer();
+			ib = new IndexBuffer(context_);
 			ib->index_count_ = nIndices;
 			ib->index_size_ = indexSize;
 

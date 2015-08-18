@@ -20,7 +20,7 @@ namespace sht {
         }
         void VertexBuffer::Unlock()
         {
-            
+            context_->UnmapVertexBufferData();
         }
         
     } // namespace graphics
