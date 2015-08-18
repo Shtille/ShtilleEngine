@@ -8,23 +8,15 @@
 namespace sht {
     namespace graphics {
         
-        enum class BufferUsage : int {
-            kStaticDraw,
-            kStaticRead,
-            kStaticCopy,
-            kStreamDraw,
-            kStreamRead,
-            kStreamCopy,
-            kDynamicDraw,
-            kDynamicRead,
-            kDynamicCopy,
-            kCount
-        };
-        
         class VideoMemoryBuffer {
         public:
             VideoMemoryBuffer(Context * context);
             virtual ~VideoMemoryBuffer();
+            
+            virtual void Bind() = 0;
+            virtual void Unbind() = 0;
+            
+            virtual void SetData(u32 size, void *data, BufferUsage usage) = 0;
             
             virtual void* Lock(DataAccessType access) = 0;
             virtual void  Unlock() = 0;

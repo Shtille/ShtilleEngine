@@ -3,7 +3,6 @@
 #define __SHT_GRAPHICS_RENDERER_OPENGL_RENDERER_H__
 
 #include "../renderer.h"
-#include "../../../../common/table.h"
 
 namespace sht {
 	namespace graphics {
@@ -38,17 +37,9 @@ namespace sht {
 			void DeleteVertexFormat(VertexFormat* vf);
 
 			void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage);
-			void SetVertexBufferData(ptrdiff_t offset, u32 size, void *data);
-			void* MapVertexBufferData(u32 size);
-			void UnmapVertexBufferData(void);
-			void ChangeVertexBuffer(VertexBuffer* vb);
 			void DeleteVertexBuffer(VertexBuffer* vb);
 
 			void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage);
-			void SetIndexBufferData(ptrdiff_t offset, u32 size, void *data);
-			void* MapIndexBufferData(u32 size);
-			void UnmapIndexBufferData(void);
-			void ChangeIndexBuffer(IndexBuffer* ib);
 			void DeleteIndexBuffer(IndexBuffer* ib);
 
 			bool AddShader(Shader* &shader, const char* filename, char **attribs = NULL, int nAttribs = 0);
@@ -97,21 +88,16 @@ namespace sht {
 		private:
 			void SetDefaultStates();
 			bool CheckFrameBufferStatus();
-            void FillBufferUsage();
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);
 			void ApiDeleteShader(Shader* shd);
 			void ApiDeleteFont(Font* font);
-			void ApiDeleteVertexBuffer(VertexBuffer* vb);
-			void ApiDeleteIndexBuffer(IndexBuffer* ib);
 			void ChangeImageUnit(u32 unit);
 
 			u32 framebuffer_;				//!< OpenGL framebuffer object
 			u32 current_image_unit_;		//!< current image unit
 			u32 current_render_targets_;	//!< current render targets count
-            
-            EnumTable<BufferUsage, u32> buffer_usage_map_; //!< buffer usage map
 		};
 
 	} // namespace graphics

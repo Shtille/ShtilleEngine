@@ -19,6 +19,11 @@ namespace sht {
             
             u32 GetSize();
             
+            void Bind();
+            void Unbind();
+            
+            void SetData(u32 size, void *data, BufferUsage usage);
+            
             void* Lock(DataAccessType access);
             void Unlock();
             

@@ -21,7 +21,6 @@ namespace sht {
 			framebuffer_ = 0;
 			current_image_unit_ = 0;
 			current_render_targets_ = 1;
-            FillBufferUsage();
             
 			SetDefaultStates();
 		}
@@ -32,19 +31,6 @@ namespace sht {
 			// delete our framebuffer, if it exists
 			if (framebuffer_) glDeleteFramebuffers(1, &framebuffer_);
 		}
-        void OpenGlRenderer::FillBufferUsage()
-        {
-            static_assert((int)BufferUsage::kCount == 9, "Fill buffer usage");
-            buffer_usage_map_[BufferUsage::kStaticDraw] = GL_STATIC_DRAW;
-            buffer_usage_map_[BufferUsage::kStaticRead] = GL_STATIC_READ;
-            buffer_usage_map_[BufferUsage::kStaticCopy] = GL_STATIC_COPY;
-            buffer_usage_map_[BufferUsage::kDynamicDraw] = GL_DYNAMIC_DRAW;
-            buffer_usage_map_[BufferUsage::kDynamicRead] = GL_DYNAMIC_READ;
-            buffer_usage_map_[BufferUsage::kDynamicCopy] = GL_DYNAMIC_COPY;
-            buffer_usage_map_[BufferUsage::kStreamDraw] = GL_STREAM_DRAW;
-            buffer_usage_map_[BufferUsage::kStreamRead] = GL_STREAM_READ;
-            buffer_usage_map_[BufferUsage::kStreamCopy] = GL_STREAM_COPY;
-        }
 		void OpenGlRenderer::SetDefaultStates()
 		{
 			glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -276,22 +262,6 @@ namespace sht {
 		void OpenGlRenderer::ApiDeleteFont(Font* font)
 		{
 			//glDeleteLists(font->base_, 256);
-		}
-		void OpenGlRenderer::ApiDeleteVertexBuffer(VertexBuffer* vb)
-		{
-			if (vb->id_)
-			{
-				glDeleteBuffers(1, &vb->id_);
-				vb->id_ = 0;
-			}
-		}
-		void OpenGlRenderer::ApiDeleteIndexBuffer(IndexBuffer* ib)
-		{
-			if (ib->id_)
-			{
-				glDeleteBuffers(1, &ib->id_);
-				ib->id_ = 0;
-			}
 		}
 		void OpenGlRenderer::CreateTextureColor(Texture* &texture, float r, float g, float b, float a)
 		{
@@ -813,71 +783,20 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage)
 		{
+            // Create a vertex buffer and upload the provided data if any
 			vb = new VertexBuffer(context_);
 			vb->size_ = size;
-            
-            u32 flags = buffer_usage_map_[usage];
 
-			// Create a vertex buffer and upload the provided data if any
-			glGenBuffers(1, &vb->id_);
-			glBindBuffer(GL_ARRAY_BUFFER, vb->id_);
-			glBufferData(GL_ARRAY_BUFFER, size, data, flags);
+            vb->Bind();
+            vb->SetData(size, data, usage);
 
 			CheckForErrors();
 
 			vertex_buffers_.push_back(vb);
 		}
-		void OpenGlRenderer::SetVertexBufferData(ptrdiff_t offset, u32 size, void *data)
-		{
-			glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
-		}
-		void* OpenGlRenderer::MapVertexBufferData(u32 size)
-		{
-			glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
-			return glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		}
-		void OpenGlRenderer::UnmapVertexBufferData(void)
-		{
-			glUnmapBuffer(GL_ARRAY_BUFFER);
-		}
-		void OpenGlRenderer::ChangeVertexBuffer(VertexBuffer* vb)
-		{
-			// Change bound VBO if neccesary
-			if (vb != current_vertex_buffer_)
-			{
-				if (vb == nullptr)
-					glBindBuffer(GL_ARRAY_BUFFER, 0);
-				else
-					glBindBuffer(GL_ARRAY_BUFFER, vb->id_);
-			}
-
-			/*
-			If either current VBO, offset into VBO or the vertex format has changed we need to update all pointers.
-			Since OpenGL doesn't have a concept of "streams" in the sense that Direct3D does, but instead has a
-			set of independent array pointers, we only update the arrays that the current vertex format indicates
-			belongs to this stream.
-			*/
-			if (vb != current_vertex_buffer_ || current_vertex_format_ != active_vertex_format_)
-			{
-				if (current_vertex_format_ != nullptr)
-				{
-					u8* base = (u8*)0;
-					VertexFormat *cvf = current_vertex_format_;
-					int vertexSize = cvf->vertex_size_;
-
-					for (int i = 0; i < kMaxGeneric; ++i)
-						if (cvf->generic_[i].size)
-							glVertexAttribPointer(i, cvf->generic_[i].size, GL_FLOAT, GL_FALSE, vertexSize, base + cvf->generic_[i].offset);
-				}
-
-				current_vertex_buffer_ = vb;
-				active_vertex_format_ = current_vertex_format_;
-			}
-		}
 		void OpenGlRenderer::DeleteVertexBuffer(VertexBuffer* vb)
 		{
 			assert(vb);
-			ApiDeleteVertexBuffer(vb);
 			auto it = std::find(vertex_buffers_.begin(), vertex_buffers_.end(), vb);
 			if (it != vertex_buffers_.end())
 			{
@@ -887,51 +806,22 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage)
 		{
+            // Create an index buffer and upload the provided data if any
 			ib = new IndexBuffer(context_);
 			ib->index_count_ = nIndices;
 			ib->index_size_ = indexSize;
 
-			GLsizeiptr size = nIndices * indexSize;
-            u32 flags = buffer_usage_map_[usage];
-
-			// Create an index buffer and upload the provided data if any
-			glGenBuffers(1, &ib->id_);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, flags);
+			u32 size = nIndices * indexSize;
+            ib->Bind();
+            ib->SetData(size, data, usage);
 
 			CheckForErrors();
 
 			index_buffers_.push_back(ib);
 		}
-		void OpenGlRenderer::SetIndexBufferData(ptrdiff_t offset, u32 size, void *data)
-		{
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
-		}
-		void* OpenGlRenderer::MapIndexBufferData(u32 size)
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, NULL, GL_STREAM_DRAW);
-			return glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
-		}
-		void OpenGlRenderer::UnmapIndexBufferData(void)
-		{
-			glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-		}
-		void OpenGlRenderer::ChangeIndexBuffer(IndexBuffer* ib)
-		{
-			if (ib != current_index_buffer_)
-			{
-				if (ib == nullptr)
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-				else
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib->id_);
-
-				current_index_buffer_ = ib;
-			}
-		}
 		void OpenGlRenderer::DeleteIndexBuffer(IndexBuffer* ib)
 		{
 			assert(ib);
-			ApiDeleteIndexBuffer(ib);
 			auto it = std::find(index_buffers_.begin(), index_buffers_.end(), ib);
 			if (it != index_buffers_.end())
 			{

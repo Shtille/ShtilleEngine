@@ -129,18 +129,10 @@ namespace sht {
 
 			// Vertex buffer functions
 			virtual void AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage) = 0;
-			virtual void SetVertexBufferData(ptrdiff_t offset, u32 size, void *data) = 0;
-			virtual void* MapVertexBufferData(u32 size) = 0;
-			virtual void UnmapVertexBufferData(void) = 0;
-			virtual void ChangeVertexBuffer(VertexBuffer* vb) = 0;
 			virtual void DeleteVertexBuffer(VertexBuffer* vb) = 0;
 
 			// Index buffer functions
 			virtual void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage) = 0;
-			virtual void SetIndexBufferData(ptrdiff_t offset, u32 size, void *data) = 0;
-			virtual void* MapIndexBufferData(u32 size) = 0;
-			virtual void UnmapIndexBufferData(void) = 0;
-			virtual void ChangeIndexBuffer(IndexBuffer* ib) = 0;
 			virtual void DeleteIndexBuffer(IndexBuffer* ib) = 0;
 
 			// Shader functions
@@ -217,8 +209,6 @@ namespace sht {
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
 			virtual void ApiDeleteShader(Shader* shd) = 0;
 			virtual void ApiDeleteFont(Font* font) = 0;
-			virtual void ApiDeleteVertexBuffer(VertexBuffer* vb) = 0;
-			virtual void ApiDeleteIndexBuffer(IndexBuffer* ib) = 0;
             
             Context * context_;
 
@@ -243,10 +233,10 @@ namespace sht {
 			Texture* current_textures_[kMaxImageUnit];
 			Shader* current_shader_;
 			Font* current_font_;
-			VertexFormat* current_vertex_format_;
-			VertexFormat* active_vertex_format_;
-			VertexBuffer* current_vertex_buffer_;
-			IndexBuffer* current_index_buffer_;
+			VertexFormat* current_vertex_format_;   //!< obsolete
+			VertexFormat* active_vertex_format_;    //!< obsolete
+			VertexBuffer* current_vertex_buffer_;   //!< obsolete
+			IndexBuffer* current_index_buffer_;     //!< obsolete
 			Texture* current_color_rt_[kMaxMrt];
 			Texture* current_depth_rt_;
 		};

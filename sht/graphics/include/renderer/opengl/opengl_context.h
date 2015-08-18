@@ -42,7 +42,7 @@ namespace sht {
             void GenVertexBuffer(u32& obj);
             void DeleteVertexBuffer(u32& obj);
             void BindVertexBuffer(u32 obj);
-            void VertexBufferData(u32 size, const void *data, u32 usage);
+            void VertexBufferData(u32 size, const void *data, BufferUsage usage);
             void* MapVertexBufferData(DataAccessType access);
             void UnmapVertexBufferData();
             
@@ -50,7 +50,7 @@ namespace sht {
             void GenIndexBuffer(u32& obj);
             void DeleteIndexBuffer(u32& obj);
             void BindIndexBuffer(u32 obj);
-            void VertexIndexData(u32 size, const void *data, u32 usage);
+            void IndexBufferData(u32 size, const void *data, BufferUsage usage);
             void* MapIndexBufferData(DataAccessType access);
             void UnmapIndexBufferData();
             

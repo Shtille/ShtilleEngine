@@ -6,6 +6,8 @@
 #define _countof(x) (sizeof(x)/sizeof(x[0]))
 #endif
 
+#include <stddef.h>
+
 // signed types
 typedef signed char s8;
 typedef signed short s16;

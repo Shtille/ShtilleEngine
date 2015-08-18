@@ -127,7 +127,6 @@ namespace sht {
 			// Clean up vertex buffers
 			for (auto &obj : vertex_buffers_)
 			{
-				ApiDeleteVertexBuffer(obj);
 				delete obj;
 			}
 			vertex_buffers_.clear();
@@ -135,7 +134,6 @@ namespace sht {
 			// Clean up index buffers
 			for (auto &obj : index_buffers_)
 			{
-				ApiDeleteIndexBuffer(obj);
 				delete obj;
 			}
 			index_buffers_.clear();

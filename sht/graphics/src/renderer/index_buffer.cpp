@@ -6,13 +6,27 @@ namespace sht {
         IndexBuffer::IndexBuffer(Context * context)
         : VideoMemoryBuffer(context)
         {
+            context_->GenIndexBuffer(id_);
         }
         IndexBuffer::~IndexBuffer()
         {
+            context_->DeleteIndexBuffer(id_);
         }
         u32 IndexBuffer::GetSize()
         {
             return index_count_ * index_size_;
+        }
+        void IndexBuffer::Bind()
+        {
+            context_->BindIndexBuffer(id_);
+        }
+        void IndexBuffer::Unbind()
+        {
+            context_->BindIndexBuffer(0);
+        }
+        void IndexBuffer::SetData(u32 size, void *data, BufferUsage usage)
+        {
+            context_->IndexBufferData(size, data, usage);
         }
         void* IndexBuffer::Lock(DataAccessType access)
         {

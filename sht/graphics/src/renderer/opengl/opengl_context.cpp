@@ -29,6 +29,17 @@ namespace sht {
             data_access_map_[DataAccessType::kWrite] = GL_WRITE_ONLY;
             data_access_map_[DataAccessType::kReadWrite] = GL_READ_WRITE;
             assert(data_access_map_.size() == (size_t)DataAccessType::kCount);
+            
+            buffer_usage_map_[BufferUsage::kStaticDraw] = GL_STATIC_DRAW;
+            buffer_usage_map_[BufferUsage::kStaticRead] = GL_STATIC_READ;
+            buffer_usage_map_[BufferUsage::kStaticCopy] = GL_STATIC_COPY;
+            buffer_usage_map_[BufferUsage::kDynamicDraw] = GL_DYNAMIC_DRAW;
+            buffer_usage_map_[BufferUsage::kDynamicRead] = GL_DYNAMIC_READ;
+            buffer_usage_map_[BufferUsage::kDynamicCopy] = GL_DYNAMIC_COPY;
+            buffer_usage_map_[BufferUsage::kStreamDraw] = GL_STREAM_DRAW;
+            buffer_usage_map_[BufferUsage::kStreamRead] = GL_STREAM_READ;
+            buffer_usage_map_[BufferUsage::kStreamCopy] = GL_STREAM_COPY;
+            assert(buffer_usage_map_.size() == (size_t)BufferUsage::kCount);
         }
         void OpenGlContext::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {
@@ -117,9 +128,10 @@ namespace sht {
         {
             glBindBuffer(GL_ARRAY_BUFFER, obj);
         }
-        void OpenGlContext::VertexBufferData(u32 size, const void *data, u32 usage)
+        void OpenGlContext::VertexBufferData(u32 size, const void *data, BufferUsage usage)
         {
-            glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+            u32 usage_type = buffer_usage_map_[usage];
+            glBufferData(GL_ARRAY_BUFFER, size, data, usage_type);
         }
         void* OpenGlContext::MapVertexBufferData(DataAccessType access)
         {
@@ -142,9 +154,10 @@ namespace sht {
         {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj);
         }
-        void OpenGlContext::VertexIndexData(u32 size, const void *data, u32 usage)
+        void OpenGlContext::IndexBufferData(u32 size, const void *data, BufferUsage usage)
         {
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage);
+            u32 usage_type = buffer_usage_map_[usage];
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage_type);
         }
         void* OpenGlContext::MapIndexBufferData(DataAccessType access)
         {

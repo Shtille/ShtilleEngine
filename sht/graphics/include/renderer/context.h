@@ -30,6 +30,19 @@ namespace sht {
             kCount
         };
         
+        enum class BufferUsage {
+            kStaticDraw,
+            kStaticRead,
+            kStaticCopy,
+            kStreamDraw,
+            kStreamRead,
+            kStreamCopy,
+            kDynamicDraw,
+            kDynamicRead,
+            kDynamicCopy,
+            kCount
+        };
+        
         class Context {
         public:
             Context();
@@ -65,7 +78,7 @@ namespace sht {
             virtual void GenVertexBuffer(u32& obj) = 0;
             virtual void DeleteVertexBuffer(u32& obj) = 0;
             virtual void BindVertexBuffer(u32 obj) = 0;
-            virtual void VertexBufferData(u32 size, const void *data, u32 usage) = 0;
+            virtual void VertexBufferData(u32 size, const void *data, BufferUsage usage) = 0;
             virtual void* MapVertexBufferData(DataAccessType access) = 0;
             virtual void UnmapVertexBufferData() = 0;
             
@@ -73,7 +86,7 @@ namespace sht {
             virtual void GenIndexBuffer(u32& obj) = 0;
             virtual void DeleteIndexBuffer(u32& obj) = 0;
             virtual void BindIndexBuffer(u32 obj) = 0;
-            virtual void VertexIndexData(u32 size, const void *data, u32 usage) = 0;
+            virtual void IndexBufferData(u32 size, const void *data, BufferUsage usage) = 0;
             virtual void* MapIndexBufferData(DataAccessType access) = 0;
             virtual void UnmapIndexBufferData() = 0;
             
@@ -87,6 +100,7 @@ namespace sht {
             EnumTable<PrimitiveType, u32> primitive_type_map_;  //!< primitive type map
             EnumTable<DataType, u32> data_type_map_;            //!< data type map
             EnumTable<DataAccessType, u32> data_access_map_;    //!< data access map
+            EnumTable<BufferUsage, u32> buffer_usage_map_;      //!< buffer usage map
         };
         
     }
