@@ -24,6 +24,11 @@ namespace sht {
             data_type_map_[DataType::kUnsignedInt] = GL_UNSIGNED_INT;
             data_type_map_[DataType::kFloat] = GL_FLOAT;
             assert(data_type_map_.size() == (size_t)DataType::kCount);
+            
+            data_access_map_[DataAccessType::kRead] = GL_READ_ONLY;
+            data_access_map_[DataAccessType::kWrite] = GL_WRITE_ONLY;
+            data_access_map_[DataAccessType::kReadWrite] = GL_READ_WRITE;
+            assert(data_access_map_.size() == (size_t)DataAccessType::kCount);
         }
         void OpenGlContext::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {
@@ -116,10 +121,40 @@ namespace sht {
         {
             glBufferData(GL_ARRAY_BUFFER, size, data, usage);
         }
-//        void* OpenGlContext::MapVertexBufferData(u32 size)
-//        {
-//            glBufferData(GL_ARRAY_BUFFER, size, data, usage);
-//        }
+        void* OpenGlContext::MapVertexBufferData(DataAccessType access)
+        {
+            u32 access_type = data_access_map_[access];
+            return glMapBuffer(GL_ARRAY_BUFFER, access_type);
+        }
+        void OpenGlContext::UnmapVertexBufferData()
+        {
+            glUnmapBuffer(GL_ARRAY_BUFFER);
+        }
+        void OpenGlContext::GenIndexBuffer(u32& obj)
+        {
+            glGenBuffers(1, &obj);
+        }
+        void OpenGlContext::DeleteIndexBuffer(u32& obj)
+        {
+            glDeleteBuffers(1, &obj);
+        }
+        void OpenGlContext::BindIndexBuffer(u32 obj)
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj);
+        }
+        void OpenGlContext::VertexIndexData(u32 size, const void *data, u32 usage)
+        {
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage);
+        }
+        void* OpenGlContext::MapIndexBufferData(DataAccessType access)
+        {
+            u32 access_type = data_access_map_[access];
+            return glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, access_type);
+        }
+        void OpenGlContext::UnmapIndexBufferData()
+        {
+            glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+        }
         void OpenGlContext::VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr)
         {
             u32 data_type = data_type_map_[type];

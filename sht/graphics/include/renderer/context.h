@@ -23,6 +23,13 @@ namespace sht {
             kCount
         };
         
+        enum class DataAccessType {
+            kRead,
+            kWrite,
+            kReadWrite,
+            kCount
+        };
+        
         class Context {
         public:
             Context();
@@ -59,7 +66,18 @@ namespace sht {
             virtual void DeleteVertexBuffer(u32& obj) = 0;
             virtual void BindVertexBuffer(u32 obj) = 0;
             virtual void VertexBufferData(u32 size, const void *data, u32 usage) = 0;
+            virtual void* MapVertexBufferData(DataAccessType access) = 0;
+            virtual void UnmapVertexBufferData() = 0;
             
+            // Index buffer object
+            virtual void GenIndexBuffer(u32& obj) = 0;
+            virtual void DeleteIndexBuffer(u32& obj) = 0;
+            virtual void BindIndexBuffer(u32 obj) = 0;
+            virtual void VertexIndexData(u32 size, const void *data, u32 usage) = 0;
+            virtual void* MapIndexBufferData(DataAccessType access) = 0;
+            virtual void UnmapIndexBufferData() = 0;
+            
+            // Vertex attribs
             virtual void VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr) = 0;
             virtual void EnableVertexAttribArray(u32 index) = 0;
             
@@ -67,7 +85,8 @@ namespace sht {
             virtual void FillTables() = 0;
             
             EnumTable<PrimitiveType, u32> primitive_type_map_;  //!< primitive type map
-            EnumTable<DataType, u32> data_type_map_;            //!< primitive type map
+            EnumTable<DataType, u32> data_type_map_;            //!< data type map
+            EnumTable<DataAccessType, u32> data_access_map_;    //!< data access map
         };
         
     }

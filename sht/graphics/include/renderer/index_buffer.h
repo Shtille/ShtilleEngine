@@ -12,7 +12,7 @@ namespace sht {
             friend class OpenGlRenderer;
             
         protected:
-            IndexBuffer();
+            IndexBuffer(Context * context);
             ~IndexBuffer();
             IndexBuffer(const IndexBuffer&) = delete;
             void operator = (const IndexBuffer&) = delete;

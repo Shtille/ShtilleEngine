@@ -43,7 +43,18 @@ namespace sht {
             void DeleteVertexBuffer(u32& obj);
             void BindVertexBuffer(u32 obj);
             void VertexBufferData(u32 size, const void *data, u32 usage);
+            void* MapVertexBufferData(DataAccessType access);
+            void UnmapVertexBufferData();
             
+            // Index buffer object
+            void GenIndexBuffer(u32& obj);
+            void DeleteIndexBuffer(u32& obj);
+            void BindIndexBuffer(u32 obj);
+            void VertexIndexData(u32 size, const void *data, u32 usage);
+            void* MapIndexBufferData(DataAccessType access);
+            void UnmapIndexBufferData();
+            
+            // Vertex attribs
             void VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr);
             void EnableVertexAttribArray(u32 index);
             

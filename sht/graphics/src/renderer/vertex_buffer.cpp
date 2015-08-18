@@ -3,7 +3,8 @@
 namespace sht {
     namespace graphics {
         
-        VertexBuffer::VertexBuffer()
+        VertexBuffer::VertexBuffer(Context * context)
+        : VideoMemoryBuffer(context)
         {
         }
         VertexBuffer::~VertexBuffer()
@@ -12,6 +13,14 @@ namespace sht {
         u32 VertexBuffer::GetSize()
         {
             return size_;
+        }
+        void* VertexBuffer::Lock(DataAccessType access)
+        {
+            return context_->MapVertexBufferData(access);
+        }
+        void VertexBuffer::Unlock()
+        {
+            
         }
         
     } // namespace graphics

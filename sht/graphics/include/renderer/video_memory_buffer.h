@@ -3,6 +3,7 @@
 #define __SHT_GRAPHICS_VIDEO_MEMORY_BUFFER_H__
 
 #include "../../../common/types.h"
+#include "context.h"
 
 namespace sht {
     namespace graphics {
@@ -22,8 +23,14 @@ namespace sht {
         
         class VideoMemoryBuffer {
         public:
-            VideoMemoryBuffer();
+            VideoMemoryBuffer(Context * context);
             virtual ~VideoMemoryBuffer();
+            
+            virtual void* Lock(DataAccessType access) = 0;
+            virtual void  Unlock() = 0;
+            
+        protected:
+            Context * context_;
         };
         
     } // namespace graphics

@@ -3,7 +3,8 @@
 namespace sht {
     namespace graphics {
         
-        IndexBuffer::IndexBuffer()
+        IndexBuffer::IndexBuffer(Context * context)
+        : VideoMemoryBuffer(context)
         {
         }
         IndexBuffer::~IndexBuffer()

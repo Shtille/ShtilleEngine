@@ -3,7 +3,8 @@
 namespace sht {
     namespace graphics {
         
-        VideoMemoryBuffer::VideoMemoryBuffer()
+        VideoMemoryBuffer::VideoMemoryBuffer(Context * context)
+        : context_(context)
         {
             
         }

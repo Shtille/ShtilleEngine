@@ -12,12 +12,15 @@ namespace sht {
             friend class OpenGlRenderer;
             
         protected:
-            VertexBuffer();
+            VertexBuffer(Context * context);
             ~VertexBuffer();
             VertexBuffer(const VertexBuffer&) = delete;
             void operator = (const VertexBuffer&) = delete;
             
             u32 GetSize();
+            
+            void* Lock(DataAccessType access);
+            void Unlock();
             
         private:
             u32 id_;
