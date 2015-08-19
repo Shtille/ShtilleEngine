@@ -1,5 +1,5 @@
 #include "../include/mouse.h"
-#include <memory.h>
+#include <assert.h>
 
 namespace sht {
     
@@ -7,13 +7,14 @@ namespace sht {
     : x_(0), y_(0)
     , enabled_(true)
     {
-        const int count = static_cast<int>(MouseButton::kCount);
-        button_down = new bool[count];
-        memset(button_down, 0, sizeof(bool)*count);
+        button_down_table_[MouseButton::kUnknown] = false;
+        button_down_table_[MouseButton::kLeft] = false;
+        button_down_table_[MouseButton::kMiddle] = false;
+        button_down_table_[MouseButton::kRight] = false;
+        assert(button_down_table_.size() == (size_t)MouseButton::kCount);
     }
     Mouse::~Mouse()
     {
-        delete [] button_down;
     }
     int& Mouse::x()
     {
@@ -26,6 +27,10 @@ namespace sht {
     bool& Mouse::enabled()
     {
         return enabled_;
+    }
+    bool& Mouse::button_down(MouseButton button)
+    {
+        return button_down_table_[button];
     }
     
 }

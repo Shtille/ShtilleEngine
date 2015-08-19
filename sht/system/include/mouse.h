@@ -2,6 +2,8 @@
 #ifndef __SHT_SYSTEM_MOUSE_H__
 #define __SHT_SYSTEM_MOUSE_H__
 
+#include "../../common/table.h"
+
 namespace sht {
     
     enum class MouseButton {
@@ -22,11 +24,12 @@ namespace sht {
         int& x();
         int& y();
         bool& enabled();
+        bool& button_down(MouseButton button);
         
     private:
         int x_, y_;
         bool enabled_;
-        bool *button_down;
+        EnumTable<MouseButton, bool> button_down_table_;
     };
     
 } // namespace sht

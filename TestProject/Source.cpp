@@ -134,6 +134,13 @@ public:
             view_theta -= 0.1f;
         }
     }
+    void OnMouseMove() final
+    {
+        if (mouse().button_down(sht::MouseButton::kLeft))
+        {
+            
+        }
+    }
     
 private:
     sht::graphics::CubeModel * cube_;

@@ -439,12 +439,14 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 - (void) mouseDown:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
+    app->mouse().button_down(sht::MouseButton::kLeft) = true;
     app->OnMouseDown(sht::MouseButton::kLeft, TranslateModifiers([theEvent modifierFlags]));
 }
 
 - (void) mouseUp:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
+    app->mouse().button_down(sht::MouseButton::kLeft) = false;
     app->OnMouseUp(sht::MouseButton::kLeft, TranslateModifiers([theEvent modifierFlags]));
 }
 
@@ -463,12 +465,14 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 - (void) rightMouseDown:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
+    app->mouse().button_down(sht::MouseButton::kRight) = true;
     app->OnMouseDown(sht::MouseButton::kRight, TranslateModifiers([theEvent modifierFlags]));
 }
 
 - (void) rightMouseUp:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
+    app->mouse().button_down(sht::MouseButton::kRight) = false;
     app->OnMouseUp(sht::MouseButton::kRight, TranslateModifiers([theEvent modifierFlags]));
 }
 
@@ -480,13 +484,17 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 - (void) otherMouseDown:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
-    app->OnMouseDown(TranslateMouseButton((int)[theEvent buttonNumber]), TranslateModifiers([theEvent modifierFlags]));
+    sht::MouseButton button = TranslateMouseButton((int)[theEvent buttonNumber]);
+    app->mouse().button_down(button) = true;
+    app->OnMouseDown(button, TranslateModifiers([theEvent modifierFlags]));
 }
 
 - (void) otherMouseUp:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
-    app->OnMouseUp(TranslateMouseButton((int)[theEvent buttonNumber]), TranslateModifiers([theEvent modifierFlags]));
+    sht::MouseButton button = TranslateMouseButton((int)[theEvent buttonNumber]);
+    app->mouse().button_down(button) = false;
+    app->OnMouseUp(button, TranslateModifiers([theEvent modifierFlags]));
 }
 
 - (void) otherMouseDragged:(NSEvent *)theEvent
