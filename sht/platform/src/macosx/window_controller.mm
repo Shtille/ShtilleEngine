@@ -221,23 +221,28 @@ void PlatformWindowResizeImpl(void *instance, int width, int height)
 }
 void PlatformWindowSetTitleImpl(void *instance, const char *title)
 {
-    [(id) instance setTitle:[NSString stringWithUTF8String:title]];
+    const NSWindow * window = [(id) instance window];
+    [window setTitle:[NSString stringWithUTF8String:title]];
 }
 void PlatformWindowIconifyImpl(void *instance)
 {
-    [(id) instance miniaturize:nil];
+    const NSWindow * window = [(id) instance window];
+    [window miniaturize:nil];
 }
 void PlatformWindowRestoreImpl(void *instance)
 {
-    [(id) instance deminiaturize:nil];
+    const NSWindow * window = [(id) instance window];
+    [window deminiaturize:nil];
 }
 void PlatformWindowShowImpl(void *instance)
 {
-    [(id) instance makeKeyAndOrderFront:nil];
+    const NSWindow * window = [(id) instance window];
+    [window makeKeyAndOrderFront:nil];
 }
 void PlatformWindowHideImpl(void *instance)
 {
-    [(id) instance orderOut:nil];
+    const NSWindow * window = [(id) instance window];
+    [window orderOut:nil];
 }
 void PlatformWindowTerminateImpl(void *instance)
 {
@@ -256,27 +261,34 @@ void PlatformSwapBuffersImpl(void *instance)
 {
     // We don't need to swap buffers on Mac
 }
-void PlatformSetCursorPosImpl(void *instance, int x, int y)
+void PlatformSetCursorPosImpl(void *instance, float x, float y)
 {
-    // contentRect is needed when use different coord system
-    //const NSRect contentRect = [(id) instance contentRectForFrameRect:[(id) instance frame]];
-    const NSPoint localPoint = NSMakePoint(x, y);
-    const NSPoint globalPoint = [(id) instance convertBaseToScreen:localPoint];
-    CGWarpMouseCursorPosition(globalPoint);
+    const NSWindow * window = [(id) instance window];
+    const NSRect frameRect = [window frame];
+    NSRect contentRect = [window contentRectForFrameRect:frameRect];
+    contentRect.origin.x = x;
+    contentRect.origin.y = contentRect.size.height - y - 1;
+    const NSRect globalRect = [window convertRectToScreen:contentRect];
+    const float displayHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
+    CGWarpMouseCursorPosition(CGPointMake(globalRect.origin.x, displayHeight - globalRect.origin.y));
 }
-void PlatformGetCursorPosImpl(void *instance, int& x, int& y)
+void PlatformGetCursorPosImpl(void *instance, float& x, float& y)
 {
-    const NSPoint pos = [(id) instance mouseLocationOutsideOfEventStream];
+    const NSWindow * window = [(id) instance window];
+    const NSPoint pos = [window mouseLocationOutsideOfEventStream];
     x = pos.x;
     y = pos.y;
 }
 void PlatformMouseToCenterImpl(void *instance)
 {
-    const NSRect contentRect = [(id) instance contentRectForFrameRect:[(id) instance frame]];
-    const NSPoint localPoint = NSMakePoint(contentRect.origin.x + contentRect.size.width/2,
-                                           contentRect.origin.y + contentRect.size.height/2);
-    const NSPoint globalPoint = [(id) instance convertBaseToScreen:localPoint];
-    CGWarpMouseCursorPosition(globalPoint);
+    const NSWindow * window = [(id) instance window];
+    const NSRect frameRect = [window frame];
+    NSRect contentRect = [window contentRectForFrameRect:frameRect];
+    contentRect.origin.x = contentRect.size.width/2;
+    contentRect.origin.y = contentRect.size.height/2 - 1;
+    const NSRect globalRect = [window convertRectToScreen:contentRect];
+    const float displayHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
+    CGWarpMouseCursorPosition(CGPointMake(globalRect.origin.x, displayHeight - globalRect.origin.y));
 }
 void PlatformSetClipboardTextImpl(void *instance, const char *text)
 {

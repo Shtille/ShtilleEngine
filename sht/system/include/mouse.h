@@ -21,14 +21,21 @@ namespace sht {
         Mouse();
         ~Mouse();
         
-        int& x();
-        int& y();
+        float& x();
+        float& y();
+        float& delta_x();
+        float& delta_y();
         bool& enabled();
+        bool& center();
         bool& button_down(MouseButton button);
         
     private:
-        int x_, y_;
+        float x_;
+        float y_;
+        float delta_x_;
+        float delta_y_;
         bool enabled_;
+        bool center_;
         EnumTable<MouseButton, bool> button_down_table_;
     };
     

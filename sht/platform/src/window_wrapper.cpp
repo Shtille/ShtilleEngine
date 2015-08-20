@@ -52,11 +52,11 @@ void PlatformSwapBuffers()
 {
 	PlatformSwapBuffersImpl(g_window_controller);
 }
-void PlatformSetCursorPos(int x, int y)
+void PlatformSetCursorPos(float x, float y)
 {
     PlatformSetCursorPosImpl(g_window_controller, x, y);
 }
-void PlatformGetCursorPos(int& x, int& y)
+void PlatformGetCursorPos(float& x, float& y)
 {
     PlatformGetCursorPosImpl(g_window_controller, x, y);
 }

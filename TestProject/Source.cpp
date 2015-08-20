@@ -48,6 +48,8 @@ public:
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
+        mouse_.center() = true;
+        
         return true;
     }
     void Unload() final
@@ -136,10 +138,12 @@ public:
     }
     void OnMouseMove() final
     {
-        if (mouse().button_down(sht::MouseButton::kLeft))
+        if (mouse_.button_down(sht::MouseButton::kLeft))
         {
-            
+            view_alpha += mouse_.delta_x()/width_;
+            view_theta += mouse_.delta_y()/height_;
         }
+        MouseToCenter();
     }
     
 private:

@@ -179,15 +179,15 @@ namespace sht {
 			fps_counter_time_ = 0.0f;
 		}
 	}
-	void Application::GetMousePos(int& x, int& y)
+	void Application::GetMousePos(float& x, float& y)
 	{
         PlatformGetCursorPos(x, y);
 	}
-	void Application::SetMousePos(int x, int y)
+	void Application::SetMousePos(float x, float y)
 	{
         PlatformSetCursorPos(x, y);
 	}
-	void Application::MouseToCenter(int &px, int &py)
+	void Application::MouseToCenter()
 	{
         PlatformMouseToCenter();
 	}

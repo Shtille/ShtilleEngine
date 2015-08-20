@@ -21,8 +21,8 @@ void PlatformDeinitOpenGLContextImpl(void *instance);
 void PlatformSwapBuffersImpl(void *instance);
 
 // Cursor functions
-void PlatformSetCursorPosImpl(void *instance, int x, int y);
-void PlatformGetCursorPosImpl(void *instance, int& x, int& y);
+void PlatformSetCursorPosImpl(void *instance, float x, float y);
+void PlatformGetCursorPosImpl(void *instance, float& x, float& y);
 void PlatformMouseToCenterImpl(void *instance);
 
 // Clipboard functions
