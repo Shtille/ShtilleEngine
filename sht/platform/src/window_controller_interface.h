@@ -24,6 +24,8 @@ void PlatformSwapBuffersImpl(void *instance);
 void PlatformSetCursorPosImpl(void *instance, float x, float y);
 void PlatformGetCursorPosImpl(void *instance, float& x, float& y);
 void PlatformMouseToCenterImpl(void *instance);
+void PlatformShowCursorImpl(void *instance);
+void PlatformHideCursorImpl(void *instance);
 
 // Clipboard functions
 void PlatformSetClipboardTextImpl(void *instance, const char *text);

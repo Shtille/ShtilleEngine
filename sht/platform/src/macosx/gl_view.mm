@@ -453,11 +453,8 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 - (void) mouseMoved:(NSEvent *)theEvent
 {
     sht::Application * app = sht::Application::GetInstance();
-    // We should store new mouse pos and differences
     app->mouse().delta_x() = [theEvent deltaX];
     app->mouse().delta_y() = [theEvent deltaY];
-//    if (app->mouse().center())
-//        app->MouseToCenter();
     NSPoint pos = [theEvent locationInWindow];
     app->mouse().x() = pos.x;
     app->mouse().y() = pos.y;

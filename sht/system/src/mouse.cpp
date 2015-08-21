@@ -5,8 +5,6 @@ namespace sht {
     
     Mouse::Mouse()
     : x_(0), y_(0)
-    , enabled_(true)
-    , center_(false)
     {
         button_down_table_[MouseButton::kUnknown] = false;
         button_down_table_[MouseButton::kLeft] = false;
@@ -32,14 +30,6 @@ namespace sht {
     float& Mouse::delta_y()
     {
         return delta_y_;
-    }
-    bool& Mouse::enabled()
-    {
-        return enabled_;
-    }
-    bool& Mouse::center()
-    {
-        return center_;
     }
     bool& Mouse::button_down(MouseButton button)
     {

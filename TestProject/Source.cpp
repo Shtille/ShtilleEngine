@@ -48,8 +48,6 @@ public:
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
-        mouse_.center() = true;
-        
         return true;
     }
     void Unload() final
@@ -143,7 +141,13 @@ public:
             view_alpha += mouse_.delta_x()/width_;
             view_theta += mouse_.delta_y()/height_;
         }
-        MouseToCenter();
+        CursorToCenter();
+    }
+    void OnSize(int w, int h) final
+    {
+        Application::OnSize(w, h);
+        // To have correct perspective when resizing
+        renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
     }
     
 private:

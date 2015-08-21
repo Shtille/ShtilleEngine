@@ -97,6 +97,9 @@ NSWindow* standardWindow;
     // Make window non-resizable (!!! it's important, without this resize won't work)
     [self.window setStyleMask:[self.window styleMask] & ~NSResizableWindowMask];
     
+    // Let NSWindow object to receive mouseMoved events
+    [self.window setAcceptsMouseMovedEvents:YES];
+    
     sht::Application * app = sht::Application::GetInstance();
     NSRect viewRect;
     viewRect.origin.x = 0;
@@ -264,11 +267,7 @@ void PlatformSwapBuffersImpl(void *instance)
 void PlatformSetCursorPosImpl(void *instance, float x, float y)
 {
     const NSWindow * window = [(id) instance window];
-    const NSRect frameRect = [window frame];
-    NSRect contentRect = [window contentRectForFrameRect:frameRect];
-    contentRect.origin.x = x;
-    contentRect.origin.y = contentRect.size.height - y - 1;
-    const NSRect globalRect = [window convertRectToScreen:contentRect];
+    const NSRect globalRect = [window convertRectToScreen:NSMakeRect(x, y, 0, 0)];
     const float displayHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
     CGWarpMouseCursorPosition(CGPointMake(globalRect.origin.x, displayHeight - globalRect.origin.y));
 }
@@ -285,10 +284,18 @@ void PlatformMouseToCenterImpl(void *instance)
     const NSRect frameRect = [window frame];
     NSRect contentRect = [window contentRectForFrameRect:frameRect];
     contentRect.origin.x = contentRect.size.width/2;
-    contentRect.origin.y = contentRect.size.height/2 - 1;
+    contentRect.origin.y = contentRect.size.height/2;
     const NSRect globalRect = [window convertRectToScreen:contentRect];
     const float displayHeight = CGDisplayBounds(CGMainDisplayID()).size.height;
     CGWarpMouseCursorPosition(CGPointMake(globalRect.origin.x, displayHeight - globalRect.origin.y));
+}
+void PlatformShowCursorImpl(void *instance)
+{
+    [NSCursor unhide];
+}
+void PlatformHideCursorImpl(void *instance)
+{
+    [NSCursor hide];
 }
 void PlatformSetClipboardTextImpl(void *instance, const char *text)
 {

@@ -39,9 +39,11 @@ namespace sht {
         void Hide();
         
         // Cursor operations
-        void GetMousePos(float& x, float& y); // x=[0,w]; y=[0,h]
-        void SetMousePos(float x, float y); // x=[0,a]; y=[0,1]
-        void MouseToCenter();
+        void GetCursorPos(float& x, float& y); // x=[0,w]; y=[0,h]
+        void SetCursorPos(float x, float y); // x=[0,a]; y=[0,1]
+        void CursorToCenter();
+        void ShowCursor();
+        void HideCursor();
         
         // Clipboard operations
         void SetClipboardText(const char *text);

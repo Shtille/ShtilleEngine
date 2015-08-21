@@ -179,18 +179,26 @@ namespace sht {
 			fps_counter_time_ = 0.0f;
 		}
 	}
-	void Application::GetMousePos(float& x, float& y)
+	void Application::GetCursorPos(float& x, float& y)
 	{
         PlatformGetCursorPos(x, y);
 	}
-	void Application::SetMousePos(float x, float y)
+	void Application::SetCursorPos(float x, float y)
 	{
         PlatformSetCursorPos(x, y);
 	}
-	void Application::MouseToCenter()
+	void Application::CursorToCenter()
 	{
         PlatformMouseToCenter();
 	}
+    void Application::ShowCursor()
+    {
+        PlatformShowCursor();
+    }
+    void Application::HideCursor()
+    {
+        PlatformHideCursor();
+    }
     void Application::SetClipboardText(const char *text)
     {
         PlatformSetClipboardText(text);
@@ -263,6 +271,8 @@ namespace sht {
             renderer_->UpdateSizes(width_, height_);
             renderer_->Viewport(width_, height_);
         }
+        // TODO: what to do if framebuffer size changes during executing?
+        ComputeFramebufferSize();
 	}
 	bool Application::visible()
 	{

@@ -16,17 +16,19 @@ namespace sht {
         kCount
     };
     
+    //! Standart mouse class
+    /*
+     Mouse position is in window coordinates with origin in left bottom corner.
+    */
     class Mouse {
     public:
         Mouse();
         ~Mouse();
         
-        float& x();
-        float& y();
+        float& x(); //!< x position of mouse in window coordinates
+        float& y(); //!< y position of mouse in window coordinates
         float& delta_x();
         float& delta_y();
-        bool& enabled();
-        bool& center();
         bool& button_down(MouseButton button);
         
     private:
@@ -34,8 +36,6 @@ namespace sht {
         float y_;
         float delta_x_;
         float delta_y_;
-        bool enabled_;
-        bool center_;
         EnumTable<MouseButton, bool> button_down_table_;
     };
     

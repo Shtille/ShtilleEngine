@@ -24,6 +24,8 @@ void PlatformSwapBuffers();
 void PlatformSetCursorPos(float x, float y);
 void PlatformGetCursorPos(float& x, float& y);
 void PlatformMouseToCenter();
+void PlatformShowCursor();
+void PlatformHideCursor();
 
 // Clipboard functions
 void PlatformSetClipboardText(const char *text);

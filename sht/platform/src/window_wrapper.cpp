@@ -64,6 +64,14 @@ void PlatformMouseToCenter()
 {
     PlatformMouseToCenterImpl(g_window_controller);
 }
+void PlatformShowCursor()
+{
+    PlatformShowCursorImpl(g_window_controller);
+}
+void PlatformHideCursor()
+{
+    PlatformHideCursorImpl(g_window_controller);
+}
 void PlatformSetClipboardText(const char *text)
 {
     PlatformSetClipboardTextImpl(g_window_controller, text);
