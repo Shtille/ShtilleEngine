@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31206.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestProject", "..\..\TestProject\TestProject.vcxproj", "{C6DD7486-7CAB-425A-81C9-36DA368F0774}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestProject", "TestProject\TestProject.vcxproj", "{C6DD7486-7CAB-425A-81C9-36DA368F0774}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C918CCDF-D39D-430D-A760-A4C3F80ACC26} = {C918CCDF-D39D-430D-A760-A4C3F80ACC26}
 	EndProjectSection

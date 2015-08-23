@@ -191,32 +191,46 @@ void PlatformSwapBuffersImpl(void *instance)
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	SwapBuffers(window->dc);
 }
-void PlatformSetCursorPosImpl(void *instance, int x, int y)
+void PlatformSetCursorPosImpl(void *instance, float x, float y)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	RECT winrect;
-	GetWindowRect(window->hwnd, &winrect);
-	SetCursorPos((int)winrect.left + x, (int)winrect.bottom - y);
+	POINT pos;
+	::GetClientRect(window->hwnd, &winrect);
+	pos.x = static_cast<LONG>(x);
+	pos.y = static_cast<LONG>(winrect.bottom - y - 1);
+	::ClientToScreen(window->hwnd, &pos);
+	::SetCursorPos((int)pos.x, (int)pos.y);
 }
-void PlatformGetCursorPosImpl(void *instance, int& x, int& y)
+void PlatformGetCursorPosImpl(void *instance, float& x, float& y)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	RECT winrect;
-	GetWindowRect(window->hwnd, &winrect);
-	POINT p;
-	GetCursorPos(&p);
-	x = p.x - winrect.left; // [0, w]
-	y = winrect.bottom - p.y; // [0, h]
+	POINT pos;
+	::GetCursorPos(&pos);
+	::GetClientRect(window->hwnd, &winrect);
+	::ScreenToClient(window->hwnd, &pos);
+	x = static_cast<float>(pos.x); // [0, w]
+	y = static_cast<float>(winrect.bottom - pos.y - 1); // [0, h]
 }
 void PlatformMouseToCenterImpl(void *instance)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	RECT winrect;
-	POINT p;
-	GetWindowRect(window->hwnd, &winrect);
-	p.x = (winrect.bottom - winrect.top) / 2;
-	p.y = (winrect.right - winrect.left) / 2;
-	SetCursorPos((int)(winrect.left + p.x), (int)(winrect.bottom - p.y));
+	POINT pos;
+	::GetClientRect(window->hwnd, &winrect);
+	pos.x = (winrect.right - winrect.left) / 2;
+	pos.y = (winrect.bottom - winrect.top) / 2;
+	::ClientToScreen(window->hwnd, &pos);
+	::SetCursorPos((int)(pos.x), (int)(pos.y));
+}
+void PlatformShowCursorImpl(void *instance)
+{
+	::ShowCursor(TRUE);
+}
+void PlatformHideCursorImpl(void *instance)
+{
+	::ShowCursor(FALSE);
 }
 void PlatformSetClipboardTextImpl(void *instance, const char *text)
 {
@@ -245,6 +259,6 @@ void PlatformChangeDirectoryToResourcesImpl()
 {
 	char buffer[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, buffer);
-	lstrcat(buffer, TEXT("\\..\\TestProject"));
+	lstrcat(buffer, TEXT("\\.."));
 	SetCurrentDirectory(buffer);
 }

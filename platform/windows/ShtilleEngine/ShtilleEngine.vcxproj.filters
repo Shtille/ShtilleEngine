@@ -51,10 +51,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\sht\common\counting_pointer.h">
+      <Filter>common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\sht\common\platform.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sht\common\singleton.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\common\table.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sht\common\types.h">
@@ -114,7 +120,22 @@
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\renderer.h">
       <Filter>graphics\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\context.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\index_buffer.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\vertex_buffer.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\video_memory_buffer.h">
+      <Filter>graphics\renderer</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_renderer.h">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\renderer\opengl\opengl_context.h">
       <Filter>graphics\renderer\opengl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\sht\graphics\include\renderer\vertex_format.h">
@@ -152,6 +173,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\sht\graphics\include\model\cube_model.h">
       <Filter>graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\model\tetrahedron_model.h">
+      <Filter>graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\graphics\include\model\vertex.h">
+      <Filter>graphics\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\sht\platform\src\window_controller_interface.h">
+      <Filter>platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -191,7 +221,19 @@
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\renderer.cpp">
       <Filter>graphics\renderer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\context.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\index_buffer.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\vertex_buffer.cpp">
+      <Filter>graphics\renderer</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_renderer.cpp">
+      <Filter>graphics\renderer\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\opengl\opengl_context.cpp">
       <Filter>graphics\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\sht\graphics\src\renderer\vertex_format.cpp">
@@ -254,6 +296,10 @@
     <ClCompile Include="..\..\..\sht\graphics\src\model\cube_model.cpp">
       <Filter>graphics\model</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\model\tetrahedron_model.cpp">
+      <Filter>graphics\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sht\graphics\src\renderer\video_memory_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ShtilleEngine.props" />
