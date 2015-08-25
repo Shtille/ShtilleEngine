@@ -13,6 +13,21 @@ void * g_window_controller = nullptr;
 
 static bool g_can_handle_mouse_move_event = true; // Hack to do not let mouse move event to overflow messages queue
 
+// Translates Windows key modifiers to engine ones
+static int TranslateModifiers(void)
+{
+    int modifier = 0;
+    if (GetKeyState(VK_SHIFT) & (1 << 31))
+        modifier |= sht::ModifierKey::kShift;
+    if (GetKeyState(VK_CONTROL) & (1 << 31))
+        modifier |= sht::ModifierKey::kControl;
+    if (GetKeyState(VK_MENU) & (1 << 31))
+        modifier |= sht::ModifierKey::kAlt;
+    if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & (1 << 31))
+        modifier |= sht::ModifierKey::kSuper;
+    return modifier;
+}
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static POINT mouse_position;
@@ -87,29 +102,29 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_LBUTTONDOWN:
 		app->mouse().button_down(sht::MouseButton::kLeft) = true;
-		app->OnMouseDown(sht::MouseButton::kLeft, 0);
+		app->OnMouseDown(sht::MouseButton::kLeft, TranslateModifiers());
 		return 0;
 	case WM_LBUTTONUP:
 		app->mouse().button_down(sht::MouseButton::kLeft) = false;
-		app->OnMouseUp(sht::MouseButton::kLeft, 0);
+		app->OnMouseUp(sht::MouseButton::kLeft, TranslateModifiers());
 		return 0;
 
 	case WM_MBUTTONDOWN:
 		app->mouse().button_down(sht::MouseButton::kMiddle) = true;
-		app->OnMouseDown(sht::MouseButton::kMiddle, 0);
+		app->OnMouseDown(sht::MouseButton::kMiddle, TranslateModifiers());
 		return 0;
 	case WM_MBUTTONUP:
 		app->mouse().button_down(sht::MouseButton::kMiddle) = false;
-		app->OnMouseUp(sht::MouseButton::kMiddle, 0);
+		app->OnMouseUp(sht::MouseButton::kMiddle, TranslateModifiers());
 		return 0;
 
 	case WM_RBUTTONDOWN:
 		app->mouse().button_down(sht::MouseButton::kRight) = true;
-		app->OnMouseDown(sht::MouseButton::kRight, 0);
+		app->OnMouseDown(sht::MouseButton::kRight, TranslateModifiers());
 		return 0;
 	case WM_RBUTTONUP:
 		app->mouse().button_down(sht::MouseButton::kRight) = false;
-		app->OnMouseUp(sht::MouseButton::kRight, 0);
+		app->OnMouseUp(sht::MouseButton::kRight, TranslateModifiers());
 		return 0;
 
 	case WM_MOUSEMOVE:
