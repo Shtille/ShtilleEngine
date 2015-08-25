@@ -2,6 +2,7 @@
 #include "../window_struct.h"
 #include "../../../common/platform.h"
 #include "../../../application/application.h"
+#include <stdio.h>	// for error logging
 // OpenGL specific
 #include "../../../thirdparty/glew/include/GL/glew.h"
 #include "../../../thirdparty/glew/include/GL/wglew.h" // Windows only
@@ -90,13 +91,13 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 		PFD_SUPPORT_OPENGL |			// Format Must Support OpenGL
 		PFD_DOUBLEBUFFER,				// Must Support Double Buffering
 		PFD_TYPE_RGBA,					// Request An RGBA Format
-		color_bits,						// Select Our Color Depth
+		(BYTE)color_bits,				// Select Our Color Depth
 		0, 0, 0, 0, 0, 0,				// Color Bits Ignored
 		0,								// No Alpha Buffer
 		0,								// Shift Bit Ignored
 		0,								// No Accumulation Buffer
 		0, 0, 0, 0,						// Accumulation Bits Ignored
-		depth_bits,						// Z-Buffer (Depth Buffer)  
+		(BYTE)depth_bits,				// Z-Buffer (Depth Buffer)
 		0,								// No Stencil Buffer
 		0,								// No Auxiliary Buffer
 		PFD_MAIN_PLANE,					// Main Drawing Layer

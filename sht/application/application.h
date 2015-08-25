@@ -88,6 +88,7 @@ namespace sht {
         virtual void OnKeyUp(sht::PublicKey key, int modifiers);
         virtual void OnMouseDown(sht::MouseButton button, int modifiers);
 		virtual void OnMouseUp(sht::MouseButton button, int modifiers);
+		// Note: aware of using SetCursorPos and CursorToCenter in this event, it may cause event cycling.
 		virtual void OnMouseMove(void);
 		virtual void OnScroll(float delta_x, float delta_y);
 		virtual void OnSize(int w, int h);

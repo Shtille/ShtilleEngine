@@ -3,11 +3,21 @@
 #include "../../../common/platform.h"
 #include "../../../application/application.h"
 #include "../../../system/include/update_timer.h"
+#include <Windowsx.h> // for GET_X_LPARAM
+
+#ifndef WM_MOUSEHWHEEL
+# define WM_MOUSEHWHEEL 0x020E
+#endif
 
 void * g_window_controller = nullptr;
 
+static bool g_can_handle_mouse_move_event = true; // Hack to do not let mouse move event to overflow messages queue
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static POINT mouse_position;
+	static POINT old_mouse_position;
+	
 	sht::Application * app = sht::Application::GetInstance();
 	switch (uMsg)
 	{
@@ -24,6 +34,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CREATE:	// Window Creation
+		// Initialize mouse position
+		::GetCursorPos(&old_mouse_position);
+		::ScreenToClient(hWnd, &old_mouse_position);
 		return 0;
 
 	case WM_CLOSE:	// Closing The Window
@@ -73,33 +86,57 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
+		app->mouse().button_down(sht::MouseButton::kLeft) = true;
 		app->OnMouseDown(sht::MouseButton::kLeft, 0);
-		break;
+		return 0;
 	case WM_LBUTTONUP:
+		app->mouse().button_down(sht::MouseButton::kLeft) = false;
 		app->OnMouseUp(sht::MouseButton::kLeft, 0);
-		break;
+		return 0;
 
 	case WM_MBUTTONDOWN:
+		app->mouse().button_down(sht::MouseButton::kMiddle) = true;
 		app->OnMouseDown(sht::MouseButton::kMiddle, 0);
-		break;
+		return 0;
 	case WM_MBUTTONUP:
+		app->mouse().button_down(sht::MouseButton::kMiddle) = false;
 		app->OnMouseUp(sht::MouseButton::kMiddle, 0);
-		break;
+		return 0;
 
 	case WM_RBUTTONDOWN:
+		app->mouse().button_down(sht::MouseButton::kRight) = true;
 		app->OnMouseDown(sht::MouseButton::kRight, 0);
-		break;
+		return 0;
 	case WM_RBUTTONUP:
+		app->mouse().button_down(sht::MouseButton::kRight) = false;
 		app->OnMouseUp(sht::MouseButton::kRight, 0);
-		break;
+		return 0;
 
 	case WM_MOUSEMOVE:
-		app->OnMouseMove();
-		break;
+		mouse_position.x = GET_X_LPARAM(lParam);
+		mouse_position.y = GET_Y_LPARAM(lParam);
+		if (g_can_handle_mouse_move_event)
+		{
+			g_can_handle_mouse_move_event = false;
+			
+			app->mouse().delta_x() = static_cast<float>(mouse_position.x - old_mouse_position.x);
+			app->mouse().delta_y() = static_cast<float>(mouse_position.y - old_mouse_position.y);
+			
+			RECT client_rect;
+			::GetClientRect(hWnd, &client_rect);
+			app->mouse().x() = static_cast<float>(mouse_position.x);
+			app->mouse().y() = static_cast<float>(client_rect.bottom - mouse_position.y - 1);
+			app->OnMouseMove();
+		}
+		old_mouse_position = mouse_position;
+		return 0;
 
 	case WM_MOUSEWHEEL:
-		app->OnScroll(0.0f, (float)GET_WHEEL_DELTA_WPARAM(wParam));
-		break;
+		app->OnScroll(0.0f, (float)HIWORD(wParam) / (float)WHEEL_DELTA);
+		return 0;		
+	case WM_MOUSEHWHEEL:
+		app->OnScroll(-((float)HIWORD(wParam) / (float)WHEEL_DELTA), 0.0f);
+		return 0;
 	}
 
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);	// Pass Unhandled Messages
@@ -231,6 +268,7 @@ int MainWrapper(int argc, const char** argv)
 					}
 				}
 				if (bQuit) break;
+				g_can_handle_mouse_move_event = true;
 
 				app->Update();
 
