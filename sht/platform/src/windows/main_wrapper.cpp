@@ -28,6 +28,49 @@ static int TranslateModifiers(void)
     return modifier;
 }
 
+static sht::PublicKey TranslateKey(WPARAM wParam, LPARAM lParam)
+{
+	if (wParam == VK_CONTROL)
+    {
+        // The CTRL keys require special handling
+
+        MSG next;
+        DWORD time;
+
+        // Is this an extended key (i.e. right key)?
+        if (lParam & 0x01000000)
+            return sht::PublicKey::kRightControl;
+
+        // Here is a trick: "Alt Gr" sends LCTRL, then RALT. We only
+        // want the RALT message, so we try to see if the next message
+        // is a RALT message. In that case, this is a false LCTRL!
+        time = GetMessageTime();
+
+        if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
+        {
+            if (next.message == WM_KEYDOWN ||
+                next.message == WM_SYSKEYDOWN ||
+                next.message == WM_KEYUP ||
+                next.message == WM_SYSKEYUP)
+            {
+                if (next.wParam == VK_MENU &&
+                    (next.lParam & 0x01000000) &&
+                    next.time == time)
+                {
+                    // Next message is a RALT down message, which
+                    // means that this is not a proper LCTRL message
+                    return sht::PublicKey::kUnknown;
+                }
+            }
+        }
+
+        return sht::PublicKey::kLeftControl;
+    }
+
+	sht::Application * app = sht::Application::GetInstance();
+    return app->keys().table(HIWORD(lParam) & 0x1FF);
+}
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static POINT mouse_position;
@@ -92,13 +135,50 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_KEYDOWN:
-		app->keys().key_down(app->keys().table(wParam)) = true;
-		return 0;
+	case WM_SYSKEYDOWN:
+	{
+		const sht::PublicKey translated_key = TranslateKey(wParam, lParam);
+		if (translated_key == sht::PublicKey::kUnknown)
+			break;
+		const int modifiers = TranslateModifiers();
+		
+		app->keys().key_down(translated_key) = true;
+		app->keys().modifiers() = modifiers;
+		
+		app->OnKeyDown(translated_key, modifiers);
+		break;
+	}
 
 	case WM_KEYUP:
-		app->keys().key_down(app->keys().table(wParam)) = false;
-		app->keys().key_active(app->keys().table(wParam)) = false;
-		return 0;
+	case WM_SYSKEYUP:
+	{
+		const sht::PublicKey translated_key = TranslateKey(wParam, lParam);
+		if (translated_key == sht::PublicKey::kUnknown)
+			break;
+		const int modifiers = TranslateModifiers();
+		
+		app->keys().key_down(translated_key) = false;
+		app->keys().key_active(translated_key) = false;
+		app->keys().modifiers() = 0;
+		
+		if (wParam == VK_SHIFT)
+		{
+			// Release both Shift keys on Shift up event, as only one event
+			// is sent even if both keys are released
+			app->OnKeyUp(sht::PublicKey::kLeftShift, modifiers);
+			app->OnKeyUp(sht::PublicKey::kRightShift, modifiers);
+		}
+		else if (wParam == VK_SNAPSHOT)
+		{
+			// Key down is not reported for the print screen key
+			//app->OnKeyDown(sht::PublicKey::kSnapshot, modifiers);
+			//app->OnKeyUp(sht::PublicKey::kSnapshot, modifiers);
+		}
+		else
+			app->OnKeyUp(translated_key, modifiers);
+		
+		break;
+	}
 
 	case WM_LBUTTONDOWN:
 		app->mouse().button_down(sht::MouseButton::kLeft) = true;

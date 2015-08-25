@@ -110,7 +110,7 @@ namespace sht {
         kLeftShift,
         kLeftSuper,
         kRightAlt,
-        kRightConrol,
+        kRightControl,
         kRightShift,
         kRightSuper,
         

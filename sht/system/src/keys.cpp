@@ -116,7 +116,7 @@ namespace sht {
         table_[0x74] = PublicKey::kPageUp;
         table_[0x7C] = PublicKey::kRight;
         table_[0x3D] = PublicKey::kRightAlt;
-        table_[0x3E] = PublicKey::kRightConrol;
+        table_[0x3E] = PublicKey::kRightControl;
         table_[0x3C] = PublicKey::kRightShift;
         table_[0x36] = PublicKey::kRightSuper;
         table_[0x31] = PublicKey::kSpace;
