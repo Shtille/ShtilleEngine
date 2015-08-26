@@ -4,17 +4,17 @@ namespace sht {
     namespace graphics {
         
         Model::Model(Renderer * renderer)
-        : renderer_(renderer)
+		: primitive_mode_(PrimitiveType::kTriangleStrip)
+        , renderer_(renderer)
         , vertex_format_(nullptr)
         , vertex_buffer_(nullptr)
         , index_buffer_(nullptr)
-        , primitive_mode_(PrimitiveType::kTriangleStrip)
+		, vertex_array_object_(0)
         , num_vertices_(0)
         , vertices_array_(nullptr)
         , num_indices_(0)
         , index_size_(0)
         , indices_array_(nullptr)
-        , vertex_array_object_(0)
         {
             
         }

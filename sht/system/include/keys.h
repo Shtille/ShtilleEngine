@@ -2,6 +2,8 @@
 #ifndef __SHT_SYSTEM_KEYS_H__
 #define __SHT_SYSTEM_KEYS_H__
 
+#include "../../common/platform.h"
+
 namespace sht {
 
     struct ModifierKey {
@@ -85,6 +87,7 @@ namespace sht {
         kRightBracket,
         kGraveAccent,
         kWorld1,
+		kWorld2,
         
         kBackspace,
         kCapsLock,
@@ -96,6 +99,8 @@ namespace sht {
         kEscape,
         kMenu,
         kNumLock,
+		kScrollLock,
+		kPause,
         kPageUp,
         kPageDown,
         kSpace,
@@ -149,8 +154,11 @@ namespace sht {
         
     private:
         void Fill();
-        
-        PublicKey table_[256];
+#if defined(TARGET_WINDOWS)
+        PublicKey table_[512];
+#else
+		PublicKey table_[256];
+#endif
         bool *key_down_;
         bool *key_active_;
         int modifiers_;

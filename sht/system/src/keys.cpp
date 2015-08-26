@@ -120,7 +120,7 @@ namespace sht {
 		table_[0x02A] = PublicKey::kLeftShift;
 		table_[0x15B] = PublicKey::kLeftSuper;
 		table_[0x137] = PublicKey::kPrintScreen;
-		table_[0x138] = PublicKey::kRightALt;
+		table_[0x138] = PublicKey::kRightAlt;
 		table_[0x11D] = PublicKey::kRightControl;
 		table_[0x036] = PublicKey::kRightShift;
 		table_[0x15C] = PublicKey::kRightSuper;

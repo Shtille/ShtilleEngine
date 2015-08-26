@@ -105,9 +105,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 
+	case WM_SETFOCUS: // Got focus
+		return 0;
 	case WM_KILLFOCUS: // Focus is lost, so minimize the window
 		app->MakeWindowed();
-		//ShowWindow(hWnd, SW_MINIMIZE);
 		return 0;
 
 	case WM_SIZE:	// Size Action Has Taken Place
@@ -171,8 +172,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		else if (wParam == VK_SNAPSHOT)
 		{
 			// Key down is not reported for the print screen key
-			//app->OnKeyDown(sht::PublicKey::kSnapshot, modifiers);
-			//app->OnKeyUp(sht::PublicKey::kSnapshot, modifiers);
+			app->OnKeyDown(sht::PublicKey::kPrintScreen, modifiers);
+			app->OnKeyUp(sht::PublicKey::kPrintScreen, modifiers);
 		}
 		else
 			app->OnKeyUp(translated_key, modifiers);
