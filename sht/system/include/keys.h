@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __SHT_SYSTEM_KEYS_H__
 #define __SHT_SYSTEM_KEYS_H__
 
@@ -131,6 +132,7 @@ namespace sht {
         kKpDecimal,
         kKpEqual,
         kKpEnter,
+        kPrintScreen,
         
         kCount
     };
