@@ -7,6 +7,7 @@
 // Window functions
 void PlatformWindowMakeWindowedImpl(void *instance);
 void PlatformWindowMakeFullscreenImpl(void *instance);
+void PlatformWindowCenterImpl(void *instance);
 void PlatformWindowResizeImpl(void *instance, int width, int height);
 void PlatformWindowSetTitleImpl(void *instance, const char *title);
 void PlatformWindowIconifyImpl(void *instance);

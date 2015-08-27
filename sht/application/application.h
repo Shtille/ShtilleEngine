@@ -31,6 +31,7 @@ namespace sht {
 		void ToggleFullscreen(void);
 		bool MakeFullscreen(void);
 		void MakeWindowed(void);
+		void Center();
         void Resize(int width, int height);
         void SetTitle(const char* title);
         void Iconify();

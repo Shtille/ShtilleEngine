@@ -7,19 +7,36 @@
 #include "../../../thirdparty/glew/include/GL/glew.h"
 #include "../../../thirdparty/glew/include/GL/wglew.h" // Windows only
 
+static struct WindowState {
+	RECT window_rect;
+	LONG_PTR style;
+	LONG_PTR ex_style;
+} old_window;
+
 void PlatformWindowMakeWindowedImpl(void *instance)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
     ChangeDisplaySettings(NULL, 0); // restore display settings
 
-	SetWindowLongPtr(window->hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-	SetWindowLongPtr(window->hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME);
+	// Restore window state
+	SetWindowLongPtr(window->hwnd, GWL_STYLE, old_window.style);
+	SetWindowLongPtr(window->hwnd, GWL_EXSTYLE, old_window.ex_style);
+	MoveWindow(window->hwnd, old_window.window_rect.left,
+							 old_window.window_rect.top, 
+							 old_window.window_rect.right - old_window.window_rect.left,
+							 old_window.window_rect.bottom - old_window.window_rect.top, FALSE);
 	ShowWindow(window->hwnd, SW_NORMAL);
 }
 void PlatformWindowMakeFullscreenImpl(void *instance)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	sht::Application * app = sht::Application::GetInstance();
+	
+	// Store current window state:
+	GetWindowRect(window->hwnd, &old_window.window_rect);
+	old_window.style = GetWindowLongPtr(window->hwnd, GWL_STYLE);
+	old_window.ex_style = GetWindowLongPtr(window->hwnd, GWL_EXSTYLE);
+	
     DEVMODE dmScreenSettings;
 	ZeroMemory(&dmScreenSettings, sizeof(DEVMODE));
 	dmScreenSettings.dmSize = sizeof(DEVMODE);
@@ -31,20 +48,40 @@ void PlatformWindowMakeFullscreenImpl(void *instance)
 	{
 		// Still windowed
 		// fullscreen_ = false; // TODO: make function bool
-		SetWindowLongPtr(window->hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-		SetWindowLongPtr(window->hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME);
+		SetWindowLongPtr(window->hwnd, GWL_STYLE, old_window.style);
+		SetWindowLongPtr(window->hwnd, GWL_EXSTYLE, old_window.ex_style);
 		ShowWindow(window->hwnd, SW_NORMAL);
 		return;
 	}
 
 	SetWindowLongPtr(window->hwnd, GWL_STYLE, WS_POPUP);
 	SetWindowLongPtr(window->hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+	MoveWindow(window->hwnd, 0, 0, app->width(), app->height(), FALSE);
 	ShowWindow(window->hwnd, SW_NORMAL);
+}
+void PlatformWindowCenterImpl(void *instance)
+{
+	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
+	RECT window_rect;
+	::GetWindowRect(window->hwnd, &window_rect);
+	int screen_width = ::GetSystemMetrics(SM_CXSCREEN);
+	int screen_height = ::GetSystemMetrics(SM_CYSCREEN);
+	int window_width = window_rect.right - window_rect.left;
+	int window_height = window_rect.bottom - window_rect.top;
+	window_rect.left = (screen_width - window_width)/2;
+	window_rect.top = (screen_height - window_height)/2;
+	::MoveWindow(window->hwnd, window_rect.left, window_rect.top, window_width, window_height, TRUE);
 }
 void PlatformWindowResizeImpl(void *instance, int width, int height)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
-	MoveWindow(window->hwnd, 0, 0, width, height, TRUE);
+	RECT rect;
+	POINT pos;
+	pos.x = width;
+	pos.y = height;
+	::GetWindowRect(window->hwnd, &rect);
+	::ClientToScreen(window->hwnd, &pos);
+	::MoveWindow(window->hwnd, rect.left, rect.top, pos.x - rect.left, pos.y - rect.top, TRUE);
 }
 void PlatformWindowSetTitleImpl(void *instance, const char *title)
 {

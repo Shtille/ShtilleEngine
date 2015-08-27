@@ -121,6 +121,10 @@ namespace sht {
 
         PlatformWindowMakeWindowed();
 	}
+	void Application::Center()
+	{
+		PlatformWindowCenter();
+	}
     void Application::Resize(int width, int height)
     {
         PlatformWindowResize(width, height);

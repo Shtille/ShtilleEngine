@@ -12,6 +12,10 @@ void PlatformWindowMakeFullscreen()
 {
     PlatformWindowMakeFullscreenImpl(g_window_controller);
 }
+void PlatformWindowCenter()
+{
+    PlatformWindowCenterImpl(g_window_controller);
+}
 void PlatformWindowResize(int width, int height)
 {
     PlatformWindowResizeImpl(g_window_controller, width, height);

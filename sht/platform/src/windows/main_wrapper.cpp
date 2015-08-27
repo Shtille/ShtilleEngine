@@ -322,6 +322,7 @@ int MainWrapper(int argc, const char** argv)
 		return 1;
 	}
 	g_window_controller = reinterpret_cast<void*>(&window);
+	app->Center();
 
 	if (app->InitApi())
 	{
