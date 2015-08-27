@@ -119,8 +119,7 @@ NSWindow* standardWindow;
         // Windowed by default
         NSRect rect = [view convertRectToBacking:viewRect];
         [self.window setFrame:rect display:YES animate:NO];
-        // TODO:
-        //[self.window center];
+        [self.window center];
     }
     // Set window title
     [self.window setTitle:[NSString stringWithUTF8String:app->GetTitle()]];
@@ -216,6 +215,11 @@ void PlatformWindowMakeWindowedImpl(void *instance)
 void PlatformWindowMakeFullscreenImpl(void *instance)
 {
     [(id) instance goFullscreen];
+}
+void PlatformWindowCenterImpl(void *instance)
+{
+    const NSWindow * window = [(id) instance window];
+    [window center];
 }
 void PlatformWindowResizeImpl(void *instance, int width, int height)
 {
