@@ -9,7 +9,6 @@ namespace sht {
         , slices_(slices)
         , loops_(loops)
         {
-            primitive_mode_ = PrimitiveType::kTriangles;
         }
         SphereModel::~SphereModel()
         {
@@ -30,7 +29,7 @@ namespace sht {
             vertices_[ind].normal.Set(0.0f, 1.0f, 0.0f);
             ++ind;
             
-            for (u32 j = 0; j < loops_-1; ++j)
+            for (u32 j = 1; j < loops_-1; ++j)
             {
                 float aj = math::kPi / (float)(loops_-1) * (float)j;
                 for (u32 i = 0; i < slices_; ++i)
@@ -44,23 +43,35 @@ namespace sht {
                 }
             }
             
-            indices_.resize((6*slices_)*(loops_ - 1));
+            assert(loops_ > 3);
+            indices_.resize((2 + 2*slices_)*(loops_ - 1) + 2*(loops_ - 2));
             ind = 0;
             for (u32 j = 0; j < loops_-1; ++j)
             {
+                bool lat_end = (j+2 == loops_);
+                bool lat_beg = (j == 0);
+                indices_[ind++] = lat_end ? (1) : (2 + (j  )*slices_);
+                indices_[ind++] = lat_beg ? (0) : (2 + (j-1)*slices_);
                 for (u32 i = 0; i < slices_; ++i)
                 {
                     u32 next_i = (i + 1 == slices_) ? (0) : (i+1);
-                    u32 ind0 = (j+2 == loops_) ? (1) : (2 + (i     ) + (j  )*slices_);
-                    u32 ind1 = (j == 0       ) ? (0) : (2 + (i     ) + (j-1)*slices_);
-                    u32 ind2 = (j+2 == loops_) ? (1) : (2 + (next_i) + (j  )*slices_);
-                    u32 ind3 = (j == 0       ) ? (0) : (2 + (next_i) + (j-1)*slices_);
-                    indices_[ind++] = ind0;
-                    indices_[ind++] = ind1;
-                    indices_[ind++] = ind2;
-                    indices_[ind++] = ind2;
-                    indices_[ind++] = ind1;
-                    indices_[ind++] = ind3;
+                    
+                    indices_[ind++] = lat_end ? (1) : (2 + (next_i) + (j  )*slices_);
+                    indices_[ind++] = lat_beg ? (0) : (2 + (next_i) + (j-1)*slices_);
+                }
+                // Degenerates
+                if (!lat_end)
+                {
+                    if (j+3 == loops_)
+                    {
+                        indices_[ind] = indices_[ind - 1], ++ind;
+                        indices_[ind++] = 1;
+                    }
+                    else
+                    {
+                        indices_[ind] = indices_[ind - 1], ++ind;
+                        indices_[ind++] = 2 + (j+1)*slices_;
+                    }
                 }
             }
         }
