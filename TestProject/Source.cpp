@@ -151,8 +151,8 @@ public:
     }
     
 private:
-    sht::graphics::CubeModel * cube_;
-    sht::graphics::TetrahedronModel * tetrahedron_;
+    sht::graphics::Model * cube_;
+    sht::graphics::Model * tetrahedron_;
     sht::graphics::Shader * shader_;
     sht::graphics::Shader * shader2_;
     
