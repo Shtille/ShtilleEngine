@@ -52,6 +52,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface GLEssentialsFullscreenWindow : NSWindow
+@interface ShtilleEngineFullscreenWindow : NSWindow
 
 @end

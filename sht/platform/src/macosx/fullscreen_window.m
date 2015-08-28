@@ -52,7 +52,7 @@
 
 #import "fullscreen_window.h"
 
-@implementation GLEssentialsFullscreenWindow
+@implementation ShtilleEngineFullscreenWindow
 
 -(id) init
 {

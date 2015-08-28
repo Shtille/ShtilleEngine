@@ -58,21 +58,21 @@
 #ifdef __cplusplus
 void * g_window_controller;
 #else
-GLEssentialsWindowController * g_window_controller;
+ShtilleEngineWindowController * g_window_controller;
 #endif
 
-@interface GLEssentialsWindowController ()
+@interface ShtilleEngineWindowController ()
 
 @end
 
-@implementation GLEssentialsWindowController
+@implementation ShtilleEngineWindowController
 
 // Were we set in the background?
 BOOL wasBackgroundedOutOfFullScreen;
 
 
 // Fullscreen window 
-GLEssentialsFullscreenWindow *fullscreenWindow;
+ShtilleEngineFullscreenWindow *fullscreenWindow;
 
 // Non-Fullscreen window (also the initial window)
 NSWindow* standardWindow;
@@ -138,7 +138,7 @@ NSWindow* standardWindow;
 	}
 
 	// Allocate a new fullscreen window
-	fullscreenWindow = [[GLEssentialsFullscreenWindow alloc] init];
+	fullscreenWindow = [[ShtilleEngineFullscreenWindow alloc] init];
 
 	// Resize the view to screensize
 	NSRect viewRect = [fullscreenWindow frame];

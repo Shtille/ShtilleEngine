@@ -50,7 +50,7 @@
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/CVDisplayLink.h>
 
-@interface GLEssentialsGLView : NSOpenGLView {
+@interface ShtilleEngineGLView : NSOpenGLView {
 	CVDisplayLinkRef displayLink;
 }
 

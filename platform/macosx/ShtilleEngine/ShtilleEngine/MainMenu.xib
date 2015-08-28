@@ -223,10 +223,10 @@
 				<bool key="NSWindowIsRestorable">NO</bool>
 			</object>
 			<object class="NSCustomObject" id="869686893">
-				<string key="NSClassName">GLEssentialsGLView</string>
+				<string key="NSClassName">ShtilleEngineGLView</string>
 			</object>
 			<object class="NSCustomObject" id="862971392">
-				<string key="NSClassName">GLEssentialsWindowController</string>
+				<string key="NSClassName">ShtilleEngineWindowController</string>
 			</object>
 		</array>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
@@ -469,13 +469,13 @@
 						<string key="id">494</string>
 						<reference key="object" ref="869686893"/>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">GL Essentials View</string>
+						<string key="objectName">ShtilleEngine View</string>
 					</object>
 					<object class="IBObjectRecord">
 						<string key="id">M8b-ga-iOS</string>
 						<reference key="object" ref="862971392"/>
 						<reference key="parent" ref="0"/>
-						<string key="objectName">GL Essentials Window Controller</string>
+						<string key="objectName">ShtilleEngine Window Controller</string>
 					</object>
 				</array>
 			</object>
@@ -515,7 +515,7 @@
 				<string key="371.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<boolean value="YES" key="371.NSWindowTemplate.visibleAtLaunch"/>
 				<boolean value="NO" key="371.showNotes"/>
-				<string key="372.CustomClassName">GLEssentialsGLView</string>
+				<string key="372.CustomClassName">ShtilleEngineGLView</string>
 				<string key="372.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<reference key="372.IBUserGuides" ref="0"/>
 				<boolean value="NO" key="372.showNotes"/>

@@ -81,12 +81,12 @@ static sht::MouseButton TranslateMouseButton(int button)
     return translated;
 }
 
-@interface GLEssentialsGLView (PrivateMethods)
+@interface ShtilleEngineGLView (PrivateMethods)
 - (void) initGL;
 
 @end
 
-@implementation GLEssentialsGLView
+@implementation ShtilleEngineGLView
 
 - (CVReturn) getFrameForTime:(const CVTimeStamp*)outputTime
 {
@@ -111,7 +111,7 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 									  CVOptionFlags* flagsOut, 
 									  void* displayLinkContext)
 {
-    CVReturn result = [(GLEssentialsGLView*)displayLinkContext getFrameForTime:outputTime];
+    CVReturn result = [(ShtilleEngineGLView*)displayLinkContext getFrameForTime:outputTime];
     return result;
 }
 
