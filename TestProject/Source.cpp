@@ -2,6 +2,7 @@
 #include "../sht/graphics/include/image/image.h"
 #include "../sht/graphics/include/model/cube_model.h"
 #include "../sht/graphics/include/model/tetrahedron_model.h"
+#include "../sht/graphics/include/model/sphere_model.h"
 #include <cmath>
 
 class UserApp : public sht::OpenGlApplication 
@@ -25,7 +26,7 @@ public:
     bool Load() final
     {
         // First model
-        cube_ = new sht::graphics::CubeModel(renderer_);
+        cube_ = new sht::graphics::SphereModel(renderer_);
         cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
         cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
         cube_->Create();

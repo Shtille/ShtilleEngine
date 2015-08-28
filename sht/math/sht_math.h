@@ -10,6 +10,10 @@
 
 namespace sht {
 	namespace math {
+        
+        // Math constants
+        const float kPi     = 3.1415926535f;
+        const float kTwoPi  = 6.2831853071f;
 
 		//! Vector orthogonalization via Gram-Shmidt method
 		Vector3 Orthogonalize(const Vector3& v1, const Vector3& v2);
