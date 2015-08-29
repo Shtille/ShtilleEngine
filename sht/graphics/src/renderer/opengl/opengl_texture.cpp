@@ -1,5 +1,5 @@
 #include "../../../include/renderer/opengl/opengl_texture.h"
-#include "../../../../thirdparty/glew/include/GL/glew.h"
+#include "opengl_include.h"
 
 namespace sht {
 	namespace graphics {
@@ -19,7 +19,7 @@ namespace sht {
 			case Image::Format::kR8:
 			case Image::Format::kR16:
 			case Image::Format::kR32:
-				return GL_R;
+				return GL_RED;
 			case Image::Format::kRG8:
 			case Image::Format::kRG16:
 			case Image::Format::kRG32:
@@ -31,15 +31,15 @@ namespace sht {
 			case Image::Format::kI8:
 			case Image::Format::kI16:
 			case Image::Format::kI32:
-				return GL_INTENSITY;
+				return GL_RED; // ?
 			case Image::Format::kL8:
 			case Image::Format::kL16:
 			case Image::Format::kL32:
-				return GL_LUMINANCE;
+				return GL_RED; // ?
 			case Image::Format::kLA8:
 			case Image::Format::kLA16:
 			case Image::Format::kLA32:
-				return GL_LUMINANCE_ALPHA;
+				return GL_RG; // ?
 			default:
 				return GL_RGB;
 			}
@@ -95,16 +95,16 @@ namespace sht {
 			case Image::Format::kRG8: return GL_RG8;
 			case Image::Format::kRG16: return GL_RG16F;
 			case Image::Format::kRG32: return GL_RG32F;
-			case Image::Format::kA8: return GL_ALPHA8;
+			case Image::Format::kA8: return GL_ALPHA8I_EXT;
 			case Image::Format::kA16: return GL_ALPHA16F_ARB;
 			case Image::Format::kA32: return GL_ALPHA32F_ARB;
-			case Image::Format::kI8: return GL_INTENSITY8;
+			case Image::Format::kI8: return GL_INTENSITY8I_EXT;
 			case Image::Format::kI16: return GL_INTENSITY16F_ARB;
 			case Image::Format::kI32: return GL_INTENSITY32F_ARB;
-			case Image::Format::kL8: return GL_LUMINANCE8;
+			case Image::Format::kL8: return GL_LUMINANCE8I_EXT;
 			case Image::Format::kL16: return GL_LUMINANCE16F_ARB;
 			case Image::Format::kL32: return GL_LUMINANCE32F_ARB;
-			case Image::Format::kLA8: return GL_LUMINANCE8_ALPHA8;
+			case Image::Format::kLA8: return GL_LUMINANCE_ALPHA8I_EXT;
 			case Image::Format::kLA16: return GL_LUMINANCE_ALPHA16F_ARB;
 			case Image::Format::kLA32: return GL_LUMINANCE_ALPHA32F_ARB;
 			case Image::Format::kDepth16: return GL_DEPTH_COMPONENT16_ARB;

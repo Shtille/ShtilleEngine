@@ -1,4 +1,5 @@
 #include "../../include/renderer/context.h"
+#include <assert.h>
 
 namespace sht {
     namespace graphics {
@@ -10,6 +11,10 @@ namespace sht {
         Context::~Context()
         {
             
+        }
+        void Context::ErrorHandler(const char *message)
+        {
+            assert(!message);
         }
         
     }

@@ -24,7 +24,7 @@ namespace sht {
 		sht::graphics::OpenGlRenderer * renderer = new sht::graphics::OpenGlRenderer(width_, height_);
 		renderer_ = renderer;
 
-		return renderer->CheckFunctionalities();
+		return true;
 	}
 	void OpenGlApplication::DeinitApi()
 	{

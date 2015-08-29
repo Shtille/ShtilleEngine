@@ -48,6 +48,10 @@ namespace sht {
             Context();
             virtual ~Context();
             
+            void ErrorHandler(const char *message);
+            
+            virtual bool CheckForErrors() = 0;
+            
             virtual void ClearColor(f32 r, f32 g, f32 b, f32 a) = 0;
             virtual void ClearColorBuffer() = 0;
             virtual void ClearDepthBuffer() = 0;
@@ -93,6 +97,25 @@ namespace sht {
             // Vertex attribs
             virtual void VertexAttribPointer(u32 index, s32 size, DataType type, u32 stride, const void* ptr) = 0;
             virtual void EnableVertexAttribArray(u32 index) = 0;
+            
+            // Shader
+            virtual void BindProgram(u32 program) = 0;
+            virtual void BindAttribLocation(u32 program, const char *name) = 0;
+            virtual void Uniform1i(u32 program, const char *name, int x) = 0;
+            virtual void Uniform2i(u32 program, const char *name, int x, int y) = 0;
+            virtual void Uniform3i(u32 program, const char *name, int x, int y, int z) = 0;
+            virtual void Uniform4i(u32 program, const char *name, int x, int y, int z, int w) = 0;
+            virtual void Uniform1f(u32 program, const char *name, float x) = 0;
+            virtual void Uniform2f(u32 program, const char *name, float x, float y) = 0;
+            virtual void Uniform3f(u32 program, const char *name, float x, float y, float z) = 0;
+            virtual void Uniform4f(u32 program, const char *name, float x, float y, float z, float w) = 0;
+            virtual void Uniform1fv(u32 program, const char *name, const float *v, int n = 1) = 0;
+            virtual void Uniform2fv(u32 program, const char *name, const float *v, int n = 1) = 0;
+            virtual void Uniform3fv(u32 program, const char *name, const float *v, int n = 1) = 0;
+            virtual void Uniform4fv(u32 program, const char *name, const float *v, int n = 1) = 0;
+            virtual void UniformMatrix2fv(u32 program, const char *name, const float *v, bool trans = false, int n = 1) = 0;
+            virtual void UniformMatrix3fv(u32 program, const char *name, const float *v, bool trans = false, int n = 1) = 0;
+            virtual void UniformMatrix4fv(u32 program, const char *name, const float *v, bool trans = false, int n = 1) = 0;
             
         protected:
             virtual void FillTables() = 0;

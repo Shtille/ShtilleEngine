@@ -48,78 +48,6 @@ namespace sht {
 
 			glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 		}
-		bool OpenGlRenderer::CheckForErrors()
-		{
-#if defined(_DEBUG) || defined(DEBUG)
-			int error = glGetError();
-			if (error != GL_NO_ERROR){
-				if (error == GL_INVALID_ENUM)
-				{
-					ErrorHandler("GL_INVALID_ENUM");
-				}
-				else if (error == GL_INVALID_VALUE){
-					ErrorHandler("GL_INVALID_VALUE");
-				}
-				else if (error == GL_INVALID_OPERATION){
-					ErrorHandler("GL_INVALID_OPERATION");
-				}
-				else if (error == GL_OUT_OF_MEMORY){
-					ErrorHandler("GL_OUT_OF_MEMORY");
-				}
-				else if (error == GL_INVALID_FRAMEBUFFER_OPERATION_EXT){
-					ErrorHandler("GL_INVALID_FRAMEBUFFER_OPERATION_EXT");
-				}
-				else {
-					char str[32];
-					sprintf(str, "Unknown OpenGL error: %d", error);
-					ErrorHandler(str);
-				}
-				return true;
-			}
-#endif
-			return false;
-		}
-		bool OpenGlRenderer::CheckFrameBufferStatus()
-		{
-#ifdef _DEBUG
-			GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-			switch (status){
-			case GL_FRAMEBUFFER_COMPLETE_EXT:
-				return true;
-			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");
-				return false;
-			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT");
-				return false;
-			case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
-				return false;
-			case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
-				return false;
-			case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT");
-				return false;
-			case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
-				return false;
-			case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-				ErrorHandler("GL_FRAMEBUFFER_UNSUPPORTED_EXT");
-				return false;
-			default:
-				ErrorHandler("Unknown FBO error");
-				return false;
-			}
-#else
-			return false;
-#endif
-		}
-		bool OpenGlRenderer::CheckFunctionalities()
-		{
-			// Base engine functionality requirements:
-			return true;
-		}
 		f32 OpenGlRenderer::GetStringHeight(f32 scale)
 		{
 			return 0.9375f * Font::GetBaseSize() * scale;
@@ -194,7 +122,7 @@ namespace sht {
 				img.pixels());
             glGenerateMipmap(tex->target_);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(tex);
 		}
@@ -229,7 +157,7 @@ namespace sht {
 					imgs[t].pixels());
 			}
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(tex);
 		}
@@ -302,7 +230,7 @@ namespace sht {
 
 			delete[] data;
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -337,7 +265,7 @@ namespace sht {
 					NULL);
 			}
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -375,7 +303,7 @@ namespace sht {
 				texture->GetSrcType(), // the data type of the pixel data
 				NULL);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -407,7 +335,7 @@ namespace sht {
 				texture->GetSrcType(), // the data type of the pixel data
 				NULL);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -439,7 +367,7 @@ namespace sht {
 				texture->GetSrcType(), // the data type of the pixel data
 				data);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -483,7 +411,7 @@ namespace sht {
 				texture->GetSrcType(), // the data type of the pixel data
 				NULL);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -526,7 +454,7 @@ namespace sht {
 			// Restore current renderbuffer
 			glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			textures_.push_back(texture);
 		}
@@ -643,7 +571,7 @@ namespace sht {
 				glViewport(0, 0, tex->width_, tex->height_);
 			}
 
-			CheckFrameBufferStatus();
+			//CheckFrameBufferStatus();
 		}
 		void OpenGlRenderer::ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face)
 		{
@@ -705,7 +633,7 @@ namespace sht {
 				glViewport(0, 0, tex->width_, tex->height_);
 			}
 
-			CheckFrameBufferStatus();
+			//CheckFrameBufferStatus();
 		}
 		void OpenGlRenderer::GenerateMipmap(Texture* texture)
 		{
@@ -790,7 +718,7 @@ namespace sht {
             vb->Bind();
             vb->SetData(size, data, usage);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			vertex_buffers_.push_back(vb);
 		}
@@ -815,7 +743,7 @@ namespace sht {
             ib->Bind();
             ib->SetData(size, data, usage);
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			index_buffers_.push_back(ib);
 		}
@@ -829,129 +757,11 @@ namespace sht {
 				delete ib;
 			}
 		}
-		bool OpenGlRenderer::AddShader(Shader* &shader, const char* filename, char **attribs, int nAttribs)
+		bool OpenGlRenderer::AddShader(Shader* &shader, const char* filename, const char **attribs, u32 n_attribs)
 		{
-			shader = new Shader();
-
-			GLint success;
-			system::FileStream stream;
-			std::string shader_source;
-			std::string shader_filename;
-
-			// Vertex program
-			shader_filename = filename;
-			shader_filename += ".vs";
-			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadBinary))
-			{
-				shader_source.resize(stream.Length());
-				if (!stream.Read(&shader_source[0], shader_source.size()))
-				{
-					ErrorHandler("Failed to read from vertex shader file");
-					delete shader;
-					return false;
-				}
-				stream.Close();
-
-				shader->vertex_ = glCreateShader(GL_VERTEX_SHADER);
-				const char * source = shader_source.c_str();
-				glShaderSource(shader->vertex_, 1, &source, NULL);
-				glCompileShader(shader->vertex_);
-				glGetShaderiv(shader->vertex_, GL_COMPILE_STATUS, &success);
-				if (!success)
-				{
-					char infoLog[2048];
-					glGetShaderInfoLog(shader->vertex_, 2048, NULL, infoLog);
-					char temp[100];
-					sprintf(temp, "%s %s", "Error in vertex shader compilation in", filename);
-					ErrorHandler(temp);
-					ErrorHandler(infoLog);
-					glDeleteShader(shader->vertex_);
-					delete shader;
-					return false;
-				}
-				CheckForErrors();
-			}
-            else
-            {
-                ErrorHandler("Failed to open vertex shader file");
-                delete shader;
+            shader = Shader::Create(context_, filename, attribs, n_attribs);
+            if (shader == nullptr)
                 return false;
-            }
-
-			// Fragment program
-			shader_filename = filename;
-			shader_filename += ".fs";
-			if (stream.Open(shader_filename.c_str(), system::StreamAccess::kReadBinary))
-			{
-				shader_source.resize(stream.Length());
-				if (!stream.Read(&shader_source[0], shader_source.size()))
-				{
-					ErrorHandler("Failed to read from fragment shader file");
-					delete shader;
-					return false;
-				}
-				stream.Close();
-
-				shader->fragment_ = glCreateShader(GL_FRAGMENT_SHADER);
-				const char * source = shader_source.c_str();
-				glShaderSource(shader->fragment_, 1, &source, NULL);
-				glCompileShader(shader->fragment_);
-				glGetShaderiv(shader->fragment_, GL_COMPILE_STATUS, &success);
-				if (!success)
-				{
-					char infoLog[2048];
-					glGetShaderInfoLog(shader->fragment_, 2048, NULL, infoLog);
-					char temp[100];
-					sprintf(temp, "%s %s", "Error in fragment shader compilation in", filename);
-					ErrorHandler(temp);
-					ErrorHandler(infoLog);
-					glDeleteShader(shader->fragment_);
-					glDeleteShader(shader->vertex_);
-					delete shader;
-					return false;
-				}
-				CheckForErrors();
-			}
-            else
-            {
-                ErrorHandler("Failed to open fragment shader file");
-                delete shader;
-                return false;
-            }
-
-			// Create program object, attach shader, then link
-			shader->program_ = glCreateProgram();
-			glAttachShader(shader->program_, shader->vertex_);
-			glAttachShader(shader->program_, shader->fragment_);
-			for (u32 i = 0; i < (u32)nAttribs; ++i)
-			{
-				if (attribs[i])
-				{
-					glBindAttribLocation(shader->program_, i, attribs[i]);
-                    CheckForErrors();
-				}
-			}
-			glLinkProgram(shader->program_);
-			glGetProgramiv(shader->program_, GL_LINK_STATUS, &success);
-			if (!success)
-			{
-				char infoLog[2048];
-				glGetProgramInfoLog(shader->program_, 2048, NULL, infoLog);
-				char temp[100];
-				sprintf(temp, "%s %s", "Error in shader linkage in", filename);
-				ErrorHandler(temp);
-				ErrorHandler(infoLog);
-				glDeleteProgram(shader->program_);
-				glDeleteShader(shader->vertex_);
-				glDeleteShader(shader->fragment_);
-				delete shader;
-				return false;
-			}
-			CheckForErrors();
-
-			// After linkage these objects may be deleted
-			glDeleteShader(shader->vertex_);
-			glDeleteShader(shader->fragment_);
 
 			// Done with shader loading
 			shaders_.push_back(shader);
@@ -968,92 +778,6 @@ namespace sht {
 				shaders_.erase(it);
 				delete shader;
 			}
-		}
-		void OpenGlRenderer::ChangeShader(Shader* shader)
-		{
-			if (shader != nullptr)
-				glUseProgram(shader->program_);
-			else
-				glUseProgram(0);
-			current_shader_ = shader;
-		}
-		void OpenGlRenderer::ChangeShaderAttribBinding(const char *name)
-		{
-			int ind = glGetAttribLocation(current_shader_->program_, name);
-            assert(ind != -1);
-			glBindAttribLocation(current_shader_->program_, ind, name);
-		}
-		void OpenGlRenderer::ChangeShaderUniform1i(const char* name, int num)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform1i(location, num);
-		}
-		void OpenGlRenderer::ChangeShaderUniform1f(const char* name, float x)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform1f(location, x);
-		}
-		void OpenGlRenderer::ChangeShaderUniform2f(const char* name, float x, float y)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform2f(location, x, y);
-		}
-		void OpenGlRenderer::ChangeShaderUniform3f(const char* name, float x, float y, float z)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform3f(location, x, y, z);
-		}
-		void OpenGlRenderer::ChangeShaderUniform4f(const char* name, float x, float y, float z, float w)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform4f(location, x, y, z, w);
-		}
-		void OpenGlRenderer::ChangeShaderUniform1fv(const char* name, float *v, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform1fv(location, n, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniform2fv(const char* name, float *v, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform2fv(location, n, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniform3fv(const char* name, float *v, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform3fv(location, n, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniform4fv(const char* name, float *v, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniform4fv(location, n, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniformMatrix2fv(location, n, trans, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniformMatrix3fv(location, n, trans, v);
-		}
-		void OpenGlRenderer::ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans, int n)
-		{
-			int location = glGetUniformLocation(current_shader_->program_, name);
-			assert(location != -1);
-			glUniformMatrix4fv(location, n, trans, v);
 		}
 		void OpenGlRenderer::AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family)
 		{
@@ -1200,7 +924,7 @@ namespace sht {
 			//static_assert(false, "Font creation has not been defined");
 #endif
 
-			CheckForErrors();
+			context_->CheckForErrors();
 
 			fonts_.push_back(font);
 		}

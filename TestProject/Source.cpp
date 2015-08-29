@@ -41,10 +41,10 @@ public:
             return false;
         
         const char *attribs[] = {"a_position", "a_normal"};
-        if (!renderer_->AddShader(shader_, "data/shaders/shader", const_cast<char**>(attribs), 2))
+        if (!renderer_->AddShader(shader_, "data/shaders/shader", attribs, 2))
             return false;
         
-        if (!renderer_->AddShader(shader2_, "data/shaders/shader2", const_cast<char**>(attribs), 1))
+        if (!renderer_->AddShader(shader2_, "data/shaders/shader2", attribs, 1))
             return false;
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
@@ -78,35 +78,35 @@ public:
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
-        renderer_->ChangeShader(shader_);
-        renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
-        renderer_->ChangeShaderUniform3fv("u_light_pos", light_pos_eye);
+        shader_->Bind();
+        shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        shader_->Uniform3fv("u_light_pos", light_pos_eye);
         
         // Draw first model
         renderer_->PushMatrix();
         renderer_->Translate(2.0f, 0.0f, 0.0f);
         renderer_->MultMatrix(rotate_matrix);
-        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+        shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        renderer_->ChangeShaderUniformMatrix3fv("u_normal_matrix", normal_matrix);
+        shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix);
         cube_->Render();
         renderer_->PopMatrix();
         
-        renderer_->ChangeShader(shader2_);
-        renderer_->ChangeShaderUniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        renderer_->ChangeShaderUniformMatrix4fv("u_view", renderer_->view_matrix());
+        shader2_->Bind();
+        shader2_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        shader2_->UniformMatrix4fv("u_view", renderer_->view_matrix());
         
         // Draw second model
         renderer_->PushMatrix();
         renderer_->Translate(light_position);
         renderer_->Scale(0.2f);
         renderer_->MultMatrix(rotate_matrix);
-        renderer_->ChangeShaderUniformMatrix4fv("u_model", renderer_->model_matrix());
+        shader2_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         tetrahedron_->Render();
         renderer_->PopMatrix();
         
-        renderer_->ChangeShader(nullptr);
+        shader_->Unbind();
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {

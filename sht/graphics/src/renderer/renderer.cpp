@@ -5,12 +5,6 @@
 namespace sht {
 	namespace graphics {
 
-		Shader::Shader()
-		{
-		}
-		Shader::~Shader()
-		{
-		}
 		Font::Font()
 		{
 		}
@@ -242,10 +236,6 @@ namespace sht {
 		void Renderer::ChangeRenderTarget(Texture* colorRT, Texture* depthRT)
 		{
 			ChangeRenderTargets(1, &colorRT, depthRT);
-		}
-		void Renderer::ErrorHandler(const char *message)
-		{
-			assert(!message);
 		}
         void Renderer::SetProjectionMatrix(const sht::math::Matrix4& mat)
         {

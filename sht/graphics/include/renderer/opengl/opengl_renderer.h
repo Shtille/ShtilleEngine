@@ -12,9 +12,6 @@ namespace sht {
 			OpenGlRenderer(int w, int h);
 			virtual ~OpenGlRenderer();
 
-			bool CheckForErrors();
-			bool CheckFunctionalities();
-
 			f32 GetStringHeight(f32 scale);
 			f32 GetStringWidth(f32 scale, const char *str);
 
@@ -42,22 +39,8 @@ namespace sht {
 			void AddIndexBuffer(IndexBuffer* &ib, u32 nIndices, u32 indexSize, void *data, BufferUsage usage);
 			void DeleteIndexBuffer(IndexBuffer* ib);
 
-			bool AddShader(Shader* &shader, const char* filename, char **attribs = NULL, int nAttribs = 0);
+			bool AddShader(Shader* &shader, const char* filename, const char **attribs = NULL, u32 n_attribs = 0);
 			void DeleteShader(Shader* shader);
-			void ChangeShader(Shader* shader);
-			void ChangeShaderAttribBinding(const char *name);
-			void ChangeShaderUniform1i(const char* name, int num);
-			void ChangeShaderUniform1f(const char* name, float x);
-			void ChangeShaderUniform2f(const char* name, float x, float y);
-			void ChangeShaderUniform3f(const char* name, float x, float y, float z);
-			void ChangeShaderUniform4f(const char* name, float x, float y, float z, float w);
-			void ChangeShaderUniform1fv(const char* name, float *v, int n = 1);
-			void ChangeShaderUniform2fv(const char* name, float *v, int n = 1);
-			void ChangeShaderUniform3fv(const char* name, float *v, int n = 1);
-			void ChangeShaderUniform4fv(const char* name, float *v, int n = 1);
-			void ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans = false, int n = 1);
-			void ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans = false, int n = 1);
-			void ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans = false, int n = 1);
 
 			void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0);
 			void DeleteFont(Font* font);
@@ -87,7 +70,6 @@ namespace sht {
 
 		private:
 			void SetDefaultStates();
-			bool CheckFrameBufferStatus();
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);

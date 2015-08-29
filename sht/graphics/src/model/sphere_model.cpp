@@ -32,12 +32,13 @@ namespace sht {
             for (u32 j = 1; j < loops_-1; ++j)
             {
                 float aj = math::kPi / (float)(loops_-1) * (float)j;
+                float sin_aj = sinf(aj);
+                float cos_aj = cosf(aj);
                 for (u32 i = 0; i < slices_; ++i)
                 {
                     float ai = math::kTwoPi / (float)slices_ * (float)i;
                     
-                    float sin_aj = sinf(aj);
-                    vertices_[ind].normal.Set(sin_aj*cosf(ai), -cosf(aj), sin_aj*sinf(ai));
+                    vertices_[ind].normal.Set(sin_aj*cosf(ai), -cos_aj, -sin_aj*sinf(ai));
                     vertices_[ind].position = vertices_[ind].normal * kRadius;
                     ++ind;
                 }

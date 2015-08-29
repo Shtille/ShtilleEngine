@@ -41,6 +41,73 @@ namespace sht {
             buffer_usage_map_[BufferUsage::kStreamCopy] = GL_STREAM_COPY;
             assert(buffer_usage_map_.size() == (size_t)BufferUsage::kCount);
         }
+        bool OpenGlContext::CheckForErrors()
+        {
+#if defined(_DEBUG) || defined(DEBUG)
+            int error = glGetError();
+            if (error != GL_NO_ERROR){
+                if (error == GL_INVALID_ENUM)
+                {
+                    ErrorHandler("GL_INVALID_ENUM");
+                }
+                else if (error == GL_INVALID_VALUE){
+                    ErrorHandler("GL_INVALID_VALUE");
+                }
+                else if (error == GL_INVALID_OPERATION){
+                    ErrorHandler("GL_INVALID_OPERATION");
+                }
+                else if (error == GL_OUT_OF_MEMORY){
+                    ErrorHandler("GL_OUT_OF_MEMORY");
+                }
+                else if (error == GL_INVALID_FRAMEBUFFER_OPERATION_EXT){
+                    ErrorHandler("GL_INVALID_FRAMEBUFFER_OPERATION_EXT");
+                }
+                else {
+                    char str[32];
+                    sprintf(str, "Unknown OpenGL error: %d", error);
+                    ErrorHandler(str);
+                }
+                return true;
+            }
+#endif
+            return false;
+        }
+        bool OpenGlContext::CheckFrameBufferStatus()
+        {
+#if defined(_DEBUG) || defined(DEBUG)
+            GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+            switch (status){
+                case GL_FRAMEBUFFER_COMPLETE_EXT:
+                    return true;
+                case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
+                    return false;
+                case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+                    ErrorHandler("GL_FRAMEBUFFER_UNSUPPORTED_EXT");
+                    return false;
+                default:
+                    ErrorHandler("Unknown FBO error");
+                    return false;
+            }
+#else
+            return false;
+#endif
+        }
         void OpenGlContext::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {
             glClearColor(r, g, b, a);
@@ -176,6 +243,106 @@ namespace sht {
         void OpenGlContext::EnableVertexAttribArray(u32 index)
         {
             glEnableVertexAttribArray(index);
+        }
+        void OpenGlContext::BindProgram(u32 program)
+        {
+            glUseProgram(program);
+        }
+        void OpenGlContext::BindAttribLocation(u32 program, const char *name)
+        {
+            GLint ind = glGetAttribLocation(program, name);
+            assert(ind != -1);
+            glBindAttribLocation(program, ind, name);
+        }
+        void OpenGlContext::Uniform1i(u32 program, const char *name, int x)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform1i(location, x);
+        }
+        void OpenGlContext::Uniform2i(u32 program, const char *name, int x, int y)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform2i(location, x, y);
+        }
+        void OpenGlContext::Uniform3i(u32 program, const char *name, int x, int y, int z)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform3i(location, x, y, z);
+        }
+        void OpenGlContext::Uniform4i(u32 program, const char *name, int x, int y, int z, int w)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform4i(location, x, y, z, w);
+        }
+        void OpenGlContext::Uniform1f(u32 program, const char *name, float x)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform1f(location, x);
+        }
+        void OpenGlContext::Uniform2f(u32 program, const char *name, float x, float y)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform2f(location, x, y);
+        }
+        void OpenGlContext::Uniform3f(u32 program, const char *name, float x, float y, float z)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform3f(location, x, y, z);
+        }
+        void OpenGlContext::Uniform4f(u32 program, const char *name, float x, float y, float z, float w)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform4f(location, x, y, z, w);
+        }
+        void OpenGlContext::Uniform1fv(u32 program, const char *name, const float *v, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform1fv(location, n, v);
+        }
+        void OpenGlContext::Uniform2fv(u32 program, const char *name, const float *v, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform2fv(location, n, v);
+        }
+        void OpenGlContext::Uniform3fv(u32 program, const char *name, const float *v, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform3fv(location, n, v);
+        }
+        void OpenGlContext::Uniform4fv(u32 program, const char *name, const float *v, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniform4fv(location, n, v);
+        }
+        void OpenGlContext::UniformMatrix2fv(u32 program, const char *name, const float *v, bool trans, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniformMatrix2fv(location, n, trans, v);
+        }
+        void OpenGlContext::UniformMatrix3fv(u32 program, const char *name, const float *v, bool trans, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniformMatrix3fv(location, n, trans, v);
+        }
+        void OpenGlContext::UniformMatrix4fv(u32 program, const char *name, const float *v, bool trans, int n)
+        {
+            GLint location = glGetUniformLocation(program, name);
+            assert(location != -1);
+            glUniformMatrix4fv(location, n, trans, v);
         }
         
     } // namespace graphics

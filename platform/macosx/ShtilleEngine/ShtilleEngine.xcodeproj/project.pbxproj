@@ -156,6 +156,8 @@
 		525D3F511B392CF200E95392 /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 525D3F3F1B392CF200E95392 /* pngtrans.c */; };
 		525D3F521B392CF200E95392 /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 525D3F401B392CF200E95392 /* pngwio.c */; };
 		525D3F531B392CF200E95392 /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 525D3F411B392CF200E95392 /* pngwrite.c */; };
+		526A05BC1B90CC7300F4D6BC /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = 526A05BB1B90CC7300F4D6BC /* shader.h */; };
+		526A05BE1B90CC8500F4D6BC /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 526A05BD1B90CC8500F4D6BC /* shader.cpp */; };
 		529AB7C41B12142C00505715 /* frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 529AB7C21B12142C00505715 /* frustum.cpp */; };
 		529AB7C51B12142C00505715 /* frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C31B12142C00505715 /* frustum.h */; };
 		529AB7C71B12339A00505715 /* update_timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 529AB7C61B12339A00505715 /* update_timer.h */; };
@@ -392,6 +394,8 @@
 		525D3F3F1B392CF200E95392 /* pngtrans.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngtrans.c; path = ../../../sht/thirdparty/libpng/src/pngtrans.c; sourceTree = "<group>"; };
 		525D3F401B392CF200E95392 /* pngwio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngwio.c; path = ../../../sht/thirdparty/libpng/src/pngwio.c; sourceTree = "<group>"; };
 		525D3F411B392CF200E95392 /* pngwrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngwrite.c; path = ../../../sht/thirdparty/libpng/src/pngwrite.c; sourceTree = "<group>"; };
+		526A05BB1B90CC7300F4D6BC /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
+		526A05BD1B90CC8500F4D6BC /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
 		529AB7C21B12142C00505715 /* frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = frustum.cpp; sourceTree = "<group>"; };
 		529AB7C31B12142C00505715 /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
 		529AB7C61B12339A00505715 /* update_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = update_timer.h; sourceTree = "<group>"; };
@@ -842,6 +846,7 @@
 		52EB31111AF680F500060D0F /* renderer */ = {
 			isa = PBXGroup;
 			children = (
+				526A05BB1B90CC7300F4D6BC /* shader.h */,
 				520AE9A01B76875A00D597C4 /* context.h */,
 				520AE9941B766CB400D597C4 /* index_buffer.h */,
 				520AE9951B766CB400D597C4 /* vertex_buffer.h */,
@@ -891,6 +896,7 @@
 		52EB311B1AF680F500060D0F /* renderer */ = {
 			isa = PBXGroup;
 			children = (
+				526A05BD1B90CC8500F4D6BC /* shader.cpp */,
 				520AE9A41B76877200D597C4 /* context.cpp */,
 				520AE99A1B766CD800D597C4 /* index_buffer.cpp */,
 				520AE99B1B766CD800D597C4 /* vertex_buffer.cpp */,
@@ -1069,6 +1075,7 @@
 				524F33A81B3329260011AE72 /* main_wrapper.h in Headers */,
 				520AE9991B766CB400D597C4 /* video_memory_buffer.h in Headers */,
 				52EB314F1AF680F500060D0F /* vertex_format.h in Headers */,
+				526A05BC1B90CC7300F4D6BC /* shader.h in Headers */,
 				52EB31581AF680F600060D0F /* sht.h in Headers */,
 				52EB314E1AF680F500060D0F /* texture.h in Headers */,
 				52EB31641AF680F600060D0F /* stream.h in Headers */,
@@ -1355,6 +1362,7 @@
 				52EB31531AF680F600060D0F /* opengl_renderer.cpp in Sources */,
 				524523EF1B49752900F17104 /* window_wrapper.cpp in Sources */,
 				52EB31691AF680F700060D0F /* stream.cpp in Sources */,
+				526A05BE1B90CC8500F4D6BC /* shader.cpp in Sources */,
 				52A3F4651B70FC49004B433D /* tetrahedron_model.cpp in Sources */,
 				524F33B91B33294E0011AE72 /* image_tif.cpp in Sources */,
 				520AE99F1B766CD800D597C4 /* video_memory_buffer.cpp in Sources */,

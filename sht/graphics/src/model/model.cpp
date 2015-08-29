@@ -82,6 +82,7 @@ namespace sht {
             if (num_indices_ > 0xffff)
             {
                 index_size_ = sizeof(u32);
+                index_data_type_ = DataType::kUnsignedInt;
                 indices_array_ = new u8[num_indices_ * index_size_];
                 u32 *indices = reinterpret_cast<u32*>(indices_array_);
                 for (size_t i = 0; i < indices_.size(); ++i)
@@ -92,6 +93,7 @@ namespace sht {
             else
             {
                 index_size_ = sizeof(u16);
+                index_data_type_ = DataType::kUnsignedShort;
                 indices_array_ = new u8[num_indices_ * index_size_];
                 u16 *indices = reinterpret_cast<u16*>(indices_array_);
                 for (size_t i = 0; i < indices_.size(); ++i)
@@ -137,9 +139,8 @@ namespace sht {
         }
         void Model::Render()
         {
-            DataType data_type = (num_indices_ > 0xffff) ? DataType::kUnsignedInt : DataType::kUnsignedShort;
             renderer_->context()->BindVertexArrayObject(vertex_array_object_);
-            renderer_->context()->DrawElements(primitive_mode_, num_indices_, data_type);
+            renderer_->context()->DrawElements(primitive_mode_, num_indices_, index_data_type_);
         }
 
     } // namespace graphics

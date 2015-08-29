@@ -82,7 +82,7 @@ namespace sht {
 
 		// Application parameters
 		virtual const char* GetTitle(void);
-		virtual const bool IsClampFps(void);
+		virtual const bool IsClampFps(void); //!< obsolete?
 
 		// --- Messages ---
         virtual void OnKeyDown(sht::PublicKey key, int modifiers);

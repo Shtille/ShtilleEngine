@@ -8,6 +8,7 @@ SOURCES ?= \
 	$(SHT_PATH)/application/opengl/opengl_application.cpp \
 	$(SHT_PATH)/graphics/src/model/cube_model.cpp \
 	$(SHT_PATH)/graphics/src/model/tetrahedron_model.cpp \
+        $(SHT_PATH)/graphics/src/model/sphere_model.cpp \
         $(SHT_PATH)/graphics/src/model/model.cpp \
 	$(SHT_PATH)/graphics/src/image/image.cpp \
         $(SHT_PATH)/graphics/src/image/image_bmp.cpp \
@@ -22,6 +23,7 @@ SOURCES ?= \
 	$(SHT_PATH)/graphics/src/renderer/context.cpp \
 	$(SHT_PATH)/graphics/src/renderer/renderer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/texture.cpp \
+        $(SHT_PATH)/graphics/src/renderer/shader.cpp \
 	$(SHT_PATH)/graphics/src/renderer/index_buffer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/vertex_buffer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/vertex_format.cpp \

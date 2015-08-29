@@ -43,6 +43,7 @@ namespace sht {
             u32 num_indices_;
             u32 index_size_;
             u8 * indices_array_;
+            DataType index_data_type_;
             
             std::vector<VertexAttribute> attribs_;
         };

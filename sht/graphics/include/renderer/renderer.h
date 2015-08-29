@@ -12,6 +12,7 @@
 #include "index_buffer.h"
 #include "texture.h"
 #include "context.h"
+#include "shader.h"
 
 #include <list>
 #include <stack>
@@ -21,23 +22,6 @@ namespace sht {
 
 		const int kMaxImageUnit = 16;
 		const int kMaxMrt = 4;
-
-		//! Shader class
-		class Shader {
-			friend class Renderer;
-			friend class OpenGlRenderer;
-
-		protected:
-			Shader();
-			~Shader();
-			Shader(const Shader&) = delete;
-			void operator = (const Shader&) = delete;
-
-		private:
-			u32 vertex_;
-			u32 fragment_;
-			u32 program_;
-		};
 
 		//! Font class
 		class Font {
@@ -84,7 +68,6 @@ namespace sht {
 
 			void Defaults(void);
 			void CleanUp(void);
-			virtual bool CheckForErrors(void) = 0;
 			void CheckForUsing(void); //!< user may do not detach texture or shader in the end of the frame, pure debug feature
 
 			// Obtain memory consumption
@@ -136,22 +119,8 @@ namespace sht {
 			virtual void DeleteIndexBuffer(IndexBuffer* ib) = 0;
 
 			// Shader functions
-			virtual bool AddShader(Shader* &shd, const char* filename, char **attribs = NULL, int nAttribs = 0) = 0;
+			virtual bool AddShader(Shader* &shd, const char* filename, const char **attribs = NULL, u32 n_attribs = 0) = 0;
 			virtual void DeleteShader(Shader* shd) = 0;
-			virtual void ChangeShader(Shader* shd) = 0;
-			virtual void ChangeShaderAttribBinding(const char *name) = 0;
-			virtual void ChangeShaderUniform1i(const char* name, int num) = 0;
-			virtual void ChangeShaderUniform1f(const char* name, float x) = 0;
-			virtual void ChangeShaderUniform2f(const char* name, float x, float y) = 0;
-			virtual void ChangeShaderUniform3f(const char* name, float x, float y, float z) = 0;
-			virtual void ChangeShaderUniform4f(const char* name, float x, float y, float z, float w) = 0;
-			virtual void ChangeShaderUniform1fv(const char* name, float *v, int n = 1) = 0;
-			virtual void ChangeShaderUniform2fv(const char* name, float *v, int n = 1) = 0;
-			virtual void ChangeShaderUniform3fv(const char* name, float *v, int n = 1) = 0;
-			virtual void ChangeShaderUniform4fv(const char* name, float *v, int n = 1) = 0;
-			virtual void ChangeShaderUniformMatrix2fv(const char* name, float *v, bool trans = false, int n = 1) = 0;
-			virtual void ChangeShaderUniformMatrix3fv(const char* name, float *v, bool trans = false, int n = 1) = 0;
-			virtual void ChangeShaderUniformMatrix4fv(const char* name, const float *v, bool trans = false, int n = 1) = 0;
 
 			// Font functions
 			virtual void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0) = 0;
@@ -203,7 +172,6 @@ namespace sht {
 			virtual void Viewport(int w, int h) = 0;
 
 		protected:
-			void ErrorHandler(const char *message);
 			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
 			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
