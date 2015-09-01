@@ -179,14 +179,6 @@ namespace sht {
 				tex->stencil_id_ = 0;
 			}
 		}
-		void OpenGlRenderer::ApiDeleteShader(Shader* shd)
-		{
-			if (shd->program_)
-			{
-				glDeleteProgram(shd->program_);
-				shd->program_ = 0;
-			}
-		}
 		void OpenGlRenderer::ApiDeleteFont(Font* font)
 		{
 			//glDeleteLists(font->base_, 256);
@@ -771,7 +763,6 @@ namespace sht {
 		void OpenGlRenderer::DeleteShader(Shader* shader)
 		{
 			assert(shader);
-			ApiDeleteShader(shader);
 			auto it = std::find(shaders_.begin(), shaders_.end(), shader);
 			if (it != shaders_.end())
 			{

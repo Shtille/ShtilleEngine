@@ -61,6 +61,7 @@ namespace sht {
             void EnableVertexAttribArray(u32 index);
             
             // Shader
+            void DeleteProgram(u32 program);
             void BindProgram(u32 program);
             void BindAttribLocation(u32 program, const char *name);
             void Uniform1i(u32 program, const char *name, int x);

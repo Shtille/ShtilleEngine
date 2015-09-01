@@ -98,7 +98,6 @@ namespace sht {
 			// Clean up shaders
 			for (auto &obj : shaders_)
 			{
-				ApiDeleteShader(obj);
 				delete obj;
 			}
 			shaders_.clear();

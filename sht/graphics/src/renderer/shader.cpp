@@ -13,6 +13,7 @@ namespace sht {
         }
         Shader::~Shader()
         {
+            context_->DeleteProgram(program_);
         }
         void Shader::Bind()
         {

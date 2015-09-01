@@ -244,6 +244,10 @@ namespace sht {
         {
             glEnableVertexAttribArray(index);
         }
+        void OpenGlContext::DeleteProgram(u32 program)
+        {
+            glDeleteProgram(program);
+        }
         void OpenGlContext::BindProgram(u32 program)
         {
             glUseProgram(program);

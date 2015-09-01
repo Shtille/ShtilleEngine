@@ -52,12 +52,6 @@ namespace sht {
 
 		//! Base renderer class
 		class Renderer {
-
-			friend class OpenGlRenderer;
-			friend class DirectXRenderer;
-            
-            friend class VertexFormat;
-
 		public:
 			Renderer(int w, int h);
 			virtual ~Renderer();
@@ -175,7 +169,6 @@ namespace sht {
 			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
 			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
-			virtual void ApiDeleteShader(Shader* shd) = 0;
 			virtual void ApiDeleteFont(Font* font) = 0;
             
             Context * context_;
@@ -199,7 +192,7 @@ namespace sht {
 
 			// Current identifiers
 			Texture* current_textures_[kMaxImageUnit];
-			Shader* current_shader_;
+			Shader* current_shader_;                //!< obsolete
 			Font* current_font_;
 			VertexFormat* current_vertex_format_;   //!< obsolete
 			VertexFormat* active_vertex_format_;    //!< obsolete

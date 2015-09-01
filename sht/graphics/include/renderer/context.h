@@ -99,6 +99,7 @@ namespace sht {
             virtual void EnableVertexAttribArray(u32 index) = 0;
             
             // Shader
+            virtual void DeleteProgram(u32 program) = 0;
             virtual void BindProgram(u32 program) = 0;
             virtual void BindAttribLocation(u32 program, const char *name) = 0;
             virtual void Uniform1i(u32 program, const char *name, int x) = 0;

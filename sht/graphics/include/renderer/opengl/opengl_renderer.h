@@ -73,7 +73,6 @@ namespace sht {
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);
-			void ApiDeleteShader(Shader* shd);
 			void ApiDeleteFont(Font* font);
 			void ChangeImageUnit(u32 unit);
 
