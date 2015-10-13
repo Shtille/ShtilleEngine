@@ -25,6 +25,8 @@
 		52368B111B67EB64001E7AD3 /* cube_model.h in Headers */ = {isa = PBXBuildFile; fileRef = 52368B101B67EB64001E7AD3 /* cube_model.h */; };
 		52368B131B67EB79001E7AD3 /* cube_model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52368B121B67EB79001E7AD3 /* cube_model.cpp */; };
 		52392F491B450D210085A437 /* window_wrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 52392F481B450D210085A437 /* window_wrapper.h */; };
+		523957251BCD6F92009253BC /* color.h in Headers */ = {isa = PBXBuildFile; fileRef = 523957241BCD6F92009253BC /* color.h */; };
+		523957271BCD6FA1009253BC /* color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523957261BCD6FA1009253BC /* color.cpp */; };
 		523B61021B20BBE400620DDA /* log_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 523B61011B20BBE400620DDA /* log_stream.h */; };
 		523B61041B20BBFD00620DDA /* log_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 523B61031B20BBFC00620DDA /* log_stream.cpp */; };
 		5243D8311B5CEB7C007A4035 /* window_controller_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243D82F1B5CEB7C007A4035 /* window_controller_interface.h */; };
@@ -263,6 +265,8 @@
 		52368B101B67EB64001E7AD3 /* cube_model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cube_model.h; path = model/cube_model.h; sourceTree = "<group>"; };
 		52368B121B67EB79001E7AD3 /* cube_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cube_model.cpp; path = model/cube_model.cpp; sourceTree = "<group>"; };
 		52392F481B450D210085A437 /* window_wrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_wrapper.h; sourceTree = "<group>"; };
+		523957241BCD6F92009253BC /* color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = color.h; sourceTree = "<group>"; };
+		523957261BCD6FA1009253BC /* color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = color.cpp; sourceTree = "<group>"; };
 		523B61011B20BBE400620DDA /* log_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log_stream.h; sourceTree = "<group>"; };
 		523B61031B20BBFC00620DDA /* log_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log_stream.cpp; sourceTree = "<group>"; };
 		5243D82F1B5CEB7C007A4035 /* window_controller_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = window_controller_interface.h; sourceTree = "<group>"; };
@@ -960,6 +964,7 @@
 		52EB31301AF680F500060D0F /* include */ = {
 			isa = PBXGroup;
 			children = (
+				523957241BCD6F92009253BC /* color.h */,
 				52CA9E2B1B58F5BD00A08AE0 /* mouse.h */,
 				522BE53E1B4E48D100EA0F52 /* keys.h */,
 				522B13AF1B2B634100CE0944 /* string */,
@@ -984,6 +989,7 @@
 		52EB31371AF680F500060D0F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				523957261BCD6FA1009253BC /* color.cpp */,
 				52CA9E2D1B58F5CA00A08AE0 /* mouse.cpp */,
 				522BE5401B4E48EC00EA0F52 /* keys.cpp */,
 				522B13B21B2B635400CE0944 /* string */,
@@ -1085,6 +1091,7 @@
 				520AE9971B766CB400D597C4 /* index_buffer.h in Headers */,
 				52EB313F1AF680F500060D0F /* application.h in Headers */,
 				5232991C1B7C6B6100AC1A2E /* opengl_include.h in Headers */,
+				523957251BCD6F92009253BC /* color.h in Headers */,
 				522B13B11B2B634100CE0944 /* filename.h in Headers */,
 				520AE9A11B76875A00D597C4 /* context.h in Headers */,
 				52EB31621AF680F600060D0F /* file_stream.h in Headers */,
@@ -1389,6 +1396,7 @@
 				52EB315B1AF680F600060D0F /* quaternion.cpp in Sources */,
 				52EB31571AF680F600060D0F /* vertex_format.cpp in Sources */,
 				52CA9E341B5930B500A08AE0 /* model.cpp in Sources */,
+				523957271BCD6FA1009253BC /* color.cpp in Sources */,
 				520AE99D1B766CD800D597C4 /* index_buffer.cpp in Sources */,
 				520AE99E1B766CD800D597C4 /* vertex_buffer.cpp in Sources */,
 				52CA9E2E1B58F5CA00A08AE0 /* mouse.cpp in Sources */,
