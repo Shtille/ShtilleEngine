@@ -29,6 +29,8 @@ namespace sht {
             
             const float* AsArray() const;
             
+            static RgbColor Mix(const RgbColor& color1, const RgbColor& color2, f32 t);
+            
         private:
             f32 red_;
             f32 green_;
@@ -48,8 +50,11 @@ namespace sht {
             f32 red() const;
             f32 green() const;
             f32 blue() const;
+            f32 alpha() const;
             
             const float* AsArray() const;
+            
+            static RgbaColor Mix(const RgbaColor& color1, const RgbaColor& color2, f32 t);
             
         private:
             f32 red_;
@@ -58,27 +63,48 @@ namespace sht {
             f32 alpha_;
         };
         
-        //! An RGB color packing into 32 bit value, alpha byte is always 0xFF
+        //! An RGB color packed into a 32 bit value, alpha byte is always 0xFF
         class PackedRgbColor {
+            friend class PackedRgbaColor;
+            
         public:
             PackedRgbColor() = default;
-            PackedRgbColor(const PackedRgbColor&);
-            PackedRgbColor(const PackedRgbaColor&);
-            PackedRgbColor(const RgbColor&);
-            PackedRgbColor(const RgbaColor&);
+            PackedRgbColor(const PackedRgbColor& rgb_color);
+            PackedRgbColor(const PackedRgbaColor& rgba_color);
+            PackedRgbColor(const RgbColor& rgb_color);
+            PackedRgbColor(const RgbaColor& rgba_color);
+            
+            f32 red() const;
+            f32 green() const;
+            f32 blue() const;
+            
+            RgbColor Unpack();
+            
+            static PackedRgbColor Mix(const PackedRgbColor& color1, const PackedRgbColor& color2, f32 t);
             
         private:
             u32 data_;
         };
         
-        //! An RGBA color packing into 32 bit value
+        //! An RGBA color packed into a 32 bit value
         class PackedRgbaColor {
+            friend class PackedRgbColor;
+            
         public:
             PackedRgbaColor() = default;
-            PackedRgbaColor(const PackedRgbaColor&);
-            PackedRgbaColor(const PackedRgbColor&);
-            PackedRgbaColor(const RgbColor&);
-            PackedRgbaColor(const RgbaColor&);
+            PackedRgbaColor(const PackedRgbaColor& rgba_color);
+            PackedRgbaColor(const PackedRgbColor& rgb_color);
+            PackedRgbaColor(const RgbColor& rgb_color);
+            PackedRgbaColor(const RgbaColor& rgba_color);
+            
+            f32 red() const;
+            f32 green() const;
+            f32 blue() const;
+            f32 alpha() const;
+            
+            RgbaColor Unpack();
+            
+            static PackedRgbaColor Mix(const PackedRgbaColor& color1, const PackedRgbaColor& color2, f32 t);
             
         private:
             u32 data_;
