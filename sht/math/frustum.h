@@ -2,10 +2,17 @@
 #ifndef __SHT_MATH_FRUSTUM_H__
 #define __SHT_MATH_FRUSTUM_H__
 
-#include "Vector.h"
+#include "vector.h"
+#include "plane.h"
 
 namespace sht {
 namespace math {
+
+	// Forward declarations
+	struct BoundingBox;
+	struct Line;
+	struct Segment;
+	struct VerticalProfile;
 
     /** Culling information definition */
     struct CullInfo {
@@ -15,30 +22,11 @@ namespace math {
         CullInfo(bool cull = false, char active = 0x3f) : culled(cull), active_planes(active) {}
     };
 
-    /** Standard mathematical plane definition */
-    struct Plane {
-        Plane(){}
-        Plane(float x, float y, float z, float w)
-        {
-            normal = vec3(x,y,z);
-            float invLen = 1.0f / normal.Length();
-            normal *= invLen;
-            offset = w * invLen;
-        }
-
-        vec3 normal;
-        float offset;
-    };
-
-    /** Bounding box definition */
-    struct BoundingBox {
-        vec3 center;
-        vec3 extent;
-    };
-
     /** 6-planes view frustum class */
     class Frustum {
     public:
+	    const vec3& getDir() const; //!< returns frustum view direction
+	    
         //! initializes frustum with matrix
         // Note: mvp should be column-major matrix
         void Load(const float *mvp);
@@ -50,6 +38,7 @@ namespace math {
         bool IsPointIn(const vec3& p) const;
         bool IsSphereIn(const vec3& p, float r) const;
         bool IsPolygonIn(int num_points, vec3 *p) const;
+        bool IsSegmentIn(const Segment& segment) const;
         bool IsBoxIn(const vec2& p, float min_h, float max_h, float size) const;
         bool IsBoxIn(const vec3& p, float sx, float sy, float sz) const;
         bool IsBoxIn(const BoundingBox& bb) const;
@@ -85,8 +74,15 @@ namespace math {
         */
         CullInfo ComputeBoxVisibility(const vec3& center, const vec3& extent, CullInfo in) const;
 
+        int IntersectionsWithSegment(const Segment& segment, vec3 points[2]) const;
+        int IntersectionsWithPlane(const Plane& plane, Segment segments[6]) const;
+        int IntersectionsWithProfile(const VerticalProfile& profile, Segment segments[6]) const;
+
     protected:
-        Plane planes_[6];
+    	bool CropLine(const Line& line, int index, Segment& cropped_segment) const;
+
+        Plane planes_[6];           		//!< frustum planes
+        static int opposite_planes_[6];		//!< opposite plane indices
     };
 
 } // namespace math

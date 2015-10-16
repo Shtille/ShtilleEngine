@@ -1,5 +1,12 @@
-#include "Frustum.h"
+#include "frustum.h"
+
+#include "line.h"
+#include "segment.h"
+#include "bounding_box.h"
+#include "vertical_profile.h"
+
 #include <cmath>
+
 #define FRUSTUM_LEFT   0
 #define FRUSTUM_RIGHT  1
 #define FRUSTUM_TOP    2
@@ -10,6 +17,12 @@
 namespace sht {
 namespace math {
 
+	int Frustum::opposite_planes_[6] = {1,0,3,2,5,4}; // opposite planes' indices
+
+	const vec3& Frustum::getDir() const
+    {
+        return planes_[FRUSTUM_NEAR].normal;
+    }
     void Frustum::Load(const float *mvp)
     {        
         // mvp is column-major matrix
@@ -62,6 +75,18 @@ namespace math {
                 break;
             }
             if (skip)
+                continue;
+
+            return false;
+        }
+        return true;
+    }
+    bool Frustum::IsSegmentIn(const Segment& segment) const
+    {
+        for (int i = 0; i < 6; ++i)
+        {
+            if (planes_[i].Distance(segment.begin) >= 0.0f ||
+                planes_[i].Distance(segment.end) >= 0.0f)
                 continue;
 
             return false;
@@ -292,6 +317,129 @@ namespace math {
         }
 
         return in;    // Box not definitively culled.  Return updated active plane flags.
+    }
+    int Frustum::IntersectionsWithSegment(const Segment& segment, vec3 points[2]) const
+    {
+        int num_intersections = 0;
+        vec3 p;
+
+        for (int i = 0; i < 6; ++i)
+        {
+            if (!planes_[i].IntersectsSegment(segment.begin, segment.end, p))
+                continue;
+
+            bool good = true;
+            for (int j = 0; j < 6; ++j)
+            {
+                if (j == i || j == opposite_planes_[i]) // dont need to test this and opposite planes
+                    continue;
+
+                // Distance to the each plane should be positive
+                good = (planes_[j].normal & p) + planes_[j].offset >= 0.0f;
+                if (!good)
+                    break;
+            }
+            if (!good)
+                continue;
+
+            // We've found one good intersection
+            points[num_intersections] = p;
+            ++num_intersections;
+
+            if (num_intersections == 2)
+                break;
+        }
+        return num_intersections;
+    }
+    int Frustum::IntersectionsWithPlane(const Plane& plane, Segment segments[6]) const
+    {
+        int num_segments = 0;
+        for (int i = 0; i < 6; ++i)
+        {
+            Line line;
+            if (!planes_[i].IntersectsPlane(plane, line))
+                continue;
+
+            if (!CropLine(line, i, segments[num_segments]))
+                continue;
+
+            // 3. Add cropped segment to the list
+            ++num_segments;
+        }
+        return num_segments;
+    }
+    int Frustum::IntersectionsWithProfile(const VerticalProfile& profile, Segment segments[6]) const
+    {
+        Plane lower_bound(0.0f, 1.0f, 0.0f, -profile.hmin);
+        Plane upper_bound(0.0f, -1.0f, 0.0f, profile.hmax);
+
+        int num_segments = 0;
+        for (int i = 0; i < 6; ++i)
+        {
+            Line line;
+            if (!planes_[i].IntersectsPlane(profile.plane, line))
+                continue;
+
+            if (!CropLine(line, i, segments[num_segments]))
+                continue;
+
+            // Test whether segment lies within profile
+            if (!profile.InRange(segments[num_segments]))
+                continue;
+
+            // Also we have to crop segment by vertical profile's bounds
+            lower_bound.CropSegment(segments[num_segments].begin, segments[num_segments].end);
+            upper_bound.CropSegment(segments[num_segments].begin, segments[num_segments].end);
+
+            // 3. Add cropped segment to the list
+            ++num_segments;
+        }
+        return num_segments;
+    }
+    bool Frustum::CropLine(const Line& line, int index, Segment& cropped_segment) const
+    {
+        vec3 points[2];
+        int num_intersections = 0;
+        for (int i = 0; i < 6; ++i)
+        {
+            // Line should be cropped by the 4 others planes
+            if (i == index || i == opposite_planes_[index]) // we do only need to test 4 planes
+                continue;
+
+            // We will try to find two intersections
+            vec3 & p = points[num_intersections];
+            if (!planes_[i].IntersectsLine(line, p))
+                continue;
+
+            // Found one, test is it in frustum
+            bool good = true;
+            for (int j = 0; j < 6; ++j)
+            {
+                if (j == index || j == opposite_planes_[index] ||
+                    j == i || j == opposite_planes_[i]) // dont need to test this and opposite planes
+                    continue;
+
+                // Distance to the each plane should be positive
+                good = planes_[j].Distance(p) >= 0.0f;
+                if (!good)
+                    break;
+            }
+            if (!good)
+                continue;
+
+            // We've found one good intersection
+            ++num_intersections;
+
+            // We're done
+            if (num_intersections == 2)
+            {
+                // Order of points doesn't matter
+                cropped_segment.begin = points[0];
+                cropped_segment.end = points[1];
+                return true;
+            }
+        }
+        return false;
     }
 
 } // namespace math
