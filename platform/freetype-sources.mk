@@ -31,6 +31,7 @@ SOURCES = \
 	$(FT_PATH)/base/ftgxval.c \
 	$(FT_PATH)/base/ftotval.c \
 	$(FT_PATH)/base/ftpatent.c \
+        $(FT_PATH)/base/ftxf86.c \
 	$(FT_PATH)/pcf/pcf.c \
 	$(FT_PATH)/pfr/pfr.c \
 	$(FT_PATH)/psaux/psaux.c \
