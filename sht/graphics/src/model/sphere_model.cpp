@@ -1,5 +1,6 @@
 #include "../../include/model/sphere_model.h"
 #include "../../../math/sht_math.h"
+#include <math.h>
 
 namespace sht {
     namespace graphics {

@@ -1,5 +1,5 @@
 #include "../../include/renderer/shader.h"
-#include "opengl_include.h"
+#include "opengl/opengl_include.h"
 #include "../../../system/include/stream/file_stream.h"
 #include <string>
 

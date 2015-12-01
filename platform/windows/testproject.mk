@@ -21,7 +21,7 @@ LIBRARIES = \
 	-lstdc++ -lgdi32 \
 	-lShtilleEngine \
         -lglew -lopengl32 \
-        -ljpeg -lpng -lz
+        -lfreetype -ljpeg -lpng -lz
 
 all: $(SOURCES) $(EXECUTABLE)
 	echo All is done!
