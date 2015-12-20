@@ -1,6 +1,6 @@
-#include "../include/scope_timer.h"
+#include "../../include/time/scope_timer.h"
 
-#include "../include/stream/stream.h"
+#include "../../include/stream/stream.h"
 
 #include <chrono>
 

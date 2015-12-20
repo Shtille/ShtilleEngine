@@ -2,7 +2,7 @@
 #include "../window_struct.h"
 #include "../../../common/platform.h"
 #include "../../../application/application.h"
-#include "../../../system/include/update_timer.h"
+#include "../../../system/include/time/update_timer.h"
 #include <Windowsx.h> // for GET_X_LPARAM
 
 #ifndef WM_MOUSEHWHEEL
