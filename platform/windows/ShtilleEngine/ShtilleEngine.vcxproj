@@ -51,7 +51,8 @@
     <ClInclude Include="..\..\..\sht\platform\src\window_controller_interface.h" />
     <ClInclude Include="..\..\..\sht\platform\src\window_struct.h" />
     <ClInclude Include="..\..\..\sht\system\include\memory_leaks.h" />
-    <ClInclude Include="..\..\..\sht\system\include\update_timer.h" />
+    <ClInclude Include="..\..\..\sht\system\include\time\update_timer.h" />
+    <ClInclude Include="..\..\..\sht\system\include\time\scope_timer.h" />
     <ClInclude Include="..\..\..\sht\system\include\keys.h" />
     <ClInclude Include="..\..\..\sht\system\include\mouse.h" />
     <ClInclude Include="..\..\..\sht\system\include\stream\log_stream.h" />
@@ -97,7 +98,8 @@
     <ClCompile Include="..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\stream\stream.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\string\filename.cpp" />
-    <ClCompile Include="..\..\..\sht\system\src\update_timer.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\time\update_timer.cpp" />
+    <ClCompile Include="..\..\..\sht\system\src\time\scope_timer.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\keys.cpp" />
     <ClCompile Include="..\..\..\sht\system\src\mouse.cpp" />
   </ItemGroup>

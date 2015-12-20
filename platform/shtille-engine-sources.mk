@@ -44,7 +44,8 @@ SOURCES ?= \
 	$(SHT_PATH)/system/src/memory_leaks.cpp \
 	$(SHT_PATH)/system/src/keys.cpp \
 	$(SHT_PATH)/system/src/mouse.cpp \
-	$(SHT_PATH)/system/src/update_timer.cpp
+	$(SHT_PATH)/system/src/time/update_timer.cpp \
+        $(SHT_PATH)/system/src/time/scope_timer.cpp
 
 INCLUDE = \
         -I$(SHT_PATH) \
