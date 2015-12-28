@@ -52,6 +52,11 @@ namespace sht {
 		void QuaternionToMatrix(Matrix3 &m, const Quaternion &q);
 		void QuaternionSLERP(Quaternion &q, const Quaternion& q1, const Quaternion& q2, float t);
 
+		void WorldToScreen(const Vector4& world, const Matrix4& proj, const Matrix4& view, const Vector4 viewport, Vector2& screen);
+	    float DistanceToCamera(const Vector3& world, const Matrix4& view);
+    	float DistanceToCamera(const Vector4& world, const Matrix4& view);
+    	void ScreenToRay(const Vector3& screen_ndc, const Matrix4& proj, const Matrix4& view, Vector3& ray);
+
 	} // namespace sht
 } // namespace math
 

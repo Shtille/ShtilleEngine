@@ -456,6 +456,50 @@ namespace sht {
 			q.z = scale0 * q1.z + scale1 * new1[2];
 			q.w = scale0 * q1.w + scale1 * new1[3];
 		}
+		void WorldToScreen(const Vector4& world, const Matrix4& proj, const Matrix4& view,
+        	const Vector4 viewport, Vector2& screen)
+		{
+			// Step 1: 4d Clip space
+			vec4 pos_clip = proj * view * world;
+
+			// Step 2: 3d Normalized Device Coordinate space
+			vec3 pos_ndc = pos_clip.xyz() / pos_clip.w;
+
+			// Step 3: Window Coordinate space
+			screen.x = (pos_ndc.x + 1.0f) * 0.5f * viewport.z + viewport.x;
+			screen.y = (pos_ndc.y + 1.0f) * 0.5f * viewport.w + viewport.y;
+		}
+		float DistanceToCamera(const Vector3& world, const Matrix4& view)
+		{
+			vec4 pos_eye = view * Vector4(world, 1.0f);
+			return pos_eye.xyz().Length();
+		}
+		float DistanceToCamera(const Vector4& world, const Matrix4& view)
+		{
+			vec4 pos_eye = view * world;
+			return pos_eye.xyz().Length();
+		}
+		void ScreenToRay(const Vector3& screen_ndc, const Matrix4& proj, const Matrix4& view, Vector3& ray)
+		{
+			// Step 1: 3d Normalised Device Coordinates ( range [-1:1, -1:1, -1:1] )
+			// We already have it in screen_ndc input variable.
+		
+			// Step 2: 4d Homogeneous Clip Coordinates ( range [-1:1, -1:1, -1:1, -1:1] )
+			vec4 ray_clip(
+				screen_ndc.x,
+				screen_ndc.y,
+				-1.0, // We want our ray's z to point forwards - this is usually the negative z direction in OpenGL style.
+				1.0
+				);
+			// Step 3: 4d Eye (Camera) Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
+			vec4 ray_eye = proj.GetInverse() * ray_clip;
+			// Now, we only needed to un-project the x,y part, so let's manually set the z,w part to mean "forwards, and not a point".
+			ray_eye.z = -1.0f;
+			ray_eye.w = 0.0f;
+			// Step 4: 4d World Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
+			ray = (view.GetInverse() * ray_eye).xyz();
+			ray.Normalize();
+		}
 
 	} // namespace math
 } // namespace sht
