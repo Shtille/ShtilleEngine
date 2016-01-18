@@ -3,6 +3,7 @@
 #include "../sht/graphics/include/model/cube_model.h"
 #include "../sht/graphics/include/model/tetrahedron_model.h"
 #include "../sht/graphics/include/model/sphere_model.h"
+#include "../sht/graphics/include/renderer/text.h"
 #include <cmath>
 
 class UserApp : public sht::OpenGlApplication 
@@ -47,12 +48,22 @@ public:
         if (!renderer_->AddShader(shader2_, "data/shaders/shader2", attribs, 1))
             return false;
         
+        if (!renderer_->AddShader(text_shader_, "data/shaders/text_shader", attribs, 1))
+            return false;
+        
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+        
+        renderer_->AddFont(font_, "data/fonts/Bitter-Regular.otf");
+//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x pq\nQQ gimp");
+        text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+        if (!text_)
+            return false;
         
         return true;
     }
     void Unload() final
     {
+        delete text_;
         delete cube_;
         delete tetrahedron_;
     }
@@ -106,6 +117,13 @@ public:
         tetrahedron_->Render();
         renderer_->PopMatrix();
         
+        // Draw text
+        text_shader_->Bind();
+        text_shader_->Uniform1i("u_texture", 0);
+        text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
+        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        text_->Render();
+        
         shader_->Unbind();
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
@@ -156,6 +174,9 @@ private:
     sht::graphics::Model * tetrahedron_;
     sht::graphics::Shader * shader_;
     sht::graphics::Shader * shader2_;
+    sht::graphics::Shader * text_shader_;
+    sht::graphics::Font * font_;
+    sht::graphics::DynamicText * text_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;
@@ -169,9 +190,6 @@ private:
     vec3 camera_position;
     float view_alpha;
     float view_theta;
-    
-    u32 vao1, vao2;
-    u32 vbo1, vbo2;
 };
 
 DECLARE_MAIN(UserApp);

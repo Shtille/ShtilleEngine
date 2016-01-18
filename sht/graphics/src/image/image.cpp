@@ -53,6 +53,44 @@ namespace sht {
 				return 24;
 			}
 		}
+        static int GetChannels(Image::Format fmt)
+        // Number of channels
+        {
+            switch (fmt)
+            {
+                case Image::Format::kA8:
+                case Image::Format::kI8:
+                case Image::Format::kL8:
+                case Image::Format::kR8:
+                case Image::Format::kA16:
+                case Image::Format::kI16:
+                case Image::Format::kL16:
+                case Image::Format::kR16:
+                case Image::Format::kA32:
+                case Image::Format::kI32:
+                case Image::Format::kL32:
+                case Image::Format::kR32:
+                    return 1;
+                case Image::Format::kLA8:
+                case Image::Format::kRG8:
+                case Image::Format::kLA16:
+                case Image::Format::kRG16:
+                case Image::Format::kLA32:
+                case Image::Format::kRG32:
+                    return 2;
+                case Image::Format::kRGB8:
+                case Image::Format::kRGB16:
+                case Image::Format::kRGB32:
+                    return 3;
+                case Image::Format::kRGBA8:
+                case Image::Format::kRGBA16:
+                case Image::Format::kRGBA32:
+                    return 4;
+                default:
+                    assert(false && "unknown image format");
+                    return 3;
+            }
+        }
 		static Image::FileFormat ExtractFileFormat(const char* filename)
 		{
 			sht::system::Filename fn(filename);
@@ -115,9 +153,29 @@ namespace sht {
 			format_ = fmt;
 			int bpp = GetBpp(fmt);
 			bpp_ = bpp >> 3; // bits to bytes
+            channels_ = GetChannels(fmt);
 			pixels_ = new u8[width_ * height_ * bpp_];
 			return pixels_;
 		}
+        void Image::FillWithZeroes()
+        {
+            memset(pixels_, 0, width_ * height_ * bpp_);
+        }
+        void Image::SubData(int offset_x, int offset_y, int w, int h, const u8* data)
+        {
+            int max_x = offset_x + w;
+            int max_y = offset_y + h;
+            assert(max_x <= width_);
+            assert(max_y <= height_);
+            
+            // Data should have the same bpp as source
+            for (int y = 0; y < h; ++y)
+            {
+                u8* dst = &pixels_[((y + offset_y)*width_ + offset_x)*bpp_];
+                const u8* src = &data[(y*w)*bpp_];
+                memcpy(dst, src, w * bpp_);
+            }
+        }
 		bool Image::Save(const char* filename)
 		{
 			FileFormat fmt = ExtractFileFormat(filename);

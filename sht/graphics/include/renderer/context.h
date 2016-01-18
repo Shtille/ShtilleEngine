@@ -13,6 +13,7 @@ namespace sht {
             kLineStrip,
             kTriangles,
             kTriangleStrip,
+            kQuads,
             kCount
         };
         
@@ -83,6 +84,7 @@ namespace sht {
             virtual void DeleteVertexBuffer(u32& obj) = 0;
             virtual void BindVertexBuffer(u32 obj) = 0;
             virtual void VertexBufferData(u32 size, const void *data, BufferUsage usage) = 0;
+            virtual void VertexBufferSubData(u32 size, const void *data) = 0;
             virtual void* MapVertexBufferData(DataAccessType access) = 0;
             virtual void UnmapVertexBufferData() = 0;
             
@@ -91,6 +93,7 @@ namespace sht {
             virtual void DeleteIndexBuffer(u32& obj) = 0;
             virtual void BindIndexBuffer(u32 obj) = 0;
             virtual void IndexBufferData(u32 size, const void *data, BufferUsage usage) = 0;
+            virtual void IndexBufferSubData(u32 size, const void *data) = 0;
             virtual void* MapIndexBufferData(DataAccessType access) = 0;
             virtual void UnmapIndexBufferData() = 0;
             

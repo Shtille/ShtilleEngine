@@ -12,9 +12,6 @@ namespace sht {
 			OpenGlRenderer(int w, int h);
 			virtual ~OpenGlRenderer();
 
-			f32 GetStringHeight(f32 scale);
-			f32 GetStringWidth(f32 scale, const char *str);
-
 			void CreateTextureColor(Texture* &texture, float r, float g, float b, float a);
 			void CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt = Image::Format::kRGB8);
 			void CreateTextureDepth(Texture* &texture, int w, int h, u32 depthSize);
@@ -42,10 +39,8 @@ namespace sht {
 			bool AddShader(Shader* &shader, const char* filename, const char **attribs = NULL, u32 n_attribs = 0);
 			void DeleteShader(Shader* shader);
 
-			void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0);
+			void AddFont(Font* &font, const char* fontname);
 			void DeleteFont(Font* font);
-			void ChangeFont(Font* font);
-			void Print(f32 x, f32 y, f32 s, f32 r, f32 g, f32 b, const char *string, ...);
 
 			void ReadPixels(int w, int h, u8 *data);
 
@@ -73,7 +68,6 @@ namespace sht {
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);
-			void ApiDeleteFont(Font* font);
 			void ChangeImageUnit(u32 unit);
 
 			u32 framebuffer_;				//!< OpenGL framebuffer object

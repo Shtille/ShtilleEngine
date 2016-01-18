@@ -24,9 +24,13 @@ namespace sht {
         {
             context_->BindVertexBuffer(0);
         }
-        void VertexBuffer::SetData(u32 size, void *data, BufferUsage usage)
+        void VertexBuffer::SetData(u32 size, const void *data, BufferUsage usage)
         {
             context_->VertexBufferData(size, data, usage);
+        }
+        void VertexBuffer::SubData(u32 size, const void *data)
+        {
+            context_->VertexBufferSubData(size, data);
         }
         void* VertexBuffer::Lock(DataAccessType access)
         {

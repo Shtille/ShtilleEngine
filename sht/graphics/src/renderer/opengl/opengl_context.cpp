@@ -18,6 +18,7 @@ namespace sht {
             primitive_type_map_[PrimitiveType::kLineStrip] = GL_LINE_STRIP;
             primitive_type_map_[PrimitiveType::kTriangles] = GL_TRIANGLES;
             primitive_type_map_[PrimitiveType::kTriangleStrip] = GL_TRIANGLE_STRIP;
+            primitive_type_map_[PrimitiveType::kQuads] = GL_QUADS;
             assert(primitive_type_map_.size() == (size_t)PrimitiveType::kCount);
             
             data_type_map_[DataType::kUnsignedShort] = GL_UNSIGNED_SHORT;
@@ -200,6 +201,10 @@ namespace sht {
             u32 usage_type = buffer_usage_map_[usage];
             glBufferData(GL_ARRAY_BUFFER, size, data, usage_type);
         }
+        void OpenGlContext::VertexBufferSubData(u32 size, const void *data)
+        {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+        }
         void* OpenGlContext::MapVertexBufferData(DataAccessType access)
         {
             u32 access_type = data_access_map_[access];
@@ -225,6 +230,10 @@ namespace sht {
         {
             u32 usage_type = buffer_usage_map_[usage];
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage_type);
+        }
+        void OpenGlContext::IndexBufferSubData(u32 size, const void *data)
+        {
+            glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data);
         }
         void* OpenGlContext::MapIndexBufferData(DataAccessType access)
         {

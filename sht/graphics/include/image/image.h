@@ -44,6 +44,8 @@ namespace sht {
 			int bpp();
 
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
+            void FillWithZeroes();
+            void SubData(int offset_x, int offset_y, int w, int h, const u8* data);
 			bool Save(const char* filename);							//!< saves image to file with specified format
 
 			bool LoadFromFile(const char* filename);					//!< loads image from file

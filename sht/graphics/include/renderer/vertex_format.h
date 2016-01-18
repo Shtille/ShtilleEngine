@@ -40,6 +40,7 @@ namespace sht {
 			friend class OpenGlRenderer;
             
             friend class Model;
+            friend class Text;
 
 		public:
 			struct Attrib {

@@ -5,46 +5,6 @@
 namespace sht {
 	namespace graphics {
 
-		Font::Font()
-		{
-		}
-		Font::~Font()
-		{
-		}
-		const int Font::GetBmpSize()
-		{
-			return 1024;
-		}
-		f32 Font::GetStrWidth(const char *str) const
-		{
-			int	shift = 0;
-#if defined(TARGET_WINDOWS)
-            size_t strl = strlen(str);
-			for (size_t i = 0; i < strl; ++i)
-			{
-				shift += Abc[(u8)str[i]].abcA +
-					Abc[(u8)str[i]].abcB +
-					Abc[(u8)str[i]].abcC;
-			}
-			if (strl > 0)
-			{
-				shift -= Abc[(u8)str[0]].abcA;
-				shift -= Abc[(u8)str[strl - 1]].abcC;
-			}
-#else
-			//static_assert(false, "How to be with fonts on mac?");
-#endif
-			return (f32)shift / (f32)Font::GetBmpSize();
-		}
-		const f32 Font::GetBaseSize()
-		{
-			return 0.1f;
-		}
-		const f32 Font::GetBaseScale()
-		{
-			return 1.6f;
-		}
-
 		Renderer::Renderer(int w, int h)
 		{
 			UpdateSizes(w, h);
@@ -64,6 +24,18 @@ namespace sht {
         {
             return context_;
         }
+        int Renderer::width()
+        {
+            return width_;
+        }
+        int Renderer::height()
+        {
+            return height_;
+        }
+        float Renderer::aspect_ratio()
+        {
+            return aspect_ratio_;
+        }
 		void Renderer::UpdateSizes(int w, int h)
 		{
 			width_ = w;
@@ -75,7 +47,6 @@ namespace sht {
 			for (int i = 0; i < kMaxImageUnit; ++i)
 				current_textures_[i] = nullptr;
 			current_shader_ = nullptr;
-			current_font_ = nullptr;
 			current_vertex_format_ = nullptr;
 			active_vertex_format_ = nullptr;
 			current_vertex_buffer_ = nullptr;
@@ -105,7 +76,6 @@ namespace sht {
 			// Clean up fonts
 			for (auto &obj : fonts_)
 			{
-				ApiDeleteFont(obj);
 				delete obj;
 			}
 			fonts_.clear();

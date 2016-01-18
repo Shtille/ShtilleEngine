@@ -48,14 +48,6 @@ namespace sht {
 
 			glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 		}
-		f32 OpenGlRenderer::GetStringHeight(f32 scale)
-		{
-			return 0.9375f * Font::GetBaseSize() * scale;
-		}
-		f32 OpenGlRenderer::GetStringWidth(f32 scale, const char *str)
-		{
-			return current_font_->GetStrWidth(str) * scale * Font::GetBaseScale() * 0.9375f;
-		}
 		void OpenGlRenderer::ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt)
 		{
 			tex = new OpenGlTexture();
@@ -178,10 +170,6 @@ namespace sht {
 				glDeleteRenderbuffers(1, &tex->stencil_id_);
 				tex->stencil_id_ = 0;
 			}
-		}
-		void OpenGlRenderer::ApiDeleteFont(Font* font)
-		{
-			//glDeleteLists(font->base_, 256);
 		}
 		void OpenGlRenderer::CreateTextureColor(Texture* &texture, float r, float g, float b, float a)
 		{
@@ -341,6 +329,8 @@ namespace sht {
 
 			glGenTextures(1, &texture->texture_id_);
 			glBindTexture(texture->target_, texture->texture_id_);
+            
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameterf(texture->target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -479,10 +469,14 @@ namespace sht {
 				if (texture == nullptr)
 				{
 					// No texture wanted, so just disable the target
+#if 0 // deprecated in core
 					glDisable(curTex->target_);
+#endif
+                    glBindTexture(curTex->target_, 0);
 				}
 				else
 				{
+#if 0 // deprecated in core
 					if (curTex == nullptr)
 					{
 						// No texture currently bound, so enable the target
@@ -494,6 +488,7 @@ namespace sht {
 						glDisable(curTex->target_);
 						glEnable(texture->target_);
 					}
+#endif
 					// Bind the texture
 					glBindTexture(texture->target_, texture->texture_id_);
 				}
@@ -770,192 +765,34 @@ namespace sht {
 				delete shader;
 			}
 		}
-		void OpenGlRenderer::AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family)
+		void OpenGlRenderer::AddFont(Font* &font, const char* fontname)
 		{
 			font = new Font();
-
-#if defined(TARGET_WINDOWS)
-			const int nBmpSize = Font::GetBmpSize();
-			const int nCharSize = nBmpSize / 16;
-
-			// Read preferences
-			int iWidth = (bold) ? FW_BOLD : FW_DONTCARE;
-			DWORD dwItalic = (italic) ? TRUE : FALSE;
-			DWORD dwUnderline = (underline) ? TRUE : FALSE;
-			DWORD dwStrikeOut = (strikeout) ? TRUE : FALSE;
-			DWORD dwFamily = family;
-
-			// Create desired font
-			HFONT hFont;
-			hFont = CreateFontA(nCharSize,					// The height, in logical units, of the font's character cell or character. 
-				0,							// The average width, in logical units, of characters in the requested font.
-				0,							// The angle, in tenths of degrees, between the escapement vector and the x-axis of the device.
-				0,							// The angle, in tenths of degrees, between each character's base line and the x-axis of the device.
-				iWidth,						// The weight of the font in the range 0 through 1000
-				dwItalic,					// Specifies an italic font if set to TRUE.
-				dwUnderline,					// Specifies an underlined font if set to TRUE.
-				dwStrikeOut,					// A strikeout font if set to TRUE.
-				RUSSIAN_CHARSET,				// The character set.
-				OUT_OUTLINE_PRECIS,			// The output precision.
-				CLIP_DEFAULT_PRECIS,			// The clipping precision.
-				ANTIALIASED_QUALITY,			// The output quality. 
-				VARIABLE_PITCH | dwFamily,	// The pitch and family of the font.
-				fontname);					// A pointer to a null-terminated string that specifies the typeface name of the font.
-			assert(hFont);
-			if (!hFont)
-			{
-				delete font;
-				return;
-			}
-
-			// Create bitmap
-			HDC hdcWindow = GetDC(NULL);
-			HDC hdcBitmap = CreateCompatibleDC(hdcWindow);
-			HBITMAP hBitmap = CreateCompatibleBitmap(hdcWindow, nBmpSize, nBmpSize);
-
-			// Select objects
-			SelectObject(hdcBitmap, hBitmap);
-			SelectObject(hdcBitmap, hFont);
-
-			// Select colors
-			SetBkColor(hdcBitmap, 0);
-			SetTextColor(hdcBitmap, ((COLORREF)(((BYTE)(255) | ((WORD)((BYTE)(255)) << 8)) | (((DWORD)(BYTE)(255)) << 16))));
-
-			// Fill out our bitmap with symbols
-			if (GetCharABCWidths(hdcBitmap, 0, 255, font->Abc))
-			{
-				int i, x, y;
-				char temp[2] = {};
-				// We now have an array of ABC structures
-				for (i = 0; i < 256; ++i)
-				{
-					x = (i % 16) * nCharSize;
-					y = (i / 16) * nCharSize;
-					temp[0] = i;
-					TextOutA(hdcBitmap, x, y, temp, 1);
-				}
-			}
-
-			// Get the BITMAP from the HBITMAP
-			BITMAP bitmap;
-			GetObject(hBitmap, sizeof(BITMAP), &bitmap);
-
-			BITMAPINFOHEADER   bi;
-			bi.biSize = sizeof(BITMAPINFOHEADER);
-			bi.biWidth = bitmap.bmWidth;
-			bi.biHeight = bitmap.bmHeight;
-			bi.biPlanes = 1;
-			bi.biBitCount = 32;
-			bi.biCompression = BI_RGB;
-			bi.biSizeImage = 0;
-			bi.biXPelsPerMeter = 0;
-			bi.biYPelsPerMeter = 0;
-			bi.biClrUsed = 0;
-			bi.biClrImportant = 0;
-
-			assert(bi.biBitCount == 32);
-
-			u8 *lpbitmap = new u8[bi.biWidth * bi.biHeight * (bi.biBitCount / 8)];
-
-			// Get bits from source image, but notice what all alpha bits are set to 0
-			GetDIBits(hdcBitmap, hBitmap, 0, (UINT)bitmap.bmHeight, lpbitmap, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
-
-			// Make pixels with text data non-transparent
-			for (int i = 0; i < bi.biWidth * bi.biHeight * 4; i += 4)
-				if (lpbitmap[i] > 0)
-					lpbitmap[i + 3] = 255;
-
-			CreateTextureFromData(font->texture_, (int)bi.biWidth, (int)bi.biHeight, graphics::Image::Format::kRGBA8, lpbitmap);
-
-			delete[] lpbitmap;
-
-			assert(font->texture_);
-
-			// Scale factor to scale new size to old size (supposed to be 1.6f)
-			const f32 scale = 1.6f;
-
-			// Finally create display lists
-			font->base_ = glGenLists(256);
-			ChangeTexture(font->texture_);
-			for (s32 i = 0; i < 16; i++)
-			{
-				for (s32 j = 0; j < 16; j++)
-				{
-					// standart sizes and offsets in pixels
-					s32 sym = i * 16 + j;
-					f32 offA = (f32)font->Abc[sym].abcA / (f32)nBmpSize; // 0 to 1
-					f32 offB = (f32)font->Abc[sym].abcB / (f32)nBmpSize; // 0 to 1
-					f32 offC = (f32)font->Abc[sym].abcC / (f32)nBmpSize; // 0 to 1
-					glTranslatef(offA * scale, 0.0f, 0.0f);
-					glNewList(font->base_ + sym, GL_COMPILE);
-					glBegin(GL_QUADS);
-					glTexCoord2f(j*0.0625f + offA, 1.0f - i*0.0625f);
-					glVertex2f(0.0f, 0.0625f * scale);
-					glTexCoord2f(j*0.0625f + offA + offB, 1.0f - i*0.0625f);
-					glVertex2f(offB * scale, 0.0625f * scale);
-					glTexCoord2f(j*0.0625f + offA + offB, 1.0f - (i*0.0625f + 0.0625f));
-					glVertex2f(offB * scale, 0.0f);
-					glTexCoord2f(j*0.0625f + offA, 1.0f - (i*0.0625f + 0.0625f));
-					glVertex2f(0.0f, 0.0f);
-					glEnd();
-					glTranslatef((offB + offC) * scale, 0.0f, 0.0f);
-					glEndList();
-				}
-			}
-
-			// Clean up all allocated data
-			DeleteObject(hBitmap);
-			DeleteObject(hdcBitmap);
-			ReleaseDC(NULL, hdcWindow);
-
-			DeleteObject(hFont);
-#elif defined(TARGET_LINUX)
-			static_assert(false, "Font creation has not been defined");
-#elif defined(TARGET_MAC)
-			//static_assert(false, "Font creation has not been defined");
-#endif
-
-			context_->CheckForErrors();
-
-			fonts_.push_back(font);
+            
+            const int kFontHeight = 64;
+            
+            Image image;
+            if (font->MakeAtlas(fontname, kFontHeight, &image))
+            {
+                CreateTextureFromData(font->texture_, image.width(), image.height(), image.format(), image.pixels());
+                
+                fonts_.push_back(font);
+            }
+            else
+            {
+                delete font;
+                font = nullptr;
+            }
 		}
 		void OpenGlRenderer::DeleteFont(Font* font)
 		{
 			assert(font);
-			ApiDeleteFont(font);
 			auto it = std::find(fonts_.begin(), fonts_.end(), font);
 			if (it != fonts_.end())
 			{
 				fonts_.erase(it);
 				delete font;
 			}
-		}
-		void OpenGlRenderer::ChangeFont(Font* font)
-		{
-			current_font_ = font;
-		}
-		void OpenGlRenderer::Print(f32 x, f32 y, f32 s, f32 r, f32 g, f32 b, const char *string, ...)
-		{
-			assert(current_font_);
-			assert(string);
-
-			char		text[256];		// Holds Our String
-			va_list		ap;				// Pointer To List Of Arguments
-
-			va_start(ap, string);				// Parses The String For Variables
-            vsprintf(text, string, ap);		    // And Converts Symbols To Actual Numbers
-			va_end(ap);							// Results Are Stored In Text
-
-//			glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT);
-//			ChangeTexture(current_font_->texture_);
-//			glPushMatrix();
-//			glColor3f(r, g, b);
-//			glTranslatef(x, y, 0.0f);
-//			glScalef(s, s, 1.0f);
-//			glListBase(current_font_->base_);
-//			glCallLists((GLsizei)strlen(text), GL_UNSIGNED_BYTE, text);
-//			glPopMatrix();
-//			glPopAttrib();
 		}
 		void OpenGlRenderer::ReadPixels(int w, int h, u8 *data)
 		{

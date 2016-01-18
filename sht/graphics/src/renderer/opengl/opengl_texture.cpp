@@ -95,7 +95,7 @@ namespace sht {
 			case Image::Format::kRG8: return GL_RG8;
 			case Image::Format::kRG16: return GL_RG16F;
 			case Image::Format::kRG32: return GL_RG32F;
-			case Image::Format::kA8: return GL_ALPHA8I_EXT;
+			case Image::Format::kA8: return GL_ALPHA;
 			case Image::Format::kA16: return GL_ALPHA16F_ARB;
 			case Image::Format::kA32: return GL_ALPHA32F_ARB;
 			case Image::Format::kI8: return GL_INTENSITY8I_EXT;

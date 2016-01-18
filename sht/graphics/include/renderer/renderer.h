@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "context.h"
 #include "shader.h"
+#include "font.h"
 
 #include <list>
 #include <stack>
@@ -23,33 +24,6 @@ namespace sht {
 		const int kMaxImageUnit = 16;
 		const int kMaxMrt = 4;
 
-		//! Font class
-		class Font {
-			friend class Renderer;
-			friend class OpenGlRenderer;
-
-		public:
-			f32 GetStrWidth(const char *str) const;
-
-			static const f32 GetBaseSize(); // 0.1f
-			static const f32 GetBaseScale(); // 1.6f
-
-		protected:
-			Font();
-			~Font();
-			Font(const Font&) = delete;
-			void operator = (const Font&) = delete;
-
-			static const int GetBmpSize();
-
-		private:
-#ifdef TARGET_WINDOWS
-			ABC Abc[256];
-#endif
-			u32 base_;
-			Texture* texture_;
-		};
-
 		//! Base renderer class
 		class Renderer {
 		public:
@@ -57,6 +31,9 @@ namespace sht {
 			virtual ~Renderer();
             
             Context * context();
+            int width();
+            int height();
+            float aspect_ratio();
 
 			void UpdateSizes(int w, int h);
 
@@ -117,13 +94,8 @@ namespace sht {
 			virtual void DeleteShader(Shader* shd) = 0;
 
 			// Font functions
-			virtual void AddFont(Font* &font, const char* fontname, bool bold, bool italic, bool underline, bool strikeout, u32 family = 0) = 0;
+			virtual void AddFont(Font* &font, const char* fontname) = 0;
 			virtual void DeleteFont(Font* font) = 0;
-			virtual void ChangeFont(Font* font) = 0;
-			virtual void Print(f32 x, f32 y, f32 s, f32 r, f32 g, f32 b, const char *string, ...) = 0;
-
-			virtual f32 GetStringHeight(f32 scale) = 0;
-			virtual f32 GetStringWidth(f32 scale, const char *str) = 0;
 
 			virtual void ReadPixels(int w, int h, u8 *data) = 0; //!< reads pixels in R8G8B8 format
 
@@ -169,7 +141,6 @@ namespace sht {
 			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
 			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
-			virtual void ApiDeleteFont(Font* font) = 0;
             
             Context * context_;
 
@@ -193,7 +164,6 @@ namespace sht {
 			// Current identifiers
 			Texture* current_textures_[kMaxImageUnit];
 			Shader* current_shader_;                //!< obsolete
-			Font* current_font_;
 			VertexFormat* current_vertex_format_;   //!< obsolete
 			VertexFormat* active_vertex_format_;    //!< obsolete
 			VertexBuffer* current_vertex_buffer_;   //!< obsolete

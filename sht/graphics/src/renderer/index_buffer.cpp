@@ -24,9 +24,13 @@ namespace sht {
         {
             context_->BindIndexBuffer(0);
         }
-        void IndexBuffer::SetData(u32 size, void *data, BufferUsage usage)
+        void IndexBuffer::SetData(u32 size, const void *data, BufferUsage usage)
         {
             context_->IndexBufferData(size, data, usage);
+        }
+        void IndexBuffer::SubData(u32 size, const void *data)
+        {
+            context_->IndexBufferSubData(size, data);
         }
         void* IndexBuffer::Lock(DataAccessType access)
         {

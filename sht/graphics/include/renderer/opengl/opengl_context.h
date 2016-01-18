@@ -45,6 +45,7 @@ namespace sht {
             void DeleteVertexBuffer(u32& obj);
             void BindVertexBuffer(u32 obj);
             void VertexBufferData(u32 size, const void *data, BufferUsage usage);
+            void VertexBufferSubData(u32 size, const void *data);
             void* MapVertexBufferData(DataAccessType access);
             void UnmapVertexBufferData();
             
@@ -53,6 +54,7 @@ namespace sht {
             void DeleteIndexBuffer(u32& obj);
             void BindIndexBuffer(u32 obj);
             void IndexBufferData(u32 size, const void *data, BufferUsage usage);
+            void IndexBufferSubData(u32 size, const void *data);
             void* MapIndexBufferData(DataAccessType access);
             void UnmapIndexBufferData();
             

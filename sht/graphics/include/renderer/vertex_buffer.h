@@ -11,6 +11,8 @@ namespace sht {
             friend class Renderer;
             friend class OpenGlRenderer;
             
+            friend class DynamicText;
+            
         protected:
             VertexBuffer(Context * context);
             ~VertexBuffer();
@@ -22,7 +24,8 @@ namespace sht {
             void Bind();
             void Unbind();
             
-            void SetData(u32 size, void *data, BufferUsage usage);
+            void SetData(u32 size, const void *data, BufferUsage usage);
+            void SubData(u32 size, const void *data);
             
             void* Lock(DataAccessType access);
             void Unlock();

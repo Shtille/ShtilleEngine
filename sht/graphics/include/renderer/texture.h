@@ -10,6 +10,7 @@ namespace sht {
 
 		//! Texture class
 		class Texture {
+            friend class Font;
 			friend class Renderer;
 			friend class OpenGlRenderer;
 

@@ -16,7 +16,8 @@ namespace sht {
             virtual void Bind() = 0;
             virtual void Unbind() = 0;
             
-            virtual void SetData(u32 size, void *data, BufferUsage usage) = 0;
+            virtual void SetData(u32 size, const void *data, BufferUsage usage) = 0;
+            virtual void SubData(u32 size, const void *data) = 0;
             
             virtual void* Lock(DataAccessType access) = 0;
             virtual void  Unlock() = 0;
