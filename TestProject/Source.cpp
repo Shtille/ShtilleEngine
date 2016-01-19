@@ -53,8 +53,8 @@ public:
         
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
-        renderer_->AddFont(font_, "data/fonts/Bitter-Regular.otf");
-//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x pq\nQQ gimp");
+        renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
+//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x\njumps over the lazy dog");
         text_ = sht::graphics::DynamicText::Create(renderer_, 30);
         if (!text_)
             return false;

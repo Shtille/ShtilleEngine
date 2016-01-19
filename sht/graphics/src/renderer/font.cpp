@@ -13,8 +13,6 @@ namespace sht {
         
         Font::Font()
         : texture_(nullptr)
-        , info_(nullptr)
-        , info_size_(0)
         {
             
         }
@@ -22,13 +20,12 @@ namespace sht {
         {
             if (texture_)
                 delete texture_;
-            if (info_)
-                delete[] info_;
         }
         const FontCharInfo* Font::info(u32 charcode) const
         {
-            if (charcode < info_size_)
-                return &info_[charcode];
+            auto it = info_map_.find(charcode);
+            if (it != info_map_.end())
+                return &(it->second);
             else
                 return nullptr;
         }
@@ -92,15 +89,10 @@ namespace sht {
             FT_ULong charcode;
             FT_UInt gindex;
             
-            FT_ULong max_charcode = 0;
-            
             // Find minimum size for a texture holding all visible ASCII characters
             charcode = FT_Get_First_Char(face, &gindex);
             while (gindex != 0)
             {
-                // Determine maximum charcode
-                if (charcode > max_charcode)
-                    max_charcode = charcode;
                 // Load glyph
                 if (FT_Load_Char(face, charcode, FT_LOAD_RENDER)) {
                     fprintf(stderr, "Loading character %lu failed!\n", charcode);
@@ -116,21 +108,15 @@ namespace sht {
                 rowh = std::max(rowh, g->bitmap.rows);
                 // Goto next charcode
                 charcode = FT_Get_Next_Char(face, charcode, &gindex);
-                // Make a cap
-                //if (charcode >= 256)
-                //    gindex = 0;
             }
             
             w = std::max(w, roww);
             h += rowh;
             
-            // Now allocate some place for table with character information
-            info_size_ = static_cast<u32>(max_charcode);
-            if (info_size_ == 0)
+            if (w == 0 || h == 0)
             {
                 return false;
             }
-            info_ = new FontCharInfo[info_size_];
             
             // Create an image that will be used to hold all ASCII glyphs
             image->Allocate(w, h, Image::Format::kR8);
@@ -159,27 +145,26 @@ namespace sht {
                 image->SubData(ox, oy, g->bitmap.width, g->bitmap.rows, g->bitmap.buffer);
                 
                 u32 i = static_cast<u32>(charcode);
+                
+                FontCharInfo & info = info_map_[i];
 
-                info_[i].advance_x = g->advance.x >> 6;
-                info_[i].advance_y = g->advance.y >> 6;
+                info.advance_x = g->advance.x >> 6;
+                info.advance_y = g->advance.y >> 6;
                 
-                info_[i].bitmap_width = g->bitmap.width;
-                info_[i].bitmap_height = g->bitmap.rows;
+                info.bitmap_width = g->bitmap.width;
+                info.bitmap_height = g->bitmap.rows;
                 
-                info_[i].bitmap_left = g->bitmap_left;
-                info_[i].bitmap_top = g->bitmap_top;
+                info.bitmap_left = g->bitmap_left;
+                info.bitmap_top = g->bitmap_top;
                 
-                info_[i].texcoord_x = ox / (float)w;
-                info_[i].texcoord_y = oy / (float)h;
+                info.texcoord_x = ox / (float)w;
+                info.texcoord_y = oy / (float)h;
                 
                 rowh = std::max(rowh, g->bitmap.rows);
                 ox += g->bitmap.width + 1;
                 
                 // Goto next charcode
                 charcode = FT_Get_Next_Char(face, charcode, &gindex);
-                // Make a cap
-                //if (charcode >= 256)
-                //    gindex = 0;
             }
             
             FT_Done_Face(face);

@@ -25,7 +25,8 @@ namespace sht {
             const size_t GetVerticesPerPrimitive() const;
             virtual void AllocateVertexBuffer() = 0;
             virtual void AllocateBuffer() = 0;
-            virtual void UpdateBuffer() = 0;
+            virtual void* LockBuffer() = 0;
+            virtual void UnlockBuffer() = 0;
             
             Renderer * renderer_;
             Font * font_;
@@ -43,7 +44,7 @@ namespace sht {
             void FreeArrays();
             
             // Store some positioning parameters to obtain text size
-            f32 scale_;         //!< text scale
+            f32 scale_;         //!< text scale (at 1 it has height as window)
             f32 reference_x_;   //!< text reference point x (in screen coordinates)
             f32 reference_y_;   //!< text reference point y (in screen coordinates)
         };
@@ -63,7 +64,8 @@ namespace sht {
             StaticText(Renderer * renderer);
             void AllocateVertexBuffer();
             void AllocateBuffer() final;
-            void UpdateBuffer() final;
+            void* LockBuffer() final;
+            void UnlockBuffer() final;
         };
         
         //! Dynamic text class
@@ -82,7 +84,8 @@ namespace sht {
             DynamicText(Renderer * renderer, u32 buffer_size);
             void AllocateVertexBuffer();
             void AllocateBuffer() final;
-            void UpdateBuffer() final;
+            void* LockBuffer() final;
+            void UnlockBuffer() final;
         };
         
     } // namespace graphics

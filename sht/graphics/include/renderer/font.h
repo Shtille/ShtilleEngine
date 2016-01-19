@@ -4,6 +4,8 @@
 
 #include "../../../common/types.h"
 
+#include <unordered_map>
+
 namespace sht {
     namespace graphics {
         
@@ -53,8 +55,7 @@ namespace sht {
             
         private:
             Texture * texture_;
-            FontCharInfo * info_;
-            u32 info_size_;
+            std::unordered_map<u32, FontCharInfo> info_map_;
             float font_height_; //!< for atlas
         };
         

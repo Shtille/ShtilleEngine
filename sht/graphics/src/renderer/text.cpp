@@ -53,7 +53,7 @@ namespace sht {
             
             AllocateBuffer();
             
-            FontGlyphPoint * vertex_buffer = reinterpret_cast<FontGlyphPoint*>(vertices_array_);
+            FontGlyphPoint * vertex_buffer = reinterpret_cast<FontGlyphPoint*>(LockBuffer());
             
             // Coefficient to transform from bitmap space to screen space
             const float kB2S = (scale/font->font_height());
@@ -82,8 +82,6 @@ namespace sht {
                 // Our font doesnt present this character
                 if (info == nullptr)
                     continue;
-                
-                // TODO: Skip glyphs that have no pixels
                 
                 // Calculate the vertex and texture coordinates
                 float glyph_size_x = kS2CX * kB2S * info->bitmap_width;
@@ -139,7 +137,7 @@ namespace sht {
                 ++index;
             }
             
-            UpdateBuffer();
+            UnlockBuffer();
             
             return true;
         }
@@ -156,6 +154,9 @@ namespace sht {
             AllocateVertexBuffer();
             renderer_->context()->CheckForErrors();
             if (vertex_buffer_ == nullptr) return false;
+            
+            // Free all data in memory
+            FreeArrays();
             
             // There is only one attribute
             const char* base = (char*)0;
@@ -278,7 +279,11 @@ namespace sht {
             vertices_array_ = new u8[text_length * GetVerticesPerPrimitive() * sizeof(FontGlyphPoint)];
             num_vertices_ = static_cast<u32>(GetVerticesPerPrimitive() * text_length);
         }
-        void StaticText::UpdateBuffer()
+        void* StaticText::LockBuffer()
+        {
+            return vertices_array_;
+        }
+        void StaticText::UnlockBuffer()
         {
             
         }
@@ -325,23 +330,29 @@ namespace sht {
         }
         void DynamicText::AllocateBuffer()
         {
-            if (!vertices_array_)
-            {
-                vertices_array_ = new u8[text_buffer_size_ * GetVerticesPerPrimitive() * sizeof(FontGlyphPoint)];
-            }
+            assert(vertex_buffer_);
             size_t text_length = wcslen(text_buffer_);
             num_vertices_ = static_cast<u32>(GetVerticesPerPrimitive() * text_length);
         }
-        void DynamicText::UpdateBuffer()
+        void* DynamicText::LockBuffer()
         {
-            // Video memory buffer already created, so just map our new data
-            renderer_->context()->BindVertexArrayObject(0);
-            vertex_buffer_->Bind();
-            void * data = vertex_buffer_->Lock(DataAccessType::kWrite);
-            memcpy(data, vertices_array_, num_vertices_ * sizeof(FontGlyphPoint));
-            vertex_buffer_->Unlock();
-            renderer_->context()->CheckForErrors();
-            vertex_buffer_->Unbind();
+            if (vertex_buffer_)
+            {
+                renderer_->context()->BindVertexArrayObject(0);
+                vertex_buffer_->Bind();
+                return vertex_buffer_->Lock(DataAccessType::kWrite);
+            }
+            else
+                return vertices_array_;
+        }
+        void DynamicText::UnlockBuffer()
+        {
+            if (vertex_buffer_)
+            {
+                vertex_buffer_->Unlock();
+                renderer_->context()->CheckForErrors();
+                vertex_buffer_->Unbind();
+            }
         }
         
     } // namespace graphics
