@@ -162,8 +162,6 @@ namespace sht {
         bool *key_down_;
         bool *key_active_;
         int modifiers_;
-        char key_queue_[64];
-        int key_queue_size_;
     };
 
 } // namespace sht

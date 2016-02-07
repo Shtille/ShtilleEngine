@@ -24,6 +24,8 @@ namespace sht {
                 renderer_->DeleteVertexFormat(vertex_format_);
             if (vertex_buffer_)
                 renderer_->DeleteVertexBuffer(vertex_buffer_);
+            if (vertex_array_object_)
+                renderer_->context()->DeleteVertexArrayObject(vertex_array_object_);
             if (text_buffer_)
                 delete[] text_buffer_;
             FreeArrays();
@@ -138,6 +140,7 @@ namespace sht {
             }
             
             UnlockBuffer();
+            renderer_->context()->CheckForErrors();
             
             return true;
         }
@@ -310,6 +313,16 @@ namespace sht {
                 return nullptr;
             }
         }
+        void DynamicText::AppendSymbol(wchar_t symbol)
+        {
+            size_t len = wcslen(text_buffer_);
+            if (len + 1 < text_buffer_size_)
+            {
+                text_buffer_[len++] = symbol;
+                text_buffer_[len] = L'\0';
+                SetTextInternal(font_, reference_x_, reference_y_, scale_);
+            }
+        }
         bool DynamicText::SetText(Font * font, float x, float y, float scale, const wchar_t* str, ...)
         {
             // Transform arguments
@@ -322,6 +335,11 @@ namespace sht {
                 assert(!"Error during character conversion.");
                 return false;
             }
+            return SetTextInternal(font, x, y, scale);
+        }
+        bool DynamicText::SetTextSimple(Font * font, float x, float y, float scale, const wchar_t* str)
+        {
+            wcsncpy(text_buffer_, str, text_buffer_size_);
             return SetTextInternal(font, x, y, scale);
         }
         void DynamicText::AllocateVertexBuffer()

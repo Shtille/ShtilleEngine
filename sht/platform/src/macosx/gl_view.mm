@@ -347,6 +347,19 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     app->keys().modifiers() = modifiers;
     
     app->OnKeyDown(translated_key, modifiers);
+    
+    NSString* characters = [theEvent characters];
+    NSUInteger i, length = [characters length];
+    
+    for (i = 0; i < length; ++i)
+    {
+        const unichar codepoint = [characters characterAtIndex:i];
+        if (((codepoint & 0xff00) == 0xf700) ||
+            (codepoint < 32 || (codepoint > 126 && codepoint < 160)))
+            continue;
+        
+        app->OnChar(codepoint);
+    }
 }
 
 - (void) keyUp:(NSEvent *)theEvent

@@ -131,8 +131,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CHAR:
-		//if (app->keys().key_queue_size < 64)
-		//	app->keys().key_queue[app->keys().key_queue_size++] = (char)wParam;
+		app->OnChar((unsigned short)wParam);
 		return 0;
 
 	case WM_KEYDOWN:

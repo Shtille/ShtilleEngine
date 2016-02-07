@@ -40,13 +40,13 @@ namespace sht {
             wchar_t * text_buffer_;
             size_t text_buffer_size_;
             
-        private:
-            void FreeArrays();
-            
             // Store some positioning parameters to obtain text size
             f32 scale_;         //!< text scale (at 1 it has height as window)
             f32 reference_x_;   //!< text reference point x (in screen coordinates)
             f32 reference_y_;   //!< text reference point y (in screen coordinates)
+            
+        private:
+            void FreeArrays();
         };
         
         //! Static text class
@@ -75,7 +75,9 @@ namespace sht {
             
             static DynamicText * Create(Renderer * renderer, u32 buffer_size);
             
+            void AppendSymbol(wchar_t symbol);
             bool SetText(Font * font, float x, float y, float scale, const wchar_t* str, ...);
+            bool SetTextSimple(Font * font, float x, float y, float scale, const wchar_t* str);
             
             using Text::Render;
             using Text::GetTextBoundingBox;

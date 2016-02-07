@@ -26,6 +26,8 @@ namespace sht {
                 renderer_->DeleteVertexBuffer(vertex_buffer_);
             if (index_buffer_)
                 renderer_->DeleteIndexBuffer(index_buffer_);
+            if (vertex_array_object_)
+                renderer_->context()->DeleteVertexArrayObject(vertex_array_object_);
             FreeArrays();
         }
         void Model::AddFormat(const VertexAttribute& attrib)

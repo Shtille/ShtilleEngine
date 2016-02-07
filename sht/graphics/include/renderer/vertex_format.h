@@ -51,6 +51,7 @@ namespace sht {
             bool operator == (const VertexFormat& vf);
             
             u32 vertex_size() const;
+            const Attrib& generic(u32 index) const;
 
 		protected:
 			VertexFormat();

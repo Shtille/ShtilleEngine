@@ -4,6 +4,7 @@
 #include "../sht/graphics/include/model/tetrahedron_model.h"
 #include "../sht/graphics/include/model/sphere_model.h"
 #include "../sht/graphics/include/renderer/text.h"
+#include "../sht/utility/include/console.h"
 #include <cmath>
 
 class UserApp : public sht::OpenGlApplication 
@@ -51,6 +52,9 @@ public:
         if (!renderer_->AddShader(text_shader_, "data/shaders/text_shader", attribs, 1))
             return false;
         
+        if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1))
+            return false;
+        
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
         
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
@@ -59,10 +63,13 @@ public:
         if (!text_)
             return false;
         
+        console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+        
         return true;
     }
     void Unload() final
     {
+        delete console_;
         delete text_;
         delete cube_;
         delete tetrahedron_;
@@ -79,6 +86,8 @@ public:
                             10.0f*sinf(view_theta),
                             10.0f*cosf(view_theta)*sinf(view_alpha));
         renderer_->SetViewMatrix(sht::math::LookAt(camera_position, vec3(0.0f)));
+        
+        console_->Update(frame_time_);
     }
     void Render() final
     {
@@ -124,33 +133,55 @@ public:
         text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
         text_->Render();
         
+        // Draw console
+        console_->Render();
+        
         shader_->Unbind();
+    }
+    void OnChar(unsigned short code)
+    {
+        if (console_->IsActive())
+        {
+            console_->ProcessCharInput(code);
+        }
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
-        if (key == sht::PublicKey::kF)
+        // Console blocks key input
+        if (console_->IsActive())
         {
-            ToggleFullscreen();
+            console_->ProcessKeyInput(key, mods);
         }
-        else if (key == sht::PublicKey::kEscape)
+        else // process another input
         {
-            Application::Terminate();
-        }
-        else if (key == sht::PublicKey::kLeft)
-        {
-            view_alpha += 0.1f;
-        }
-        else if (key == sht::PublicKey::kRight)
-        {
-            view_alpha -= 0.1f;
-        }
-        else if (key == sht::PublicKey::kUp)
-        {
-            view_theta += 0.1f;
-        }
-        else if (key == sht::PublicKey::kDown)
-        {
-            view_theta -= 0.1f;
+            if (key == sht::PublicKey::kF)
+            {
+                ToggleFullscreen();
+            }
+            else if (key == sht::PublicKey::kEscape)
+            {
+                Application::Terminate();
+            }
+            else if (key == sht::PublicKey::kLeft)
+            {
+                view_alpha += 0.1f;
+            }
+            else if (key == sht::PublicKey::kRight)
+            {
+                view_alpha -= 0.1f;
+            }
+            else if (key == sht::PublicKey::kUp)
+            {
+                view_theta += 0.1f;
+            }
+            else if (key == sht::PublicKey::kDown)
+            {
+                view_theta -= 0.1f;
+            }
+            else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
+            {
+                console_->Move();
+            }
         }
     }
     void OnMouseMove() final
@@ -174,9 +205,11 @@ private:
     sht::graphics::Model * tetrahedron_;
     sht::graphics::Shader * shader_;
     sht::graphics::Shader * shader2_;
+    sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
     sht::graphics::Font * font_;
     sht::graphics::DynamicText * text_;
+    sht::utility::Console * console_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;

@@ -22,6 +22,10 @@ namespace sht {
         {
             return vertex_size_;
         }
+        const VertexFormat::Attrib& VertexFormat::generic(u32 index) const
+        {
+            return generic_[index];
+        }
 		void VertexFormat::Fill(VertexAttribute *attribs, u32 num_attribs)
 		{
 			/*

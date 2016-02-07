@@ -85,6 +85,7 @@ namespace sht {
 		virtual const bool IsClampFps(void); //!< obsolete?
 
 		// --- Messages ---
+        virtual void OnChar(unsigned short code);
         virtual void OnKeyDown(sht::PublicKey key, int modifiers);
         virtual void OnKeyUp(sht::PublicKey key, int modifiers);
         virtual void OnMouseDown(sht::MouseButton button, int modifiers);

@@ -6,7 +6,6 @@ namespace sht {
 
     Keys::Keys()
     : modifiers_(0)
-    , key_queue_size_(0)
     {
         memset(table_, 0, sizeof(table_));
         const int count = static_cast<int>(PublicKey::kCount);

@@ -247,6 +247,9 @@ namespace sht {
 	{
 		return false;
 	}
+    void Application::OnChar(unsigned short code)
+    {
+    }
     void Application::OnKeyDown(sht::PublicKey key, int modifiers)
     {
     }
