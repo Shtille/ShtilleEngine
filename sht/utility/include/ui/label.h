@@ -10,7 +10,7 @@ namespace sht {
 	namespace utility {
 		namespace ui {
 
-			//! Standart rectangle class
+			//! Label class, holds DynamicText object
 			class Label : public Widget {
 			public:
                 Label(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,

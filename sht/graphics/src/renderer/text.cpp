@@ -3,6 +3,12 @@
 #include <cwchar>
 #include <clocale>
 
+#ifdef TARGET_MAC
+#define my_vswprintf vswprintf
+#else
+#define my_vswprintf _vsnwprintf
+#endif
+
 namespace sht {
     namespace graphics {
         
@@ -251,7 +257,7 @@ namespace sht {
             // Transform arguments
             va_list ap;
             va_start(ap, str);
-            int written = _vsnwprintf(text->text_buffer_, text->text_buffer_size_, str, ap);
+            int written = my_vswprintf(text->text_buffer_, text->text_buffer_size_, str, ap);
             va_end(ap);
             if (written == -1) // error
             {
@@ -328,7 +334,7 @@ namespace sht {
             // Transform arguments
             va_list ap;
             va_start(ap, str);
-            int written = _vsnwprintf(text_buffer_, text_buffer_size_, str, ap);
+            int written = my_vswprintf(text_buffer_, text_buffer_size_, str, ap);
             va_end(ap);
             if (written == -1) // error
             {
@@ -375,3 +381,5 @@ namespace sht {
         
     } // namespace graphics
 } // namespace sht
+
+#undef my_vswprintf

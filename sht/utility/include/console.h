@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 namespace sht {
 	namespace utility {
@@ -25,6 +26,7 @@ namespace sht {
 
             bool IsActive(); //!< down position
 			void Move();
+            void AddString(const wchar_t* text);
             
             void Update(f32 sec);
 			void Render();
@@ -36,17 +38,22 @@ namespace sht {
             Console(const Console&) = delete;
             Console& operator =(const Console&) = delete;
             
+            std::wstring& input_string();
+            
             void InsertSymbol(wchar_t symbol);
             void RemoveSymbol();
             void PushString();
+            void InsertString();
+            void RecognizeString();
             
             ui::VerticalBoard vertical_board_;
-            ui::Label * input_text_; // pointer, dont need to delete
 			f32 text_height_; //!< height of text in screen coordinates
             u32 max_lines_; //!< maximum number of lines
-			std::vector<std::string> lines_; //!< lines of text
-            std::wstring input_string_;
+            ui::Label * * labels_; // pointers to labels
+            std::vector<std::wstring> lines_;
+            std::mutex mutex_;
             bool need_to_update_input_;
+            bool need_to_update_all_;
 		};
 
 	} // namespace utility
