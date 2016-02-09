@@ -28,6 +28,14 @@ SOURCES ?= \
 	$(SHT_PATH)/graphics/src/renderer/vertex_buffer.cpp \
 	$(SHT_PATH)/graphics/src/renderer/vertex_format.cpp \
 	$(SHT_PATH)/graphics/src/renderer/video_memory_buffer.cpp \
+	$(SHT_PATH)/graphics/src/renderer/font.cpp \
+	$(SHT_PATH)/graphics/src/renderer/text.cpp \
+	$(SHT_PATH)/utility/src/ui/widget.cpp \
+	$(SHT_PATH)/utility/src/ui/drawable_widget.cpp \
+	$(SHT_PATH)/utility/src/ui/rect.cpp \
+	$(SHT_PATH)/utility/src/ui/board.cpp \
+	$(SHT_PATH)/utility/src/ui/label.cpp \
+	$(SHT_PATH)/utility/src/console.cpp \
         $(SHT_PATH)/platform/src/window_wrapper.cpp \
         $(SHT_PATH)/platform/src/windows\main_wrapper.cpp \
         $(SHT_PATH)/platform/src/windows\window_controller.cpp \
@@ -52,4 +60,5 @@ INCLUDE = \
         -I$(SHT_PATH)/thirdparty/libjpeg/include \
         -I$(SHT_PATH)/thirdparty/libjpeg/src \
 	-I$(SHT_PATH)/thirdparty/libpng/include \
-        -I$(SHT_PATH)/thirdparty/libpng/src
+        -I$(SHT_PATH)/thirdparty/libpng/src \
+        -I$(SHT_PATH)/thirdparty/freetype/include

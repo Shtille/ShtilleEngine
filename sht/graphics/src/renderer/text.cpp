@@ -251,7 +251,7 @@ namespace sht {
             // Transform arguments
             va_list ap;
             va_start(ap, str);
-            int written = vswprintf(text->text_buffer_, text->text_buffer_size_, str, ap);
+            int written = _vsnwprintf(text->text_buffer_, text->text_buffer_size_, str, ap);
             va_end(ap);
             if (written == -1) // error
             {
@@ -328,7 +328,7 @@ namespace sht {
             // Transform arguments
             va_list ap;
             va_start(ap, str);
-            int written = vswprintf(text_buffer_, text_buffer_size_, str, ap);
+            int written = _vsnwprintf(text_buffer_, text_buffer_size_, str, ap);
             va_end(ap);
             if (written == -1) // error
             {
