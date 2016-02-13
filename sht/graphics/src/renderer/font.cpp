@@ -18,8 +18,6 @@ namespace sht {
         }
         Font::~Font()
         {
-            if (texture_)
-                delete texture_;
         }
         const FontCharInfo* Font::info(u32 charcode) const
         {
@@ -63,6 +61,7 @@ namespace sht {
             if (FT_New_Face(ft, filename, 0, &face))
             {
                 fprintf(stderr, "Failed to load a font %s!\n", filename);
+				FT_Done_FreeType(ft);
                 return false;
             }
             
@@ -70,6 +69,7 @@ namespace sht {
             if (FT_Select_Charmap(face, FT_ENCODING_UNICODE))
             {
                 fprintf(stderr, "Failed to set encoding\n");
+				FT_Done_FreeType(ft);
                 return false;
             }
             
@@ -115,6 +115,7 @@ namespace sht {
             
             if (w == 0 || h == 0)
             {
+				FT_Done_FreeType(ft);
                 return false;
             }
             

@@ -16,6 +16,7 @@ namespace sht {
                 Label(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
                       sht::graphics::Font * font, const vec4& color, f32 text_height, u32 buffer_size,
                       f32 x, f32 y, u32 flags);
+				virtual ~Label();
                 
                 void Render() override;
                 

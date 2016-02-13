@@ -14,6 +14,12 @@ public:
     : cube_(nullptr)
     , tetrahedron_(nullptr)
     , shader_(nullptr)
+	, shader2_(nullptr)
+	, gui_shader_(nullptr)
+	, text_shader_(nullptr)
+	, font_(nullptr)
+	, text_(nullptr)
+	, console_(nullptr)
     , angle_(0.0f)
     , light_angle(0.0f)
     , view_alpha(0.0f)
@@ -54,12 +60,15 @@ public:
         
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1))
             return false;
-        
+
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
-        
+
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
-//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x\njumps over the lazy dog");
-        text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+		if (font_ == nullptr)
+			return false;
+
+		//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x\njumps over the lazy dog");
+		text_ = sht::graphics::DynamicText::Create(renderer_, 30);
         if (!text_)
             return false;
         
@@ -69,10 +78,14 @@ public:
     }
     void Unload() final
     {
-        delete console_;
-        delete text_;
-        delete cube_;
-        delete tetrahedron_;
+		if (console_)
+			delete console_;
+		if (text_)
+			delete text_;
+		if (cube_)
+			delete cube_;
+		if (tetrahedron_)
+			delete tetrahedron_;
     }
     void Update() final
     {

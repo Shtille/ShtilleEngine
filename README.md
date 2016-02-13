@@ -9,7 +9,7 @@ The aim of this project is to create lightweight application that could be easil
 
 To build project using this framework you will need the one of following instruments:
 * Windows (requires Windows XP or newer)
- * Visual Studio (requires Visual Studio 2013 or newer)
+ * Visual Studio (requires Visual Studio 2015 or newer)
  * MinGW (don't know actually the version required, 3.80 or newer would be fine)
 * Mac OS X (requires OS X Yosemite 10.10 or newer)
  * Xcode

@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\sht\application\application.cpp" />
+    <ClCompile Include="..\..\..\..\sht\application\opengl\opengl_application.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_bmp.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_hdr.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_jpeg.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_png.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_tga.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_tif.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\cube_model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\sphere_model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\tetrahedron_model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\context.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\font.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\index_buffer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\opengl\opengl_context.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\opengl\opengl_renderer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\opengl\opengl_texture.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\renderer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\shader.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\text.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\texture.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\vertex_buffer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\vertex_format.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\video_memory_buffer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\frustum.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\geometry\polygon.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\matrix.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\plane.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\quaternion.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\segment.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\sht_math.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\vector.cpp" />
+    <ClCompile Include="..\..\..\..\sht\math\vertical_profile.cpp" />
+    <ClCompile Include="..\..\..\..\sht\platform\src\windows\main_wrapper.cpp" />
+    <ClCompile Include="..\..\..\..\sht\platform\src\windows\window_controller.cpp" />
+    <ClCompile Include="..\..\..\..\sht\platform\src\window_wrapper.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\color.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\keys.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\memory_leaks.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\mouse.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\stream\file_stream.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\stream\log_stream.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\stream\memory_stream.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\stream\stream.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\string\filename.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\time\scope_timer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\time\update_timer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\console.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\board.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\drawable_widget.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\label.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\rect.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\widget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\sht\application\application.h" />
+    <ClInclude Include="..\..\..\..\sht\application\opengl\opengl_application.h" />
+    <ClInclude Include="..\..\..\..\sht\common\counting_pointer.h" />
+    <ClInclude Include="..\..\..\..\sht\common\platform.h" />
+    <ClInclude Include="..\..\..\..\sht\common\singleton.h" />
+    <ClInclude Include="..\..\..\..\sht\common\table.h" />
+    <ClInclude Include="..\..\..\..\sht\common\types.h" />
+    <ClInclude Include="..\..\..\..\sht\containers\sht_hash.h" />
+    <ClInclude Include="..\..\..\..\sht\containers\sht_map.h" />
+    <ClInclude Include="..\..\..\..\sht\containers\sht_pair.h" />
+    <ClInclude Include="..\..\..\..\sht\containers\sht_utility.h" />
+    <ClInclude Include="..\..\..\..\sht\containers\sht_vector.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\image\image.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\cube_model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\sphere_model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\tetrahedron_model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\vertex.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\context.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\font.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\index_buffer.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\opengl\opengl_context.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\opengl\opengl_renderer.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\opengl\opengl_texture.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\renderer.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\shader.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\text.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\texture.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\vertex_buffer.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\vertex_format.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\video_memory_buffer.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\src\renderer\opengl\opengl_include.h" />
+    <ClInclude Include="..\..\..\..\sht\include\sht.h" />
+    <ClInclude Include="..\..\..\..\sht\math\bounding_box.h" />
+    <ClInclude Include="..\..\..\..\sht\math\frustum.h" />
+    <ClInclude Include="..\..\..\..\sht\math\geometry\line.h" />
+    <ClInclude Include="..\..\..\..\sht\math\geometry\point.h" />
+    <ClInclude Include="..\..\..\..\sht\math\geometry\polygon.h" />
+    <ClInclude Include="..\..\..\..\sht\math\geometry\segment.h" />
+    <ClInclude Include="..\..\..\..\sht\math\line.h" />
+    <ClInclude Include="..\..\..\..\sht\math\matrix.h" />
+    <ClInclude Include="..\..\..\..\sht\math\plane.h" />
+    <ClInclude Include="..\..\..\..\sht\math\quaternion.h" />
+    <ClInclude Include="..\..\..\..\sht\math\segment.h" />
+    <ClInclude Include="..\..\..\..\sht\math\sht_math.h" />
+    <ClInclude Include="..\..\..\..\sht\math\vector.h" />
+    <ClInclude Include="..\..\..\..\sht\math\vertical_profile.h" />
+    <ClInclude Include="..\..\..\..\sht\platform\include\main_wrapper.h" />
+    <ClInclude Include="..\..\..\..\sht\platform\include\window_wrapper.h" />
+    <ClInclude Include="..\..\..\..\sht\platform\src\window_controller_interface.h" />
+    <ClInclude Include="..\..\..\..\sht\platform\src\window_struct.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\color.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\keys.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\memory_leaks.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\mouse.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\notification.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\stream\file_stream.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\stream\log_stream.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\stream\memory_stream.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\stream\stream.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\string\filename.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\time\scope_timer.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\time\update_timer.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\console.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\board.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\drawable_widget.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\label.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\rect.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\widget.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{26DB0CAA-E90A-4DF3-BBFC-33311F50889A}</ProjectGuid>
+    <RootNamespace>ShtilleEngine</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)..\..\..\bin\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\obj\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)..\..\..\bin\</OutDir>
+    <IntDir>$(SolutionDir)..\..\..\obj\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\sht\thirdparty\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\..\sht\thirdparty\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

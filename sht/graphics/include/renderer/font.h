@@ -54,7 +54,7 @@ namespace sht {
             static const int GetBmpSize();
             
         private:
-            Texture * texture_;
+            Texture * texture_; // pointer to a textore, don't need to delete (or use shared pointers)
             std::unordered_map<u32, FontCharInfo> info_map_;
             float font_height_; //!< for atlas
         };

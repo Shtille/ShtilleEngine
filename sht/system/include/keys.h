@@ -151,6 +151,8 @@ namespace sht {
         bool& key_down(PublicKey key);
         bool& key_active(PublicKey key);
         int& modifiers();
+
+		static bool IsGoodChar(unsigned short code);
         
     private:
         void Fill();

@@ -281,5 +281,9 @@ namespace sht {
     {
         return modifiers_;
     }
+	bool Keys::IsGoodChar(unsigned short code)
+	{
+		return (code >= 32 && code <= 126) || code >= 160;
+	}
 
 } // namespace sht

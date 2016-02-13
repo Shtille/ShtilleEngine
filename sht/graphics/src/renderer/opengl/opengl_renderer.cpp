@@ -691,9 +691,11 @@ namespace sht {
             if (it != vertex_formats_.end())
             {
                 it->DecreaseCount();
-                if (it->count() == 0)
-                    delete it->pointer();
-                vertex_formats_.erase(it);
+				if (it->count() == 0)
+				{
+					delete it->pointer();
+					vertex_formats_.erase(it);
+				}
             }
 		}
 		void OpenGlRenderer::AddVertexBuffer(VertexBuffer* &vb, u32 size, void *data, BufferUsage usage)

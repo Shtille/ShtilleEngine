@@ -11,6 +11,8 @@
 #endif
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+#define NOMINMAX						// We don't want these annoying defines
+
 #include <Windows.h>
 #include "../system/include/memory_leaks.h"
 #include <stddef.h>

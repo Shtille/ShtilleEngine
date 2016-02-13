@@ -131,8 +131,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_CHAR:
-		app->OnChar((unsigned short)wParam);
+	{
+		unsigned short code = static_cast<unsigned short>(wParam);
+		if (sht::Keys::IsGoodChar(code))
+			app->OnChar(code);
 		return 0;
+	}
 
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:

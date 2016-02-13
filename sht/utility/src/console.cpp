@@ -26,7 +26,7 @@ namespace sht {
 		}
 		Console::~Console()
 		{
-            delete [] labels_;
+			delete[] labels_;
 		}
         bool Console::IsActive()
         {

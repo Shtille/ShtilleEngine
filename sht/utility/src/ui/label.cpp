@@ -18,6 +18,10 @@ namespace sht {
                 assert(text_);
                 SetText(L""); // just to be able to render the text
             }
+			Label::~Label()
+			{
+				delete text_;
+			}
             void Label::Render()
             {
                 shader_->Bind();
