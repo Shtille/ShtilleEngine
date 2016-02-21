@@ -149,14 +149,14 @@ namespace sht {
                 
                 FontCharInfo & info = info_map_[i];
 
-                info.advance_x = g->advance.x >> 6;
-                info.advance_y = g->advance.y >> 6;
+                info.advance_x = static_cast<float>(g->advance.x >> 6);
+                info.advance_y = static_cast<float>(g->advance.y >> 6);
                 
-                info.bitmap_width = g->bitmap.width;
-                info.bitmap_height = g->bitmap.rows;
+                info.bitmap_width = static_cast<float>(g->bitmap.width);
+                info.bitmap_height = static_cast<float>(g->bitmap.rows);
                 
-                info.bitmap_left = g->bitmap_left;
-                info.bitmap_top = g->bitmap_top;
+                info.bitmap_left = static_cast<float>(g->bitmap_left);
+                info.bitmap_top = static_cast<float>(g->bitmap_top);
                 
                 info.texcoord_x = ox / (float)w;
                 info.texcoord_y = oy / (float)h;

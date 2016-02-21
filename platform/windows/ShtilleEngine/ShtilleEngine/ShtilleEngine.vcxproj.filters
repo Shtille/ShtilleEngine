@@ -276,6 +276,12 @@
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\widget.cpp">
       <Filter>sht\utility\src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\progress_bar.cpp">
+      <Filter>sht\utility\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\crypt.cpp">
+      <Filter>sht\utility\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -484,6 +490,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\widget.h">
       <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\progress_bar.h">
+      <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\crypt.h">
+      <Filter>sht\utility\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

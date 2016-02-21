@@ -3,6 +3,8 @@
 #include "../../../system/include/stream/log_stream.h"
 #include "../../../thirdparty/libjpeg/include/jpeglib.h"
 
+#include <csetjmp> // for error handling
+
 namespace sht {
 	namespace graphics {
 
@@ -119,6 +121,27 @@ namespace sht {
 			/* And we're done! */
 			return true;
 		}
+		struct jpegErrorManager {
+			/* "public" fields */
+			struct jpeg_error_mgr pub;
+			/* for return to caller */
+			jmp_buf setjmp_buffer;
+		};
+		void jpegErrorExit(j_common_ptr cinfo)
+		{
+			/* cinfo->err actually points to a jpegErrorManager struct */
+			jpegErrorManager* myerr = (jpegErrorManager*)cinfo->err;
+			/* note : *(cinfo->err) is now equivalent to myerr->pub */
+
+			/* output_message is a method to print an error message */
+			(* (cinfo->err->output_message) ) (cinfo);
+
+			/* Create the message */
+			/*(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);*/
+
+			/* Jump to the setjmp point */
+			longjmp(myerr->setjmp_buffer, 1);
+		}
 		bool Image::LoadJpeg(const char *filename)
 		{
 			// Get access to error log
@@ -132,7 +155,7 @@ namespace sht {
 			* Note that this struct must live as long as the main JPEG parameter
 			* struct, to avoid dangling-pointer problems.
 			*/
-			struct jpeg_error_mgr jerr;
+			jpegErrorManager jerr;
 			/* More stuff */
 			sht::system::FileStream stream;
 			unsigned char * rowptr[1];
@@ -153,7 +176,15 @@ namespace sht {
 			/* Step 1: allocate and initialize JPEG decompression object */
 
 			/* We set up the normal JPEG error routines, then override error_exit. */
-			cinfo.err = jpeg_std_error(&jerr);
+			cinfo.err = jpeg_std_error(&jerr.pub);
+			jerr.pub.error_exit = jpegErrorExit;
+			/* Establish the setjmp return context for my_error_exit to use. */
+			if (setjmp(jerr.setjmp_buffer)) {
+				/* If we get here, the JPEG code has signaled an error. */
+				jpeg_destroy_decompress(&cinfo);
+				stream.Close();
+				return false;
+			}
 
 			/* Now we can initialize the JPEG decompression object. */
 			jpeg_create_decompress(&cinfo);
