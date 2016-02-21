@@ -35,7 +35,9 @@ SOURCES ?= \
 	$(SHT_PATH)/utility/src/ui/rect.cpp \
 	$(SHT_PATH)/utility/src/ui/board.cpp \
 	$(SHT_PATH)/utility/src/ui/label.cpp \
+        $(SHT_PATH)/utility/src/ui/progress_bar.cpp \
 	$(SHT_PATH)/utility/src/console.cpp \
+	$(SHT_PATH)/utility/src/crypt.cpp \
         $(SHT_PATH)/platform/src/window_wrapper.cpp \
         $(SHT_PATH)/platform/src/windows\main_wrapper.cpp \
         $(SHT_PATH)/platform/src/windows\window_controller.cpp \

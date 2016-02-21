@@ -26,10 +26,6 @@ namespace sht {
 			protected:
 				f32 width_;
 				f32 height_;
-                
-            private:
-                void FillVertexAttribs() override;
-                void FillVertices() override;
 			};
             
             //! Colored rectangle class
@@ -45,6 +41,22 @@ namespace sht {
                 
             private:
                 void BindConstUniforms() override;
+                void FillVertexAttribs() override;
+                void FillVertices() override;
+            };
+            
+            //! Textured rectangle class
+            class RectTextured : public Rect {
+            public:
+                RectTextured(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
+                	sht::graphics::Texture * texture, f32 x, f32 y, f32 width, f32 height, u32 flags);
+                
+                virtual void Render() override;
+                
+            private:
+                void BindConstUniforms() override;
+                void FillVertexAttribs() override;
+                void FillVertices() override;
             };
 
 		} // namespace ui

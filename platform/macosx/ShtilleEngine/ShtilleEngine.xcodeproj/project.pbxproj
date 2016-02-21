@@ -211,6 +211,8 @@
 		526797191BD0134B000456D4 /* notification.h in Headers */ = {isa = PBXBuildFile; fileRef = 526797181BD0134B000456D4 /* notification.h */; };
 		526A05BC1B90CC7300F4D6BC /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = 526A05BB1B90CC7300F4D6BC /* shader.h */; };
 		526A05BE1B90CC8500F4D6BC /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 526A05BD1B90CC8500F4D6BC /* shader.cpp */; };
+		5276F4F11C71AA740097FEA1 /* crypt.h in Headers */ = {isa = PBXBuildFile; fileRef = 5276F4F01C71AA740097FEA1 /* crypt.h */; };
+		5276F4F31C71AA860097FEA1 /* crypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5276F4F21C71AA860097FEA1 /* crypt.cpp */; };
 		5283FFA51C31A39400C59A6C /* line.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA01C31A39400C59A6C /* line.h */; };
 		5283FFA61C31A39400C59A6C /* point.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA11C31A39400C59A6C /* point.h */; };
 		5283FFA71C31A39400C59A6C /* polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5283FFA21C31A39400C59A6C /* polygon.cpp */; };
@@ -243,6 +245,8 @@
 		52CA9E2E1B58F5CA00A08AE0 /* mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52CA9E2D1B58F5CA00A08AE0 /* mouse.cpp */; };
 		52CA9E321B5930A400A08AE0 /* model.h in Headers */ = {isa = PBXBuildFile; fileRef = 52CA9E311B5930A400A08AE0 /* model.h */; };
 		52CA9E341B5930B500A08AE0 /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52CA9E331B5930B500A08AE0 /* model.cpp */; };
+		52CC7B4E1C79EAAF003C8680 /* progress_bar.h in Headers */ = {isa = PBXBuildFile; fileRef = 52CC7B4D1C79EAAF003C8680 /* progress_bar.h */; };
+		52CC7B501C79EAC4003C8680 /* progress_bar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52CC7B4F1C79EAC4003C8680 /* progress_bar.cpp */; };
 		52EB313E1AF680F500060D0F /* application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52EB30FE1AF680F500060D0F /* application.cpp */; };
 		52EB313F1AF680F500060D0F /* application.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EB30FF1AF680F500060D0F /* application.h */; };
 		52EB31401AF680F500060D0F /* opengl_application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52EB31011AF680F500060D0F /* opengl_application.cpp */; };
@@ -539,6 +543,8 @@
 		526797181BD0134B000456D4 /* notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = notification.h; sourceTree = "<group>"; };
 		526A05BB1B90CC7300F4D6BC /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
 		526A05BD1B90CC8500F4D6BC /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
+		5276F4F01C71AA740097FEA1 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crypt.h; path = ../../../../sht/utility/include/crypt.h; sourceTree = "<group>"; };
+		5276F4F21C71AA860097FEA1 /* crypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = crypt.cpp; path = ../../../../sht/utility/src/crypt.cpp; sourceTree = "<group>"; };
 		5283FFA01C31A39400C59A6C /* line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = line.h; path = geometry/line.h; sourceTree = "<group>"; };
 		5283FFA11C31A39400C59A6C /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = geometry/point.h; sourceTree = "<group>"; };
 		5283FFA21C31A39400C59A6C /* polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cpp; path = geometry/polygon.cpp; sourceTree = "<group>"; };
@@ -574,6 +580,8 @@
 		52CA9E2D1B58F5CA00A08AE0 /* mouse.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mouse.cpp; sourceTree = "<group>"; };
 		52CA9E311B5930A400A08AE0 /* model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = model.h; path = model/model.h; sourceTree = "<group>"; };
 		52CA9E331B5930B500A08AE0 /* model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = model.cpp; path = model/model.cpp; sourceTree = "<group>"; };
+		52CC7B4D1C79EAAF003C8680 /* progress_bar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = progress_bar.h; path = ../../../../sht/utility/include/ui/progress_bar.h; sourceTree = "<group>"; };
+		52CC7B4F1C79EAC4003C8680 /* progress_bar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = progress_bar.cpp; path = ../../../../sht/utility/src/ui/progress_bar.cpp; sourceTree = "<group>"; };
 		52EB30FE1AF680F500060D0F /* application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = application.cpp; sourceTree = "<group>"; };
 		52EB30FF1AF680F500060D0F /* application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = application.h; sourceTree = "<group>"; };
 		52EB31011AF680F500060D0F /* opengl_application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = opengl_application.cpp; sourceTree = "<group>"; };
@@ -1013,6 +1021,7 @@
 		52C59AE51C5A7E8300BA3F4F /* include */ = {
 			isa = PBXGroup;
 			children = (
+				5276F4F01C71AA740097FEA1 /* crypt.h */,
 				52C59AE91C5A7EE900BA3F4F /* console.h */,
 				52C59AE71C5A7EB500BA3F4F /* ui */,
 			);
@@ -1022,6 +1031,7 @@
 		52C59AE61C5A7E9300BA3F4F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5276F4F21C71AA860097FEA1 /* crypt.cpp */,
 				52C59AF11C5A7F3200BA3F4F /* console.cpp */,
 				52C59AE81C5A7EBE00BA3F4F /* ui */,
 			);
@@ -1031,6 +1041,7 @@
 		52C59AE71C5A7EB500BA3F4F /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				52CC7B4D1C79EAAF003C8680 /* progress_bar.h */,
 				524C16911C6477BE00EA934F /* label.h */,
 				5263A28A1C5D4E9E00CD9693 /* drawable_widget.h */,
 				52C59AEB1C5A7F1500BA3F4F /* board.h */,
@@ -1043,6 +1054,7 @@
 		52C59AE81C5A7EBE00BA3F4F /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				52CC7B4F1C79EAC4003C8680 /* progress_bar.cpp */,
 				524C16931C6477CE00EA934F /* label.cpp */,
 				5263A28C1C5D4EB900CD9693 /* drawable_widget.cpp */,
 				52C59AF31C5A7F4500BA3F4F /* board.cpp */,
@@ -1373,6 +1385,7 @@
 				52EB315A1AF680F600060D0F /* matrix.h in Headers */,
 				52EB31431AF680F500060D0F /* singleton.h in Headers */,
 				529475531BD0F6BE001EA29C /* bounding_box.h in Headers */,
+				52CC7B4E1C79EAAF003C8680 /* progress_bar.h in Headers */,
 				52EB31461AF680F500060D0F /* sht_map.h in Headers */,
 				520AE9A31B76876300D597C4 /* opengl_context.h in Headers */,
 				52EB31601AF680F600060D0F /* vector.h in Headers */,
@@ -1382,6 +1395,7 @@
 				52EB315E1AF680F600060D0F /* sht_math.h in Headers */,
 				52EB31631AF680F600060D0F /* memory_stream.h in Headers */,
 				52EB315C1AF680F600060D0F /* quaternion.h in Headers */,
+				5276F4F11C71AA740097FEA1 /* crypt.h in Headers */,
 				52392F491B450D210085A437 /* window_wrapper.h in Headers */,
 				529475561BD0F6BE001EA29C /* plane.h in Headers */,
 				522BE53F1B4E48D100EA0F52 /* keys.h in Headers */,
@@ -1735,6 +1749,7 @@
 				524523EF1B49752900F17104 /* window_wrapper.cpp in Sources */,
 				52EB31691AF680F700060D0F /* stream.cpp in Sources */,
 				526A05BE1B90CC8500F4D6BC /* shader.cpp in Sources */,
+				5276F4F31C71AA860097FEA1 /* crypt.cpp in Sources */,
 				52A3F4651B70FC49004B433D /* tetrahedron_model.cpp in Sources */,
 				52C59AF21C5A7F3200BA3F4F /* console.cpp in Sources */,
 				524F33B91B33294E0011AE72 /* image_tif.cpp in Sources */,
@@ -1773,6 +1788,7 @@
 				520AE99D1B766CD800D597C4 /* index_buffer.cpp in Sources */,
 				5283FFA71C31A39400C59A6C /* polygon.cpp in Sources */,
 				520AE99E1B766CD800D597C4 /* vertex_buffer.cpp in Sources */,
+				52CC7B501C79EAC4003C8680 /* progress_bar.cpp in Sources */,
 				52C59AF61C5A7F4500BA3F4F /* board.cpp in Sources */,
 				52CA9E2E1B58F5CA00A08AE0 /* mouse.cpp in Sources */,
 				521781991C3DD0EA00288265 /* text.cpp in Sources */,
