@@ -17,12 +17,11 @@ namespace sht {
 		}
 		Quaternion::Quaternion(const Vector3& vector, const float angle)
 		{
-			float halfangle = angle * 0.5f;
-			float sin_ha = sin(halfangle);
-			x = vector.x * sin_ha;
-			y = vector.y * sin_ha;
-			z = vector.z * sin_ha;
-			w = cos(halfangle);
+			Set(vector, angle);
+		}
+		Quaternion::Quaternion(const Vector3& from, const Vector3& to)
+		{
+			Set(from, to);
 		}
 		Quaternion& Quaternion::operator = (const Quaternion& q)
 		{
@@ -128,6 +127,34 @@ namespace sht {
 		{
 			x = y = z = 0.0f;
 			w = 1.0f;
+		}
+		void Quaternion::Set(const Vector3& vector, const float angle)
+		{
+			float halfangle = angle * 0.5f;
+			float sin_ha = sin(halfangle);
+			x = vector.x * sin_ha;
+			y = vector.y * sin_ha;
+			z = vector.z * sin_ha;
+			w = cos(halfangle);
+		}
+		void Quaternion::Set(const Vector3& from, const Vector3& to)
+		{
+			Vector3 dir = to - from;
+			dir.Normalize();
+			float cos_angle = dir.x; // dir dot i
+			const float kPrecision = 0.001f; // TODO: move to separate module
+			if (cos_angle + kPrecision >= 1.0f) // not zero angle
+			{
+				float angle = acos(cos_angle);
+				// axis = i x dir
+				Vector3 axis(0.0f, -dir.z, dir.y);
+				axis.Normalize();
+				Set(axis, angle);
+			}
+			else // angle = 0
+			{
+				Identity();
+			}
 		}
 		void Quaternion::Normalize()
 		{

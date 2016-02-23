@@ -14,6 +14,7 @@ namespace sht {
 			Quaternion();
 			Quaternion(const float ix, const float iy, const float iz, const float iw);
 			Quaternion(const Vector3& vector, const float angle); //!< angle in radians
+			Quaternion(const Vector3& from, const Vector3& to); //!< from 2 directional points
 
 			Quaternion& operator = (const Quaternion& q);
 			void operator *= (const float s);
@@ -39,6 +40,8 @@ namespace sht {
 			float Angle() const; // returns angle in [-Pi; Pi]
 			float HalfAngle() const; // returns angle in [-Pi/2; Pi/2]
 			void Identity();
+			void Set(const Vector3& vector, const float angle);
+			void Set(const Vector3& from, const Vector3& to);
 			void Normalize();
 			Quaternion GetNormalized() const; //!< единичный
 			Quaternion GetConjugate() const; //!< сопряженный

@@ -218,6 +218,19 @@
 		5283FFA71C31A39400C59A6C /* polygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5283FFA21C31A39400C59A6C /* polygon.cpp */; };
 		5283FFA81C31A39400C59A6C /* polygon.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA31C31A39400C59A6C /* polygon.h */; };
 		5283FFA91C31A39400C59A6C /* segment.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA41C31A39400C59A6C /* segment.h */; };
+		528F540A1C7CA9F9009D79C9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BA7F331B04005200E39529 /* OpenGL.framework */; };
+		528F540B1C7CAA0A009D79C9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 524840111B39FE6F001DD466 /* Cocoa.framework */; };
+		528F540C1C7CAA21009D79C9 /* libShtilleEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 525A77391AF6254F003AF7E7 /* libShtilleEngine.a */; };
+		528F540D1C7CAA2C009D79C9 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52483F5A1B39EF1D001DD466 /* libjpeg.a */; };
+		528F540E1C7CAA32009D79C9 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 525D3F271B392B4400E95392 /* libpng.a */; };
+		528F540F1C7CAA38009D79C9 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52483F0D1B39E27B001DD466 /* libz.a */; };
+		528F54101C7CAA3E009D79C9 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 526738751C09DBED006E3ABF /* libfreetype.a */; };
+		528F54131C7CAAD4009D79C9 /* fullscreen_window.m in Sources */ = {isa = PBXBuildFile; fileRef = 524DB8621B405EF500EAB364 /* fullscreen_window.m */; };
+		528F54141C7CAAD4009D79C9 /* gl_view.mm in Sources */ = {isa = PBXBuildFile; fileRef = 524DB8631B405EF500EAB364 /* gl_view.mm */; };
+		528F54151C7CAAD5009D79C9 /* window_controller.mm in Sources */ = {isa = PBXBuildFile; fileRef = 524DB8641B405EF500EAB364 /* window_controller.mm */; };
+		528F54171C7CAAF8009D79C9 /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 528F54161C7CAAF8009D79C9 /* Source.cpp */; };
+		528F54181C7CAB35009D79C9 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 5256E2131B73327200DCF17B /* data */; };
+		528F54191C7CAB35009D79C9 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 524DB8371B404C6500EAB364 /* MainMenu.xib */; };
 		529475531BD0F6BE001EA29C /* bounding_box.h in Headers */ = {isa = PBXBuildFile; fileRef = 5294754B1BD0F6BE001EA29C /* bounding_box.h */; };
 		529475541BD0F6BE001EA29C /* line.h in Headers */ = {isa = PBXBuildFile; fileRef = 5294754C1BD0F6BE001EA29C /* line.h */; };
 		529475551BD0F6BE001EA29C /* plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5294754D1BD0F6BE001EA29C /* plane.cpp */; };
@@ -332,6 +345,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 52483F0C1B39E27B001DD466;
 			remoteInfo = z;
+		};
+		528F54111C7CAA97009D79C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 525A77311AF6254F003AF7E7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 525A77381AF6254F003AF7E7;
+			remoteInfo = ShtilleEngine;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -550,6 +570,8 @@
 		5283FFA21C31A39400C59A6C /* polygon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = polygon.cpp; path = geometry/polygon.cpp; sourceTree = "<group>"; };
 		5283FFA31C31A39400C59A6C /* polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon.h; path = geometry/polygon.h; sourceTree = "<group>"; };
 		5283FFA41C31A39400C59A6C /* segment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = segment.h; path = geometry/segment.h; sourceTree = "<group>"; };
+		528F53F91C7CA755009D79C9 /* ShtilleEarth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShtilleEarth.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		528F54161C7CAAF8009D79C9 /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Source.cpp; path = ../../../../ShtilleEarth/Source.cpp; sourceTree = "<group>"; };
 		5294754B1BD0F6BE001EA29C /* bounding_box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bounding_box.h; sourceTree = "<group>"; };
 		5294754C1BD0F6BE001EA29C /* line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = line.h; sourceTree = "<group>"; };
 		5294754D1BD0F6BE001EA29C /* plane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plane.cpp; sourceTree = "<group>"; };
@@ -675,6 +697,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		528F53F61C7CA755009D79C9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				528F540A1C7CA9F9009D79C9 /* OpenGL.framework in Frameworks */,
+				528F540B1C7CAA0A009D79C9 /* Cocoa.framework in Frameworks */,
+				528F54101C7CAA3E009D79C9 /* libfreetype.a in Frameworks */,
+				528F540F1C7CAA38009D79C9 /* libz.a in Frameworks */,
+				528F540E1C7CAA32009D79C9 /* libpng.a in Frameworks */,
+				528F540D1C7CAA2C009D79C9 /* libjpeg.a in Frameworks */,
+				528F540C1C7CAA21009D79C9 /* libShtilleEngine.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -778,10 +814,11 @@
 		525A77301AF6254F003AF7E7 = {
 			isa = PBXGroup;
 			children = (
+				528F541B1C7CACAE009D79C9 /* Projects */,
+				528F541A1C7CAC6F009D79C9 /* Platform */,
 				524DB8401B4052A600EAB364 /* Frameworks */,
 				525D3F221B392AD700E95392 /* Thirdparty */,
 				524DB8351B404C3400EAB364 /* Resources */,
-				52BA7F2E1B03FC8400E39529 /* TestProject */,
 				525A773B1AF6254F003AF7E7 /* ShtilleEngine */,
 				525A773A1AF6254F003AF7E7 /* Products */,
 			);
@@ -796,6 +833,7 @@
 				52483F5A1B39EF1D001DD466 /* libjpeg.a */,
 				523608721B3BD48200DD3A5B /* TestProject.app */,
 				526738751C09DBED006E3ABF /* libfreetype.a */,
+				528F53F91C7CA755009D79C9 /* ShtilleEarth.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -980,12 +1018,36 @@
 			name = geometry;
 			sourceTree = "<group>";
 		};
-		52BA7F2E1B03FC8400E39529 /* TestProject */ = {
+		528F53FA1C7CA755009D79C9 /* ShtilleEarth */ = {
+			isa = PBXGroup;
+			children = (
+				528F54161C7CAAF8009D79C9 /* Source.cpp */,
+			);
+			path = ShtilleEarth;
+			sourceTree = "<group>";
+		};
+		528F541A1C7CAC6F009D79C9 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
 				524DB8621B405EF500EAB364 /* fullscreen_window.m */,
 				524DB8631B405EF500EAB364 /* gl_view.mm */,
 				524DB8641B405EF500EAB364 /* window_controller.mm */,
+			);
+			name = Platform;
+			sourceTree = "<group>";
+		};
+		528F541B1C7CACAE009D79C9 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				52BA7F2E1B03FC8400E39529 /* TestProject */,
+				528F53FA1C7CA755009D79C9 /* ShtilleEarth */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		52BA7F2E1B03FC8400E39529 /* TestProject */ = {
+			isa = PBXGroup;
+			children = (
 				52BA7F2C1B03FC6900E39529 /* Source.cpp */,
 			);
 			name = TestProject;
@@ -1581,6 +1643,24 @@
 			productReference = 526738751C09DBED006E3ABF /* libfreetype.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		528F53F81C7CA755009D79C9 /* ShtilleEarth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 528F54091C7CA755009D79C9 /* Build configuration list for PBXNativeTarget "ShtilleEarth" */;
+			buildPhases = (
+				528F53F51C7CA755009D79C9 /* Sources */,
+				528F53F61C7CA755009D79C9 /* Frameworks */,
+				528F53F71C7CA755009D79C9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				528F54121C7CAA97009D79C9 /* PBXTargetDependency */,
+			);
+			name = ShtilleEarth;
+			productName = ShtilleEarth;
+			productReference = 528F53F91C7CA755009D79C9 /* ShtilleEarth.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1608,6 +1688,9 @@
 					526738741C09DBED006E3ABF = {
 						CreatedOnToolsVersion = 6.4;
 					};
+					528F53F81C7CA755009D79C9 = {
+						CreatedOnToolsVersion = 7.2.1;
+					};
 				};
 			};
 			buildConfigurationList = 525A77341AF6254F003AF7E7 /* Build configuration list for PBXProject "ShtilleEngine" */;
@@ -1629,6 +1712,7 @@
 				52483F591B39EF1D001DD466 /* jpeg */,
 				526738741C09DBED006E3ABF /* freetype */,
 				523608711B3BD48200DD3A5B /* TestProject */,
+				528F53F81C7CA755009D79C9 /* ShtilleEarth */,
 			);
 		};
 /* End PBXProject section */
@@ -1640,6 +1724,15 @@
 			files = (
 				5256E2141B7332BF00DCF17B /* data in Resources */,
 				524DB8381B404C7300EAB364 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		528F53F71C7CA755009D79C9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				528F54181C7CAB35009D79C9 /* data in Resources */,
+				528F54191C7CAB35009D79C9 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1867,6 +1960,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		528F53F51C7CA755009D79C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				528F54131C7CAAD4009D79C9 /* fullscreen_window.m in Sources */,
+				528F54141C7CAAD4009D79C9 /* gl_view.mm in Sources */,
+				528F54151C7CAAD5009D79C9 /* window_controller.mm in Sources */,
+				528F54171C7CAAF8009D79C9 /* Source.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1899,6 +2003,11 @@
 			isa = PBXTargetDependency;
 			target = 52483F0C1B39E27B001DD466 /* z */;
 			targetProxy = 526738E61C0B25E0006E3ABF /* PBXContainerItemProxy */;
+		};
+		528F54121C7CAA97009D79C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 525A77381AF6254F003AF7E7 /* ShtilleEngine */;
+			targetProxy = 528F54111C7CAA97009D79C9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2171,6 +2280,37 @@
 			};
 			name = Release;
 		};
+		528F54071C7CA755009D79C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = ShtilleEngine/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Shtille-Inc.ShtilleEarth";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		528F54081C7CA755009D79C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = ShtilleEngine/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Shtille-Inc.ShtilleEarth";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2236,6 +2376,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		528F54091C7CA755009D79C9 /* Build configuration list for PBXNativeTarget "ShtilleEarth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				528F54071C7CA755009D79C9 /* Debug */,
+				528F54081C7CA755009D79C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
