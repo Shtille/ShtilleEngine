@@ -5,12 +5,13 @@
 #include "../sht/graphics/include/model/sphere_model.h"
 #include "../sht/graphics/include/renderer/text.h"
 #include "../sht/utility/include/console.h"
+#include "../sht/utility/include/camera.h"
 #include <cmath>
 
-class UserApp : public sht::OpenGlApplication 
+class ShtilleEarthApp : public sht::OpenGlApplication
 {
 public:
-    UserApp()
+    ShtilleEarthApp()
     : cube_(nullptr)
     , tetrahedron_(nullptr)
     , shader_(nullptr)
@@ -20,16 +21,15 @@ public:
 	, font_(nullptr)
 	, text_(nullptr)
 	, console_(nullptr)
+    , camera_manager_(nullptr)
     , angle_(0.0f)
     , light_angle(0.0f)
-    , view_alpha(0.0f)
-    , view_theta(0.0f)
     {
         light_position.Set(5.0f, 5.0f, 5.0f);
     }
     const char* GetTitle(void) final
     {
-        return "Test project";
+        return "Shtille Earth";
     }
     bool Load() final
     {
@@ -73,11 +73,24 @@ public:
             return false;
         
         console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+
+        camera_manager_ = new sht::utility::CameraManager();
+        camera_manager_->MakeFree(vec3(10.0f, 0.0f, 0.0f), vec3(0.0f));
+//        auto first_camera = camera_manager_->Add(vec3(10.0f, 0.0f, 0.0f), vec3(0.0f));
+//        auto second_camera = camera_manager_->Add(vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f));
+//        auto third_camera = camera_manager_->Add(vec3(-10.0f, -10.0f, 10.0f), vec3(0.0f));
+//        camera_manager_->PathClear();
+//        camera_manager_->PathSetStart(first_camera, 5.0f, false);
+//        camera_manager_->PathAdd(second_camera, 5.0f, true);
+//        camera_manager_->PathAdd(third_camera, 5.0f, false);
+//        camera_manager_->PathSetCycling(true);
         
         return true;
     }
     void Unload() final
     {
+        if (camera_manager_)
+            delete camera_manager_;
 		if (console_)
 			delete console_;
 		if (text_)
@@ -92,15 +105,14 @@ public:
         angle_ += 0.5f * frame_time_;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
-        light_angle += 0.2f * frame_time_;
+        //light_angle += 0.2f * frame_time_;
         light_position.Set(5.0f*cosf(light_angle), 5.0f, 5.0f*sinf(light_angle));
         
-        camera_position.Set(10.0f*cosf(view_theta)*cosf(view_alpha),
-                            10.0f*sinf(view_theta),
-                            10.0f*cosf(view_theta)*sinf(view_alpha));
-        renderer_->SetViewMatrix(sht::math::LookAt(camera_position, vec3(0.0f)));
-        
         console_->Update(frame_time_);
+
+        camera_manager_->Update(frame_time_);
+
+        renderer_->SetViewMatrix(camera_manager_->view_matrix());
     }
     void Render() final
     {
@@ -118,7 +130,7 @@ public:
         
         // Draw first model
         renderer_->PushMatrix();
-        renderer_->Translate(2.0f, 0.0f, 0.0f);
+        renderer_->Translate(0.0f, 0.0f, 0.0f);
         renderer_->MultMatrix(rotate_matrix);
         shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
@@ -177,19 +189,19 @@ public:
             }
             else if (key == sht::PublicKey::kLeft)
             {
-                view_alpha += 0.1f;
+                camera_manager_->RotateAroundTargetInY(0.1f);
             }
             else if (key == sht::PublicKey::kRight)
             {
-                view_alpha -= 0.1f;
+                camera_manager_->RotateAroundTargetInY(-0.1f);
             }
             else if (key == sht::PublicKey::kUp)
             {
-                view_theta += 0.1f;
+                camera_manager_->RotateAroundTargetInZ(0.1f);
             }
             else if (key == sht::PublicKey::kDown)
             {
-                view_theta -= 0.1f;
+                camera_manager_->RotateAroundTargetInZ(-0.1f);
             }
             else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
@@ -201,8 +213,8 @@ public:
     {
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
-            view_alpha += mouse_.delta_x()/width_;
-            view_theta += mouse_.delta_y()/height_;
+            camera_manager_->RotateAroundTargetInY(mouse_.delta_x()/width_);
+            camera_manager_->RotateAroundTargetInZ(mouse_.delta_y()/height_);
         }
         CursorToCenter();
     }
@@ -223,6 +235,7 @@ private:
     sht::graphics::Font * font_;
     sht::graphics::DynamicText * text_;
     sht::utility::Console * console_;
+    sht::utility::CameraManager * camera_manager_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;
@@ -231,11 +244,6 @@ private:
     float light_angle;
     
     sht::math::Vector3 light_position;
-    
-    // Viewer params
-    vec3 camera_position;
-    float view_alpha;
-    float view_theta;
 };
 
-DECLARE_MAIN(UserApp);
+DECLARE_MAIN(ShtilleEarthApp);

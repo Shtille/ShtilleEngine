@@ -33,6 +33,7 @@ namespace sht {
 
 			Vector3 xyz() const;
 			Vector3 Vector() const;
+			Vector3 Direction() const;
 
 			void Null();
 			float Length() const;
@@ -43,16 +44,21 @@ namespace sht {
 			void Set(const Vector3& vector, const float angle);
 			void Set(const Vector3& from, const Vector3& to);
 			void Normalize();
-			Quaternion GetNormalized() const; //!< единичный
-			Quaternion GetConjugate() const; //!< сопряженный
-			Quaternion GetInverse() const; //!< обратный
+			Quaternion GetNormalized() const;
+			Quaternion GetConjugate() const;
+			Quaternion GetInverse() const;
 
 			Vector3 RotateVector(const Vector3& _v) const;
+			
+			static void Slerp(const Quaternion& q1, const Quaternion& q2, float t,
+				Quaternion * out);
 
 			float x, y, z, w;
 		};
 
 	} // namespace math
 } // namespace sht
+
+typedef sht::math::Quaternion quat;
 
 #endif

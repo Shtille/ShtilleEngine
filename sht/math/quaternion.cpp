@@ -62,7 +62,8 @@ namespace sht {
 		{
 			Vector3 v1 = Vector3(q1.x, q1.y, q1.z);
 			Vector3 v2 = Vector3(q2.x, q2.y, q2.z);
-			return Quaternion((v1^v2) + q1.w*v2 + q2.w*v1, q1.w*q2.w - (v1&v2));
+            Vector3 v = (v1^v2) + q1.w*v2 + q2.w*v1;
+			return Quaternion(v.x, v.y, v.z, q1.w*q2.w - (v1&v2));
 		}
 		Quaternion operator * (const float s, const Quaternion &q)
 		{
@@ -96,6 +97,16 @@ namespace sht {
 		Vector3 Quaternion::Vector() const
 		{
 			return Vector3(x, y, z) / sqrt(1.0f - w*w);
+		}
+		Vector3 Quaternion::Direction() const
+		{
+			float y2, z2, yy, zz, xy, xz, wy, wz;
+			y2 = y + y;
+			z2 = z + z;
+			xy = x * y2;  xz = x * z2;
+			yy = y * y2;  zz = z * z2;
+			wy = w * y2;  wz = w * z2;
+			return Vector3(1.0f - (yy + zz), xy + wz, xz - wy).GetNormalized();
 		}
 		void Quaternion::Null()
 		{
@@ -142,19 +153,24 @@ namespace sht {
 			Vector3 dir = to - from;
 			dir.Normalize();
 			float cos_angle = dir.x; // dir dot i
-			const float kPrecision = 0.001f; // TODO: move to separate module
-			if (cos_angle + kPrecision >= 1.0f) // not zero angle
-			{
-				float angle = acos(cos_angle);
-				// axis = i x dir
-				Vector3 axis(0.0f, -dir.z, dir.y);
-				axis.Normalize();
-				Set(axis, angle);
-			}
-			else // angle = 0
-			{
-				Identity();
-			}
+            if (fabs(cos_angle) < 0.999f) // not zero angle
+            {
+                float angle = acos(cos_angle);
+                // axis = i x dir
+                Vector3 axis(0.0f, -dir.z, dir.y);
+                axis.Normalize();
+                Set(axis, angle);
+            }
+            else if (cos_angle > 0.0f) // angle = 0
+            {
+                x = y = z = 0.0f;
+                w = 1.0f;
+            }
+            else // angle = 180 degrees
+            {
+                x = z = w = 0.0f;
+                y = 1.0f;
+            }
 		}
 		void Quaternion::Normalize()
 		{
@@ -179,6 +195,36 @@ namespace sht {
 		Vector3 Quaternion::RotateVector(const Vector3& _v) const
 		{
 			return ((*this) * Quaternion(_v.x, _v.y, _v.z, 0.0f) * GetInverse()).xyz();
+		}
+		void Quaternion::Slerp(const Quaternion& q1, const Quaternion& q2, float t,
+			Quaternion * out)
+		{
+			Quaternion new_q2;
+			float cos_om, scale0, scale1;
+			cos_om = q1 & q2;
+			if (cos_om < 0.0f)
+			{
+				cos_om = -cos_om;
+				new_q2 = -q2;
+			}
+			else
+			{
+				new_q2 = q2;
+			}
+			if (cos_om > 0.9999f)
+			{
+				float omega = acos(cos_om);
+				float sin_om = sin(omega);
+				scale0 = sin((1.0f - t) * omega) / sin_om;
+				scale1 = sin(t * omega) / sin_om;
+			}
+			else // small angle - LERP
+			{
+				scale0 = 1.0f - t;
+				scale1 = t;
+			}
+			*out = (scale0 * q1) + (scale1 * new_q2);
+			out->Normalize();
 		}
 
 	} // namespace math
