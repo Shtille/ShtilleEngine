@@ -4,7 +4,7 @@
 SHT_PATH = ../../sht
 SHT_BIN = ../../bin
 
-SOURCES = ../../ShtilleEarth/Source.cpp
+SOURCES = ../../ShtilleEarth/shtille_earth.cpp
 
 INCLUDE = -I$(SHT_PATH)
 
