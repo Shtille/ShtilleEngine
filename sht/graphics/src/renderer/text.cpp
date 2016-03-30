@@ -1,7 +1,6 @@
 #include "../../include/renderer/text.h"
 #include <cstdarg>
 #include <cwchar>
-#include <clocale>
 
 #ifdef TARGET_MAC
 #define my_vswprintf vswprintf

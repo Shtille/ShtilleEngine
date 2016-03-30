@@ -4,6 +4,7 @@
 #include "../system/include/memory_leaks.h"
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
+#include <clocale>
 #if defined(TARGET_MAC)
 #include <AGL/AGL.h>
 #endif
@@ -45,6 +46,9 @@ namespace sht {
     int Application::Run(int argc, const char** argv)
 	{
 		app_ = this;
+		
+		// Set proper text encoding to let use non-english characters
+		setlocale(LC_CTYPE, "UTF-8");
 
 		// Enable automatic memory leaks checking
         sht::system::EnableMemoryLeaksChecking();
