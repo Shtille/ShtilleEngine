@@ -49,7 +49,6 @@ namespace sht {
         }
         void Console::Update(f32 sec)
         {
-            mutex_.lock();
             if (need_to_update_all_)
             {
                 for (u32 i = 0; i < max_lines_; ++i)
@@ -63,7 +62,6 @@ namespace sht {
                 labels_[0]->SetText(input_string().c_str());
                 need_to_update_input_ = false;
             }
-            mutex_.unlock();
             vertical_board_.UpdateAll(sec);
         }
 		void Console::Render()
@@ -75,7 +73,6 @@ namespace sht {
 		}
         void Console::ProcessKeyInput(sht::PublicKey key, int mods)
         {
-            mutex_.lock();
             if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
                 Move();
@@ -88,14 +85,11 @@ namespace sht {
             {
                 PushString();
             }
-            mutex_.unlock();
         }
         void Console::ProcessCharInput(unsigned short code)
         {
             wchar_t symbol = static_cast<wchar_t>(code);
-            mutex_.lock();
             InsertSymbol(symbol);
-            mutex_.unlock();
         }
         std::wstring& Console::input_string()
         {

@@ -8,6 +8,10 @@
 #include "../sht/utility/include/camera.h"
 #include <cmath>
 
+#ifdef TARGET_MAC // see common/platform.h
+#include <mutex>
+#endif
+
 class ShtilleEarthApp : public sht::OpenGlApplication
 {
 public:
@@ -24,6 +28,7 @@ public:
     , camera_manager_(nullptr)
     , angle_(0.0f)
     , light_angle(0.0f)
+    , need_update_projection_matrix_(true)
     {
         light_position.Set(5.0f, 5.0f, 5.0f);
     }
@@ -60,8 +65,6 @@ public:
         
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1))
             return false;
-
-        renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
 
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
@@ -102,6 +105,9 @@ public:
     }
     void Update() final
     {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
         angle_ += 0.5f * frame_time_;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
@@ -113,9 +119,14 @@ public:
         camera_manager_->Update(frame_time_);
 
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
+        
+        UpdateProjectionMatrix();
     }
     void Render() final
     {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
         vec3 light_pos_eye = renderer_->view_matrix() * light_position;
         
         renderer_->Viewport(width_, height_);
@@ -155,7 +166,7 @@ public:
         text_shader_->Bind();
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fpsФПС: %.2f", frame_rate_);
         text_->Render();
         
         // Draw console
@@ -165,6 +176,9 @@ public:
     }
     void OnChar(unsigned short code)
     {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
         if (console_->IsActive())
         {
             console_->ProcessCharInput(code);
@@ -172,6 +186,9 @@ public:
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
+//#ifdef TARGET_MAC
+//        mutex_.lock();
+//#endif
         // Console blocks key input
         if (console_->IsActive())
         {
@@ -181,10 +198,16 @@ public:
         {
             if (key == sht::PublicKey::kF)
             {
+//#ifdef TARGET_MAC
+//                //mutex_.unlock(); // to not get deadlock
+//#endif
                 ToggleFullscreen();
             }
             else if (key == sht::PublicKey::kEscape)
             {
+//#ifdef TARGET_MAC
+//                mutex_.unlock(); // to not get deadlock
+//#endif
                 Application::Terminate();
             }
             else if (key == sht::PublicKey::kLeft)
@@ -208,9 +231,15 @@ public:
                 console_->Move();
             }
         }
+//#ifdef TARGET_MAC
+//        mutex_.unlock();
+//#endif
     }
     void OnMouseMove() final
     {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             camera_manager_->RotateAroundTargetInY(mouse_.delta_x()/width_);
@@ -220,12 +249,27 @@ public:
     }
     void OnSize(int w, int h) final
     {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
         Application::OnSize(w, h);
         // To have correct perspective when resizing
+        need_update_projection_matrix_ = true;
+    }
+    void UpdateProjectionMatrix()
+    {
+        if (!need_update_projection_matrix_)
+            return;
+        
+        need_update_projection_matrix_ = false;
+        
         renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
     }
     
 private:
+#ifdef TARGET_MAC
+    std::mutex mutex_;
+#endif
     sht::graphics::Model * cube_;
     sht::graphics::Model * tetrahedron_;
     sht::graphics::Shader * shader_;
@@ -244,6 +288,8 @@ private:
     float light_angle;
     
     sht::math::Vector3 light_position;
+    
+    bool need_update_projection_matrix_;
 };
 
 DECLARE_MAIN(ShtilleEarthApp);

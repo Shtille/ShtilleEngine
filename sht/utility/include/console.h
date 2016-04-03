@@ -8,7 +8,6 @@
 
 #include <string>
 #include <vector>
-#include <mutex>
 
 namespace sht {
 	namespace utility {
@@ -51,7 +50,6 @@ namespace sht {
             u32 max_lines_; //!< maximum number of lines
             ui::Label * * labels_; // pointers to labels
             std::vector<std::wstring> lines_;
-            std::mutex mutex_;
             bool need_to_update_input_;
             bool need_to_update_all_;
 		};
