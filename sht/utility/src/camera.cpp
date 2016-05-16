@@ -55,6 +55,16 @@ namespace sht {
 			orientation_ = new quat(orient);
 			need_update_orientation_ = false;
 		}
+        Camera::Camera(const vec3& pos, const quat& orient, const vec3& target_pos)
+        {
+            is_position_ = true;
+            position_ = new vec3(pos);
+            is_target_position_ = true;
+            target_position_ = new vec3(target_pos);
+            is_orientation_ = true;
+            orientation_ = new quat(orient);
+            need_update_orientation_ = false;
+        }
 		Camera::Camera(vec3 * pos, const quat& orient)
 		{
 			is_position_ = false;
@@ -153,6 +163,26 @@ namespace sht {
 		{
 			return view_matrix_;
 		}
+        const math::Vector3* CameraManager::position() const
+        {
+            if (current_camera_)
+                return current_camera_->position_;
+            else
+                return nullptr;
+        }
+        math::Vector3 CameraManager::GetDirection() const
+        {
+            assert(current_camera_);
+            return current_camera_->orientation_->Direction();
+        }
+        bool CameraManager::animated() const
+        {
+            return need_view_matrix_update_;
+        }
+        void CameraManager::SetManualUpdate()
+        {
+            manual_rotation_ = true;
+        }
 		void CameraManager::RotateAroundX(f32 angle)
 		{
 			quat orient(UNIT_X, angle);
@@ -225,6 +255,14 @@ namespace sht {
 			current_camera_ = new Camera(pos, orient);
             manual_rotation_ = true;
 		}
+        void CameraManager::MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos)
+        {
+            if (is_current_)
+                delete current_camera_;
+            is_current_ = true;
+            current_camera_ = new Camera(pos, orient);
+            manual_rotation_ = true;
+        }
 		void CameraManager::MakeAttached(vec3 * pos, quat * orient)
 		{
 			if (is_current_)
@@ -332,7 +370,7 @@ namespace sht {
 				// Update the single camera
 				CameraID cam_id = paths_[0].camera_id;
 				cameras_[cam_id]->Update();
-				need_view_matrix_update_ = cameras_[cam_id]->need_update_orientation_;
+                need_view_matrix_update_ = cameras_[cam_id]->need_update_orientation_;
 			}
 			else
 			{
@@ -373,7 +411,13 @@ namespace sht {
 					pos = *curr_camera->position_ +
 						(*next_camera->position_ - *curr_camera->position_) * t;
 				}
-				MakeFree(pos, orient);
+                if (curr_camera->is_target_position_ && next_camera->is_target_position_)
+                {
+                    // Make target oriented but saving orientation
+                    MakeFreeTargeted(pos, orient, *curr_camera->target_position_);
+                }
+                else
+                    MakeFree(pos, orient);
 
 				animation_time_ += sec; // increase time
 				if (animation_time_ >= paths_[next_index].interval)

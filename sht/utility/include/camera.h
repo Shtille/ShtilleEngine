@@ -18,6 +18,7 @@ namespace sht {
 			explicit Camera(const vec3& pos, vec3 * target_pos);
 			explicit Camera(vec3 * pos, vec3 * target_pos);
 			explicit Camera(const vec3& pos, const quat& orient);
+            explicit Camera(const vec3& pos, const quat& orient, const vec3& target_pos);
 			explicit Camera(vec3 * pos, const quat& orient);
 			explicit Camera(const vec3& pos, quat * orient);
 			explicit Camera(vec3 * pos, quat * orient);
@@ -52,6 +53,12 @@ namespace sht {
 			~CameraManager();
 
 			const math::Matrix4& view_matrix() const;
+            
+            const math::Vector3* position() const;
+            math::Vector3 GetDirection() const;
+            bool animated() const;
+            
+            void SetManualUpdate();
 
 			void RotateAroundX(f32 angle);
 			void RotateAroundY(f32 angle);
@@ -83,6 +90,9 @@ namespace sht {
 			void PathSetCycling(bool cycling);
 
 			void Update(f32 sec);
+            
+        protected:
+            void MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos);
 
 		private:
 			struct Path {
