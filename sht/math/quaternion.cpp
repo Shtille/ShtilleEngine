@@ -211,7 +211,7 @@ namespace sht {
 			{
 				new_q2 = q2;
 			}
-			if (cos_om > 0.9999f)
+			if (cos_om < 0.9999f)
 			{
 				float omega = acos(cos_om);
 				float sin_om = sin(omega);
