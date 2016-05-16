@@ -139,6 +139,13 @@ namespace sht {
             
             return true;
         }
+        bool Model::HasTexture() const
+        {
+            for (const auto &a : attribs_)
+                if (a.type == VertexAttribute::kTexcoord)
+                    return true;
+            return false;
+        }
         void Model::Render()
         {
             renderer_->context()->BindVertexArrayObject(vertex_array_object_);

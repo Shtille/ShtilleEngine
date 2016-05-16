@@ -20,6 +20,8 @@ namespace sht {
             void AddFormat(const VertexAttribute& attrib);
             bool MakeRenderable();
             
+            bool HasTexture() const;
+            
             void Render();
             
         protected:            
