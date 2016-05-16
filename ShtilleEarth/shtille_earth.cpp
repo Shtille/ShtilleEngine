@@ -6,31 +6,43 @@
 #include "../sht/graphics/include/renderer/text.h"
 #include "../sht/utility/include/console.h"
 #include "../sht/utility/include/camera.h"
+#include "../sht/geo/include/planet_zoom.h"
 #include <cmath>
 
 #ifdef TARGET_MAC // see common/platform.h
 #include <mutex>
 #endif
 
+namespace {
+    const float kEarthRadius = 6317000.0f;
+    const float kCameraDistance = kEarthRadius * 5.0f;
+    const sht::math::Vector3 kEarthPosition(0.0f, 0.0f, 0.0f);
+    const sht::math::Vector3 kCameraPosition1(kCameraDistance, 0.0f, 0.0f);
+    const sht::math::Vector3 kCameraPosition2(-kCameraDistance, 0.0f, 0.0f);
+    const sht::math::Vector3 kCameraPosition3(-kCameraDistance, -kCameraDistance, kCameraDistance);
+    const sht::math::Vector3 kSunPosition(kCameraDistance, 0.0f, 0.0f);
+}
+
 class ShtilleEarthApp : public sht::OpenGlApplication
 {
 public:
     ShtilleEarthApp()
     : cube_(nullptr)
-    , tetrahedron_(nullptr)
     , shader_(nullptr)
 	, shader2_(nullptr)
 	, gui_shader_(nullptr)
 	, text_shader_(nullptr)
+    , earth_texture_(nullptr)
 	, font_(nullptr)
-	, text_(nullptr)
+	, fps_text_(nullptr)
 	, console_(nullptr)
     , camera_manager_(nullptr)
+    , planet_zoom_(nullptr)
     , angle_(0.0f)
-    , light_angle(0.0f)
+    , camera_distance_(kCameraDistance)
     , need_update_projection_matrix_(true)
+    , camera_animation_stopped_(false)
     {
-        light_position.Set(5.0f, 5.0f, 5.0f);
     }
     const char* GetTitle(void) final
     {
@@ -42,19 +54,13 @@ public:
         cube_ = new sht::graphics::SphereModel(renderer_);
         cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
         cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+        cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
         cube_->Create();
         if (!cube_->MakeRenderable())
             return false;
         
-        // Second model
-        tetrahedron_ = new sht::graphics::TetrahedronModel(renderer_);
-        tetrahedron_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        tetrahedron_->Create();
-        if (!tetrahedron_->MakeRenderable())
-            return false;
-        
-        const char *attribs[] = {"a_position", "a_normal"};
-        if (!renderer_->AddShader(shader_, "data/shaders/shader", attribs, 2))
+        const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
+        if (!renderer_->AddShader(shader_, "data/shaders/shader", attribs, 3))
             return false;
         
         if (!renderer_->AddShader(shader2_, "data/shaders/shader2", attribs, 1))
@@ -65,58 +71,60 @@ public:
         
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1))
             return false;
+        
+        if (!renderer_->AddTexture(earth_texture_, "data/textures/earth_texture.jpg"))
+            return false;
 
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
 			return false;
 
-		//        text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.1f, 0.0f, 0.5f, L"Brown F0x\njumps over the lazy dog");
-		text_ = sht::graphics::DynamicText::Create(renderer_, 30);
-        if (!text_)
+		fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+        if (!fps_text_)
             return false;
         
         console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
 
         camera_manager_ = new sht::utility::CameraManager();
-        camera_manager_->MakeFree(vec3(10.0f, 0.0f, 0.0f), vec3(0.0f));
-//        auto first_camera = camera_manager_->Add(vec3(10.0f, 0.0f, 0.0f), vec3(0.0f));
-//        auto second_camera = camera_manager_->Add(vec3(-10.0f, 0.0f, 0.0f), vec3(0.0f));
-//        auto third_camera = camera_manager_->Add(vec3(-10.0f, -10.0f, 10.0f), vec3(0.0f));
+//        camera_manager_->MakeFree(vec3(camera_distance_, 0.0f, 0.0f), vec3(0.0f));
+//        auto first_camera  = camera_manager_->Add(kCameraPosition1, kEarthPosition);
+//        auto second_camera = camera_manager_->Add(kCameraPosition2, kEarthPosition);
+//        auto third_camera  = camera_manager_->Add(kCameraPosition3, kEarthPosition);
 //        camera_manager_->PathClear();
 //        camera_manager_->PathSetStart(first_camera, 5.0f, false);
 //        camera_manager_->PathAdd(second_camera, 5.0f, true);
 //        camera_manager_->PathAdd(third_camera, 5.0f, false);
 //        camera_manager_->PathSetCycling(true);
         
+        planet_zoom_ = new sht::geo::PlanetZoom(camera_manager_, kEarthRadius, kCameraDistance, 100.0f);
+        
         return true;
     }
     void Unload() final
     {
+        if (planet_zoom_)
+            delete planet_zoom_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
 			delete console_;
-		if (text_)
-			delete text_;
+		if (fps_text_)
+			delete fps_text_;
 		if (cube_)
 			delete cube_;
-		if (tetrahedron_)
-			delete tetrahedron_;
     }
     void Update() final
     {
 //#ifdef TARGET_MAC
 //        std::lock_guard<std::mutex> lock(mutex_);
 //#endif
-        angle_ += 0.5f * frame_time_;
+        //angle_ += 0.5f * frame_time_;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
-        
-        //light_angle += 0.2f * frame_time_;
-        light_position.Set(5.0f*cosf(light_angle), 5.0f, 5.0f*sinf(light_angle));
         
         console_->Update(frame_time_);
 
-        camera_manager_->Update(frame_time_);
+        if (!camera_animation_stopped_)
+            camera_manager_->Update(frame_time_);
 
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
         
@@ -127,7 +135,7 @@ public:
 //#ifdef TARGET_MAC
 //        std::lock_guard<std::mutex> lock(mutex_);
 //#endif
-        vec3 light_pos_eye = renderer_->view_matrix() * light_position;
+        vec3 light_pos_eye = renderer_->view_matrix() * kSunPosition;
         
         renderer_->Viewport(width_, height_);
         
@@ -138,10 +146,13 @@ public:
         shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
         shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
         shader_->Uniform3fv("u_light_pos", light_pos_eye);
+        shader_->Uniform1i("u_texture", 0);
+        renderer_->ChangeTexture(earth_texture_);
         
         // Draw first model
         renderer_->PushMatrix();
-        renderer_->Translate(0.0f, 0.0f, 0.0f);
+        renderer_->Translate(kEarthPosition);
+        renderer_->Scale(kEarthRadius);
         renderer_->MultMatrix(rotate_matrix);
         shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
@@ -149,28 +160,22 @@ public:
         cube_->Render();
         renderer_->PopMatrix();
         
-        shader2_->Bind();
-        shader2_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        shader2_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        renderer_->ChangeTexture(nullptr);
         
-        // Draw second model
-        renderer_->PushMatrix();
-        renderer_->Translate(light_position);
-        renderer_->Scale(0.2f);
-        renderer_->MultMatrix(rotate_matrix);
-        shader2_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        tetrahedron_->Render();
-        renderer_->PopMatrix();
+        renderer_->DisableDepthTest();
         
-        // Draw text
+        // Draw FPS
         text_shader_->Bind();
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fpsФПС: %.2f", frame_rate_);
-        text_->Render();
+        //fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"CamX: %.7f", camera_manager_->position()->x);
+        fps_text_->Render();
         
         // Draw console
         console_->Render();
+        
+        renderer_->EnableDepthTest();
         
         shader_->Unbind();
     }
@@ -226,9 +231,21 @@ public:
             {
                 camera_manager_->RotateAroundTargetInZ(-0.1f);
             }
+            else if (key == sht::PublicKey::kEqual)
+            {
+                planet_zoom_->ZoomIn();
+            }
+            else if (key == sht::PublicKey::kMinus)
+            {
+                planet_zoom_->ZoomOut();
+            }
             else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
                 console_->Move();
+            }
+            else if (key == sht::PublicKey::kSpace)
+            {
+                camera_animation_stopped_ = !camera_animation_stopped_;
             }
         }
 //#ifdef TARGET_MAC
@@ -258,12 +275,19 @@ public:
     }
     void UpdateProjectionMatrix()
     {
-        if (!need_update_projection_matrix_)
-            return;
-        
-        need_update_projection_matrix_ = false;
-        
-        renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+        if (need_update_projection_matrix_ || camera_manager_->animated())
+        {
+            need_update_projection_matrix_ = false;
+            
+            const sht::math::Vector3* cam_pos = camera_manager_->position();
+            assert(cam_pos);
+            const sht::math::Vector3 to_earth = kEarthPosition - *cam_pos;
+            const sht::math::Vector3 camera_direction = camera_manager_->GetDirection(); // normalized
+            const float cam_distance = to_earth & camera_direction;
+            const float znear = cam_distance - kEarthRadius;
+            const float zfar = cam_distance + kEarthRadius;
+            renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
+        }
     }
     
 private:
@@ -271,25 +295,25 @@ private:
     std::mutex mutex_;
 #endif
     sht::graphics::Model * cube_;
-    sht::graphics::Model * tetrahedron_;
     sht::graphics::Shader * shader_;
     sht::graphics::Shader * shader2_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
+    sht::graphics::Texture * earth_texture_;
     sht::graphics::Font * font_;
-    sht::graphics::DynamicText * text_;
+    sht::graphics::DynamicText * fps_text_;
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
+    sht::geo::PlanetZoom * planet_zoom_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;
     
-    float angle_; //!< rotation angle of cube
-    float light_angle;
-    
-    sht::math::Vector3 light_position;
+    float angle_; //!< rotation angle of earth
+    float camera_distance_;
     
     bool need_update_projection_matrix_;
+    bool camera_animation_stopped_;
 };
 
 DECLARE_MAIN(ShtilleEarthApp);
