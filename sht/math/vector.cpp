@@ -21,6 +21,11 @@ namespace sht {
 			x = ix;
 			y = iy;
 		}
+        void Vector2::Set(const float ix, const float iy)
+        {
+            x = ix;
+            y = iy;
+        }
 		Vector2::operator float *()
 		{
 			return &x;
@@ -81,6 +86,11 @@ namespace sht {
 		{
 			return sqrt(x*x + y*y);
 		}
+        float Vector2::Distance(const Vector2& v) const
+        {
+            Vector2 l = v - *this;
+            return sqrt(l.x*l.x + l.y*l.y);
+        }
 		void Vector2::Normalize()
 		{
 			float r = 1.0f / Length();
@@ -298,6 +308,11 @@ namespace sht {
 		{
 			return sqrt(x*x + y*y + z*z);
 		}
+        float Vector3::Distance(const Vector3& v) const
+        {
+            Vector3 l = v - *this;
+            return sqrt(l.x*l.x + l.y*l.y + l.z*l.z);
+        }
 		void Vector3::Normalize()
 		{
 			float r = 1.0f / Length();
@@ -480,6 +495,11 @@ namespace sht {
 		{
 			return sqrt(x*x + y*y + z*z + w*w);
 		}
+        float Vector4::Distance(const Vector4& v) const
+        {
+            Vector4 l = v - *this;
+            return sqrt(l.x*l.x + l.y*l.y + l.z*l.z + l.w*l.w);
+        }
 		void Vector4::Normalize()
 		{
 			float r = 1.0f / Length();

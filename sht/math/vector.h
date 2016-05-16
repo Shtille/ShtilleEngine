@@ -12,6 +12,8 @@ namespace sht {
 			Vector2(const Vector2& v);
 			Vector2(const float iv);
 			Vector2(const float ix, const float iy);
+            
+            void Set(const float ix, const float iy);
 
 			operator float *();
 			operator const float *() const;
@@ -43,6 +45,7 @@ namespace sht {
 			bool IsNull() const;
 			float Sqr() const;
 			float Length() const;
+            float Distance(const Vector2& v) const;
 			void Normalize();
 			Vector2 GetNormalized() const;
 
@@ -108,6 +111,7 @@ namespace sht {
 			bool IsNull() const;
 			float Sqr() const;
 			float Length() const;
+            float Distance(const Vector3& v) const;
 			void Normalize();
 			Vector3 GetNormalized() const;
 
@@ -157,6 +161,7 @@ namespace sht {
 			bool IsNull() const;
 			float Sqr() const;
 			float Length() const;
+            float Distance(const Vector4& v) const;
 			void Normalize();
 			Vector4 GetNormalized() const;
 
