@@ -63,7 +63,9 @@ namespace sht {
 		bool fullscreen();
 		int width();
 		int height();
-		int color_bits();
+		u32 color_bits();
+        u32 depth_bits();
+        u32 stencil_bits();
         
         Keys& keys();
         Mouse& mouse();
@@ -106,8 +108,9 @@ namespace sht {
 		int width_;						//!< width of the window
 		int height_;					//!< height of the window
 		float aspect_ratio_;			//!< aspect ratio of window
-		unsigned char color_bits_;				//!< number of bits for color buffer
-		unsigned char depth_bits_;				//!< number of bits for depth buffer
+		unsigned char color_bits_;		//!< number of bits for color buffer
+		unsigned char depth_bits_;		//!< number of bits for depth buffer
+        unsigned char stencil_bits_;    //!< number of bits for stencil buffer
 		float time_;					//!< total time elapsed from application start
 		float frame_time_;				//!< time elapsed since last update
 		float frame_rate_;				//!< frames per second (FPS)

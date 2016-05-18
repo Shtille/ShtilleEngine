@@ -103,6 +103,8 @@ namespace sht {
 			virtual void ClearColorBuffer(void) = 0;
 			virtual void ClearColorAndDepthBuffers(void) = 0;
 			virtual void ClearDepthBuffer(void) = 0;
+            virtual void ClearStencil(s32 value) = 0;
+            virtual void ClearStencilBuffer() = 0;
             
             // Matrices functions
             void SetProjectionMatrix(const sht::math::Matrix4& mat);
@@ -131,6 +133,9 @@ namespace sht {
 			virtual void DisableDepthTest(void) = 0;
 			virtual void EnableDepthWrite(void) = 0;
 			virtual void DisableDepthWrite(void) = 0;
+            
+            virtual void EnableStencilTest(void) = 0;
+            virtual void DisableStencilTest(void) = 0;
 
 			virtual void EnableWireframeMode(void) = 0;
 			virtual void DisableWireframeMode(void) = 0;

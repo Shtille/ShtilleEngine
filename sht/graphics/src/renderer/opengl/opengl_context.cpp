@@ -125,6 +125,14 @@ namespace sht {
         {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
+        void OpenGlContext::ClearStencil(s32 value)
+        {
+            glClearStencil(value);
+        }
+        void OpenGlContext::ClearStencilBuffer()
+        {
+            glClear(GL_STENCIL_BUFFER_BIT);
+        }
         void OpenGlContext::Viewport(int w, int h)
         {
             glViewport(0, 0, w, h);
@@ -152,6 +160,18 @@ namespace sht {
         void OpenGlContext::DisableDepthWrite()
         {
             glDepthMask(GL_FALSE);
+        }
+        void OpenGlContext::EnableStencilTest()
+        {
+            glEnable(GL_STENCIL_TEST);
+        }
+        void OpenGlContext::DisableStencilTest()
+        {
+            glDisable(GL_STENCIL_TEST);
+        }
+        void OpenGlContext::StencilMask(u32 mask)
+        {
+            glStencilMask(mask);
         }
         void OpenGlContext::EnableWireframeMode()
         {

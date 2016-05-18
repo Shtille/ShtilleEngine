@@ -816,6 +816,14 @@ namespace sht {
 		{
             context_->ClearDepthBuffer();
 		}
+        void OpenGlRenderer::ClearStencil(s32 value)
+        {
+            context_->ClearStencil(value);
+        }
+        void OpenGlRenderer::ClearStencilBuffer()
+        {
+            context_->ClearStencilBuffer();
+        }
 		void OpenGlRenderer::ChangeBlendFunc(u32 source, u32 dest)
 		{
 			glBlendFunc(source, dest);
@@ -844,6 +852,14 @@ namespace sht {
 		{
             context_->DisableDepthWrite();
 		}
+        void OpenGlRenderer::EnableStencilTest(void)
+        {
+            context_->EnableStencilTest();
+        }
+        void OpenGlRenderer::DisableStencilTest(void)
+        {
+            context_->DisableStencilTest();
+        }
 		void OpenGlRenderer::EnableWireframeMode(void)
 		{
             context_->EnableWireframeMode();

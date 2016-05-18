@@ -205,7 +205,7 @@ void PlatformWindowTerminateImpl(void *instance)
 {
     [[NSApplication sharedApplication] terminate:nil];
 }
-bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits)
+bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits, int stencil_bits)
 {
     // We don't need to init context on Mac
     return true;

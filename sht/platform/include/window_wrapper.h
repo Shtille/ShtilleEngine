@@ -17,7 +17,7 @@ void PlatformWindowHide();
 void PlatformWindowTerminate();
 
 // OpenGL context functions
-bool PlatformInitOpenGLContext(int color_bits, int depth_bits);
+bool PlatformInitOpenGLContext(int color_bits, int depth_bits, int stencil_bits);
 void PlatformDeinitOpenGLContext();
 void PlatformSwapBuffers();
 

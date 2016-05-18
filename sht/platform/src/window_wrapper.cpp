@@ -44,9 +44,9 @@ void PlatformWindowTerminate()
 {
     PlatformWindowTerminateImpl(g_window_controller);
 }
-bool PlatformInitOpenGLContext(int color_bits, int depth_bits)
+bool PlatformInitOpenGLContext(int color_bits, int depth_bits, int stencil_bits)
 {
-	return PlatformInitOpenGLContextImpl(g_window_controller, color_bits, depth_bits);
+	return PlatformInitOpenGLContextImpl(g_window_controller, color_bits, depth_bits, stencil_bits);
 }
 void PlatformDeinitOpenGLContext()
 {

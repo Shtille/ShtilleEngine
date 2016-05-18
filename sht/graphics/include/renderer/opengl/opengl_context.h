@@ -18,6 +18,8 @@ namespace sht {
             void ClearColorBuffer();
             void ClearDepthBuffer();
             void ClearColorAndDepthBuffers();
+            void ClearStencil(s32 value);
+            void ClearStencilBuffer();
             
             void Viewport(int w, int h);
             
@@ -28,6 +30,10 @@ namespace sht {
             void DisableDepthTest();
             void EnableDepthWrite();
             void DisableDepthWrite();
+            
+            void EnableStencilTest();
+            void DisableStencilTest();
+            void StencilMask(u32 mask);
             
             void EnableWireframeMode();
             void DisableWireframeMode();

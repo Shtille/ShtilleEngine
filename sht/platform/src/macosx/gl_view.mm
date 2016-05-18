@@ -70,10 +70,13 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (void) awakeFromNib
 {
+    sht::Application * app = sht::Application::GetInstance();
     NSOpenGLPixelFormatAttribute attrs[] =
 	{
 		NSOpenGLPFADoubleBuffer,
-		NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFAColorSize, app->color_bits(),
+		NSOpenGLPFADepthSize, app->depth_bits(),
+        NSOpenGLPFAStencilSize, app->stencil_bits(),
 		// Must specify the 3.2 Core Profile to use OpenGL 3.2
 #if ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 
 		NSOpenGLPFAOpenGLProfile,

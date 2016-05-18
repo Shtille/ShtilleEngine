@@ -26,7 +26,8 @@ namespace sht {
 		visible_ = false;
 		fullscreen_ = false;
 		color_bits_ = 32;
-		depth_bits_ = 32;
+		depth_bits_ = 24;
+        stencil_bits_ = 0;
 
 		time_ = 0.0f;
 		frame_time_ = 0.0f;
@@ -305,10 +306,18 @@ namespace sht {
 	{
 		return height_;
 	}
-	int Application::color_bits()
+	u32 Application::color_bits()
 	{
-		return color_bits_;
+		return static_cast<u32>(color_bits_);
 	}
+    u32 Application::depth_bits()
+    {
+        return static_cast<u32>(depth_bits_);
+    }
+    u32 Application::stencil_bits()
+    {
+        return static_cast<u32>(stencil_bits_);
+    }
     Keys& Application::keys()
     {
         return keys_;

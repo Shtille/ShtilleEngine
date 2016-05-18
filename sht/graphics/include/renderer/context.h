@@ -57,6 +57,8 @@ namespace sht {
             virtual void ClearColorBuffer() = 0;
             virtual void ClearDepthBuffer() = 0;
             virtual void ClearColorAndDepthBuffers() = 0;
+            virtual void ClearStencil(s32 value) = 0;
+            virtual void ClearStencilBuffer() = 0;
             
             virtual void Viewport(int w, int h) = 0;
             
@@ -67,6 +69,12 @@ namespace sht {
             virtual void DisableDepthTest() = 0;
             virtual void EnableDepthWrite() = 0;
             virtual void DisableDepthWrite() = 0;
+            
+            virtual void EnableStencilTest() = 0;
+            virtual void DisableStencilTest() = 0;
+            virtual void StencilMask(u32 mask) = 0;
+            //virtual void StencilFunc() = 0;
+            //virtual void StencilOp() = 0;
             
             virtual void EnableWireframeMode() = 0;
             virtual void DisableWireframeMode() = 0;

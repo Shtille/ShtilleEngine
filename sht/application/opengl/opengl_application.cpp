@@ -18,7 +18,7 @@ namespace sht {
 	}
 	bool OpenGlApplication::InitApi()
 	{
-		if (!PlatformInitOpenGLContext(color_bits_, depth_bits_))
+		if (!PlatformInitOpenGLContext(color_bits_, depth_bits_, stencil_bits_))
 			return false;
 
 		sht::graphics::OpenGlRenderer * renderer = new sht::graphics::OpenGlRenderer(width_, height_);

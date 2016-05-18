@@ -48,6 +48,8 @@ namespace sht {
 			void ClearColorBuffer(void);
 			void ClearColorAndDepthBuffers(void);
 			void ClearDepthBuffer(void);
+            void ClearStencil(s32 value);
+            void ClearStencilBuffer();
 
 			void ChangeBlendFunc(u32 source, u32 dest);
 			void EnableBlend(void);
@@ -57,6 +59,9 @@ namespace sht {
 			void DisableDepthTest(void);
 			void EnableDepthWrite(void);
 			void DisableDepthWrite(void);
+            
+            void EnableStencilTest(void);
+            void DisableStencilTest(void);
 
 			void EnableWireframeMode(void);
 			void DisableWireframeMode(void);
