@@ -139,6 +139,10 @@ namespace sht {
 			x = y = z = 0.0f;
 			w = 1.0f;
 		}
+        void Quaternion::Set(const Quaternion& q)
+        {
+            (void)operator=(q);
+        }
 		void Quaternion::Set(const Vector3& vector, const float angle)
 		{
 			float halfangle = angle * 0.5f;

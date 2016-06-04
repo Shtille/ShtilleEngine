@@ -14,6 +14,9 @@ namespace sht {
         // Math constants
         const float kPi     = 3.1415926535f;
         const float kTwoPi  = 6.2831853071f;
+        
+        // Sign function (returns -1 if negative, 1 otherwise)
+        float Sign(float x);
 
 		//! Vector orthogonalization via Gram-Shmidt method
 		Vector3 Orthogonalize(const Vector3& v1, const Vector3& v2);
@@ -51,11 +54,14 @@ namespace sht {
 		void MatrixToQuaternion(Quaternion &q, const Matrix3 &m);
 		void QuaternionToMatrix(Matrix3 &m, const Quaternion &q);
 		void QuaternionSLERP(Quaternion &q, const Quaternion& q1, const Quaternion& q2, float t);
+        
+        float DistanceToCamera(const Vector3& world, const Matrix4& view);
+        float DistanceToCamera(const Vector4& world, const Matrix4& view);
 
 		void WorldToScreen(const Vector4& world, const Matrix4& proj, const Matrix4& view, const Vector4 viewport, Vector2& screen);
-	    float DistanceToCamera(const Vector3& world, const Matrix4& view);
-    	float DistanceToCamera(const Vector4& world, const Matrix4& view);
-    	void ScreenToRay(const Vector3& screen_ndc, const Matrix4& proj, const Matrix4& view, Vector3& ray);
+    	void ScreenToRay(const Vector2& screen, const Vector4& viewport, const Matrix4& proj, const Matrix4& view, Vector3& ray);
+        
+        bool RaySphereIntersection(const Vector3& origin, const Vector3& direction, const Vector3& center, float radius, Vector3& intersection);
 
 	} // namespace sht
 } // namespace math

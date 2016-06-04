@@ -4,6 +4,10 @@
 namespace sht {
 	namespace math {
 
+        float Sign(float x)
+        {
+            return (x < 0.0f) ? -1.0f : 1.0f;
+        }
 		Vector3 ClosestPointOnLine(const Vector3& a, const Vector3& b, const Vector3& p)
 		{
 			Vector3 c = p - a;
@@ -439,7 +443,7 @@ namespace sht {
 				new1[0] = q2.x; new1[1] = q2.y;
 				new1[2] = q2.z; new1[3] = q2.w;
 			}
-			if (cos_om > 0.9999f)
+			if (cos_om < 0.9999f)
 			{
 				float omega = acos(cos_om);
 				float sin_om = sin(omega);
@@ -456,6 +460,16 @@ namespace sht {
 			q.z = scale0 * q1.z + scale1 * new1[2];
 			q.w = scale0 * q1.w + scale1 * new1[3];
 		}
+        float DistanceToCamera(const Vector3& world, const Matrix4& view)
+        {
+            vec4 pos_eye = view * Vector4(world, 1.0f);
+            return pos_eye.xyz().Length();
+        }
+        float DistanceToCamera(const Vector4& world, const Matrix4& view)
+        {
+            vec4 pos_eye = view * world;
+            return pos_eye.xyz().Length();
+        }
 		void WorldToScreen(const Vector4& world, const Matrix4& proj, const Matrix4& view,
         	const Vector4 viewport, Vector2& screen)
 		{
@@ -469,20 +483,13 @@ namespace sht {
 			screen.x = (pos_ndc.x + 1.0f) * 0.5f * viewport.z + viewport.x;
 			screen.y = (pos_ndc.y + 1.0f) * 0.5f * viewport.w + viewport.y;
 		}
-		float DistanceToCamera(const Vector3& world, const Matrix4& view)
-		{
-			vec4 pos_eye = view * Vector4(world, 1.0f);
-			return pos_eye.xyz().Length();
-		}
-		float DistanceToCamera(const Vector4& world, const Matrix4& view)
-		{
-			vec4 pos_eye = view * world;
-			return pos_eye.xyz().Length();
-		}
-		void ScreenToRay(const Vector3& screen_ndc, const Matrix4& proj, const Matrix4& view, Vector3& ray)
+		void ScreenToRay(const Vector2& screen, const Vector4& viewport, const Matrix4& proj, const Matrix4& view, Vector3& ray)
 		{
 			// Step 1: 3d Normalised Device Coordinates ( range [-1:1, -1:1, -1:1] )
-			// We already have it in screen_ndc input variable.
+            vec2 screen_ndc;
+            screen_ndc.x = 2.0f * (screen.x - viewport.x) / viewport.z - 1.0f;
+            screen_ndc.y = 2.0f * (screen.y - viewport.y) / viewport.w - 1.0f;
+            // We don't need z component actually
 		
 			// Step 2: 4d Homogeneous Clip Coordinates ( range [-1:1, -1:1, -1:1, -1:1] )
 			vec4 ray_clip(
@@ -500,6 +507,24 @@ namespace sht {
 			ray = (view.GetInverse() * ray_eye).xyz();
 			ray.Normalize();
 		}
+        bool RaySphereIntersection(const Vector3& origin, const Vector3& direction, const Vector3& center, float radius, Vector3& intersection)
+        {
+            Vector3 line = origin - center;
+            float b = (direction & line);
+            float c = (line & line) - radius * radius;
+            float D = b * b - c;
+            if (D < 0.0f) // ray cannot intersect sphere
+                return false;
+            // Ray can intersect the sphere, solve closer hitpoint
+            float t = -b - sqrtf(D);
+            if (t > 0.0f)
+            {
+                intersection = origin + t * direction;
+            }
+            else
+                return false;
+            return true;
+        }
 
 	} // namespace math
 } // namespace sht

@@ -126,6 +126,8 @@ namespace sht {
 			Vector4(const float iv);
 			Vector4(const Vector3& _v, const float _w);
 			Vector4(const float _x, const float _y, const float _z, const float _w);
+            
+            void Set(const float _x, const float _y, const float _z, const float _w);
 
 			operator float *();
 			operator const float *() const;
