@@ -221,8 +221,8 @@
 		5283FFA81C31A39400C59A6C /* polygon.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA31C31A39400C59A6C /* polygon.h */; };
 		5283FFA91C31A39400C59A6C /* segment.h in Headers */ = {isa = PBXBuildFile; fileRef = 5283FFA41C31A39400C59A6C /* segment.h */; };
 		528512761CCF421300518767 /* constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 528512741CCF421300518767 /* constants.h */; };
-		528512771CCF421300518767 /* planet_zoom.h in Headers */ = {isa = PBXBuildFile; fileRef = 528512751CCF421300518767 /* planet_zoom.h */; };
-		528512791CCF422800518767 /* planet_zoom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 528512781CCF422800518767 /* planet_zoom.cpp */; };
+		528512771CCF421300518767 /* planet_navigation.h in Headers */ = {isa = PBXBuildFile; fileRef = 528512751CCF421300518767 /* planet_navigation.h */; };
+		528512791CCF422800518767 /* planet_navigation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 528512781CCF422800518767 /* planet_navigation.cpp */; };
 		528F540A1C7CA9F9009D79C9 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52BA7F331B04005200E39529 /* OpenGL.framework */; };
 		528F540B1C7CAA0A009D79C9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 524840111B39FE6F001DD466 /* Cocoa.framework */; };
 		528F540C1C7CAA21009D79C9 /* libShtilleEngine.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 525A77391AF6254F003AF7E7 /* libShtilleEngine.a */; };
@@ -578,8 +578,8 @@
 		5283FFA31C31A39400C59A6C /* polygon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = polygon.h; path = geometry/polygon.h; sourceTree = "<group>"; };
 		5283FFA41C31A39400C59A6C /* segment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = segment.h; path = geometry/segment.h; sourceTree = "<group>"; };
 		528512741CCF421300518767 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = ../../../../sht/geo/include/constants.h; sourceTree = "<group>"; };
-		528512751CCF421300518767 /* planet_zoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = planet_zoom.h; path = ../../../../sht/geo/include/planet_zoom.h; sourceTree = "<group>"; };
-		528512781CCF422800518767 /* planet_zoom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = planet_zoom.cpp; path = ../../../../sht/geo/src/planet_zoom.cpp; sourceTree = "<group>"; };
+		528512751CCF421300518767 /* planet_navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = planet_navigation.h; path = ../../../../sht/geo/include/planet_navigation.h; sourceTree = "<group>"; };
+		528512781CCF422800518767 /* planet_navigation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = planet_navigation.cpp; path = ../../../../sht/geo/src/planet_navigation.cpp; sourceTree = "<group>"; };
 		528F53F91C7CA755009D79C9 /* ShtilleEarth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShtilleEarth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5294754B1BD0F6BE001EA29C /* bounding_box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bounding_box.h; sourceTree = "<group>"; };
 		5294754C1BD0F6BE001EA29C /* line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = line.h; sourceTree = "<group>"; };
@@ -1042,7 +1042,7 @@
 			isa = PBXGroup;
 			children = (
 				528512741CCF421300518767 /* constants.h */,
-				528512751CCF421300518767 /* planet_zoom.h */,
+				528512751CCF421300518767 /* planet_navigation.h */,
 			);
 			name = include;
 			sourceTree = "<group>";
@@ -1050,7 +1050,7 @@
 		528512731CCF41EF00518767 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				528512781CCF422800518767 /* planet_zoom.cpp */,
+				528512781CCF422800518767 /* planet_navigation.cpp */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -1544,7 +1544,7 @@
 				5283FFA51C31A39400C59A6C /* line.h in Headers */,
 				521781931C3946EC00288265 /* font.h in Headers */,
 				523957251BCD6F92009253BC /* color.h in Headers */,
-				528512771CCF421300518767 /* planet_zoom.h in Headers */,
+				528512771CCF421300518767 /* planet_navigation.h in Headers */,
 				522B13B11B2B634100CE0944 /* filename.h in Headers */,
 				520AE9A11B76875A00D597C4 /* context.h in Headers */,
 				52EB31621AF680F600060D0F /* file_stream.h in Headers */,
@@ -1883,7 +1883,7 @@
 				52EB31531AF680F600060D0F /* opengl_renderer.cpp in Sources */,
 				524523EF1B49752900F17104 /* window_wrapper.cpp in Sources */,
 				52EB31691AF680F700060D0F /* stream.cpp in Sources */,
-				528512791CCF422800518767 /* planet_zoom.cpp in Sources */,
+				528512791CCF422800518767 /* planet_navigation.cpp in Sources */,
 				526A05BE1B90CC8500F4D6BC /* shader.cpp in Sources */,
 				5276F4F31C71AA860097FEA1 /* crypt.cpp in Sources */,
 				52A3F4651B70FC49004B433D /* tetrahedron_model.cpp in Sources */,

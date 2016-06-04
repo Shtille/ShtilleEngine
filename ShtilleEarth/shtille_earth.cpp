@@ -7,7 +7,7 @@
 #include "../sht/utility/include/console.h"
 #include "../sht/utility/include/camera.h"
 #include "../sht/geo/include/constants.h"
-#include "../sht/geo/include/planet_zoom.h"
+#include "../sht/geo/include/planet_navigation.h"
 #include <cmath>
 
 #ifdef TARGET_MAC // see common/platform.h
@@ -37,7 +37,7 @@ public:
 	, fps_text_(nullptr)
 	, console_(nullptr)
     , camera_manager_(nullptr)
-    , planet_zoom_(nullptr)
+    , planet_navigation_(nullptr)
     , angle_(0.0f)
     , camera_distance_(kCameraDistance)
     , need_update_projection_matrix_(true)
@@ -96,14 +96,14 @@ public:
 //        camera_manager_->PathAdd(third_camera, 5.0f, false);
 //        camera_manager_->PathSetCycling(true);
         
-        planet_zoom_ = new sht::geo::PlanetZoom(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
+        planet_navigation_ = new sht::geo::PlanetNavigation(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
         
         return true;
     }
     void Unload() final
     {
-        if (planet_zoom_)
-            delete planet_zoom_;
+        if (planet_navigation_)
+            delete planet_navigation_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
@@ -217,11 +217,11 @@ public:
             }
             else if (key == sht::PublicKey::kEqual)
             {
-                planet_zoom_->SmoothZoomIn();
+                planet_navigation_->SmoothZoomIn();
             }
             else if (key == sht::PublicKey::kMinus)
             {
-                planet_zoom_->SmoothZoomOut();
+                planet_navigation_->SmoothZoomOut();
             }
             else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
@@ -237,7 +237,7 @@ public:
                 float angle_x = 0.25f * sht::math::kPi; // rotation by Pi/4
                 if (shift_presseed)
                     angle_x = -angle_x; // opposite direction
-                planet_zoom_->SmoothRotation(angle_x);
+                planet_navigation_->SmoothRotation(angle_x);
             }
         }
 //#ifdef TARGET_MAC
@@ -251,14 +251,14 @@ public:
             const sht::math::Vector4& viewport = renderer_->viewport();
             const sht::math::Matrix4& proj = renderer_->projection_matrix();
             const sht::math::Matrix4& view = renderer_->view_matrix();
-            planet_zoom_->PanBegin(mouse_.x(), mouse_.y(), viewport, proj, view);
+            planet_navigation_->PanBegin(mouse_.x(), mouse_.y(), viewport, proj, view);
         }
     }
     void OnMouseUp(sht::MouseButton button, int modifiers) final
     {
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
-            planet_zoom_->PanEnd();
+            planet_navigation_->PanEnd();
         }
     }
     void OnMouseMove() final
@@ -271,7 +271,7 @@ public:
             const sht::math::Vector4& viewport = renderer_->viewport();
             const sht::math::Matrix4& proj = renderer_->projection_matrix();
             const sht::math::Matrix4& view = renderer_->view_matrix();
-            planet_zoom_->PanMove(mouse_.x(), mouse_.y(), viewport, proj, view);
+            planet_navigation_->PanMove(mouse_.x(), mouse_.y(), viewport, proj, view);
         }
     }
     void OnSize(int w, int h) final
@@ -290,7 +290,7 @@ public:
             need_update_projection_matrix_ = false;
             
             float znear, zfar;
-            planet_zoom_->ObtainZNearZFar(&znear, &zfar);
+            planet_navigation_->ObtainZNearZFar(&znear, &zfar);
             renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
         }
     }
@@ -309,7 +309,7 @@ private:
     sht::graphics::DynamicText * fps_text_;
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
-    sht::geo::PlanetZoom * planet_zoom_;
+    sht::geo::PlanetNavigation * planet_navigation_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __SHT_GEO_PLANET_ZOOM_H__
-#define __SHT_GEO_PLANET_ZOOM_H__
+#ifndef __SHT_GEO_PLANET_NAVIGATION_H__
+#define __SHT_GEO_PLANET_NAVIGATION_H__
 
 #include "../../math/vector.h"
 #include "../../math/matrix.h"
@@ -15,10 +15,10 @@ namespace sht {
 namespace sht {
 	namespace geo {
 
-		class PlanetZoom {
+		class PlanetNavigation {
 		public:
-			PlanetZoom(utility::CameraManager * camera_manager, float planet_radius, float farest_distance, float nearest_distance);
-			~PlanetZoom();
+			PlanetNavigation(utility::CameraManager * camera_manager, float planet_radius, float farest_distance, float nearest_distance);
+			~PlanetNavigation();
 
             void InstantZoomIn();
             void InstantZoomOut();

@@ -1,4 +1,4 @@
-#include "../include/planet_zoom.h"
+#include "../include/planet_navigation.h"
 #include "../include/constants.h"
 #include "../../utility/include/camera.h"
 #include "../../math/sht_math.h"
@@ -11,7 +11,7 @@ namespace {
 namespace sht {
 	namespace geo {
 
-		PlanetZoom::PlanetZoom(utility::CameraManager * camera_manager, float planet_radius, float farest_distance, float nearest_distance)
+		PlanetNavigation::PlanetNavigation(utility::CameraManager * camera_manager, float planet_radius, float farest_distance, float nearest_distance)
         : camera_manager_(camera_manager)
         , current_scale_index_(0)
         , is_pan_mode_(false)
@@ -27,11 +27,11 @@ namespace sht {
             // Make static camera at farest point
             camera_manager_->MakeFree(MakePoint(farest_distance), kEarthPosition);
 		}
-		PlanetZoom::~PlanetZoom()
+		PlanetNavigation::~PlanetNavigation()
 		{
 			delete[] distances_;
 		}
-        void PlanetZoom::InstantZoomIn()
+        void PlanetNavigation::InstantZoomIn()
         {
             if (current_scale_index_ + 1 < num_scales_)
             {
@@ -39,7 +39,7 @@ namespace sht {
                 ProcessZoomInstant();
             }
         }
-        void PlanetZoom::InstantZoomOut()
+        void PlanetNavigation::InstantZoomOut()
         {
             if (current_scale_index_ > 0)
             {
@@ -47,7 +47,7 @@ namespace sht {
                 ProcessZoomInstant();
             }
         }
-		void PlanetZoom::SmoothZoomIn()
+		void PlanetNavigation::SmoothZoomIn()
 		{
             if (current_scale_index_ + 1 < num_scales_)
             {
@@ -55,7 +55,7 @@ namespace sht {
                 ProcessZoomSmooth();
             }
 		}
-		void PlanetZoom::SmoothZoomOut()
+		void PlanetNavigation::SmoothZoomOut()
 		{
             if (current_scale_index_ > 0)
             {
@@ -63,14 +63,14 @@ namespace sht {
                 ProcessZoomSmooth();
             }
 		}
-        void PlanetZoom::InstantRotation(float angle_x)
+        void PlanetNavigation::InstantRotation(float angle_x)
         {
             // Reset any camera animation first
             camera_manager_->PathClear();
             camera_manager_->Clear();
             camera_manager_->RotateAroundTargetInX(angle_x);
         }
-        void PlanetZoom::SmoothRotation(float angle_x)
+        void PlanetNavigation::SmoothRotation(float angle_x)
         {
             const math::Vector3& pos = *camera_manager_->position();
             const math::Quaternion& orient = *camera_manager_->orientation();
@@ -83,7 +83,7 @@ namespace sht {
             camera_manager_->PathSetStart(first_camera, 0.0f);
             camera_manager_->PathAdd(second_camera, kAnimationTime);
         }
-        void PlanetZoom::PanBegin(float screen_x, float screen_y,
+        void PlanetNavigation::PanBegin(float screen_x, float screen_y,
                                   const math::Vector4& viewport, const math::Matrix4& proj, const math::Matrix4& view)
         {
             math::Vector2 screen_point(screen_x, screen_y);
@@ -95,7 +95,7 @@ namespace sht {
             camera_manager_->PathClear();
             camera_manager_->Clear();
         }
-        void PlanetZoom::PanMove(float screen_x, float screen_y,
+        void PlanetNavigation::PanMove(float screen_x, float screen_y,
                                  const math::Vector4& viewport, const math::Matrix4& proj, const math::Matrix4& view)
         {
             if (!is_pan_mode_)
@@ -154,11 +154,11 @@ namespace sht {
                 camera_manager_->MakeFreeTargeted(new_pos, new_orient, kEarthPosition);
             }
         }
-        void PlanetZoom::PanEnd()
+        void PlanetNavigation::PanEnd()
         {
             is_pan_mode_ = false;
         }
-        void PlanetZoom::ObtainZNearZFar(float * znear, float * zfar) const
+        void PlanetNavigation::ObtainZNearZFar(float * znear, float * zfar) const
         {
             const sht::math::Vector3* cam_pos = camera_manager_->position();
             const sht::math::Vector3 to_earth = kEarthPosition - *cam_pos;
@@ -167,11 +167,11 @@ namespace sht {
             *znear = cam_distance - kEarthRadius;
             *zfar = cam_distance + kEarthRadius;
         }
-        math::Vector3 PlanetZoom::MakePoint(float distance)
+        math::Vector3 PlanetNavigation::MakePoint(float distance)
         {
             return math::Vector3(kEarthRadius + distance, 0.0f, 0.0f);
         }
-        void PlanetZoom::ProcessZoomInstant()
+        void PlanetNavigation::ProcessZoomInstant()
         {
             float distance = distances_[current_scale_index_];
             const math::Vector3& pos = *camera_manager_->position();
@@ -183,7 +183,7 @@ namespace sht {
             camera_manager_->Clear();
             camera_manager_->MakeFreeTargeted(new_pos, orient, kEarthPosition);
         }
-        void PlanetZoom::ProcessZoomSmooth()
+        void PlanetNavigation::ProcessZoomSmooth()
         {
             // Add two cameras: at current position and at specified distance from Earth
             float distance = distances_[current_scale_index_];
