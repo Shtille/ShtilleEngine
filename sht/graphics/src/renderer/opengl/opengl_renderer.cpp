@@ -868,9 +868,9 @@ namespace sht {
 		{
             context_->DisableWireframeMode();
 		}
-		void OpenGlRenderer::Viewport(int w, int h)
+		void OpenGlRenderer::ApiViewport(int width, int height)
 		{
-            context_->Viewport(w, h);
+            context_->Viewport(width, height);
 		}
 
 	} // namespace graphics

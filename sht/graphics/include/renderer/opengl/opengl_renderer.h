@@ -66,13 +66,12 @@ namespace sht {
 			void EnableWireframeMode(void);
 			void DisableWireframeMode(void);
 
-			void Viewport(int w, int h);
-
 		private:
 			void SetDefaultStates();
 			void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt);
 			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
 			void ApiDeleteTexture(Texture* tex);
+            void ApiViewport(int width, int height);
 			void ChangeImageUnit(u32 unit);
 
 			u32 framebuffer_;				//!< OpenGL framebuffer object

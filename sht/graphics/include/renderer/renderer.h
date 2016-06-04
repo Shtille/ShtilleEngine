@@ -106,6 +106,8 @@ namespace sht {
             virtual void ClearStencil(s32 value) = 0;
             virtual void ClearStencilBuffer() = 0;
             
+            void SetViewport(int w, int h);
+            
             // Matrices functions
             void SetProjectionMatrix(const sht::math::Matrix4& mat);
             void SetViewMatrix(const sht::math::Matrix4& mat);
@@ -113,6 +115,7 @@ namespace sht {
             void PushMatrix();
             void PopMatrix();
             
+            const sht::math::Vector4& viewport() const;
             const sht::math::Matrix4& projection_matrix() const;
             const sht::math::Matrix4& view_matrix() const;
             const sht::math::Matrix4& model_matrix() const;
@@ -140,12 +143,11 @@ namespace sht {
 			virtual void EnableWireframeMode(void) = 0;
 			virtual void DisableWireframeMode(void) = 0;
 
-			virtual void Viewport(int w, int h) = 0;
-
 		protected:
 			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
 			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
+            virtual void ApiViewport(int width, int height) = 0;
             
             Context * context_;
 
@@ -154,6 +156,7 @@ namespace sht {
 			float aspect_ratio_;							//!< w/h
 			sht::math::Matrix4 standart_2d_matrix_;			//!< matrix for 2d projection
             
+            sht::math::Vector4 viewport_;                   //!< viewport
             sht::math::Matrix4 projection_matrix_;          //!< projection matrix
             sht::math::Matrix4 view_matrix_;                //!< view matrix
             sht::math::Matrix4 model_matrix_;               //!< model matrix

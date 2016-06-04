@@ -206,6 +206,11 @@ namespace sht {
 		{
 			ChangeRenderTargets(1, &colorRT, depthRT);
 		}
+        void Renderer::SetViewport(int w, int h)
+        {
+            viewport_.Set(0.0f, 0.0f, (float)w, (float)h);
+            ApiViewport(w, h);
+        }
         void Renderer::SetProjectionMatrix(const sht::math::Matrix4& mat)
         {
             projection_matrix_ = mat;
@@ -227,6 +232,10 @@ namespace sht {
             assert(!matrices_stack_.empty());
             model_matrix_ = matrices_stack_.top();
             matrices_stack_.pop();
+        }
+        const sht::math::Vector4& Renderer::viewport() const
+        {
+            return viewport_;
         }
         const sht::math::Matrix4& Renderer::projection_matrix() const
         {

@@ -281,7 +281,7 @@ namespace sht {
         if (renderer_) // renderer may not be initialized yet
         {
             renderer_->UpdateSizes(width_, height_);
-            renderer_->Viewport(width_, height_);
+            renderer_->SetViewport(width_, height_);
         }
         // TODO: what to do if framebuffer size changes during executing?
         ComputeFramebufferSize();
