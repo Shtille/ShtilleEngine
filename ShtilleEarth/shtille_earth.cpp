@@ -6,6 +6,7 @@
 #include "../sht/graphics/include/renderer/text.h"
 #include "../sht/utility/include/console.h"
 #include "../sht/utility/include/camera.h"
+#include "../sht/geo/include/constants.h"
 #include "../sht/geo/include/planet_zoom.h"
 #include <cmath>
 
@@ -14,8 +15,7 @@
 #endif
 
 namespace {
-    const float kEarthRadius = 6317000.0f;
-    const float kCameraDistance = kEarthRadius * 5.0f;
+    const float kCameraDistance = sht::geo::kEarthRadius * 5.0f;
     const sht::math::Vector3 kEarthPosition(0.0f, 0.0f, 0.0f);
     const sht::math::Vector3 kCameraPosition1(kCameraDistance, 0.0f, 0.0f);
     const sht::math::Vector3 kCameraPosition2(-kCameraDistance, 0.0f, 0.0f);
@@ -96,7 +96,7 @@ public:
 //        camera_manager_->PathAdd(third_camera, 5.0f, false);
 //        camera_manager_->PathSetCycling(true);
         
-        planet_zoom_ = new sht::geo::PlanetZoom(camera_manager_, kEarthRadius, kCameraDistance, 100.0f);
+        planet_zoom_ = new sht::geo::PlanetZoom(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
         
         return true;
     }
@@ -137,7 +137,7 @@ public:
 //#endif
         vec3 light_pos_eye = renderer_->view_matrix() * kSunPosition;
         
-        renderer_->Viewport(width_, height_);
+        renderer_->SetViewport(width_, height_);
         
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
@@ -152,7 +152,7 @@ public:
         // Draw first model
         renderer_->PushMatrix();
         renderer_->Translate(kEarthPosition);
-        renderer_->Scale(kEarthRadius);
+        renderer_->Scale(sht::geo::kEarthRadius);
         renderer_->MultMatrix(rotate_matrix);
         shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
@@ -215,29 +215,13 @@ public:
 //#endif
                 Application::Terminate();
             }
-            else if (key == sht::PublicKey::kLeft)
-            {
-                camera_manager_->RotateAroundTargetInY(0.1f);
-            }
-            else if (key == sht::PublicKey::kRight)
-            {
-                camera_manager_->RotateAroundTargetInY(-0.1f);
-            }
-            else if (key == sht::PublicKey::kUp)
-            {
-                camera_manager_->RotateAroundTargetInZ(0.1f);
-            }
-            else if (key == sht::PublicKey::kDown)
-            {
-                camera_manager_->RotateAroundTargetInZ(-0.1f);
-            }
             else if (key == sht::PublicKey::kEqual)
             {
-                planet_zoom_->ZoomIn();
+                planet_zoom_->SmoothZoomIn();
             }
             else if (key == sht::PublicKey::kMinus)
             {
-                planet_zoom_->ZoomOut();
+                planet_zoom_->SmoothZoomOut();
             }
             else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
@@ -247,10 +231,35 @@ public:
             {
                 camera_animation_stopped_ = !camera_animation_stopped_;
             }
+            else if (key == sht::PublicKey::kR)
+            {
+                bool shift_presseed = (mods & sht::ModifierKey::kShift) == sht::ModifierKey::kShift;
+                float angle_x = 0.25f * sht::math::kPi; // rotation by Pi/4
+                if (shift_presseed)
+                    angle_x = -angle_x; // opposite direction
+                planet_zoom_->SmoothRotation(angle_x);
+            }
         }
 //#ifdef TARGET_MAC
 //        mutex_.unlock();
 //#endif
+    }
+    void OnMouseDown(sht::MouseButton button, int modifiers) final
+    {
+        if (mouse_.button_down(sht::MouseButton::kLeft))
+        {
+            const sht::math::Vector4& viewport = renderer_->viewport();
+            const sht::math::Matrix4& proj = renderer_->projection_matrix();
+            const sht::math::Matrix4& view = renderer_->view_matrix();
+            planet_zoom_->PanBegin(mouse_.x(), mouse_.y(), viewport, proj, view);
+        }
+    }
+    void OnMouseUp(sht::MouseButton button, int modifiers) final
+    {
+        if (mouse_.button_down(sht::MouseButton::kLeft))
+        {
+            planet_zoom_->PanEnd();
+        }
     }
     void OnMouseMove() final
     {
@@ -259,10 +268,11 @@ public:
 //#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
-            camera_manager_->RotateAroundTargetInY(mouse_.delta_x()/width_);
-            camera_manager_->RotateAroundTargetInZ(mouse_.delta_y()/height_);
+            const sht::math::Vector4& viewport = renderer_->viewport();
+            const sht::math::Matrix4& proj = renderer_->projection_matrix();
+            const sht::math::Matrix4& view = renderer_->view_matrix();
+            planet_zoom_->PanMove(mouse_.x(), mouse_.y(), viewport, proj, view);
         }
-        CursorToCenter();
     }
     void OnSize(int w, int h) final
     {
@@ -279,13 +289,8 @@ public:
         {
             need_update_projection_matrix_ = false;
             
-            const sht::math::Vector3* cam_pos = camera_manager_->position();
-            assert(cam_pos);
-            const sht::math::Vector3 to_earth = kEarthPosition - *cam_pos;
-            const sht::math::Vector3 camera_direction = camera_manager_->GetDirection(); // normalized
-            const float cam_distance = to_earth & camera_direction;
-            const float znear = cam_distance - kEarthRadius;
-            const float zfar = cam_distance + kEarthRadius;
+            float znear, zfar;
+            planet_zoom_->ObtainZNearZFar(&znear, &zfar);
             renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
         }
     }
