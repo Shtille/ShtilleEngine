@@ -12,33 +12,48 @@ namespace sht {
 		//! Standart camera class
 		class Camera {
 			friend class CameraManager;
-		protected:
-			explicit Camera(const vec3& pos, const vec3& target_pos);
-			explicit Camera(vec3 * pos, const vec3& target_pos);
-			explicit Camera(const vec3& pos, vec3 * target_pos);
-			explicit Camera(vec3 * pos, vec3 * target_pos);
-			explicit Camera(const vec3& pos, const quat& orient);
+        public:
+            explicit Camera(const vec3& pos, const vec3& target_pos);
+            explicit Camera(vec3 * pos, const vec3& target_pos);
+            explicit Camera(const vec3& pos, vec3 * target_pos);
+            explicit Camera(vec3 * pos, vec3 * target_pos);
+            explicit Camera(const vec3& pos, const quat& orient);
             explicit Camera(const vec3& pos, const quat& orient, const vec3& target_pos);
-			explicit Camera(vec3 * pos, const quat& orient);
-			explicit Camera(const vec3& pos, quat * orient);
-			explicit Camera(vec3 * pos, quat * orient);
-
-			Camera(const Camera& camera);
-			~Camera();
-
-			Camera& operator =(const Camera& camera);
+            explicit Camera(vec3 * pos, const quat& orient);
+            explicit Camera(const vec3& pos, quat * orient);
+            explicit Camera(vec3 * pos, quat * orient);
+            Camera(const Camera& camera);
+            Camera();
+            ~Camera();
+            
+            Camera& operator =(const Camera& camera);
+            
+		protected:
+            
+            void Set(const vec3& pos, const vec3& target_pos);
+            void Set(vec3 * pos, const vec3& target_pos);
+            void Set(const vec3& pos, vec3 * target_pos);
+            void Set(vec3 * pos, vec3 * target_pos);
+            void Set(const vec3& pos, const quat& orient);
+            void Set(const vec3& pos, const quat& orient, const vec3& target_pos);
+            void Set(vec3 * pos, const quat& orient);
+            void Set(const vec3& pos, quat * orient);
+            void Set(vec3 * pos, quat * orient);
 
 			void Move(const vec3& translation);
 
 			void Update(); //!< update orientation
 
 		private:
-			vec3 * position_;
-			vec3 * target_position_;
-			quat * orientation_;
-			bool is_position_;
-			bool is_target_position_;
-			bool is_orientation_;
+			vec3 * position_ptr_;
+			vec3 * target_position_ptr_;
+			quat * orientation_ptr_;
+            vec3 position_;
+            vec3 target_position_;
+            quat orientation_;
+			bool is_position_; //!< owns position or refers to external pointer
+			bool is_target_position_; //!< owns target position or refers to external pointer
+			bool is_orientation_; //!< owns orientation or refers to external pointer
 			bool need_update_orientation_;
 		};
 
@@ -54,7 +69,13 @@ namespace sht {
 
 			const math::Matrix4& view_matrix() const;
             
-            const math::Vector3* position() const;
+            const math::Vector3 * position() const;
+            const math::Quaternion * orientation() const;
+            
+            math::Vector3 GetForward() const;
+            math::Vector3 GetUp() const;
+            math::Vector3 GetSide() const;
+            
             math::Vector3 GetDirection() const;
             bool animated() const;
             
@@ -70,6 +91,8 @@ namespace sht {
 
 			void MakeFree(const vec3& pos, const vec3& target_pos);
 			void MakeFree(const vec3& pos, const quat& orient);
+            void MakeFree(CameraID camera_id);
+            void MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos);
 			void MakeAttached(vec3 * pos, quat * orient);
 
 			void Clear();
@@ -78,9 +101,11 @@ namespace sht {
 			CameraID Add(const vec3& pos, vec3 * target_pos);
 			CameraID Add(vec3 * pos, vec3 * target_pos);
 			CameraID Add(const vec3& pos, const quat& orient);
+            CameraID Add(const vec3& pos, const quat& orient, const vec3& target_pos);
 			CameraID Add(vec3 * pos, const quat& orient);
 			CameraID Add(const vec3& pos, quat * orient);
 			CameraID Add(vec3 * pos, quat * orient);
+            CameraID AddAsCurrent();
 			void SetCurrent(CameraID cam_id);
 
 			void PathClear();
@@ -90,9 +115,6 @@ namespace sht {
 			void PathSetCycling(bool cycling);
 
 			void Update(f32 sec);
-            
-        protected:
-            void MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos);
 
 		private:
 			struct Path {
@@ -100,13 +122,14 @@ namespace sht {
 				f32 interval;
 				bool is_target_oriented; //!< whether we should rotate around target
 			};
-			std::vector<Camera*> cameras_;
+			std::vector<Camera> cameras_;
 			std::vector<Path> paths_;
 			f32 animation_time_; //!< time to interpolate cameras
-			Camera * current_camera_; 	//!< pointer to current camera (to single or standart)
+            Camera current_camera_; //!< current single camera object
+			Camera * current_camera_ptr_; 	//!< pointer to current camera (to single or standart)
 			int current_path_index_;
 			math::Matrix4 view_matrix_;
-			bool is_current_;			//!< is using single camera (obsolete?)
+			bool is_current_;			//!< is using single camera
 			bool is_path_cycled_;
 			bool need_view_matrix_update_;
 			bool manual_rotation_;
