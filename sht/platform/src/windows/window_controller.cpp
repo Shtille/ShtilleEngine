@@ -113,7 +113,7 @@ void PlatformWindowTerminateImpl(void *instance)
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 	PostMessage(window->hwnd, WM_CLOSE, 0, 0);
 }
-bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits)
+bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits, int stencil_bits)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
 
@@ -135,7 +135,7 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 		0,								// No Accumulation Buffer
 		0, 0, 0, 0,						// Accumulation Bits Ignored
 		(BYTE)depth_bits,				// Z-Buffer (Depth Buffer)
-		0,								// No Stencil Buffer
+		(BYTE)stencil_bits,				// Stencil Buffer
 		0,								// No Auxiliary Buffer
 		PFD_MAIN_PLANE,					// Main Drawing Layer
 		0,								// Reserved

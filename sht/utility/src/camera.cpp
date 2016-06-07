@@ -203,9 +203,9 @@ namespace sht {
                 orientation_.Set(*position_, *target_position_);
 		}
 		CameraManager::CameraManager()
-		: current_camera_ptr_(nullptr)
+		: animation_time_(0.0f)
+		, current_camera_ptr_(nullptr)
 		, current_path_index_(0)
-		, animation_time_(0.0f)
 		, is_current_(false)
 		, is_path_cycled_(false)
 		, need_view_matrix_update_(false)

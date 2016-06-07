@@ -106,7 +106,7 @@ public:
     {
         vec3 light_pos_eye = renderer_->view_matrix() * light_position;
         
-        renderer_->Viewport(width_, height_);
+        renderer_->SetViewport(width_, height_);
         
         renderer_->ClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
