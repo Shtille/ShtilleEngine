@@ -8,6 +8,7 @@ namespace sht {
 	namespace geo {
 
 		const float kEarthRadius = 6371000.0f;
+		const float kEarthAtmosphereHeight = 100000.0f;
         const math::Vector3 kEarthPosition = math::Vector3(0.0f, 0.0f, 0.0f);
 
 	}
