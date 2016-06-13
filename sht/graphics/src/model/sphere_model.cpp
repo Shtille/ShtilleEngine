@@ -54,7 +54,7 @@ namespace sht {
                     indices_[ind++] = (j  )*width;
                     for (u32 i = 0; i < slices_; ++i)
                     {
-                        u32 next_i = (i == slices_) ? (0) : (i+1);
+                        u32 next_i = (i+1);
                         
                         indices_[ind++] = (next_i) + (j+1)*width;
                         indices_[ind++] = (next_i) + (j  )*width;

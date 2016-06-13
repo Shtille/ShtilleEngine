@@ -109,6 +109,15 @@
     <Filter Include="sht\utility\src\ui">
       <UniqueIdentifier>{541ede63-5d9f-49cb-a9e0-9c37df6727fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sht\geo">
+      <UniqueIdentifier>{3c0099ee-f9d7-471b-bed4-625bd9399e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\geo\include">
+      <UniqueIdentifier>{791def3a-eb93-48fc-a3e3-fbeaf82b9b1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\geo\src">
+      <UniqueIdentifier>{74a9655a-7664-4513-89c3-2ba63f115628}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp">
@@ -280,6 +289,12 @@
       <Filter>sht\utility\src\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\sht\utility\src\crypt.cpp">
+      <Filter>sht\utility\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_navigation.cpp">
+      <Filter>sht\geo\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\camera.cpp">
       <Filter>sht\utility\src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -495,6 +510,15 @@
       <Filter>sht\utility\include\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\utility\include\crypt.h">
+      <Filter>sht\utility\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\include\constants.h">
+      <Filter>sht\geo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\include\planet_navigation.h">
+      <Filter>sht\geo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\camera.h">
       <Filter>sht\utility\include</Filter>
     </ClInclude>
   </ItemGroup>

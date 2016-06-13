@@ -96,7 +96,7 @@ namespace sht {
 		}
 		Vector3 Quaternion::Vector() const
 		{
-			return Vector3(x, y, z) / sqrt(1.0f - w*w);
+			return Vector3(x, y, z) / sqrtf(1.0f - w*w);
 		}
 		Vector3 Quaternion::Direction() const
 		{
@@ -114,7 +114,7 @@ namespace sht {
 		}
 		float Quaternion::Length() const
 		{
-			return sqrt(x*x + y*y + z*z + w*w);
+			return sqrtf(x*x + y*y + z*z + w*w);
 		}
 		float Quaternion::Norm() const
 		{
@@ -123,16 +123,16 @@ namespace sht {
 		float Quaternion::Angle() const
 		{
 			if (w < 0.0f)
-				return 2.0f*atan2(-sqrt(x*x + y*y + z*z), -w);
+				return 2.0f*atan2f(-sqrtf(x*x + y*y + z*z), -w);
 			else
-				return 2.0f*atan2(sqrt(x*x + y*y + z*z), w);
+				return 2.0f*atan2f(sqrtf(x*x + y*y + z*z), w);
 		}
 		float Quaternion::HalfAngle() const
 		{
 			if (w < 0.0f)
-				return atan2(-sqrt(x*x + y*y + z*z), -w);
+				return atan2f(-sqrtf(x*x + y*y + z*z), -w);
 			else
-				return atan2(sqrt(x*x + y*y + z*z), w);
+				return atan2f(sqrtf(x*x + y*y + z*z), w);
 		}
 		void Quaternion::Identity()
 		{
@@ -146,11 +146,11 @@ namespace sht {
 		void Quaternion::Set(const Vector3& vector, const float angle)
 		{
 			float halfangle = angle * 0.5f;
-			float sin_ha = sin(halfangle);
+			float sin_ha = sinf(halfangle);
 			x = vector.x * sin_ha;
 			y = vector.y * sin_ha;
 			z = vector.z * sin_ha;
-			w = cos(halfangle);
+			w = cosf(halfangle);
 		}
 		void Quaternion::Set(const Vector3& from, const Vector3& to)
 		{
@@ -159,7 +159,7 @@ namespace sht {
 			float cos_angle = dir.x; // dir dot i
             if (fabs(cos_angle) < 0.999f) // not zero angle
             {
-                float angle = acos(cos_angle);
+                float angle = acosf(cos_angle);
                 // axis = i x dir
                 Vector3 axis(0.0f, -dir.z, dir.y);
                 axis.Normalize();
@@ -217,10 +217,10 @@ namespace sht {
 			}
 			if (cos_om < 0.9999f)
 			{
-				float omega = acos(cos_om);
-				float sin_om = sin(omega);
-				scale0 = sin((1.0f - t) * omega) / sin_om;
-				scale1 = sin(t * omega) / sin_om;
+				float omega = acosf(cos_om);
+				float sin_om = sinf(omega);
+				scale0 = sinf((1.0f - t) * omega) / sin_om;
+				scale1 = sinf(t * omega) / sin_om;
 			}
 			else // small angle - LERP
 			{

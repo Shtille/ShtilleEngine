@@ -84,12 +84,12 @@ namespace sht {
 		}
 		float Vector2::Length() const
 		{
-			return sqrt(x*x + y*y);
+			return sqrtf(x*x + y*y);
 		}
         float Vector2::Distance(const Vector2& v) const
         {
             Vector2 l = v - *this;
-            return sqrt(l.x*l.x + l.y*l.y);
+            return sqrtf(l.x*l.x + l.y*l.y);
         }
 		void Vector2::Normalize()
 		{
@@ -306,12 +306,12 @@ namespace sht {
 		}
 		float Vector3::Length() const
 		{
-			return sqrt(x*x + y*y + z*z);
+			return sqrtf(x*x + y*y + z*z);
 		}
         float Vector3::Distance(const Vector3& v) const
         {
             Vector3 l = v - *this;
-            return sqrt(l.x*l.x + l.y*l.y + l.z*l.z);
+            return sqrtf(l.x*l.x + l.y*l.y + l.z*l.z);
         }
 		void Vector3::Normalize()
 		{
@@ -500,12 +500,12 @@ namespace sht {
 		}
 		float Vector4::Length() const
 		{
-			return sqrt(x*x + y*y + z*z + w*w);
+			return sqrtf(x*x + y*y + z*z + w*w);
 		}
         float Vector4::Distance(const Vector4& v) const
         {
             Vector4 l = v - *this;
-            return sqrt(l.x*l.x + l.y*l.y + l.z*l.z + l.w*l.w);
+            return sqrtf(l.x*l.x + l.y*l.y + l.z*l.z + l.w*l.w);
         }
 		void Vector4::Normalize()
 		{

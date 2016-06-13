@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp" />
     <ClCompile Include="..\..\..\..\sht\application\opengl\opengl_application.cpp" />
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_navigation.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_bmp.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_hdr.cpp" />
@@ -68,6 +69,7 @@
     <ClCompile Include="..\..\..\..\sht\system\src\string\filename.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\time\scope_timer.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\time\update_timer.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\camera.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\console.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\crypt.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\board.cpp" />
@@ -90,6 +92,8 @@
     <ClInclude Include="..\..\..\..\sht\containers\sht_pair.h" />
     <ClInclude Include="..\..\..\..\sht\containers\sht_utility.h" />
     <ClInclude Include="..\..\..\..\sht\containers\sht_vector.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\include\constants.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\include\planet_navigation.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\image\image.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\cube_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\model.h" />
@@ -141,6 +145,7 @@
     <ClInclude Include="..\..\..\..\sht\system\include\string\filename.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\time\scope_timer.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\time\update_timer.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\camera.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\console.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\crypt.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\board.h" />

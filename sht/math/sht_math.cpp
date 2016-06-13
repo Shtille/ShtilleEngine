@@ -445,10 +445,10 @@ namespace sht {
 			}
 			if (cos_om < 0.9999f)
 			{
-				float omega = acos(cos_om);
-				float sin_om = sin(omega);
-				scale0 = sin((1.0f - t) * omega) / sin_om;
-				scale1 = sin(t * omega) / sin_om;
+				float omega = acosf(cos_om);
+				float sin_om = sinf(omega);
+				scale0 = sinf((1.0f - t) * omega) / sin_om;
+				scale1 = sinf(t * omega) / sin_om;
 			}
 			else // small angle - LERP
 			{
