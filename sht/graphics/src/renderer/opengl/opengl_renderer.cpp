@@ -868,6 +868,10 @@ namespace sht {
 		{
             context_->DisableWireframeMode();
 		}
+        void OpenGlRenderer::CullFace(CullFaceType mode)
+        {
+            context_->CullFace(mode);
+        }
 		void OpenGlRenderer::ApiViewport(int width, int height)
 		{
             context_->Viewport(width, height);

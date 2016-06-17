@@ -65,6 +65,8 @@ namespace sht {
 
 			void EnableWireframeMode(void);
 			void DisableWireframeMode(void);
+            
+            void CullFace(CullFaceType mode);
 
 		private:
 			void SetDefaultStates();

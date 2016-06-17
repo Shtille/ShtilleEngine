@@ -142,6 +142,8 @@ namespace sht {
 
 			virtual void EnableWireframeMode(void) = 0;
 			virtual void DisableWireframeMode(void) = 0;
+            
+            virtual void CullFace(CullFaceType mode) = 0;
 
 		protected:
 			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;

@@ -44,6 +44,12 @@ namespace sht {
             kCount
         };
         
+        enum class CullFaceType {
+            kBack,
+            kFront,
+            kCount
+        };
+        
         class Context {
         public:
             Context();
@@ -78,6 +84,8 @@ namespace sht {
             
             virtual void EnableWireframeMode() = 0;
             virtual void DisableWireframeMode() = 0;
+            
+            virtual void CullFace(CullFaceType mode) = 0;
             
             virtual void DrawArrays(PrimitiveType mode, s32 first, u32 count) = 0;
             virtual void DrawElements(PrimitiveType mode, u32 num_indices, DataType index_type) = 0;
@@ -136,6 +144,7 @@ namespace sht {
             EnumTable<DataType, u32> data_type_map_;            //!< data type map
             EnumTable<DataAccessType, u32> data_access_map_;    //!< data access map
             EnumTable<BufferUsage, u32> buffer_usage_map_;      //!< buffer usage map
+            EnumTable<CullFaceType, u32> cull_face_map_;        //!< cull face map
         };
         
     }

@@ -41,6 +41,10 @@ namespace sht {
             buffer_usage_map_[BufferUsage::kStreamRead] = GL_STREAM_READ;
             buffer_usage_map_[BufferUsage::kStreamCopy] = GL_STREAM_COPY;
             assert(buffer_usage_map_.size() == (size_t)BufferUsage::kCount);
+            
+            cull_face_map_[CullFaceType::kBack] = GL_BACK;
+            cull_face_map_[CullFaceType::kFront] = GL_FRONT;
+            assert(cull_face_map_.size() == (size_t)CullFaceType::kCount);
         }
         bool OpenGlContext::CheckForErrors()
         {
@@ -180,6 +184,11 @@ namespace sht {
         void OpenGlContext::DisableWireframeMode()
         {
             glPolygonMode(GL_FRONT, GL_FILL);
+        }
+        void OpenGlContext::CullFace(CullFaceType mode)
+        {
+            u32 cull_face = cull_face_map_[mode];
+            glCullFace(cull_face);
         }
         void OpenGlContext::DrawArrays(PrimitiveType mode, s32 first, u32 count)
         {

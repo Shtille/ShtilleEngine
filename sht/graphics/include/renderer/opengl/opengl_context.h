@@ -38,6 +38,8 @@ namespace sht {
             void EnableWireframeMode();
             void DisableWireframeMode();
             
+            void CullFace(CullFaceType mode);
+            
             void DrawArrays(PrimitiveType mode, s32 first, u32 count);
             void DrawElements(PrimitiveType mode, u32 num_indices, DataType index_type);
             
