@@ -227,7 +227,7 @@ namespace sht {
 			framebuffer_size_ = 4096;
 		inv_framebuffer_size_ = 1.0f / (float)framebuffer_size_;
 	}
-	bool Application::PreStartInit(void)
+	bool Application::PreStartInit()
 	{
 		return true;
 	}
@@ -244,14 +244,14 @@ namespace sht {
 	void Application::Render()
 	{
 	}
-	const char* Application::GetTitle(void)
+	const char* Application::GetTitle()
 	{
 		return "Test application";
 	}
-	const bool Application::IsClampFps(void)
-	{
-		return false;
-	}
+    const bool Application::IsMultisample()
+    {
+        return false;
+    }
     void Application::OnChar(unsigned short code)
     {
     }

@@ -16,7 +16,11 @@ namespace {
 	const float kInnerRadius = sht::geo::kEarthRadius;
 	const float kOuterRadius = sht::geo::kEarthRadius + sht::geo::kEarthAtmosphereHeight;
     const sht::math::Vector3 kEarthPosition(0.0f, 0.0f, 0.0f);
-    const sht::math::Vector3 kSunPosition(kCameraDistance, 0.0f, 0.0f);
+    /*
+     The distance from Earth to Sun is 1.52*10^11 meters, so practically we dont need to compute
+     vector to Sun for each vertex. Thus we just use sun direction vector.
+     */
+    const sht::math::Vector3 kSunDirection(1.0f, 0.0f, 0.0f);
 }
 
 class ShtilleEarthApp : public sht::OpenGlApplication
@@ -38,18 +42,22 @@ public:
     {
         return "Shtille Earth";
     }
+    const bool IsMultisample() final
+    {
+        return true;
+    }
 	void BindShaderConstants()
 	{
-		float Kr = 0.0030f;
-		float Km = 0.0015f;
-		float ESun = 16.0f;
-		float g = -0.75f;
-		float Scale = 1.0f / (kOuterRadius - kInnerRadius);
-		float ScaleDepth = 0.25f;
-		float ScaleOverScaleDepth = Scale / ScaleDepth;
+		const float Kr = 0.0030f;
+		const float Km = 0.0015f;
+		const float ESun = 16.0f;
+		const float g = -0.75f;
+		const float scale = 1.0f / (kOuterRadius - kInnerRadius);
+		const float scale_depth = 0.25f;
+		const float scale_over_scale_depth = scale / scale_depth;
 
         ground_shader_->Bind();
-        ground_shader_->Uniform3f("u_to_light", 0.0f, 0.0f, 1.0f);
+        ground_shader_->Uniform3fv("u_to_light", kSunDirection);
         ground_shader_->Uniform3f("u_inv_wave_length", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
         ground_shader_->Uniform1f("u_inner_radius", kInnerRadius);
         ground_shader_->Uniform1f("u_outer_radius", kOuterRadius);
@@ -58,16 +66,16 @@ public:
         ground_shader_->Uniform1f("u_km_esun", Km * ESun);
         ground_shader_->Uniform1f("u_kr_4_pi", Kr * 4.0f * sht::math::kPi);
         ground_shader_->Uniform1f("u_km_4_pi", Km * 4.0f * sht::math::kPi);
-        ground_shader_->Uniform1f("u_scale", Scale);
-        ground_shader_->Uniform1f("u_scale_depth", ScaleDepth);
-        ground_shader_->Uniform1f("u_scale_over_scale_depth", ScaleOverScaleDepth);
+        ground_shader_->Uniform1f("u_scale", scale);
+        ground_shader_->Uniform1f("u_scale_depth", scale_depth);
+        ground_shader_->Uniform1f("u_scale_over_scale_depth", scale_over_scale_depth);
         ground_shader_->Uniform1i("u_samples", 4);
         ground_shader_->Uniform1i("u_earth_texture", 0);
         ground_shader_->Uniform1i("u_clouds_texture", 1);
         ground_shader_->Unbind();
         
         sky_shader_->Bind();
-        sky_shader_->Uniform3f("u_to_light", 0.0f, 0.0f, 1.0f);
+        sky_shader_->Uniform3fv("u_to_light", kSunDirection);
         sky_shader_->Uniform3f("u_inv_wave_length", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
         sky_shader_->Uniform1f("u_inner_radius", kInnerRadius);
         sky_shader_->Uniform1f("u_outer_radius", kOuterRadius);
@@ -76,9 +84,9 @@ public:
         sky_shader_->Uniform1f("u_km_esun", Km * ESun);
         sky_shader_->Uniform1f("u_kr_4_pi", Kr * 4.0f * sht::math::kPi);
         sky_shader_->Uniform1f("u_km_4_pi", Km * 4.0f * sht::math::kPi);
-        sky_shader_->Uniform1f("u_scale", Scale);
-        sky_shader_->Uniform1f("u_scale_depth", ScaleDepth);
-        sky_shader_->Uniform1f("u_scale_over_scale_depth", ScaleOverScaleDepth);
+        sky_shader_->Uniform1f("u_scale", scale);
+        sky_shader_->Uniform1f("u_scale_depth", scale_depth);
+        sky_shader_->Uniform1f("u_scale_over_scale_depth", scale_over_scale_depth);
         sky_shader_->Uniform1i("u_samples", 4);
         sky_shader_->Uniform1f("u_g", g);
         sky_shader_->Uniform1f("u_g2", g * g);

@@ -3,8 +3,7 @@
 #include "../../../application/application.h"
 #include "../../../system/include/keys.h"
 
-#define SUPPORT_RETINA_RESOLUTION 1
-#define ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 1
+#include <vector> // for attributes
 
 // Translates OS X key modifiers to engine ones
 static int TranslateModifiers(NSUInteger mods)
@@ -71,22 +70,37 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 - (void) awakeFromNib
 {
     sht::Application * app = sht::Application::GetInstance();
-    NSOpenGLPixelFormatAttribute attrs[] =
-	{
-		NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFAColorSize, app->color_bits(),
-		NSOpenGLPFADepthSize, app->depth_bits(),
-        NSOpenGLPFAStencilSize, app->stencil_bits(),
-		// Must specify the 3.2 Core Profile to use OpenGL 3.2
-#if ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 
-		NSOpenGLPFAOpenGLProfile,
-		NSOpenGLProfileVersion3_2Core,
-#endif
-		0
-	};
+
+    std::vector<NSOpenGLPixelFormatAttribute> attributes;
+    attributes.reserve(20);
+    
+    attributes.push_back(NSOpenGLPFADoubleBuffer);
+    attributes.push_back(NSOpenGLPFAColorSize);
+    attributes.push_back(app->color_bits());
+    attributes.push_back(NSOpenGLPFADepthSize);
+    attributes.push_back(app->depth_bits());
+    attributes.push_back(NSOpenGLPFAStencilSize);
+    attributes.push_back(app->stencil_bits());
+    {
+        // Must specify the 3.2 Core Profile to use OpenGL 3.2
+        attributes.push_back(NSOpenGLPFAOpenGLProfile);
+        attributes.push_back(NSOpenGLProfileVersion3_2Core);
+    }
+    if (app->IsMultisample())
+    {
+        // Enable multisampling
+        attributes.push_back(NSOpenGLPFAMultisample);
+        attributes.push_back(NSOpenGLPFASampleBuffers);
+        attributes.push_back(1);
+        attributes.push_back(NSOpenGLPFASamples);
+        attributes.push_back(4);
+    }
+    attributes.push_back(0); // finishing sign
+    
+    NSOpenGLPixelFormatAttribute * attributes_ptr = &attributes[0];
 	
-	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attrs] autorelease];
-	
+	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attributes_ptr] autorelease];
+    
 	if (!pf)
 	{
 		NSLog(@"No OpenGL pixel format");
@@ -94,23 +108,19 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 	   
     NSOpenGLContext* context = [[[NSOpenGLContext alloc] initWithFormat:pf shareContext:nil] autorelease];
     
-#if ESSENTIAL_GL_PRACTICES_SUPPORT_GL3 && defined(DEBUG)
 	// When we're using a CoreProfile context, crash if we call a legacy OpenGL function
 	// This will make it much more obvious where and when such a function call is made so
 	// that we can remove such calls.
 	// Without this we'd simply get GL_INVALID_OPERATION error for calling legacy functions
 	// but it would be more difficult to see where that function was called.
 	CGLEnable([context CGLContextObj], kCGLCECrashOnRemovedFunctions);
-#endif
 	
     [self setPixelFormat:pf];
     
     [self setOpenGLContext:context];
     
-#if SUPPORT_RETINA_RESOLUTION
     // Opt-In to Retina resolution
     [self setWantsBestResolutionOpenGLSurface:YES];
-#endif // SUPPORT_RETINA_RESOLUTION
 }
 
 - (void) prepareOpenGL
@@ -221,8 +231,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
 
 	// Get the view size in Points
 	NSRect viewRectPoints = [self bounds];
-    
-#if SUPPORT_RETINA_RESOLUTION
 
     // Rendering at retina resolutions will reduce aliasing, but at the potential
     // cost of framerate and battery life due to the GPU needing to render more
@@ -236,18 +244,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     // viewRectPixels will be larger (2x) than viewRectPoints for retina displays.
     // viewRectPixels will be the same as viewRectPoints for non-retina displays
     NSRect viewRectPixels = [self convertRectToBacking:viewRectPoints];
-    
-#else //if !SUPPORT_RETINA_RESOLUTION
-    
-    // App will typically render faster and use less power rendering at
-    // non-retina resolutions since the GPU needs to render less pixels.  There
-    // is the cost of more aliasing, but it will be no-worse than on a Mac
-    // without a retina display.
-    
-    // Points:Pixels is always 1:1 when not supporting retina resolutions
-    NSRect viewRectPixels = viewRectPoints;
-    
-#endif // !SUPPORT_RETINA_RESOLUTION
     
 	// Set the new dimensions in our renderer
     if ([self.window isVisible]) // make sure context is created
@@ -299,8 +295,12 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink,
     if (app->visible()) // make sure context is created
     {
         app->SetFrameTime((float)deltaTime);
+        
         app->Update();
+        
+        app->BeginFrame();
         app->Render();
+        app->EndFrame();
     }
 
 	CGLFlushDrawable([[self openGLContext] CGLContextObj]);

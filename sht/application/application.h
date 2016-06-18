@@ -75,7 +75,7 @@ namespace sht {
 		// --- User defined functions ---
 
 		// User data loading/unloading
-		virtual bool PreStartInit(void); //!< All window initialization goes here
+		virtual bool PreStartInit(); //!< All window initialization goes here (OpenGL hasn't been initialized)
 		virtual bool Load();
 		virtual void Unload();
 
@@ -83,8 +83,8 @@ namespace sht {
 		virtual void Render();
 
 		// Application parameters
-		virtual const char* GetTitle(void);
-		virtual const bool IsClampFps(void); //!< obsolete?
+		virtual const char* GetTitle();
+        virtual const bool IsMultisample();
 
 		// --- Messages ---
         virtual void OnChar(unsigned short code);
