@@ -1,5 +1,13 @@
 #version 330 core
 
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec3 a_normal;
+layout(location = 2) in vec2 a_texcoord;
+
+uniform mat4 u_projection;
+uniform mat4 u_view;
+uniform mat4 u_model;
+
 uniform vec3 v3CameraPos;			// The camera's current position
 uniform vec3 v3LightPos;			// The direction vector to the light source
 uniform vec3 v3InvWavelength;		// 1 / pow(wavelength, 4) for the red, green, and blue channels
@@ -18,6 +26,10 @@ uniform float fScaleDepth;			// The scale depth (i.e. the altitude at which the 
 uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
 
 uniform int Samples;
+
+out vec3 v_color;
+out vec3 v_attenuate;
+out vec2 v_texcoord;
 
 float scale(float fCos)
 {

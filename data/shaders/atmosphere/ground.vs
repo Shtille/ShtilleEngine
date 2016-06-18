@@ -16,7 +16,6 @@ uniform float fCameraHeight2;		// fCameraHeight^2
 uniform float fOuterRadius;			// The outer (atmosphere) radius
 uniform float fOuterRadius2;		// fOuterRadius^2
 uniform float fInnerRadius;			// The inner (planetary) radius
-uniform float fInnerRadius2;		// fInnerRadius^2
 uniform float fKrESun;				// Kr * ESun
 uniform float fKmESun;				// Km * ESun
 uniform float fKr4PI;				// Kr * 4 * PI
@@ -26,6 +25,8 @@ uniform float fScaleDepth;			// The scale depth (i.e. the altitude at which the 
 uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
 
 uniform int Samples;
+
+uniform bool u_from_space;
 
 out vec3 v_color;
 out vec3 v_attenuate;
@@ -39,15 +40,36 @@ float scale(float fCos)
 
 void main(void)
 {
+	vec4 world_pos = u_model * vec4(a_position, 1.0);
+
 	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
-	vec3 v3Pos = (gl_TextureMatrix[0] * gl_Vertex).xyz;
+	vec3 v3Pos = world_pos.xyz;
 	vec3 v3Ray = v3Pos - v3CameraPos;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
+	vec3 v3Start;
+	float fDepth;
+	if (u_from_space) // from space
+	{
+		// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
+		float B = 2.0 * dot(v3CameraPos, v3Ray);
+		float C = fCameraHeight2 - fOuterRadius2;
+		float fDet = max(0.0, B * B - 4.0 * C);
+		float fNear = 0.5 * (-B - sqrt(fDet));
+
+		v3Start = v3CameraPos + v3Ray * fNear;
+		fFar -= fNear;
+		fDepth = exp((fInnerRadius - fOuterRadius) / fScaleDepth);
+	}
+	else // from atmosphere
+	{
+		v3Start = v3CameraPos;
+		fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
+	}
+
 	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 v3Start = v3CameraPos;
-	float fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
+	// v3Pos/length(v3Pos) is equal to a_normal
 	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
 	float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
 	float fCameraScale = scale(fCameraAngle);
@@ -79,7 +101,6 @@ void main(void)
 	// Calculate the attenuation factor for the ground
 	v_attenuate = v3Attenuate;
 
-	vec4 pos_eye = u_view * u_model * vec4(a_position, 1.0);
 	v_texcoord = a_texcoord;
-	gl_Position = u_projection * pos_eye;
+	gl_Position = u_projection * u_view * world_pos;
 }

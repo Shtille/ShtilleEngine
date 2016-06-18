@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __SHT_SYTEM_SCOPE_TIMER_H__
-#define __SHT_SYTEM_SCOPE_TIMER_H__
+#ifndef __SHT_SYSTEM_SCOPE_TIMER_H__
+#define __SHT_SYSTEM_SCOPE_TIMER_H__
 
 namespace sht {
 	namespace system {

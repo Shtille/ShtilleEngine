@@ -16,7 +16,6 @@ uniform float fCameraHeight2;		// fCameraHeight^2
 uniform float fOuterRadius;			// The outer (atmosphere) radius
 uniform float fOuterRadius2;		// fOuterRadius^2
 uniform float fInnerRadius;			// The inner (planetary) radius
-uniform float fInnerRadius2;		// fInnerRadius^2
 uniform float fKrESun;				// Kr * ESun
 uniform float fKmESun;				// Km * ESun
 uniform float fKr4PI;				// Kr * 4 * PI
@@ -27,9 +26,11 @@ uniform float fScaleOverScaleDepth;	// fScale / fScaleDepth
 
 uniform int Samples;
 
-out vec3 v_color;
-out vec3 v_attenuate;
-out vec2 v_texcoord;
+uniform bool u_from_space;
+
+out vec3 v_mie_color;
+out vec3 v_rayleigh_color;
+out vec3 v_to_camera;
 
 float scale(float fCos)
 {
@@ -39,21 +40,40 @@ float scale(float fCos)
 
 void main(void)
 {
-	// Get the ray from the camera to the vertex, and its length (which is the far point of the ray passing through the atmosphere)
-	vec3 v3Pos = (gl_TextureMatrix[0] * gl_Vertex).xyz;
+	vec4 world_pos = u_model * vec4(a_position, 1.0);
+
+	// Get the ray from the camera to the vertex and its length (which is the far point of the ray passing through the atmosphere)
+	vec3 v3Pos = world_pos.xyz;
 	vec3 v3Ray = v3Pos - v3CameraPos;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
-	// Calculate the ray's starting position, then calculate its scattering offset
-	vec3 v3Start = v3CameraPos;
-	float fDepth = exp((fInnerRadius - fCameraHeight) / fScaleDepth);
-	float fCameraAngle = dot(-v3Ray, v3Pos) / length(v3Pos);
-	float fLightAngle = dot(v3LightPos, v3Pos) / length(v3Pos);
-	float fCameraScale = scale(fCameraAngle);
-	float fLightScale = scale(fLightAngle);
-	float fCameraOffset = fDepth * fCameraScale;
-	float fTemp = (fLightScale + fCameraScale);
+	vec3 v3Start;
+	float fStartOffset;
+	if (u_from_space) // from space
+	{
+		// Calculate the closest intersection of the ray with the outer atmosphere (which is the near point of the ray passing through the atmosphere)
+		float B = 2.0 * dot(v3CameraPos, v3Ray);
+		float C = fCameraHeight2 - fOuterRadius2;
+		float fDet = max(0.0, B * B - 4.0 * C);
+		float fNear = 0.5 * (-B - sqrt(fDet));
+
+		// Calculate the ray's starting position, then calculate its scattering offset
+		v3Start = v3CameraPos + v3Ray * fNear;
+		fFar -= fNear;
+		float fStartAngle = dot(v3Ray, v3Start) / fOuterRadius;
+		float fStartDepth = exp(-1.0 / fScaleDepth);
+		fStartOffset = fStartDepth * scale(fStartAngle);
+	}
+	else // from atmosphere
+	{
+		// Calculate the ray's starting position, then calculate its scattering offset
+		v3Start = v3CameraPos;
+		float fHeight = length(v3Start);
+		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
+		float fStartAngle = dot(v3Ray, v3Start) / fHeight;
+		fStartOffset = fDepth * scale(fStartAngle);
+	}
 
 	// Initialize the scattering loop variables
 	float fSampleLength = fFar / Samples;
@@ -63,23 +83,24 @@ void main(void)
 
 	// Now loop through the sample rays
 	vec3 v3FrontColor = vec3(0.0);
-	vec3 v3Attenuate;
 	for(int i = 0; i < Samples; i++)
 	{
 		float fHeight = length(v3SamplePoint);
 		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fHeight));
-		float fScatter = fDepth*fTemp - fCameraOffset;
-		v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
+		float fLightAngle = dot(v3LightPos, v3SamplePoint) / fHeight;
+		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
+		float fScatter = (fStartOffset + fDepth * (scale(fLightAngle) - scale(fCameraAngle)));
+		vec3 v3Attenuate = exp(-fScatter * (v3InvWavelength * fKr4PI + fKm4PI));
 		v3FrontColor += v3Attenuate * (fDepth * fScaledLength);
 		v3SamplePoint += v3SampleRay;
 	}
 
-	v_color = v3FrontColor * (v3InvWavelength * fKrESun + fKmESun);
+	// Finally, scale the Mie and Rayleigh colors and set up the varying variables for the pixel shader
+	v_mie_color = v3FrontColor * fKmESun;
+	v_rayleigh_color = v3FrontColor * (v3InvWavelength * fKrESun);
 
-	// Calculate the attenuation factor for the ground
-	v_attenuate = v3Attenuate;
-
-	vec4 pos_eye = u_view * u_model * vec4(a_position, 1.0);
-	v_texcoord = a_texcoord;
-	gl_Position = u_projection * pos_eye;
+	gl_Position = u_projection * u_view * world_pos;
+	
+	v_to_camera = v3CameraPos - v3Pos;
 }
+

@@ -24,8 +24,6 @@ class ShtilleEarthApp : public sht::OpenGlApplication
 public:
     ShtilleEarthApp()
     : sphere_(nullptr)
-	, current_ground_shader_(nullptr)
-	, current_sky_shader_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, console_(nullptr)
@@ -50,61 +48,65 @@ public:
 		float ScaleDepth = 0.25f;
 		float ScaleOverScaleDepth = Scale / ScaleDepth;
 
-		sht::graphics::Shader * atmosphere_shaders[] = {
-			ground_from_space_shader_,
-			ground_from_atmosphere_shader_,
-			sky_from_space_shader_,
-			sky_from_atmosphere_shader_
-		};
-
-		for (int i = 0; i < 4; ++i)
-		{
-			sht::graphics::Shader * atmosphere_shader = atmosphere_shaders[i];
-
-			atmosphere_shader->Bind();
-			atmosphere_shader->Uniform3f("v3LightPos", 0.0f, 0.0f, 1.0f);
-			atmosphere_shader->Uniform3f("v3InvWavelength", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
-			atmosphere_shader->Uniform1f("fInnerRadius", kInnerRadius);
-			atmosphere_shader->Uniform1f("fInnerRadius2", kInnerRadius * kInnerRadius);
-			atmosphere_shader->Uniform1f("fOuterRadius", kOuterRadius);
-			atmosphere_shader->Uniform1f("fOuterRadius2", kOuterRadius * kOuterRadius);
-			atmosphere_shader->Uniform1f("fKrESun", Kr * ESun);
-			atmosphere_shader->Uniform1f("fKmESun", Km * ESun);
-			atmosphere_shader->Uniform1f("fKr4PI", Kr * 4.0f * sht::math::kPi);
-			atmosphere_shader->Uniform1f("fKm4PI", Km * 4.0f * sht::math::kPi);
-			atmosphere_shader->Uniform1f("fScale", Scale);
-			atmosphere_shader->Uniform1f("fScaleDepth", ScaleDepth);
-			atmosphere_shader->Uniform1f("fScaleOverScaleDepth", ScaleOverScaleDepth);
-			atmosphere_shader->Uniform1f("g", g);
-			atmosphere_shader->Uniform1f("g2", g * g);
-			atmosphere_shader->Uniform1i("Samples", 4);
-			atmosphere_shader->Uniform1i("u_earth_texture", 0);
-			atmosphere_shader->Uniform1i("u_clouds_texture", 1);
-			atmosphere_shader->Unbind();
-		}
+        ground_shader_->Bind();
+        ground_shader_->Uniform3f("v3LightPos", 0.0f, 0.0f, 1.0f);
+        ground_shader_->Uniform3f("v3InvWavelength", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
+        ground_shader_->Uniform1f("fInnerRadius", kInnerRadius);
+        ground_shader_->Uniform1f("fOuterRadius", kOuterRadius);
+        ground_shader_->Uniform1f("fOuterRadius2", kOuterRadius * kOuterRadius);
+        ground_shader_->Uniform1f("fKrESun", Kr * ESun);
+        ground_shader_->Uniform1f("fKmESun", Km * ESun);
+        ground_shader_->Uniform1f("fKr4PI", Kr * 4.0f * sht::math::kPi);
+        ground_shader_->Uniform1f("fKm4PI", Km * 4.0f * sht::math::kPi);
+        ground_shader_->Uniform1f("fScale", Scale);
+        ground_shader_->Uniform1f("fScaleDepth", ScaleDepth);
+        ground_shader_->Uniform1f("fScaleOverScaleDepth", ScaleOverScaleDepth);
+        ground_shader_->Uniform1i("Samples", 4);
+        ground_shader_->Uniform1i("u_earth_texture", 0);
+        ground_shader_->Uniform1i("u_clouds_texture", 1);
+        ground_shader_->Unbind();
+        
+        sky_shader_->Bind();
+        sky_shader_->Uniform3f("v3LightPos", 0.0f, 0.0f, 1.0f);
+        sky_shader_->Uniform3f("v3InvWavelength", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
+        sky_shader_->Uniform1f("fInnerRadius", kInnerRadius);
+        sky_shader_->Uniform1f("fOuterRadius", kOuterRadius);
+        sky_shader_->Uniform1f("fOuterRadius2", kOuterRadius * kOuterRadius);
+        sky_shader_->Uniform1f("fKrESun", Kr * ESun);
+        sky_shader_->Uniform1f("fKmESun", Km * ESun);
+        sky_shader_->Uniform1f("fKr4PI", Kr * 4.0f * sht::math::kPi);
+        sky_shader_->Uniform1f("fKm4PI", Km * 4.0f * sht::math::kPi);
+        sky_shader_->Uniform1f("fScale", Scale);
+        sky_shader_->Uniform1f("fScaleDepth", ScaleDepth);
+        sky_shader_->Uniform1f("fScaleOverScaleDepth", ScaleOverScaleDepth);
+        sky_shader_->Uniform1i("Samples", 4);
+        sky_shader_->Uniform1f("g", g);
+        sky_shader_->Uniform1f("g2", g * g);
+        sky_shader_->Unbind();
 	}
 	void BindShaderVariables()
 	{
 		float distance_to_earth = camera_manager_->position()->Distance(kEarthPosition);
-		current_ground_shader_ = (distance_to_earth > kOuterRadius) ? ground_from_space_shader_ : ground_from_atmosphere_shader_;
-		current_sky_shader_ = (distance_to_earth > kOuterRadius) ? sky_from_space_shader_ : sky_from_atmosphere_shader_;
+        int from_space = (distance_to_earth > kOuterRadius) ? 1 : 0;
 
-		current_ground_shader_->Bind();
-		current_ground_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
-		current_ground_shader_->Uniform1f("fCameraHeight", distance_to_earth);
-		current_ground_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
-		current_ground_shader_->Unbind();
+		ground_shader_->Bind();
+		ground_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
+		ground_shader_->Uniform1f("fCameraHeight", distance_to_earth);
+		ground_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
+        ground_shader_->Uniform1i("u_from_space", from_space);
+		ground_shader_->Unbind();
 
-		current_sky_shader_->Bind();
-		current_sky_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
-		current_sky_shader_->Uniform1f("fCameraHeight", distance_to_earth);
-		current_sky_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
-		current_sky_shader_->Unbind();
+		sky_shader_->Bind();
+		sky_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
+		sky_shader_->Uniform1f("fCameraHeight", distance_to_earth);
+		sky_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
+        sky_shader_->Uniform1i("u_from_space", from_space);
+		sky_shader_->Unbind();
 	}
     bool Load() final
     {
         // Sphere model
-		sphere_ = new sht::graphics::SphereModel(renderer_, 60, 30);
+		sphere_ = new sht::graphics::SphereModel(renderer_, 128, 64);
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
@@ -114,10 +116,8 @@ public:
         
 		// Load shaders
         const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
-        if (!renderer_->AddShader(ground_from_space_shader_, "data/shaders/atmosphere/ground_from_space", attribs, 3)) return false;
-		if (!renderer_->AddShader(ground_from_atmosphere_shader_, "data/shaders/atmosphere/ground_from_atmosphere", attribs, 3)) return false;
-		if (!renderer_->AddShader(sky_from_space_shader_, "data/shaders/atmosphere/sky_from_space", attribs, 3)) return false;
-		if (!renderer_->AddShader(sky_from_atmosphere_shader_, "data/shaders/atmosphere/sky_from_atmosphere", attribs, 3)) return false;
+        if (!renderer_->AddShader(ground_shader_, "data/shaders/atmosphere/ground", attribs, _countof(attribs))) return false;
+		if (!renderer_->AddShader(sky_shader_, "data/shaders/atmosphere/sky", attribs, _countof(attribs))) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
         
@@ -177,40 +177,54 @@ public:
 
 		BindShaderVariables();
     }
-    void Render() final
+    void RenderGround()
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
-        vec3 light_pos_eye = renderer_->view_matrix() * kSunPosition;
-        
-        renderer_->SetViewport(width_, height_);
-        
-        renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        renderer_->ClearColorAndDepthBuffers();
-        
-        shader_->Bind();
-        shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-        shader_->Uniform3fv("u_light_pos", light_pos_eye);
-        shader_->Uniform1i("u_texture", 0);
-        renderer_->ChangeTexture(earth_texture_);
-        
-        // Draw ground
         renderer_->PushMatrix();
         renderer_->Translate(kEarthPosition);
         renderer_->Scale(kInnerRadius);
         renderer_->MultMatrix(rotate_matrix);
-        shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix);
-		sphere_->Render();
+        
+        ground_shader_->Bind();
+        ground_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        ground_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        ground_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        
+        renderer_->ChangeTexture(earth_texture_, 0);
+        renderer_->ChangeTexture(clouds_texture_, 1);
+        
+        sphere_->Render();
+        
+        renderer_->ChangeTexture(nullptr, 1);
+        renderer_->ChangeTexture(nullptr, 0);
+        
+        ground_shader_->Unbind();
+        
+        renderer_->PopMatrix();
+    }
+    void RenderSky()
+    {
+        renderer_->CullFace(sht::graphics::CullFaceType::kFront);
+        
+        renderer_->PushMatrix();
+        renderer_->Translate(kEarthPosition);
+        renderer_->Scale(kOuterRadius);
+        renderer_->MultMatrix(rotate_matrix);
+        
+        sky_shader_->Bind();
+        sky_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
+        sky_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        sky_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        
+        sphere_->Render();
+        
+        sky_shader_->Unbind();
+        
         renderer_->PopMatrix();
         
-        renderer_->ChangeTexture(nullptr);
-
-		// Draw sky
-        
+        renderer_->CullFace(sht::graphics::CullFaceType::kBack);
+    }
+    void RenderInterface()
+    {
         renderer_->DisableDepthTest();
         
         // Draw FPS
@@ -218,15 +232,29 @@ public:
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
         fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
-        //fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"CamX: %.7f", camera_manager_->position()->x);
         fps_text_->Render();
         
         // Draw console
         console_->Render();
         
         renderer_->EnableDepthTest();
+    }
+    void Render() final
+    {
+//#ifdef TARGET_MAC
+//        std::lock_guard<std::mutex> lock(mutex_);
+//#endif
+        //vec3 light_pos_eye = renderer_->view_matrix() * kSunPosition;
         
-        shader_->Unbind();
+        renderer_->SetViewport(width_, height_);
+        
+        renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        renderer_->ClearColorAndDepthBuffers();
+        
+        RenderGround();
+        RenderSky();
+
+        RenderInterface();
     }
     void OnChar(unsigned short code)
     {
@@ -349,12 +377,8 @@ private:
     std::mutex mutex_;
 #endif
     sht::graphics::Model * sphere_;
-    sht::graphics::Shader * ground_from_space_shader_;
-	sht::graphics::Shader * ground_from_atmosphere_shader_;
-	sht::graphics::Shader * sky_from_space_shader_;
-	sht::graphics::Shader * sky_from_atmosphere_shader_;
-	sht::graphics::Shader * current_ground_shader_;
-	sht::graphics::Shader * current_sky_shader_;
+    sht::graphics::Shader * ground_shader_;
+	sht::graphics::Shader * sky_shader_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
     sht::graphics::Texture * earth_texture_;
