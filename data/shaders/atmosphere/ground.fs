@@ -9,7 +9,7 @@ in vec3 v_color;
 in vec3 v_attenuate;
 in vec2 v_texcoord;
 
-void main(void)
+void main()
 {
 	vec3 earth = texture(u_earth_texture, v_texcoord).rgb;
 	vec3 clouds = texture(u_clouds_texture, v_texcoord).rrr; // 1 channel texture

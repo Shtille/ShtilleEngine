@@ -49,39 +49,39 @@ public:
 		float ScaleOverScaleDepth = Scale / ScaleDepth;
 
         ground_shader_->Bind();
-        ground_shader_->Uniform3f("v3LightPos", 0.0f, 0.0f, 1.0f);
-        ground_shader_->Uniform3f("v3InvWavelength", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
-        ground_shader_->Uniform1f("fInnerRadius", kInnerRadius);
-        ground_shader_->Uniform1f("fOuterRadius", kOuterRadius);
-        ground_shader_->Uniform1f("fOuterRadius2", kOuterRadius * kOuterRadius);
-        ground_shader_->Uniform1f("fKrESun", Kr * ESun);
-        ground_shader_->Uniform1f("fKmESun", Km * ESun);
-        ground_shader_->Uniform1f("fKr4PI", Kr * 4.0f * sht::math::kPi);
-        ground_shader_->Uniform1f("fKm4PI", Km * 4.0f * sht::math::kPi);
-        ground_shader_->Uniform1f("fScale", Scale);
-        ground_shader_->Uniform1f("fScaleDepth", ScaleDepth);
-        ground_shader_->Uniform1f("fScaleOverScaleDepth", ScaleOverScaleDepth);
-        ground_shader_->Uniform1i("Samples", 4);
+        ground_shader_->Uniform3f("u_to_light", 0.0f, 0.0f, 1.0f);
+        ground_shader_->Uniform3f("u_inv_wave_length", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
+        ground_shader_->Uniform1f("u_inner_radius", kInnerRadius);
+        ground_shader_->Uniform1f("u_outer_radius", kOuterRadius);
+        ground_shader_->Uniform1f("u_outer_radius2", kOuterRadius * kOuterRadius);
+        ground_shader_->Uniform1f("u_kr_esun", Kr * ESun);
+        ground_shader_->Uniform1f("u_km_esun", Km * ESun);
+        ground_shader_->Uniform1f("u_kr_4_pi", Kr * 4.0f * sht::math::kPi);
+        ground_shader_->Uniform1f("u_km_4_pi", Km * 4.0f * sht::math::kPi);
+        ground_shader_->Uniform1f("u_scale", Scale);
+        ground_shader_->Uniform1f("u_scale_depth", ScaleDepth);
+        ground_shader_->Uniform1f("u_scale_over_scale_depth", ScaleOverScaleDepth);
+        ground_shader_->Uniform1i("u_samples", 4);
         ground_shader_->Uniform1i("u_earth_texture", 0);
         ground_shader_->Uniform1i("u_clouds_texture", 1);
         ground_shader_->Unbind();
         
         sky_shader_->Bind();
-        sky_shader_->Uniform3f("v3LightPos", 0.0f, 0.0f, 1.0f);
-        sky_shader_->Uniform3f("v3InvWavelength", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
-        sky_shader_->Uniform1f("fInnerRadius", kInnerRadius);
-        sky_shader_->Uniform1f("fOuterRadius", kOuterRadius);
-        sky_shader_->Uniform1f("fOuterRadius2", kOuterRadius * kOuterRadius);
-        sky_shader_->Uniform1f("fKrESun", Kr * ESun);
-        sky_shader_->Uniform1f("fKmESun", Km * ESun);
-        sky_shader_->Uniform1f("fKr4PI", Kr * 4.0f * sht::math::kPi);
-        sky_shader_->Uniform1f("fKm4PI", Km * 4.0f * sht::math::kPi);
-        sky_shader_->Uniform1f("fScale", Scale);
-        sky_shader_->Uniform1f("fScaleDepth", ScaleDepth);
-        sky_shader_->Uniform1f("fScaleOverScaleDepth", ScaleOverScaleDepth);
-        sky_shader_->Uniform1i("Samples", 4);
-        sky_shader_->Uniform1f("g", g);
-        sky_shader_->Uniform1f("g2", g * g);
+        sky_shader_->Uniform3f("u_to_light", 0.0f, 0.0f, 1.0f);
+        sky_shader_->Uniform3f("u_inv_wave_length", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
+        sky_shader_->Uniform1f("u_inner_radius", kInnerRadius);
+        sky_shader_->Uniform1f("u_outer_radius", kOuterRadius);
+        sky_shader_->Uniform1f("u_outer_radius2", kOuterRadius * kOuterRadius);
+        sky_shader_->Uniform1f("u_kr_esun", Kr * ESun);
+        sky_shader_->Uniform1f("u_km_esun", Km * ESun);
+        sky_shader_->Uniform1f("u_kr_4_pi", Kr * 4.0f * sht::math::kPi);
+        sky_shader_->Uniform1f("u_km_4_pi", Km * 4.0f * sht::math::kPi);
+        sky_shader_->Uniform1f("u_scale", Scale);
+        sky_shader_->Uniform1f("u_scale_depth", ScaleDepth);
+        sky_shader_->Uniform1f("u_scale_over_scale_depth", ScaleOverScaleDepth);
+        sky_shader_->Uniform1i("u_samples", 4);
+        sky_shader_->Uniform1f("u_g", g);
+        sky_shader_->Uniform1f("u_g2", g * g);
         sky_shader_->Unbind();
 	}
 	void BindShaderVariables()
@@ -90,16 +90,16 @@ public:
         int from_space = (distance_to_earth > kOuterRadius) ? 1 : 0;
 
 		ground_shader_->Bind();
-		ground_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
-		ground_shader_->Uniform1f("fCameraHeight", distance_to_earth);
-		ground_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
+		ground_shader_->Uniform3fv("u_camera_pos", *camera_manager_->position());
+		ground_shader_->Uniform1f("u_camera_height", distance_to_earth);
+		ground_shader_->Uniform1f("u_camera_height2", distance_to_earth * distance_to_earth);
         ground_shader_->Uniform1i("u_from_space", from_space);
 		ground_shader_->Unbind();
 
 		sky_shader_->Bind();
-		sky_shader_->Uniform3fv("v3CameraPos", *camera_manager_->position());
-		sky_shader_->Uniform1f("fCameraHeight", distance_to_earth);
-		sky_shader_->Uniform1f("fCameraHeight2", distance_to_earth * distance_to_earth);
+		sky_shader_->Uniform3fv("u_camera_pos", *camera_manager_->position());
+		sky_shader_->Uniform1f("u_camera_height", distance_to_earth);
+		sky_shader_->Uniform1f("u_camera_height2", distance_to_earth * distance_to_earth);
         sky_shader_->Uniform1i("u_from_space", from_space);
 		sky_shader_->Unbind();
 	}
@@ -122,8 +122,12 @@ public:
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
         
 		// Load textures
-        if (!renderer_->AddTexture(earth_texture_, "data/textures/earth.jpg")) return false;
-		if (!renderer_->AddTexture(clouds_texture_, "data/textures/clouds.jpg")) return false;
+        if (!renderer_->AddTexture(earth_texture_, "data/textures/earth.jpg",
+                                   sht::graphics::Texture::Wrap::kClampToEdge,
+                                   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+        if (!renderer_->AddTexture(clouds_texture_, "data/textures/clouds.jpg",
+                                   sht::graphics::Texture::Wrap::kClampToEdge,
+                                   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(lights_texture_, "data/textures/lights.jpg")) return false;
 
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
@@ -171,9 +175,10 @@ public:
         if (!camera_animation_stopped_)
             camera_manager_->Update(frame_time_);
 
+        // Update matrices
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
-        
         UpdateProjectionMatrix();
+        projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
 
 		BindShaderVariables();
     }
@@ -185,8 +190,7 @@ public:
         renderer_->MultMatrix(rotate_matrix);
         
         ground_shader_->Bind();
-        ground_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        ground_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        ground_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
         ground_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         
         renderer_->ChangeTexture(earth_texture_, 0);
@@ -211,8 +215,7 @@ public:
         renderer_->MultMatrix(rotate_matrix);
         
         sky_shader_->Bind();
-        sky_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        sky_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+        sky_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
         sky_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         
         sphere_->Render();
@@ -389,6 +392,8 @@ private:
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
     sht::geo::PlanetNavigation * planet_navigation_;
+    
+    sht::math::Matrix4 projection_view_matrix_;
     
     sht::math::Matrix4 rotate_matrix;
     sht::math::Matrix3 normal_matrix;

@@ -1,8 +1,8 @@
 #version 330 core
 
-uniform vec3 v3LightPos;
-uniform float g;
-uniform float g2;
+uniform vec3 u_to_light;
+uniform float u_g;
+uniform float u_g2;
 
 out vec4 color;
 
@@ -10,11 +10,11 @@ in vec3 v_mie_color;
 in vec3 v_rayleigh_color;
 in vec3 v_to_camera;
 
-void main (void)
+void main()
 {
-	float fCos = dot(v3LightPos, v_to_camera) / length(v_to_camera);
-	float fRayleighPhase = 1.0 + fCos * fCos;
-	float fMiePhase = (1.0 - g2) / (2.0 + g2) * (1.0 + fCos * fCos) / pow(1.0 + g2 - 2.0 * g * fCos, 1.5);
-	color = vec4(1.0 - exp(-1.5 * (fRayleighPhase * v_rayleigh_color + fMiePhase * v_mie_color)), 1.0);
+	float cos_a = dot(u_to_light, v_to_camera) / length(v_to_camera);
+	float rayleigh_phase = 1.0 + cos_a * cos_a;
+	float mie_phase = (1.0 - u_g2) / (2.0 + u_g2) * (1.0 + cos_a * cos_a) / pow(1.0 + u_g2 - 2.0 * u_g * cos_a, 1.5);
+	color = vec4(1.0 - exp(-1.5 * (rayleigh_phase * v_rayleigh_color + mie_phase * v_mie_color)), 1.0);
 }
 
