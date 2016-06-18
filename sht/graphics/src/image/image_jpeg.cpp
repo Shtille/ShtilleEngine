@@ -219,16 +219,29 @@ namespace sht {
 			height_ = cinfo.output_height;
 			channels_ = cinfo.num_components;
 			data_type_ = DataType::kUint8;
-			if (channels_ == 4)
-			{
-				bpp_ = 4;
-				format_ = Format::kRGBA8;
-			}
-			else
-			{
-				bpp_ = 3;
-				format_ = Format::kRGB8;
-			}
+            switch (channels_)
+            {
+            case 4:
+                bpp_ = 4;
+                format_ = Format::kRGBA8;
+                break;
+            case 3:
+                bpp_ = 3;
+                format_ = Format::kRGB8;
+                break;
+            case 2:
+                bpp_ = 2;
+                format_ = Format::kRG8;
+                break;
+            case 1:
+                bpp_ = 1;
+                format_ = Format::kR8;
+                break;
+                
+            default:
+                assert(!"Implement this case");
+                break;
+            }
 
 			pixels_ = new u8[width_ * height_ * bpp_];
 
