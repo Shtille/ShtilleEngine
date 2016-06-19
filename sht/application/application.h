@@ -85,6 +85,7 @@ namespace sht {
 		// Application parameters
 		virtual const char* GetTitle();
         virtual const bool IsMultisample();
+		virtual const bool IsBenchmark(); // allows to get maximum available FPS (Windows only)
 
 		// --- Messages ---
         virtual void OnChar(unsigned short code);
@@ -111,12 +112,12 @@ namespace sht {
 		unsigned char color_bits_;		//!< number of bits for color buffer
 		unsigned char depth_bits_;		//!< number of bits for depth buffer
         unsigned char stencil_bits_;    //!< number of bits for stencil buffer
+		bool need_take_screenshot_;		//!< do we need to take a screenshot?
 		float time_;					//!< total time elapsed from application start
 		float frame_time_;				//!< time elapsed since last update
 		float frame_rate_;				//!< frames per second (FPS)
 		float fps_counter_time_;		//!< for counting FPS
 		float fps_counter_count_;		//!< for counting FPS
-		bool need_take_screenshot_;		//!< do we need to take a screenshot?
 		int framebuffer_size_;			//!< optimal size for framebuffer
 		float inv_framebuffer_size_;	//!< inverted framebuffer size for shaders
 
@@ -125,6 +126,11 @@ namespace sht {
         void InitWindowSize(int w, int h, bool fullscr);
 
 		static Application *app_;
+
+#ifdef TARGET_WINDOWS
+	public:
+		int msaa_pixel_format;
+#endif
 	};
 
 } // namespace sht

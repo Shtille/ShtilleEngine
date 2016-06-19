@@ -9,9 +9,6 @@
 #include <AGL/AGL.h>
 #endif
 #include <algorithm> // for std::max
-#ifdef TARGET_WINDOWS
-#undef max
-#endif
 //#if defined(TARGET_MAC) || defined(TARGET_IOS)
 #include "../platform/include/main_wrapper.h"
 #include "../platform/include/window_wrapper.h"
@@ -22,19 +19,28 @@ namespace sht {
 	Application * Application::app_ = nullptr;
 
 	Application::Application()
+	: renderer_(nullptr)
+	, visible_(false)
+	, fullscreen_(false)
+	, width_(800)
+	, height_(600)
+	, aspect_ratio_(1.0f)
+	, color_bits_(32)
+	, depth_bits_(24)
+	, stencil_bits_(0)
+	, need_take_screenshot_(false)
+	, time_(0.0f)
+	, frame_time_(0.0f)
+	, frame_rate_(0.0f)
+	, fps_counter_time_(0.0f)
+	, fps_counter_count_(0.0f)
+	, framebuffer_size_(0)
+	, inv_framebuffer_size_(0.0f)
+#ifdef TARGET_WINDOWS
+	, msaa_pixel_format(0)
+#endif
 	{
-		visible_ = false;
-		fullscreen_ = false;
-		color_bits_ = 32;
-		depth_bits_ = 24;
-        stencil_bits_ = 0;
 
-		time_ = 0.0f;
-		frame_time_ = 0.0f;
-
-		fps_counter_time_ = 0.0f;
-		fps_counter_count_ = 0.0f;
-		need_take_screenshot_ = false;
 	}
 	Application::~Application()
 	{
@@ -252,6 +258,10 @@ namespace sht {
     {
         return false;
     }
+	const bool Application::IsBenchmark()
+	{
+		return false;
+	}
     void Application::OnChar(unsigned short code)
     {
     }

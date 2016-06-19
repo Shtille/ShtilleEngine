@@ -116,9 +116,16 @@ void PlatformWindowTerminateImpl(void *instance)
 bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits, int stencil_bits)
 {
 	PlatformWindow * window = reinterpret_cast<PlatformWindow*>(instance);
+	sht::Application * app = sht::Application::GetInstance();
 
 	const int kContextMajorVersion = 3;
 	const int kContextMinorVersion = 3;
+
+	window->dc = GetDC(window->hwnd);	// Grab A Device Context For This Window
+	if (window->dc == 0)
+	{
+		return false;
+	}
 
 	PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -142,18 +149,15 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 		0, 0, 0							// Layer Masks Ignored
 	};
 
-	window->dc = GetDC(window->hwnd);	// Grab A Device Context For This Window
-	if (window->dc == 0)
-	{
-		return false;
-	}
-
 	int pixel_format = ChoosePixelFormat(window->dc, &pfd);	// Find A Compatible Pixel Format
 	if (pixel_format == 0)
 	{
 		ReleaseDC(window->hwnd, window->dc); window->dc = 0;
 		return false;
 	}
+
+	if (app->msaa_pixel_format != 0)
+		pixel_format = app->msaa_pixel_format;
 
 	if (SetPixelFormat(window->dc, pixel_format, &pfd) == FALSE) // Try To Set The Pixel Format
 	{
@@ -181,9 +185,56 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+		fprintf(stderr, "glewInit failed: %s\n", glewGetErrorString(err));
+		wglDeleteContext(temp_rc);	window->rc = 0;
+		ReleaseDC(window->hwnd, window->dc); window->dc = 0;
 		return false;
+	}
+
+	// Try to create a MSAA pixel format
+	if (app->IsMultisample() && app->msaa_pixel_format == 0)
+	{
+		if (GLEW_ARB_multisample && WGLEW_ARB_pixel_format)
+		{
+			int samples = 4; // = msaa_samples
+
+			while (samples > 0)
+			{
+				UINT num_formats = 0;
+
+				int attribs[] =
+				{
+					WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+					WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+					WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+					WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+					WGL_COLOR_BITS_ARB, color_bits,
+					WGL_DEPTH_BITS_ARB, depth_bits,
+					WGL_STENCIL_BITS_ARB, stencil_bits,
+					WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+					WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
+					WGL_SAMPLES_ARB, samples,
+					0
+				};
+
+				int msaa_pixel_format = 0;
+				if (wglChoosePixelFormatARB(window->dc, attribs, NULL, 1, &msaa_pixel_format, &num_formats) == TRUE && num_formats > 0)
+				{
+					// We cant's set pixel format twice, so we have to recreate a window *?*
+					app->msaa_pixel_format = msaa_pixel_format;
+					wglDeleteContext(temp_rc);	window->rc = 0;
+					ReleaseDC(window->hwnd, window->dc); window->dc = 0;
+					return false;
+				}
+
+				--samples;
+			}
+			fprintf(stderr, "Error: failed to find any compatible MSAA format\n");
+		}
+		else
+		{
+			fprintf(stderr, "Error: WGL_ARB_multisample isn't supported, using standart context\n");
+		}
 	}
 
 	int attribs[] =
@@ -207,6 +258,12 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 		// Use old context
 		window->rc = temp_rc;
 	}
+
+	if (app->IsBenchmark() && WGLEW_EXT_swap_control)
+	{
+		wglSwapIntervalEXT(0);
+	}
+
 	return true;
 }
 void PlatformDeinitOpenGLContextImpl(void *instance)

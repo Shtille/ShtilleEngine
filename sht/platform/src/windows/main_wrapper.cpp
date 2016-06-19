@@ -306,17 +306,18 @@ int MainWrapper(int argc, const char** argv)
 
 	// Create Window
 	PlatformWindow window;
+	g_window_controller = reinterpret_cast<void*>(&window);
 	window.hwnd = CreateWindowExA(windowExtendedStyle,	// Extended Style
-		app_class_name,	        // Class Name
-		app->GetTitle(),		// Window Title
-		windowStyle,			// Window Style
-		0, 0,				// Window X,Y Position
-		winRect.right - winRect.left,	// Window Width
-		winRect.bottom - winRect.top,	// Window Height
-		HWND_DESKTOP,	// Desktop Is Window's Parent
-		0,			// No Menu
-		instance,  // Pass The Window Instance
-		NULL); // pointer to window class
+		app_class_name,									// Class Name
+		app->GetTitle(),								// Window Title
+		windowStyle,									// Window Style
+		0, 0,											// Window X,Y Position
+		winRect.right - winRect.left,					// Window Width
+		winRect.bottom - winRect.top,					// Window Height
+		HWND_DESKTOP,									// Desktop Is Window's Parent
+		0,												// No Menu
+		instance,										// Pass The Window Instance
+		NULL);											// pointer to window class
 	if (window.hwnd == NULL)
 	{
 		// Window creation failed
@@ -324,10 +325,43 @@ int MainWrapper(int argc, const char** argv)
 		DestroyIcon(icon);
 		return 1;
 	}
-	g_window_controller = reinterpret_cast<void*>(&window);
+
+	bool api_initialized = app->InitApi();
+	if (!api_initialized && app->msaa_pixel_format != 0)
+	{
+		// We have found compatible MSAA pixel format, now we have to recreate window
+		DestroyWindow(window.hwnd);
+		// Don't forget do dispatch any upcoming messages, such as WM_QUIT
+		MSG	msg;
+		while (GetMessage(&msg, NULL, 0, 0))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		window.hwnd = CreateWindowExA(windowExtendedStyle,	// Extended Style
+			app_class_name,									// Class Name
+			app->GetTitle(),								// Window Title
+			windowStyle,									// Window Style
+			0, 0,											// Window X,Y Position
+			winRect.right - winRect.left,					// Window Width
+			winRect.bottom - winRect.top,					// Window Height
+			HWND_DESKTOP,									// Desktop Is Window's Parent
+			0,												// No Menu
+			instance,										// Pass The Window Instance
+			NULL);											// pointer to window class
+		if (window.hwnd == NULL)
+		{
+			// Window creation failed
+			UnregisterClassA(app_class_name, instance);
+			DestroyIcon(icon);
+			return 1;
+		}
+		// Do second initialization
+		api_initialized = app->InitApi();
+	}
 	app->Center();
 
-	if (app->InitApi())
+	if (api_initialized)
 	{
 		if (app->Load())
 		{
@@ -345,18 +379,18 @@ int MainWrapper(int argc, const char** argv)
             sht::system::UpdateTimer update_timer;
 			update_timer.Start();
 
-			// program main loop
+			// Program main loop
 			MSG	msg;
 			bool bQuit = false;
 			while (!bQuit)
 			{
-				// calculate dt
+				// Calculate dt
 				app->SetFrameTime(update_timer.GetElapsedTime());
 
-				// check for messages
+				// Check for messages
 				while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 				{
-					// handle or dispatch messages
+					// Handle or dispatch messages
 					if (msg.message == WM_QUIT)
 					{
 						bQuit = true;
