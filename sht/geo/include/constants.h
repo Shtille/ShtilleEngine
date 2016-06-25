@@ -9,6 +9,9 @@ namespace sht {
 
 		const float kEarthRadius = 6371000.0f;
 		const float kEarthAtmosphereHeight = 100000.0f;
+        const float kEarthCloudsHeight = 12000.0f;
+        const float kEarthAtmosphereRadius = kEarthRadius + kEarthAtmosphereHeight;
+        const float kEarthCloudsRadius = kEarthRadius + kEarthCloudsHeight;
         const math::Vector3 kEarthPosition = math::Vector3(0.0f, 0.0f, 0.0f);
 
 	}

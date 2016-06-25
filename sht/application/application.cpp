@@ -5,9 +5,6 @@
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
 #include <clocale>
-#if defined(TARGET_MAC)
-#include <AGL/AGL.h>
-#endif
 #include <algorithm> // for std::max
 //#if defined(TARGET_MAC) || defined(TARGET_IOS)
 #include "../platform/include/main_wrapper.h"

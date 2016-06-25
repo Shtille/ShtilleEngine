@@ -14,7 +14,8 @@
 namespace {
     const float kCameraDistance = sht::geo::kEarthRadius * 5.0f;
 	const float kInnerRadius = sht::geo::kEarthRadius;
-	const float kOuterRadius = sht::geo::kEarthRadius + sht::geo::kEarthAtmosphereHeight;
+	const float kOuterRadius = sht::geo::kEarthAtmosphereRadius;
+    const float kCloudsRadius = sht::geo::kEarthCloudsRadius;
     const sht::math::Vector3 kEarthPosition(0.0f, 0.0f, 0.0f);
     /*
      The distance from Earth to Sun is 1.52*10^11 meters, so practically we dont need to compute
@@ -71,8 +72,24 @@ public:
         ground_shader_->Uniform1f("u_scale_over_scale_depth", scale_over_scale_depth);
         ground_shader_->Uniform1i("u_samples", 4);
         ground_shader_->Uniform1i("u_earth_texture", 0);
-        ground_shader_->Uniform1i("u_clouds_texture", 1);
         ground_shader_->Unbind();
+        
+        clouds_shader_->Bind();
+        clouds_shader_->Uniform3fv("u_to_light", kSunDirection);
+        clouds_shader_->Uniform3f("u_inv_wave_length", 1.0f / powf(0.650f, 4.0f), 1.0f / powf(0.570f, 4.0f), 1.0f / powf(0.475f, 4.0f));
+        clouds_shader_->Uniform1f("u_inner_radius", kCloudsRadius);
+        clouds_shader_->Uniform1f("u_outer_radius", kOuterRadius);
+        clouds_shader_->Uniform1f("u_outer_radius2", kOuterRadius * kOuterRadius);
+        clouds_shader_->Uniform1f("u_kr_esun", Kr * ESun);
+        clouds_shader_->Uniform1f("u_km_esun", Km * ESun);
+        clouds_shader_->Uniform1f("u_kr_4_pi", Kr * 4.0f * sht::math::kPi);
+        clouds_shader_->Uniform1f("u_km_4_pi", Km * 4.0f * sht::math::kPi);
+        clouds_shader_->Uniform1f("u_scale", 1.0f / (kOuterRadius - kCloudsRadius));
+        clouds_shader_->Uniform1f("u_scale_depth", scale_depth);
+        clouds_shader_->Uniform1f("u_scale_over_scale_depth", 1.0f / (kOuterRadius - kCloudsRadius) / scale_depth);
+        clouds_shader_->Uniform1i("u_samples", 4);
+        clouds_shader_->Uniform1i("u_clouds_texture", 0);
+        clouds_shader_->Unbind();
         
         sky_shader_->Bind();
         sky_shader_->Uniform3fv("u_to_light", kSunDirection);
@@ -103,6 +120,13 @@ public:
 		ground_shader_->Uniform1f("u_camera_height2", distance_to_earth * distance_to_earth);
         ground_shader_->Uniform1i("u_from_space", from_space);
 		ground_shader_->Unbind();
+        
+        clouds_shader_->Bind();
+        clouds_shader_->Uniform3fv("u_camera_pos", *camera_manager_->position());
+        clouds_shader_->Uniform1f("u_camera_height", distance_to_earth);
+        clouds_shader_->Uniform1f("u_camera_height2", distance_to_earth * distance_to_earth);
+        clouds_shader_->Uniform1i("u_from_space", from_space);
+        clouds_shader_->Unbind();
 
 		sky_shader_->Bind();
 		sky_shader_->Uniform3fv("u_camera_pos", *camera_manager_->position());
@@ -125,6 +149,7 @@ public:
 		// Load shaders
         const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
         if (!renderer_->AddShader(ground_shader_, "data/shaders/atmosphere/ground", attribs, _countof(attribs))) return false;
+        if (!renderer_->AddShader(clouds_shader_, "data/shaders/atmosphere/clouds", attribs, _countof(attribs))) return false;
 		if (!renderer_->AddShader(sky_shader_, "data/shaders/atmosphere/sky", attribs, _countof(attribs))) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
@@ -172,10 +197,10 @@ public:
     }
     void Update() final
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
-        //angle_ += 0.5f * frame_time_;
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
+        angle_ += 0.005f * frame_time_;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
         console_->Update(frame_time_);
@@ -195,21 +220,39 @@ public:
         renderer_->PushMatrix();
         renderer_->Translate(kEarthPosition);
         renderer_->Scale(kInnerRadius);
-        renderer_->MultMatrix(rotate_matrix);
         
         ground_shader_->Bind();
         ground_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
         ground_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         
         renderer_->ChangeTexture(earth_texture_, 0);
-        renderer_->ChangeTexture(clouds_texture_, 1);
         
         sphere_->Render();
         
-        renderer_->ChangeTexture(nullptr, 1);
         renderer_->ChangeTexture(nullptr, 0);
         
         ground_shader_->Unbind();
+        
+        renderer_->PopMatrix();
+    }
+    void RenderClouds()
+    {
+        renderer_->PushMatrix();
+        renderer_->Translate(kEarthPosition);
+        renderer_->Scale(kCloudsRadius);
+        renderer_->MultMatrix(rotate_matrix);
+        
+        clouds_shader_->Bind();
+        clouds_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
+        clouds_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        
+        renderer_->ChangeTexture(clouds_texture_, 0);
+        
+        sphere_->Render();
+        
+        renderer_->ChangeTexture(nullptr, 0);
+        
+        clouds_shader_->Unbind();
         
         renderer_->PopMatrix();
     }
@@ -252,11 +295,9 @@ public:
     }
     void Render() final
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
-        //vec3 light_pos_eye = renderer_->view_matrix() * kSunPosition;
-        
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         renderer_->SetViewport(width_, height_);
         
         renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -264,14 +305,15 @@ public:
         
         RenderGround();
         RenderSky();
+        RenderClouds();
 
         RenderInterface();
     }
     void OnChar(unsigned short code)
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         if (console_->IsActive())
         {
             console_->ProcessCharInput(code);
@@ -279,9 +321,9 @@ public:
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
-//#ifdef TARGET_MAC
-//        mutex_.lock();
-//#endif
+#ifdef TARGET_MAC
+        mutex_.lock();
+#endif
         // Console blocks key input
         if (console_->IsActive())
         {
@@ -291,16 +333,16 @@ public:
         {
             if (key == sht::PublicKey::kF)
             {
-//#ifdef TARGET_MAC
-//                //mutex_.unlock(); // to not get deadlock
-//#endif
+#ifdef TARGET_MAC
+                //mutex_.unlock(); // to not get deadlock
+#endif
                 ToggleFullscreen();
             }
             else if (key == sht::PublicKey::kEscape)
             {
-//#ifdef TARGET_MAC
-//                mutex_.unlock(); // to not get deadlock
-//#endif
+#ifdef TARGET_MAC
+                mutex_.unlock(); // to not get deadlock
+#endif
                 Application::Terminate();
             }
             else if (key == sht::PublicKey::kEqual)
@@ -328,12 +370,15 @@ public:
                 planet_navigation_->SmoothRotation(angle_x);
             }
         }
-//#ifdef TARGET_MAC
-//        mutex_.unlock();
-//#endif
+#ifdef TARGET_MAC
+        mutex_.unlock();
+#endif
     }
     void OnMouseDown(sht::MouseButton button, int modifiers) final
     {
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             const sht::math::Vector4& viewport = renderer_->viewport();
@@ -344,6 +389,9 @@ public:
     }
     void OnMouseUp(sht::MouseButton button, int modifiers) final
     {
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             planet_navigation_->PanEnd();
@@ -351,9 +399,9 @@ public:
     }
     void OnMouseMove() final
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             const sht::math::Vector4& viewport = renderer_->viewport();
@@ -364,9 +412,9 @@ public:
     }
     void OnSize(int w, int h) final
     {
-//#ifdef TARGET_MAC
-//        std::lock_guard<std::mutex> lock(mutex_);
-//#endif
+#ifdef TARGET_MAC
+        std::lock_guard<std::mutex> lock(mutex_);
+#endif
         Application::OnSize(w, h);
         // To have correct perspective when resizing
         need_update_projection_matrix_ = true;
@@ -389,6 +437,7 @@ private:
 #endif
     sht::graphics::Model * sphere_;
     sht::graphics::Shader * ground_shader_;
+    sht::graphics::Shader * clouds_shader_;
 	sht::graphics::Shader * sky_shader_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
