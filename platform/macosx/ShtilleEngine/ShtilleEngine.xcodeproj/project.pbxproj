@@ -375,6 +375,9 @@
 		521781941C3946FD00288265 /* font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = font.cpp; sourceTree = "<group>"; };
 		521781961C3DD0DA00288265 /* text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text.h; sourceTree = "<group>"; };
 		521781981C3DD0EA00288265 /* text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = text.cpp; sourceTree = "<group>"; };
+		521AA47C1D1EA69700F43557 /* fullscreen_window.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fullscreen_window.h; path = ../../../sht/platform/src/macosx/fullscreen_window.h; sourceTree = "<group>"; };
+		521AA47D1D1EA69700F43557 /* gl_view.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gl_view.h; path = ../../../sht/platform/src/macosx/gl_view.h; sourceTree = "<group>"; };
+		521AA47E1D1EA69700F43557 /* window_controller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = window_controller.h; path = ../../../sht/platform/src/macosx/window_controller.h; sourceTree = "<group>"; };
 		521F127C1B6D5E9F00D7D735 /* table.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = table.h; sourceTree = "<group>"; };
 		521F127D1B6D68FE00D7D735 /* vertex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vertex.h; path = model/vertex.h; sourceTree = "<group>"; };
 		522B13B01B2B634100CE0944 /* filename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filename.h; sourceTree = "<group>"; };
@@ -1058,6 +1061,9 @@
 		528F541A1C7CAC6F009D79C9 /* Platform */ = {
 			isa = PBXGroup;
 			children = (
+				521AA47C1D1EA69700F43557 /* fullscreen_window.h */,
+				521AA47D1D1EA69700F43557 /* gl_view.h */,
+				521AA47E1D1EA69700F43557 /* window_controller.h */,
 				524DB8621B405EF500EAB364 /* fullscreen_window.m */,
 				524DB8631B405EF500EAB364 /* gl_view.mm */,
 				524DB8641B405EF500EAB364 /* window_controller.mm */,
