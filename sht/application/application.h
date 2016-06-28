@@ -126,11 +126,6 @@ namespace sht {
         void InitWindowSize(int w, int h, bool fullscr);
 
 		static Application *app_;
-
-#ifdef TARGET_WINDOWS
-	public:
-		int msaa_pixel_format;
-#endif
 	};
 
 } // namespace sht

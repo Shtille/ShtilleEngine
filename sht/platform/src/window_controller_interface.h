@@ -4,6 +4,16 @@
 
 #include <string>
 
+// Inner functions
+bool PlatformInitImpl(void *instance);
+void PlatformTerminateImpl(void *instance);
+void PlatformAdjustVideoSettingsImpl();
+void PlatformRestoreVideoSettingsImpl();
+bool PlatformWindowCreateImpl(void *instance);
+void PlatformWindowDestroyImpl(void *instance);
+bool PlatformNeedQuitImpl(void *instance);
+void PlatformPollEventsImpl(void *instance);
+
 // Window functions
 void PlatformWindowMakeWindowedImpl(void *instance);
 void PlatformWindowMakeFullscreenImpl(void *instance);

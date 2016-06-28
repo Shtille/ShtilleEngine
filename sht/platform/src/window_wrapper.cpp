@@ -4,6 +4,38 @@
 
 extern void * g_window_controller;
 
+bool PlatformInit()
+{
+    return PlatformInitImpl(g_window_controller);
+}
+void PlatformTerminate()
+{
+    PlatformTerminateImpl(g_window_controller);
+}
+void PlatformAdjustVideoSettings()
+{
+    PlatformAdjustVideoSettingsImpl();
+}
+void PlatformRestoreVideoSettings()
+{
+    PlatformRestoreVideoSettingsImpl();
+}
+bool PlatformWindowCreate()
+{
+    return PlatformWindowCreateImpl(g_window_controller);
+}
+void PlatformWindowDestroy()
+{
+    PlatformWindowDestroyImpl(g_window_controller);
+}
+bool PlatformNeedQuit()
+{
+    return PlatformNeedQuitImpl(g_window_controller);
+}
+void PlatformPollEvents()
+{
+    PlatformPollEventsImpl(g_window_controller);
+}
 void PlatformWindowMakeWindowed()
 {
     PlatformWindowMakeWindowedImpl(g_window_controller);

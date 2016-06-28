@@ -33,9 +33,6 @@ namespace sht {
 	, fps_counter_count_(0.0f)
 	, framebuffer_size_(0)
 	, inv_framebuffer_size_(0.0f)
-#ifdef TARGET_WINDOWS
-	, msaa_pixel_format(0)
-#endif
 	{
 
 	}
