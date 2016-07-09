@@ -6,7 +6,7 @@
 
 // Window functions
 void PlatformWindowMakeWindowed();
-void PlatformWindowMakeFullscreen();
+bool PlatformWindowMakeFullscreen();
 void PlatformWindowCenter();
 void PlatformWindowResize(int width, int height);
 void PlatformWindowSetTitle(const char *title);

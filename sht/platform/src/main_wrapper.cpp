@@ -1,7 +1,7 @@
-#include "../../include/main_wrapper.h"
-#include "../platform_inner.h"
-#include "../../../application/application.h"
-#include "../../../system/include/time/update_timer.h"
+#include "../include/main_wrapper.h"
+#include "platform_inner.h"
+#include "../../application/application.h"
+#include "../../system/include/time/update_timer.h"
 
 int MainWrapper(int argc, const char** argv)
 {

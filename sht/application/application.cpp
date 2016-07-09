@@ -1,15 +1,12 @@
 #include "application.h"
-#include <memory.h>
+#include "../platform/include/main_wrapper.h"
+#include "../platform/include/window_controller.h"
 #include "../graphics/include/renderer/renderer.h"
 #include "../system/include/memory_leaks.h"
 #include "../system/include/stream/file_stream.h"
 #include <cstdlib>
 #include <clocale>
 #include <algorithm> // for std::max
-//#if defined(TARGET_MAC) || defined(TARGET_IOS)
-#include "../platform/include/main_wrapper.h"
-#include "../platform/include/window_wrapper.h"
-//#endif
 
 namespace sht {
 
@@ -116,9 +113,8 @@ namespace sht {
 	bool Application::MakeFullscreen(void)
 	{
         if (fullscreen_) return true;
-        PlatformWindowMakeFullscreen();
-        //fullscreen_ = false;
-		return true;
+        
+		return PlatformWindowMakeFullscreen();
 	}
 	void Application::MakeWindowed(void)
 	{

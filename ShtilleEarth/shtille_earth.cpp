@@ -7,10 +7,6 @@
 #include "../sht/geo/include/planet_navigation.h"
 #include <cmath>
 
-#ifdef TARGET_MAC // see common/platform.h
-#include <mutex>
-#endif
-
 namespace {
     const float kCameraDistance = sht::geo::kEarthRadius * 5.0f;
 	const float kInnerRadius = sht::geo::kEarthRadius;
@@ -197,9 +193,6 @@ public:
     }
     void Update() final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         angle_ += 0.005f * frame_time_;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
@@ -295,9 +288,6 @@ public:
     }
     void Render() final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         renderer_->SetViewport(width_, height_);
         
         renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -311,9 +301,6 @@ public:
     }
     void OnChar(unsigned short code)
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         if (console_->IsActive())
         {
             console_->ProcessCharInput(code);
@@ -321,9 +308,6 @@ public:
     }
     void OnKeyDown(sht::PublicKey key, int mods) final
     {
-#ifdef TARGET_MAC
-        mutex_.lock();
-#endif
         // Console blocks key input
         if (console_->IsActive())
         {
@@ -333,16 +317,10 @@ public:
         {
             if (key == sht::PublicKey::kF)
             {
-#ifdef TARGET_MAC
-                //mutex_.unlock(); // to not get deadlock
-#endif
                 ToggleFullscreen();
             }
             else if (key == sht::PublicKey::kEscape)
             {
-#ifdef TARGET_MAC
-                mutex_.unlock(); // to not get deadlock
-#endif
                 Application::Terminate();
             }
             else if (key == sht::PublicKey::kEqual)
@@ -370,15 +348,9 @@ public:
                 planet_navigation_->SmoothRotation(angle_x);
             }
         }
-#ifdef TARGET_MAC
-        mutex_.unlock();
-#endif
     }
     void OnMouseDown(sht::MouseButton button, int modifiers) final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             const sht::math::Vector4& viewport = renderer_->viewport();
@@ -389,9 +361,6 @@ public:
     }
     void OnMouseUp(sht::MouseButton button, int modifiers) final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             planet_navigation_->PanEnd();
@@ -399,9 +368,6 @@ public:
     }
     void OnMouseMove() final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         if (mouse_.button_down(sht::MouseButton::kLeft))
         {
             const sht::math::Vector4& viewport = renderer_->viewport();
@@ -412,9 +378,6 @@ public:
     }
     void OnSize(int w, int h) final
     {
-#ifdef TARGET_MAC
-        std::lock_guard<std::mutex> lock(mutex_);
-#endif
         Application::OnSize(w, h);
         // To have correct perspective when resizing
         need_update_projection_matrix_ = true;
@@ -432,9 +395,6 @@ public:
     }
     
 private:
-#ifdef TARGET_MAC
-    std::mutex mutex_;
-#endif
     sht::graphics::Model * sphere_;
     sht::graphics::Shader * ground_shader_;
     sht::graphics::Shader * clouds_shader_;

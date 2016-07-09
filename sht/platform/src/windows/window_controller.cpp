@@ -1,7 +1,10 @@
-#include "../window_controller_interface.h"
+#include "../../window_wrapper.h"
+#include "../platform_inner.h"
+
 #include "../window_struct.h"
-#include "../../../common/platform.h"
+
 #include "../../../application/application.h"
+
 #include <stdio.h>	// for error logging
 // OpenGL specific
 #include "../../../thirdparty/glew/include/GL/glew.h"
@@ -9,11 +12,9 @@
 #include <Windowsx.h> // for GET_X_LPARAM
 
 namespace {
-	PlatformWindow * g_window = nullptr;
+	PlatformWindow g_window;
 	const char* kApplicationClassName = "ShtilleEngine";
 }
-// TODO: remove it when with macOS will be done
-void * g_window_controller;
 
 //========================= Window Proc ==============================
 
@@ -245,11 +246,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 //==================================================================
 
-bool PlatformInitImpl(void *window_instance)
+bool PlatformInit()
 {
-	// Windows data storage struct
-	g_window = new PlatformWindow;
-	g_window->need_quit = false;
+	g_window.need_quit = false;
 
 	// Skip any upcoming error
 	GetLastError();
@@ -261,15 +260,14 @@ bool PlatformInitImpl(void *window_instance)
 	SetThreadAffinityMask(GetCurrentThread(), 1);
 
 	// This is the way to change window icon manually:
-	g_window->icon = LoadIcon(NULL, IDI_APPLICATION);
-	if (g_window->icon == NULL)
+	g_window.icon = LoadIcon(NULL, IDI_APPLICATION);
+	if (g_window.icon == NULL)
 	{
-		delete g_window;
 		MessageBox(HWND_DESKTOP, TEXT("Icon loading failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
-	g_window->instance = GetModuleHandle(NULL);
+	g_window.instance = GetModuleHandle(NULL);
 
 	// Register A Window Class
 	WNDCLASSEXA window_class;
@@ -277,61 +275,58 @@ bool PlatformInitImpl(void *window_instance)
 	window_class.cbSize = sizeof(WNDCLASSEX);
 	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	window_class.lpfnWndProc = (WNDPROC)(WindowProc);
-	window_class.hInstance = g_window->instance;
+	window_class.hInstance = g_window.instance;
 	window_class.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	window_class.hCursor = LoadCursor(NULL, IDC_ARROW);
-	window_class.hIcon = g_window->icon;
-	window_class.hIconSm = g_window->icon;
+	window_class.hIcon = g_window.icon;
+	window_class.hIconSm = g_window.icon;
 	window_class.lpszClassName = kApplicationClassName;
 	if (RegisterClassExA(&window_class) == 0)
 	{
-		DestroyIcon(g_window->icon);
-		delete g_window;
+		DestroyIcon(g_window.icon);
 		MessageBox(HWND_DESKTOP, TEXT("RegisterClassEx Failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
 
 	return true;
 }
-void PlatformTerminateImpl(void *window_instance)
+void PlatformTerminate()
 {
-	UnregisterClassA(kApplicationClassName, g_window->instance);
-	DestroyIcon(g_window->icon);
-	delete g_window;
-	g_window = nullptr;
+	UnregisterClassA(kApplicationClassName, g_window.instance);
+	DestroyIcon(g_window.icon);
 }
-void PlatformAdjustVideoSettingsImpl()
+void PlatformAdjustVideoSettings()
 {
 	sht::Application * app = sht::Application::GetInstance();
 
-	g_window->current_state.style = WS_OVERLAPPEDWINDOW;
-	g_window->current_state.ex_style = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME;
+	g_window.current_state.style = WS_OVERLAPPEDWINDOW;
+	g_window.current_state.ex_style = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME;
 
-	g_window->current_state.rect.left = 0;
-	g_window->current_state.rect.top = 0;
-	g_window->current_state.rect.right = app->width();
-	g_window->current_state.rect.bottom = app->height();
+	g_window.current_state.rect.left = 0;
+	g_window.current_state.rect.top = 0;
+	g_window.current_state.rect.right = app->width();
+	g_window.current_state.rect.bottom = app->height();
 
 	if (app->fullscreen())	// Fullscreen Requested, Try Changing Video Modes
 	{
-		if (!app->MakeFullscreen())
+		if (!PlatformWindowMakeFullscreen())
 		{
 			// Fullscreen Mode Failed.  Run In Windowed Mode Instead
 			MessageBox(HWND_DESKTOP, TEXT("Mode Switch Failed.\nRunning In Windowed Mode."), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 		}
 		else	// Otherwise (If Fullscreen Mode Was Successful)
 		{
-			g_window->current_state.style = WS_POPUP;
-			g_window->current_state.ex_style |= WS_EX_TOPMOST;
+			g_window.current_state.style = WS_POPUP;
+			g_window.current_state.ex_style |= WS_EX_TOPMOST;
 		}
 	}
 	else
 	{
 		// Adjust Window, Account For Window Borders
-		AdjustWindowRectEx(&g_window->current_state.rect, g_window->current_state.style, 0, g_window->current_state.ex_style);
+		AdjustWindowRectEx(&g_window.current_state.rect, g_window.current_state.style, 0, g_window.current_state.ex_style);
 	}
 }
-void PlatformRestoreVideoSettingsImpl()
+void PlatformRestoreVideoSettings()
 {
 	sht::Application * app = sht::Application::GetInstance();
 	if (app->fullscreen())
@@ -339,34 +334,34 @@ void PlatformRestoreVideoSettingsImpl()
 		ChangeDisplaySettingsA(NULL, 0);
 	}
 }
-bool PlatformWindowCreateImpl(void *window_instance)
+bool PlatformWindowCreate()
 {
 	sht::Application * app = sht::Application::GetInstance();
 
 	// Create Window
-	g_window->hwnd = CreateWindowExA(g_window->current_state.ex_style,			// Extended Style
+	g_window.hwnd = CreateWindowExA(g_window.current_state.ex_style,			// Extended Style
 		kApplicationClassName,													// Class Name
 		app->GetTitle(),														// Window Title
-		g_window->current_state.style,											// Window Style
+		g_window.current_state.style,											// Window Style
 		0, 0,																	// Window X,Y Position
-		g_window->current_state.rect.right - g_window->current_state.rect.left,	// Window Width
-		g_window->current_state.rect.bottom - g_window->current_state.rect.top,	// Window Height
+		g_window.current_state.rect.right - g_window.current_state.rect.left,	// Window Width
+		g_window.current_state.rect.bottom - g_window.current_state.rect.top,	// Window Height
 		HWND_DESKTOP,															// Desktop Is Window's Parent
 		0,																		// No Menu
-		g_window->instance,														// Pass The Window Instance
+		g_window.instance,														// Pass The Window Instance
 		NULL);																	// pointer to window class
 
-	return g_window->hwnd != NULL;
+	return g_window.hwnd != NULL;
 }
-void PlatformWindowDestroyImpl(void *instance)
+void PlatformWindowDestroy()
 {
-	DestroyWindow(g_window->hwnd);
+	DestroyWindow(g_window.hwnd);
 }
-bool PlatformNeedQuitImpl(void *instance)
+bool PlatformNeedQuit()
 {
-	return g_window->need_quit;
+	return g_window.need_quit;
 }
-void PlatformPollEventsImpl(void *instance)
+void PlatformPollEvents()
 {
 	MSG msg;
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -374,7 +369,7 @@ void PlatformPollEventsImpl(void *instance)
 		// Handle or dispatch messages
 		if (msg.message == WM_QUIT)
 		{
-			g_window->need_quit = true;
+			g_window.need_quit = true;
 		}
 		else
 		{
@@ -383,26 +378,26 @@ void PlatformPollEventsImpl(void *instance)
 		}
 	}
 }
-void PlatformWindowMakeWindowedImpl(void *instance)
+void PlatformWindowMakeWindowed()
 {
     ChangeDisplaySettings(NULL, 0); // restore display settings
 
 	// Restore window state
-	SetWindowLongPtr(g_window->hwnd, GWL_STYLE, g_window->old_state.style);
-	SetWindowLongPtr(g_window->hwnd, GWL_EXSTYLE, g_window->old_state.ex_style);
-	MoveWindow(g_window->hwnd, g_window->old_state.rect.left, g_window->old_state.rect.top,
-		g_window->old_state.rect.right - g_window->old_state.rect.left,
-		g_window->old_state.rect.bottom - g_window->old_state.rect.top, FALSE);
-	ShowWindow(g_window->hwnd, SW_NORMAL);
+	SetWindowLongPtr(g_window.hwnd, GWL_STYLE, g_window.old_state.style);
+	SetWindowLongPtr(g_window.hwnd, GWL_EXSTYLE, g_window.old_state.ex_style);
+	MoveWindow(g_window.hwnd, g_window.old_state.rect.left, g_window.old_state.rect.top,
+		g_window.old_state.rect.right - g_window.old_state.rect.left,
+		g_window.old_state.rect.bottom - g_window.old_state.rect.top, FALSE);
+	ShowWindow(g_window.hwnd, SW_NORMAL);
 }
-void PlatformWindowMakeFullscreenImpl(void *instance)
+bool PlatformWindowMakeFullscreen()
 {
 	sht::Application * app = sht::Application::GetInstance();
 	
 	// Store current window state:
-	GetWindowRect(g_window->hwnd, &g_window->old_state.rect);
-	g_window->old_state.style = GetWindowLongPtr(g_window->hwnd, GWL_STYLE);
-	g_window->old_state.ex_style = GetWindowLongPtr(g_window->hwnd, GWL_EXSTYLE);
+	g_window.old_state.rect = g_window.current_state.rect;
+	g_window.old_state.style = g_window.current_state.style;
+	g_window.old_state.ex_style = g_window.current_state.ex_style;
 	
     DEVMODE dmScreenSettings;
 	ZeroMemory(&dmScreenSettings, sizeof(DEVMODE));
@@ -414,65 +409,65 @@ void PlatformWindowMakeFullscreenImpl(void *instance)
 	if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 	{
 		// Still windowed
-		// fullscreen_ = false; // TODO: make function bool
-		SetWindowLongPtr(g_window->hwnd, GWL_STYLE, g_window->old_state.style);
-		SetWindowLongPtr(g_window->hwnd, GWL_EXSTYLE, g_window->old_state.ex_style);
-		ShowWindow(g_window->hwnd, SW_NORMAL);
-		return;
+		SetWindowLongPtr(g_window.hwnd, GWL_STYLE, g_window.old_state.style);
+		SetWindowLongPtr(g_window.hwnd, GWL_EXSTYLE, g_window.old_state.ex_style);
+		ShowWindow(g_window.hwnd, SW_NORMAL);
+		return false;
 	}
 
-	SetWindowLongPtr(g_window->hwnd, GWL_STYLE, WS_POPUP);
-	SetWindowLongPtr(g_window->hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
-	MoveWindow(g_window->hwnd, 0, 0, app->width(), app->height(), FALSE);
-	ShowWindow(g_window->hwnd, SW_NORMAL);
+	SetWindowLongPtr(g_window.hwnd, GWL_STYLE, WS_POPUP);
+	SetWindowLongPtr(g_window.hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+	MoveWindow(g_window.hwnd, 0, 0, app->width(), app->height(), FALSE);
+	ShowWindow(g_window.hwnd, SW_NORMAL);
+	return true;
 }
-void PlatformWindowCenterImpl(void *instance)
+void PlatformWindowCenter()
 {
 	RECT window_rect;
-	::GetWindowRect(g_window->hwnd, &window_rect);
+	::GetWindowRect(g_window.hwnd, &window_rect);
 	int screen_width = ::GetSystemMetrics(SM_CXSCREEN);
 	int screen_height = ::GetSystemMetrics(SM_CYSCREEN);
 	int window_width = window_rect.right - window_rect.left;
 	int window_height = window_rect.bottom - window_rect.top;
 	window_rect.left = (screen_width - window_width)/2;
 	window_rect.top = (screen_height - window_height)/2;
-	::MoveWindow(g_window->hwnd, window_rect.left, window_rect.top, window_width, window_height, TRUE);
+	::MoveWindow(g_window.hwnd, window_rect.left, window_rect.top, window_width, window_height, TRUE);
 }
-void PlatformWindowResizeImpl(void *instance, int width, int height)
+void PlatformWindowResize(int width, int height)
 {
 	RECT rect;
 	POINT pos;
 	pos.x = width;
 	pos.y = height;
-	::GetWindowRect(g_window->hwnd, &rect);
-	::ClientToScreen(g_window->hwnd, &pos);
-	::MoveWindow(g_window->hwnd, rect.left, rect.top, pos.x - rect.left, pos.y - rect.top, TRUE);
+	::GetWindowRect(g_window.hwnd, &rect);
+	::ClientToScreen(g_window.hwnd, &pos);
+	::MoveWindow(g_window.hwnd, rect.left, rect.top, pos.x - rect.left, pos.y - rect.top, TRUE);
 }
-void PlatformWindowSetTitleImpl(void *instance, const char *title)
+void PlatformWindowSetTitle(const char *title)
 {
-	SetWindowTextA(g_window->hwnd, title);
+	SetWindowTextA(g_window.hwnd, title);
 }
-void PlatformWindowIconifyImpl(void *instance)
+void PlatformWindowIconify()
 {
-	ShowWindow(g_window->hwnd, SW_MINIMIZE);
+	ShowWindow(g_window.hwnd, SW_MINIMIZE);
 }
-void PlatformWindowRestoreImpl(void *instance)
+void PlatformWindowRestore()
 {
-	ShowWindow(g_window->hwnd, SW_NORMAL);
+	ShowWindow(g_window.hwnd, SW_NORMAL);
 }
-void PlatformWindowShowImpl(void *instance)
+void PlatformWindowShow()
 {
-	ShowWindow(g_window->hwnd, SW_SHOW);
+	ShowWindow(g_window.hwnd, SW_SHOW);
 }
-void PlatformWindowHideImpl(void *instance)
+void PlatformWindowHide()
 {
-	ShowWindow(g_window->hwnd, SW_HIDE);
+	ShowWindow(g_window.hwnd, SW_HIDE);
 }
-void PlatformWindowTerminateImpl(void *instance)
+void PlatformWindowTerminate()
 {
-	PostMessage(g_window->hwnd, WM_CLOSE, 0, 0);
+	PostMessage(g_window.hwnd, WM_CLOSE, 0, 0);
 }
-bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bits, int stencil_bits)
+bool PlatformInitOpenGLContext(int color_bits, int depth_bits, int stencil_bits)
 {
 	sht::Application * app = sht::Application::GetInstance();
 
@@ -481,8 +476,8 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 
 	static int msaa_pixel_format = 0;
 
-	g_window->dc = GetDC(g_window->hwnd);	// Grab A Device Context For This Window
-	if (g_window->dc == 0)
+	g_window.dc = GetDC(g_window.hwnd);	// Grab A Device Context For This Window
+	if (g_window.dc == 0)
 	{
 		return false;
 	}
@@ -509,10 +504,10 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 		0, 0, 0							// Layer Masks Ignored
 	};
 
-	int pixel_format = ChoosePixelFormat(g_window->dc, &pfd);	// Find A Compatible Pixel Format
+	int pixel_format = ChoosePixelFormat(g_window.dc, &pfd);	// Find A Compatible Pixel Format
 	if (pixel_format == 0)
 	{
-		ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
 		return false;
 	}
 
@@ -520,25 +515,25 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 	if (msaa_pixel_format != 0)
 		pixel_format = msaa_pixel_format;
 
-	if (SetPixelFormat(g_window->dc, pixel_format, &pfd) == FALSE) // Try To Set The Pixel Format
+	if (SetPixelFormat(g_window.dc, pixel_format, &pfd) == FALSE) // Try To Set The Pixel Format
 	{
-		ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
 		return false;
 	}
 
-	HGLRC temp_rc = wglCreateContext(g_window->dc);	// Try To Get A Rendering Context
+	HGLRC temp_rc = wglCreateContext(g_window.dc);	// Try To Get A Rendering Context
 	if (temp_rc == 0)
 	{
-		ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
 		return false;
 	}
 
 	// Make The Rendering Context Our Current Rendering Context
-	if (wglMakeCurrent(g_window->dc, temp_rc) == FALSE)
+	if (wglMakeCurrent(g_window.dc, temp_rc) == FALSE)
 	{
 		// Failed
-		wglDeleteContext(temp_rc);	g_window->rc = 0;
-		ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
+		wglDeleteContext(temp_rc);	g_window.rc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
 		return false;
 	}
 
@@ -547,8 +542,8 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 	if (GLEW_OK != err)
 	{
 		fprintf(stderr, "glewInit failed: %s\n", glewGetErrorString(err));
-		wglDeleteContext(temp_rc);	g_window->rc = 0;
-		ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
+		wglDeleteContext(temp_rc);	g_window.rc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
 		return false;
 	}
 
@@ -578,12 +573,12 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 					0
 				};
 
-				if (wglChoosePixelFormatARB(g_window->dc, attribs, NULL, 1, &msaa_pixel_format, &num_formats) == TRUE && num_formats > 0)
+				if (wglChoosePixelFormatARB(g_window.dc, attribs, NULL, 1, &msaa_pixel_format, &num_formats) == TRUE && num_formats > 0)
 				{
 					// We cant's set pixel format twice, so we have to recreate a window *?*
-					wglDeleteContext(temp_rc);	g_window->rc = 0;
-					ReleaseDC(g_window->hwnd, g_window->dc); g_window->dc = 0;
-					PlatformWindowDestroyImpl(instance);
+					wglDeleteContext(temp_rc);	g_window.rc = 0;
+					ReleaseDC(g_window.hwnd, g_window.dc); g_window.dc = 0;
+					PlatformWindowDestroy();
 					// Don't forget do dispatch any upcoming messages, such as WM_QUIT
 					MSG	msg;
 					while (GetMessage(&msg, NULL, 0, 0))
@@ -591,11 +586,11 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 						TranslateMessage(&msg);
 						DispatchMessage(&msg);
 					}
-					if (PlatformWindowCreateImpl(instance))
+					if (PlatformWindowCreate())
 					{
-						PlatformWindowCenterImpl(instance);
+						PlatformWindowCenter();
 						// Call this function again with msaa pixel format already known
-						return PlatformInitOpenGLContextImpl(instance, color_bits, depth_bits, stencil_bits);
+						return PlatformInitOpenGLContext(color_bits, depth_bits, stencil_bits);
 					}
 					else
 						return false;
@@ -623,8 +618,8 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 	};
 
 	if ((wglewIsSupported("WGL_ARB_create_context")) &&
-		(g_window->rc = wglCreateContextAttribsARB(g_window->dc, 0, attribs)) &&
-		(wglMakeCurrent(g_window->dc, g_window->rc)))
+		(g_window.rc = wglCreateContextAttribsARB(g_window.dc, 0, attribs)) &&
+		(wglMakeCurrent(g_window.dc, g_window.rc)))
 	{
 		// Forward context has been successfully created
 		wglDeleteContext(temp_rc);
@@ -632,7 +627,7 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 	else // failed to obtain forward context
 	{
 		// Use old context
-		g_window->rc = temp_rc;
+		g_window.rc = temp_rc;
 	}
 
 	if (app->IsBenchmark() && WGLEW_EXT_swap_control)
@@ -642,63 +637,63 @@ bool PlatformInitOpenGLContextImpl(void *instance, int color_bits, int depth_bit
 
 	return true;
 }
-void PlatformDeinitOpenGLContextImpl(void *instance)
+void PlatformDeinitOpenGLContext()
 {
-	if (g_window->dc != 0)
+	if (g_window.dc != 0)
 	{
-		wglMakeCurrent(g_window->dc, 0);
-		if (g_window->rc != 0)
+		wglMakeCurrent(g_window.dc, 0);
+		if (g_window.rc != 0)
 		{
-			wglDeleteContext(g_window->rc);
-			g_window->rc = 0;
+			wglDeleteContext(g_window.rc);
+			g_window.rc = 0;
 		}
-		ReleaseDC(g_window->hwnd, g_window->dc);
-		g_window->dc = 0;
+		ReleaseDC(g_window.hwnd, g_window.dc);
+		g_window.dc = 0;
 	}
 }
-void PlatformSwapBuffersImpl(void *instance)
+void PlatformSwapBuffers()
 {
-	SwapBuffers(g_window->dc);
+	SwapBuffers(g_window.dc);
 }
-void PlatformSetCursorPosImpl(void *instance, float x, float y)
+void PlatformSetCursorPos(float x, float y)
 {
 	RECT winrect;
 	POINT pos;
-	::GetClientRect(g_window->hwnd, &winrect);
+	::GetClientRect(g_window.hwnd, &winrect);
 	pos.x = static_cast<LONG>(x);
 	pos.y = static_cast<LONG>(winrect.bottom - y - 1);
-	::ClientToScreen(g_window->hwnd, &pos);
+	::ClientToScreen(g_window.hwnd, &pos);
 	::SetCursorPos((int)pos.x, (int)pos.y);
 }
-void PlatformGetCursorPosImpl(void *instance, float& x, float& y)
+void PlatformGetCursorPos(float& x, float& y)
 {
 	RECT winrect;
 	POINT pos;
 	::GetCursorPos(&pos);
-	::GetClientRect(g_window->hwnd, &winrect);
-	::ScreenToClient(g_window->hwnd, &pos);
+	::GetClientRect(g_window.hwnd, &winrect);
+	::ScreenToClient(g_window.hwnd, &pos);
 	x = static_cast<float>(pos.x); // [0, w]
 	y = static_cast<float>(winrect.bottom - pos.y - 1); // [0, h]
 }
-void PlatformMouseToCenterImpl(void *instance)
+void PlatformMouseToCenter()
 {
 	RECT winrect;
 	POINT pos;
-	::GetClientRect(g_window->hwnd, &winrect);
+	::GetClientRect(g_window.hwnd, &winrect);
 	pos.x = (winrect.right - winrect.left) / 2;
 	pos.y = (winrect.bottom - winrect.top) / 2;
-	::ClientToScreen(g_window->hwnd, &pos);
+	::ClientToScreen(g_window.hwnd, &pos);
 	::SetCursorPos((int)(pos.x), (int)(pos.y));
 }
-void PlatformShowCursorImpl(void *instance)
+void PlatformShowCursor()
 {
 	::ShowCursor(TRUE);
 }
-void PlatformHideCursorImpl(void *instance)
+void PlatformHideCursor()
 {
 	::ShowCursor(FALSE);
 }
-void PlatformSetClipboardTextImpl(void *instance, const char *text)
+void PlatformSetClipboardText(const char *text)
 {
 	size_t len = strlen(text);
 	HGLOBAL x = GlobalAlloc(GMEM_DDESHARE|GMEM_MOVEABLE, (len+1)*sizeof(char));
@@ -711,7 +706,7 @@ void PlatformSetClipboardTextImpl(void *instance, const char *text)
 	SetClipboardData(CF_TEXT, x);
 	CloseClipboard();
 }
-std::string PlatformGetClipboardTextImpl(void *instance)
+std::string PlatformGetClipboardText()
 {
 	OpenClipboard(NULL);
 	HANDLE pText = GetClipboardData(CF_TEXT);
