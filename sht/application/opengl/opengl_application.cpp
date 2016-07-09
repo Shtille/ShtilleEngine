@@ -1,6 +1,6 @@
 #include "opengl_application.h"
 #include "../../graphics/include/renderer/opengl/opengl_renderer.h"
-#include "../../platform/include/window_wrapper.h"
+#include "../../platform/include/window_controller.h"
 
 namespace sht {
 

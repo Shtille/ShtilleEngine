@@ -55,7 +55,7 @@ public:
         if (!renderer_->AddShader(shader2_, "data/shaders/shader2", attribs, 1))
             return false;
         
-        if (!renderer_->AddShader(text_shader_, "data/shaders/text_shader", attribs, 1))
+        if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1))
             return false;
         
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1))
