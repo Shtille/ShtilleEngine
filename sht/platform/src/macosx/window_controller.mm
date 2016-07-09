@@ -638,23 +638,19 @@ static bool CreateWindow()
 
     unsigned int styleMask = 0;
 
-    // if (wndconfig->monitor || !wndconfig->decorated)
-    //     styleMask = NSBorderlessWindowMask;
-    // else
-    // {
+    if (app->IsDecorated())
+    {
         styleMask = NSTitledWindowMask | NSClosableWindowMask |
                     NSMiniaturizableWindowMask;
 
-    //     if (wndconfig->resizable)
-    //         styleMask |= NSResizableWindowMask;
-    // }
+        if (app->IsResizable())
+             styleMask |= NSResizableWindowMask;
+    }
+    else
+        styleMask = NSBorderlessWindowMask;
 
-    NSRect contentRect;
-
-    // if (wndconfig->monitor)
-    //     contentRect = [wndconfig->monitor->ns.screen frame];
-    // else
-        contentRect = NSMakeRect(0, 0, app->width(), app->height());
+    // We will create fullscreen window separately
+    NSRect contentRect = NSMakeRect(0, 0, app->width(), app->height());
 
     g_window.object = [[ShtilleEngineWindow alloc]
         initWithContentRect:contentRect
@@ -667,30 +663,14 @@ static bool CreateWindow()
         LogError("Cocoa: Failed to create window");
         return false;
     }
-    
-    // Enable fullscreen ability
-    NSWindowCollectionBehavior behavior = [g_window.object collectionBehavior];
-    behavior |= NSWindowCollectionBehaviorFullScreenPrimary;
-    [g_window.object setCollectionBehavior:behavior];
 
-    // if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
-    // {
-    //     if (wndconfig->resizable)
-    //         [g_window.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-    // }
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6)
+    {
+        if (app->IsResizable())
+            [g_window.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+    }
 
-    // if (wndconfig->monitor)
-    // {
-    //     [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
-    //     [window->ns.object setHidesOnDeactivate:YES];
-    // }
-    // else
-    // {
-        [g_window.object center];
-
-    //     if (wndconfig->floating)
-    //         [window->ns.object setLevel:NSFloatingWindowLevel];
-    // }
+    [g_window.object center];
 
     [g_window.object setTitle:[NSString stringWithUTF8String:app->GetTitle()]];
     [g_window.object setDelegate:g_window.delegate];
@@ -739,14 +719,6 @@ void PlatformTerminate()
 
     [g_window.autorelease_pool release];
     g_window.autorelease_pool = nil;
-}
-void PlatformAdjustVideoSettings()
-{
-    // No need to do it on Mac
-}
-void PlatformRestoreVideoSettings()
-{
-    // No need to do it on Mac
 }
 bool PlatformWindowCreate()
 {

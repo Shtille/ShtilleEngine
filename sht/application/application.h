@@ -85,7 +85,9 @@ namespace sht {
 		// Application parameters
 		virtual const char* GetTitle();
         virtual const bool IsMultisample();
-		virtual const bool IsBenchmark(); // allows to get maximum available FPS (Windows only)
+		virtual const bool IsBenchmark(); //!< allows to get maximum available FPS (Windows only)
+		virtual const bool IsResizable(); //!< window style is resizable
+		virtual const bool IsDecorated(); //!< window style is decorated
 
 		// --- Messages ---
         virtual void OnChar(unsigned short code);

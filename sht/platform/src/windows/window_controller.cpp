@@ -246,6 +246,62 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 //==================================================================
 
+static void AdjustVideoSettings()
+{
+	sht::Application * app = sht::Application::GetInstance();
+
+	g_window.current_state.style = WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+	g_window.current_state.ex_style = WS_EX_APPWINDOW;
+
+	g_window.current_state.rect.left = 0;
+	g_window.current_state.rect.top = 0;
+	g_window.current_state.rect.right = app->width();
+	g_window.current_state.rect.bottom = app->height();
+
+	bool windowed = true;
+	if (app->fullscreen())	// Fullscreen Requested, Try Changing Video Modes
+	{
+		if (!PlatformWindowMakeFullscreen())
+		{
+			// Fullscreen Mode Failed.  Run In Windowed Mode Instead
+			MessageBox(HWND_DESKTOP, TEXT("Mode Switch Failed.\nRunning In Windowed Mode."), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
+		}
+		else // Otherwise (If Fullscreen Mode Was Successful)
+		{
+			windowed = false;
+			g_window.current_state.style |= WS_POPUP;
+			g_window.current_state.ex_style |= WS_EX_TOPMOST;
+		}
+	}
+	if (windowed)
+	{
+		if (app->IsDecorated())
+		{
+			g_window.current_state.style |= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+
+			if (app->IsResizable())
+			{
+				g_window.current_state.style |= WS_MAXIMIZEBOX | WS_SIZEBOX;
+				g_window.current_state.ex_style |= WS_EX_WINDOWEDGE;
+			}
+		}
+		else
+		{
+			g_window.current_state.style |= WS_POPUP;
+		}
+		// Adjust Window, Account For Window Borders
+		AdjustWindowRectEx(&g_window.current_state.rect, g_window.current_state.style, 0, g_window.current_state.ex_style);
+	}
+}
+static void RestoreVideoSettings()
+{
+	sht::Application * app = sht::Application::GetInstance();
+	if (app->fullscreen())
+	{
+		ChangeDisplaySettingsA(NULL, 0);
+	}
+}
+
 bool PlatformInit()
 {
 	g_window.need_quit = false;
@@ -288,51 +344,16 @@ bool PlatformInit()
 		return false;
 	}
 
+	AdjustVideoSettings();
+
 	return true;
 }
 void PlatformTerminate()
 {
+	RestoreVideoSettings();
+
 	UnregisterClassA(kApplicationClassName, g_window.instance);
 	DestroyIcon(g_window.icon);
-}
-void PlatformAdjustVideoSettings()
-{
-	sht::Application * app = sht::Application::GetInstance();
-
-	g_window.current_state.style = WS_OVERLAPPEDWINDOW;
-	g_window.current_state.ex_style = WS_EX_APPWINDOW | WS_EX_DLGMODALFRAME;
-
-	g_window.current_state.rect.left = 0;
-	g_window.current_state.rect.top = 0;
-	g_window.current_state.rect.right = app->width();
-	g_window.current_state.rect.bottom = app->height();
-
-	if (app->fullscreen())	// Fullscreen Requested, Try Changing Video Modes
-	{
-		if (!PlatformWindowMakeFullscreen())
-		{
-			// Fullscreen Mode Failed.  Run In Windowed Mode Instead
-			MessageBox(HWND_DESKTOP, TEXT("Mode Switch Failed.\nRunning In Windowed Mode."), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
-		}
-		else	// Otherwise (If Fullscreen Mode Was Successful)
-		{
-			g_window.current_state.style = WS_POPUP;
-			g_window.current_state.ex_style |= WS_EX_TOPMOST;
-		}
-	}
-	else
-	{
-		// Adjust Window, Account For Window Borders
-		AdjustWindowRectEx(&g_window.current_state.rect, g_window.current_state.style, 0, g_window.current_state.ex_style);
-	}
-}
-void PlatformRestoreVideoSettings()
-{
-	sht::Application * app = sht::Application::GetInstance();
-	if (app->fullscreen())
-	{
-		ChangeDisplaySettingsA(NULL, 0);
-	}
 }
 bool PlatformWindowCreate()
 {

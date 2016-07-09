@@ -6,8 +6,6 @@
 
 bool PlatformInit();
 void PlatformTerminate();
-void PlatformAdjustVideoSettings();
-void PlatformRestoreVideoSettings();
 bool PlatformWindowCreate();
 void PlatformWindowDestroy();
 bool PlatformNeedQuit();

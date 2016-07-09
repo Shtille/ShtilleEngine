@@ -252,6 +252,14 @@ namespace sht {
 	{
 		return false;
 	}
+	const bool Application::IsResizable()
+	{
+		return false;
+	}
+	const bool Application::IsDecorated()
+	{
+		return true;
+	}
     void Application::OnChar(unsigned short code)
     {
     }
