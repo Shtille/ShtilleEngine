@@ -670,8 +670,6 @@ static bool CreateWindow()
             [g_window.object setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
     }
 
-    [g_window.object center];
-
     [g_window.object setTitle:[NSString stringWithUTF8String:app->GetTitle()]];
     [g_window.object setDelegate:g_window.delegate];
     [g_window.object setAcceptsMouseMovedEvents:YES];
@@ -731,6 +729,11 @@ bool PlatformWindowCreate()
     g_window.view = [[ShtilleEngineContentView alloc] init];
 
     [g_window.object setContentView:g_window.view];
+
+    // Create a fullscreen window initially
+    sht::Application * app = sht::Application::GetInstance();
+    if (app->fullscreen())
+        [g_window.object goFullscreen];
 
     return true;
 }
