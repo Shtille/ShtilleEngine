@@ -8,8 +8,6 @@ int MainWrapper(int argc, const char** argv)
 	if (!PlatformInit())
 		return 1;
 
-	PlatformAdjustVideoSettings();
-
 	if (!PlatformWindowCreate())
 	{
 		PlatformTerminate();
@@ -52,7 +50,6 @@ int MainWrapper(int argc, const char** argv)
 		PlatformWindowDestroy();
 	}
 
-	PlatformRestoreVideoSettings();
 	PlatformTerminate();
 
 	return 0;

@@ -515,5 +515,8 @@
     <ClInclude Include="..\..\..\..\sht\utility\include\camera.h">
       <Filter>sht\utility\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\platform\src\platform_inner.h">
+      <Filter>sht\platform\src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
