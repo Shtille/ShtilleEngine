@@ -20,6 +20,8 @@ void PlatformWindowTerminate();
 bool PlatformInitOpenGLContext(int color_bits, int depth_bits, int stencil_bits);
 void PlatformDeinitOpenGLContext();
 void PlatformSwapBuffers();
+void PlatformMakeContextCurrent();
+void PlatformSwapInterval(int interval);
 
 // Cursor functions
 void PlatformSetCursorPos(float x, float y);

@@ -225,10 +225,7 @@
     <ClCompile Include="..\..\..\..\sht\math\geometry\polygon.cpp">
       <Filter>sht\math\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\sht\platform\src\window_wrapper.cpp">
-      <Filter>sht\platform\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\sht\platform\src\windows\main_wrapper.cpp">
+    <ClCompile Include="..\..\..\..\sht\platform\src\main_wrapper.cpp">
       <Filter>sht\platform\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\sht\platform\src\windows\window_controller.cpp">
@@ -443,11 +440,8 @@
     <ClInclude Include="..\..\..\..\sht\platform\include\main_wrapper.h">
       <Filter>sht\platform\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\platform\include\window_wrapper.h">
+    <ClInclude Include="..\..\..\..\sht\platform\include\window_controller.h">
       <Filter>sht\platform\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\platform\src\window_controller_interface.h">
-      <Filter>sht\platform\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\platform\src\window_struct.h">
       <Filter>sht\platform\src</Filter>

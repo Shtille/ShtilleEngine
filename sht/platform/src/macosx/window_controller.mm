@@ -916,6 +916,15 @@ void PlatformSwapBuffers()
 {
     [g_window.context flushBuffer];
 }
+void PlatformMakeContextCurrent()
+{
+    [g_window.context makeCurrentContext];
+}
+void PlatformSwapInterval(int interval)
+{
+    GLint swapInt = (GLint)interval;
+    [g_window.context setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
+}
 void PlatformSetCursorPos(float x, float y)
 {
     const NSRect globalRect = [g_window.object convertRectToScreen:NSMakeRect(x, y, 0, 0)];

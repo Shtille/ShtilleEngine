@@ -1,4 +1,4 @@
-#include "../../window_wrapper.h"
+#include "../../include/window_controller.h"
 #include "../platform_inner.h"
 
 #include "../window_struct.h"
@@ -630,11 +630,6 @@ bool PlatformInitOpenGLContext(int color_bits, int depth_bits, int stencil_bits)
 		g_window.rc = temp_rc;
 	}
 
-	if (app->IsBenchmark() && WGLEW_EXT_swap_control)
-	{
-		wglSwapIntervalEXT(0);
-	}
-
 	return true;
 }
 void PlatformDeinitOpenGLContext()
@@ -654,6 +649,15 @@ void PlatformDeinitOpenGLContext()
 void PlatformSwapBuffers()
 {
 	SwapBuffers(g_window.dc);
+}
+void PlatformMakeContextCurrent()
+{
+	wglMakeCurrent(g_window.dc, g_window.rc);
+}
+void PlatformSwapInterval(int interval)
+{
+	if (WGLEW_EXT_swap_control)
+		wglSwapIntervalEXT(interval);
 }
 void PlatformSetCursorPos(float x, float y)
 {
@@ -716,7 +720,7 @@ std::string PlatformGetClipboardText()
 	GlobalUnlock(pText);
 	return string;
 }
-void PlatformChangeDirectoryToResourcesImpl()
+void PlatformChangeDirectoryToResources()
 {
 	char buffer[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, buffer);
