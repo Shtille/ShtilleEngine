@@ -107,7 +107,9 @@ namespace sht {
 				return Image::FileFormat::kTif;
 			return Image::FileFormat::kUnknown;
 		}
-		Image::Image() : pixels_(nullptr)
+		Image::Image()
+        : pixels_(nullptr)
+        , inverted_row_order_(true)
 		{
 		}
 		Image::~Image()

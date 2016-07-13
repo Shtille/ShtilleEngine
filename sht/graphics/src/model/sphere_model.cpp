@@ -27,7 +27,7 @@ namespace sht {
                 
                 for (u32 j = 0; j < loops_; ++j)
                 {
-                    float part_j = 1.0f - (float)j / (float)(loops_-1);
+                    float part_j = (float)j / (float)(loops_-1);
                     float aj = (math::kPi / (float)(loops_-1)) * (float)j;
                     float sin_aj = sinf(aj);
                     float cos_aj = cosf(aj);

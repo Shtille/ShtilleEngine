@@ -84,6 +84,7 @@ namespace sht {
 			int height_;		//!< height of the source image
 			int channels_;		//!< number of channels in image
 			int bpp_;			//!< number of BYTES per pixel
+            bool inverted_row_order_;
 		};
 
 	} // namespace graphics

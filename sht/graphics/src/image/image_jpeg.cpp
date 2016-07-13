@@ -103,7 +103,13 @@ namespace sht {
 				* Here the array is only one element long, but you could pass
 				* more than one scanline at a time if that's more convenient.
 				*/
-				row_pointer[0] = &pixels_[cinfo.next_scanline * row_stride];
+                if (inverted_row_order_)
+                {
+                    int row_number = cinfo.image_height - 1 - cinfo.next_scanline;
+                    row_pointer[0] = &pixels_[row_number * row_stride];
+                }
+                else // normal row order
+                    row_pointer[0] = &pixels_[cinfo.next_scanline * row_stride];
 				(void)jpeg_write_scanlines(&cinfo, row_pointer, 1);
 			}
 
@@ -261,7 +267,13 @@ namespace sht {
 			* loop counter, so that we don't have to keep track ourselves.
 			*/
 			while (cinfo.output_scanline < cinfo.output_height) {
-				rowptr[0] = pixels_ + row_stride * cinfo.output_scanline;
+                if (inverted_row_order_)
+                {
+                    int row_number = cinfo.output_height - 1 - cinfo.output_scanline;
+                    rowptr[0] = pixels_ + row_stride * row_number;
+                }
+                else // normal row order
+                    rowptr[0] = pixels_ + row_stride * cinfo.output_scanline;
 				/* jpeg_read_scanlines expects an array of pointers to scanlines.
 				* Here the array is only one element long, but you could ask for
 				* more than one scanline at a time if that's more convenient.

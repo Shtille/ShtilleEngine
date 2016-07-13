@@ -57,8 +57,16 @@ namespace sht {
 			// Use png_set_filler().
 			//png_set_filler(png, 0, PNG_FILLER_AFTER);
 			png_bytepp row_pointers = new png_bytep[height_];
-			for(int y = 0; y < height_; ++y)
-				row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+            if (inverted_row_order_)
+            {
+                for(int y = 0; y < height_; ++y)
+                    row_pointers[height_-1-y] = (png_bytep)&pixels_[y*width_*bpp_];
+            }
+            else // normal row order
+            {
+                for(int y = 0; y < height_; ++y)
+                    row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+            }
 
 			png_write_image(png, row_pointers);
 			png_write_end(png, NULL);
@@ -147,8 +155,17 @@ namespace sht {
 			pixels_ = new u8[image_size];
 			
 			png_bytepp row_pointers = new png_bytep[height_];
-			for(int y = 0; y < height_; ++y)
-				row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+            
+            if (inverted_row_order_)
+            {
+                for(int y = 0; y < height_; ++y)
+                    row_pointers[height_-1-y] = (png_bytep)&pixels_[y*width_*bpp_];
+            }
+            else // normal row order
+            {
+                for(int y = 0; y < height_; ++y)
+                    row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+            }
 
 			png_read_image(png, row_pointers);
 			
