@@ -478,58 +478,70 @@ namespace sht {
 			else
 			{
 				need_view_matrix_update_ = true;
-				// Camera interpolation
-				int curr_index = current_path_index_;
-				int next_index = current_path_index_ + 1;
-				if (next_index >= path_size && is_path_cycled_)
-					next_index = 0;
-				CameraID curr_cam_id = paths_[curr_index].camera_id;
-				CameraID next_cam_id = paths_[next_index].camera_id;
-				Camera * curr_camera = &cameras_[curr_cam_id];
-				Camera * next_camera = &cameras_[next_cam_id];
-
-				curr_camera->Update();
-				next_camera->Update();
-
-				f32 t = animation_time_ / paths_[next_index].interval;
-				quat orient;
-				quat::Slerp(*curr_camera->orientation_ptr_, *next_camera->orientation_ptr_, t, &orient);
-				vec3 pos;
-				if (paths_[next_index].is_target_oriented)
-				{
-					// Rotation around target position
-					assert(curr_camera->position_ptr_);
-					assert(curr_camera->target_position_ptr_);
-					assert(next_camera->target_position_ptr_);
-
-					vec3 direction = orient.Direction();
-					vec3 target_pos = *curr_camera->target_position_ptr_ +
-						(*next_camera->target_position_ptr_ - *curr_camera->target_position_ptr_) * t;
-					f32 distance = (*curr_camera->target_position_ptr_ - *curr_camera->position_ptr_).Length();
-					pos = target_pos - (direction * distance);
-				}
-				else
-				{
-					// Common case: interpolation between positions
-					pos = *curr_camera->position_ptr_ +
-						(*next_camera->position_ptr_ - *curr_camera->position_ptr_) * t;
-				}
-                if (curr_camera->is_target_position_ && next_camera->is_target_position_)
+                animation_time_ += sec; // increase time
+                int curr_index = current_path_index_;
+                int next_index = current_path_index_ + 1;
+                if (next_index >= path_size && is_path_cycled_)
+                    next_index = 0;
+                bool animation_finished = false;
+                if (animation_time_ >= paths_[next_index].interval)
                 {
-                    // Make target oriented but saving orientation
-                    MakeFreeTargeted(pos, orient, *curr_camera->target_position_ptr_);
+                    // Transfer is complete
+                    animation_time_ -= paths_[next_index].interval;
+                    // Move selection to the next interval
+                    current_path_index_ = next_index;
+                    curr_index = current_path_index_;
+                    next_index = current_path_index_ + 1;
+                    if (next_index >= path_size)
+                    {
+                        if (is_path_cycled_)
+                            next_index = 0;
+                        else
+                            animation_finished = true;
+                    }
                 }
-                else
-                    MakeFree(pos, orient);
+                if (!animation_finished)
+                {
+                    // Camera interpolation
+                    CameraID curr_cam_id = paths_[curr_index].camera_id;
+                    CameraID next_cam_id = paths_[next_index].camera_id;
+                    Camera * curr_camera = &cameras_[curr_cam_id];
+                    Camera * next_camera = &cameras_[next_cam_id];
 
-				animation_time_ += sec; // increase time
-				if (animation_time_ >= paths_[next_index].interval)
-				{
-					// Transfer is complete
-					animation_time_ -= paths_[next_index].interval;
-					// Move selection to the next interval
-					current_path_index_ = next_index;
-				}
+                    curr_camera->Update();
+                    next_camera->Update();
+
+                    f32 t = animation_time_ / paths_[next_index].interval;
+                    quat orient;
+                    quat::Slerp(*curr_camera->orientation_ptr_, *next_camera->orientation_ptr_, t, &orient);
+                    vec3 pos;
+                    if (paths_[next_index].is_target_oriented)
+                    {
+                        // Rotation around target position
+                        assert(curr_camera->position_ptr_);
+                        assert(curr_camera->target_position_ptr_);
+                        assert(next_camera->target_position_ptr_);
+
+                        vec3 direction = orient.Direction();
+                        vec3 target_pos = *curr_camera->target_position_ptr_ +
+                            (*next_camera->target_position_ptr_ - *curr_camera->target_position_ptr_) * t;
+                        f32 distance = (*curr_camera->target_position_ptr_ - *curr_camera->position_ptr_).Length();
+                        pos = target_pos - (direction * distance);
+                    }
+                    else
+                    {
+                        // Common case: interpolation between positions
+                        pos = *curr_camera->position_ptr_ +
+                            (*next_camera->position_ptr_ - *curr_camera->position_ptr_) * t;
+                    }
+                    if (curr_camera->is_target_position_ && next_camera->is_target_position_)
+                    {
+                        // Make target oriented but saving orientation
+                        MakeFreeTargeted(pos, orient, *curr_camera->target_position_ptr_);
+                    }
+                    else
+                        MakeFree(pos, orient);
+                }
 			}
 			if (need_view_matrix_update_ || manual_rotation_)
 			{
