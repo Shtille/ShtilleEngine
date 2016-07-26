@@ -11,6 +11,10 @@
 #include "../../../thirdparty/glew/include/GL/wglew.h" // Windows only
 #include <Windowsx.h> // for GET_X_LPARAM
 
+#ifndef WM_MOUSEHWHEEL // It isn't defined on MinGW platform
+#define WM_MOUSEHWHEEL 0x020E
+#endif
+
 namespace {
 	PlatformWindow g_window;
 	const char* kApplicationClassName = "ShtilleEngine";
