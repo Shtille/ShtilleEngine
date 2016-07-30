@@ -118,6 +118,12 @@
     <Filter Include="sht\geo\src">
       <UniqueIdentifier>{74a9655a-7664-4513-89c3-2ba63f115628}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sht\system\include\tasks">
+      <UniqueIdentifier>{9a027498-6599-496b-99e2-c69bc3d91a7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\system\src\tasks">
+      <UniqueIdentifier>{df85c46c-7e70-4fe6-8738-6f201559c37b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp">
@@ -293,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\sht\utility\src\camera.cpp">
       <Filter>sht\utility\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\system\src\tasks\service.cpp">
+      <Filter>sht\system\src\tasks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -517,6 +526,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\platform\src\platform_inner.h">
       <Filter>sht\platform\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\system\include\tasks\service.h">
+      <Filter>sht\system\include\tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\system\include\tasks\service_task.h">
+      <Filter>sht\system\include\tasks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

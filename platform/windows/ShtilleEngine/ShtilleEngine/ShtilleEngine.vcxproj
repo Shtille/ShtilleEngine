@@ -66,6 +66,7 @@
     <ClCompile Include="..\..\..\..\sht\system\src\stream\memory_stream.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\stream\stream.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\string\filename.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\tasks\service.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\time\scope_timer.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\time\update_timer.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\camera.cpp" />
@@ -142,6 +143,8 @@
     <ClInclude Include="..\..\..\..\sht\system\include\stream\memory_stream.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\stream\stream.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\string\filename.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\tasks\service.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\tasks\service_task.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\time\scope_timer.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\time\update_timer.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\camera.h" />
