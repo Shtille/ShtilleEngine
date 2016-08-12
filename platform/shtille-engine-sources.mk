@@ -39,6 +39,7 @@ SOURCES ?= \
 	$(SHT_PATH)/utility/src/console.cpp \
 	$(SHT_PATH)/utility/src/crypt.cpp \
 	$(SHT_PATH)/utility/src/camera.cpp \
+	$(SHT_PATH)/utility/src/curl_wrapper.cpp \
     $(SHT_PATH)/platform/src/main_wrapper.cpp \
     $(SHT_PATH)/platform/src/windows/window_controller.cpp \
 	$(SHT_PATH)/math/frustum.cpp \
@@ -64,4 +65,5 @@ INCLUDE = \
     -I$(SHT_PATH)/thirdparty/libjpeg/src \
 	-I$(SHT_PATH)/thirdparty/libpng/include \
     -I$(SHT_PATH)/thirdparty/libpng/src \
-    -I$(SHT_PATH)/thirdparty/freetype/include
+    -I$(SHT_PATH)/thirdparty/freetype/include \
+    -I$(SHT_PATH)/thirdparty/libcurl/include
