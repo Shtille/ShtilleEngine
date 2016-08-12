@@ -1,5 +1,5 @@
 #include "../../include/tasks/service.h"
-#include "../../include/tasks/service_task.h"
+#include "../../include/tasks/service_task_interface.h"
 
 #include <chrono>
 
@@ -52,7 +52,7 @@ namespace sht {
 			volatile bool finishing = false;
 			for (;;)
 			{
-				ServiceTask * task = nullptr;
+				ServiceTaskInterface * task = nullptr;
 				{//---
 					std::lock_guard<std::mutex> guard(mutex_);
 					finishing = finishing_;

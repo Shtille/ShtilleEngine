@@ -9,7 +9,7 @@
 namespace sht {
 	namespace system {
 
-		class ServiceTask;
+		class ServiceTaskInterface;
 
 		//! Service class
 		class Service {
@@ -27,7 +27,7 @@ namespace sht {
 
 			std::mutex mutex_;
 			std::thread * thread_;
-			std::list<ServiceTask*> tasks_;
+			std::list<ServiceTaskInterface*> tasks_;
 			bool finishing_;
 
 		private:
