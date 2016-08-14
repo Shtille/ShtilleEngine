@@ -69,6 +69,10 @@ namespace sht {
 			//static const int origins[3] = {SEEK_SET, SEEK_CUR, SEEK_END};
 			fseek(file_, offset, (int)origin);
 		}
+		long FileStream::Tell()
+		{
+			return ftell(file_);
+		}
 		void FileStream::Rewind()
 		{
 			fseek(file_, 0, SEEK_SET);

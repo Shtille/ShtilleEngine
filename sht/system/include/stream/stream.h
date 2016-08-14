@@ -2,6 +2,8 @@
 #ifndef __SHT_SYSTEM_STREAM_STREAM_H__
 #define __SHT_SYSTEM_STREAM_STREAM_H__
 
+#include "../../../common/non_copyable.h"
+
 #include <stddef.h>
 
 namespace sht {
@@ -26,7 +28,7 @@ namespace sht {
 		};
 
 		//! Stream base class
-		class Stream {
+		class Stream : public NonCopyable {
 		public:
 			virtual ~Stream();
 
@@ -43,6 +45,10 @@ namespace sht {
 			// Stream positioning
 			virtual bool Eof() = 0;
 			virtual void Seek(long offset, StreamOffsetOrigin origin) = 0;
+			virtual void OffsetFromBeginning(long offset) = 0;
+			virtual void OffsetFromCurrent(long offset) = 0;
+			virtual void OffsetFromEnd(long offset) = 0;
+			virtual long Tell() = 0;
 			virtual void Rewind() = 0;
 			virtual size_t Length() = 0;
 

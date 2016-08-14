@@ -3,7 +3,7 @@
 #define __SHT_SYSTEM_STREAM_FILE_STREAM_H__
 
 #include "stream.h"
-#include "../../../common/platform.h"
+
 #include <stdio.h> // for FILE
 
 namespace sht {
@@ -23,18 +23,14 @@ namespace sht {
 
 			bool Eof();
 			void Seek(long offset, StreamOffsetOrigin origin);
+			long Tell();
 			void Rewind();
 			size_t Length(); //!< Obtain file size, up to 2Gb (long max)
             
             FILE * GetFilePointer();
 
-		private:
-			//! Object copying is not allowed
-			FileStream(const FileStream&) {}
-			void operator = (const FileStream&) {}
-
-		private:
-			FILE *file_;
+		protected:
+			FILE * file_;
 		};
 
 	} // namespace system

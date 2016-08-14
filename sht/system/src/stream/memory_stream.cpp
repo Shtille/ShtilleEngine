@@ -81,6 +81,10 @@ namespace sht {
 				break;
 			}
 		}
+		long MemoryStream::Tell()
+		{
+			return static_cast<long>(ptr_ - buffer_);
+		}
 		void MemoryStream::Rewind()
 		{
 			ptr_ = buffer_;

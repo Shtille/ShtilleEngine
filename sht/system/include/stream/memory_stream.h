@@ -21,10 +21,11 @@ namespace sht {
 
 			bool Eof();
 			void Seek(long offset, StreamOffsetOrigin origin);
+			long Tell();
 			void Rewind();
 			size_t Length(); //!< Obtain file size, up to 2Gb (long max)
 
-		private:
+		protected:
 			size_t size_;	//!< buffer size
 			char *buffer_;	//!< beginning of the buffer
 			char *ptr_;		//!< pointer to the current position

@@ -17,11 +17,6 @@ namespace sht {
 			// Make some functions public
 			using Stream::WriteLine;
             using Stream::PrintString;
-
-		private:
-			//! Object copying is not allowed
-            ScopeLogStream(const ScopeLogStream&) = delete;
-            void operator = (const ScopeLogStream&) = delete;
 		};
         
         //! Unique logging class
@@ -39,10 +34,7 @@ namespace sht {
                 bool opened = Open(filename, StreamAccess::kWriteText);
                 assert(opened);
             }
-            virtual ~UniqueLogStream() {}
-            //! Object copying is not allowed
-            UniqueLogStream(const UniqueLogStream&) = delete;
-            void operator = (const UniqueLogStream&) = delete;
+            virtual ~UniqueLogStream() = default;
         };
         
         // Common logging class
