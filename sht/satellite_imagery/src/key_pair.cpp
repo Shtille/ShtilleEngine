@@ -6,7 +6,7 @@ namespace sht {
         KeyPair::KeyPair()
         {
         }
-        KeyPair::KeyPair(const RawKey& key)
+        KeyPair::KeyPair(const DataKey& key)
             : first(key)
             , second()
         {

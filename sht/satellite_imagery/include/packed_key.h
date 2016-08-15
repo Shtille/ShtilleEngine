@@ -2,6 +2,8 @@
 #ifndef __SHT_SATELLITE_IMAGERY_PACKED_KEY_H__
 #define __SHT_SATELLITE_IMAGERY_PACKED_KEY_H__
 
+#include <cstdint>
+
 namespace sht {
 	namespace satellite_imagery {
 
@@ -11,7 +13,7 @@ namespace sht {
 		//! Packed tile key class
 		class PackedKey {
 		public:
-			typedef unsigned long long HashType;
+			typedef uint64_t HashType;
 
 			PackedKey();
 			PackedKey(const PackedKey& other);
@@ -23,6 +25,9 @@ namespace sht {
 			int x() const;
 			int y() const;
 			int z() const;
+
+			PackedKey& operator =(const PackedKey& other);
+			PackedKey& operator =(const RawKey& other);
 
 			friend bool operator == (const PackedKey& lhs, const PackedKey& rhs);
 			friend bool operator <  (const PackedKey& lhs, const PackedKey& rhs);

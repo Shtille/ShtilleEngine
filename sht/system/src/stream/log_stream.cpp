@@ -1,5 +1,7 @@
 #include "../../include/stream/log_stream.h"
 
+#include <assert.h>
+
 namespace sht {
 	namespace system {
 

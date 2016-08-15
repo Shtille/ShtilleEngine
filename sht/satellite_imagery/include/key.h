@@ -5,4 +5,7 @@
 #include "raw_key.h"
 #include "packed_key.h"
 
+// Choose our main key type
+typedef PackedKey DataKey;
+
 #endif

@@ -22,6 +22,9 @@ namespace sht {
 			int y() const;
 			int z() const;
 
+			RawKey& operator =(const RawKey& other);
+			RawKey& operator =(const PackedKey& other);
+
 			friend bool operator == (const RawKey& lhs, const RawKey& rhs);
 			friend bool operator <  (const RawKey& lhs, const RawKey& rhs);
 

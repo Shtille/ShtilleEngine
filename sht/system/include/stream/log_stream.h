@@ -37,7 +37,7 @@ namespace sht {
             virtual ~UniqueLogStream() = default;
         };
         
-        // Common logging class
+        //! Common logging class
         class CommonLogStream : public UniqueLogStream<CommonLogStream> {
             friend class Singleton<CommonLogStream>;
         public:
@@ -50,7 +50,7 @@ namespace sht {
             virtual ~CommonLogStream() = default;
         };
 
-		// Error logging class
+		//! Error logging class
 		class ErrorLogStream : public UniqueLogStream<ErrorLogStream> {
 			friend class Singleton<ErrorLogStream>;
 		public:
@@ -65,5 +65,9 @@ namespace sht {
 
 	} // namespace system
 } // namespace sht
+
+// Useful defines
+#define LOG_INFO sht::system::CommonLogStream::GetInstance()->PrintString
+#define LOG_ERROR sht::system::ErrorLogStream::GetInstance()->PrintString
 
 #endif

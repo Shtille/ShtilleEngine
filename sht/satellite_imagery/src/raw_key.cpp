@@ -43,6 +43,20 @@ namespace sht {
 		{
 			return z_;
 		}
+		RawKey& RawKey::operator =(const RawKey& other)
+		{
+			x_ = other.x();
+			y_ = other.y();
+			z_ = other.z();
+			return *this;
+		}
+		RawKey& RawKey::operator =(const PackedKey& other)
+		{
+			x_ = other.x();
+			y_ = other.y();
+			z_ = other.z();
+			return *this;
+		}
 		bool operator == (const RawKey& lhs, const RawKey& rhs)
 		{
 			return (lhs.z_ == rhs.z_) && (lhs.x_ == rhs.x_) && (lhs.y_ == rhs.y_);

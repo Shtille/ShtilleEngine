@@ -15,11 +15,11 @@ namespace sht {
 
 #pragma pack(push, 1)
         struct KeyPair {
-            RawKey first;
+            DataKey first;
             DataInfo second;
 
             KeyPair();
-            KeyPair(const RawKey& key); // implicit c-tor
+            KeyPair(const DataKey& key); // implicit c-tor
             KeyPair(const StoredKeyPair& stored_pair, FileOffsetType key_offset);
         };
         struct StoredKeyPair {

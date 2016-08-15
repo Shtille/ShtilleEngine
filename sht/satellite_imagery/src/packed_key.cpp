@@ -53,6 +53,16 @@ namespace sht {
 		{
 			return static_cast<int>((hash_ & kZMask) >> kZShift) - 1;
 		}
+		PackedKey& operator =(const PackedKey& other)
+		{
+			Set(other.x(), other.y(), other.z());
+			return *this;
+		}
+		PackedKey& operator =(const RawKey& other)
+		{
+			Set(other.x(), other.y(), other.z());
+			return *this;
+		}
 		bool operator == (const PackedKey& lhs, const PackedKey& rhs)
 		{
 			return lhs.hash_ == rhs.hash_;
