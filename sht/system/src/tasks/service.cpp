@@ -47,6 +47,11 @@ namespace sht {
 				tasks_.pop_front();
 			}
 		}
+		void Service::AddTask(ServiceTaskInterface * task)
+		{
+			std::lock_guard<std::mutex> guard(mutex_);
+			tasks_.push_back(task);
+		}
 		void Service::ThreadFunc()
 		{
 			volatile bool finishing = false;

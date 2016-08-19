@@ -50,7 +50,7 @@ namespace sht {
             bool is_pan_mode_; //!< is pan mode enabled
 		};
 
-	}
-}
+	} // namespace geo
+} // namespace sht
 
 #endif

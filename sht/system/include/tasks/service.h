@@ -21,6 +21,7 @@ namespace sht {
 			void StopService();
 
 			void ClearTasks();
+			void AddTask(ServiceTaskInterface * task);
 
 		protected:
 			virtual void ThreadFunc();
