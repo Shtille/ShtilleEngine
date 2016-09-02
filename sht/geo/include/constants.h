@@ -14,7 +14,7 @@ namespace sht {
         const float kEarthCloudsRadius = kEarthRadius + kEarthCloudsHeight;
         const math::Vector3 kEarthPosition = math::Vector3(0.0f, 0.0f, 0.0f);
 
-	}
-}
+	} // namespace geo
+} // namespace sht
 
 #endif
