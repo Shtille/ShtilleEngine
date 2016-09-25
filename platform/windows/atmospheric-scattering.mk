@@ -4,7 +4,7 @@
 SHT_PATH = ../../sht
 SHT_BIN = ../../bin
 
-SRC_DIRS = ../../apps/ShtilleEarth
+SRC_DIRS = ../../apps/AtmosphericScattering
 SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 INCLUDE = -I$(SHT_PATH)
@@ -14,7 +14,7 @@ CFLAGS = -g -Wall -std=c++11
 CFLAGS += $(INCLUDE)
 LDFLAGS = -s -mwindows
 OBJECTS = $(SRC_FILES:.cpp=.o)
-TARGET = ShtilleEarth
+TARGET = AtmosphericScattering
 TARGET_PATH = ..\..\bin
 EXECUTABLE = $(TARGET).exe
 

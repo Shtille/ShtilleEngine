@@ -590,8 +590,8 @@
 		529AB7C31B12142C00505715 /* frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frustum.h; sourceTree = "<group>"; };
 		52A3F4631B70FC3C004B433D /* tetrahedron_model.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tetrahedron_model.h; path = model/tetrahedron_model.h; sourceTree = "<group>"; };
 		52A3F4641B70FC49004B433D /* tetrahedron_model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tetrahedron_model.cpp; path = model/tetrahedron_model.cpp; sourceTree = "<group>"; };
-		52AC3AA21C8AF79900CDECC8 /* shtille_earth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = shtille_earth.cpp; path = ../../../ShtilleEarth/shtille_earth.cpp; sourceTree = "<group>"; };
-		52BA7F2C1B03FC6900E39529 /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Source.cpp; path = ../../../TestProject/Source.cpp; sourceTree = "<group>"; };
+		52AC3AA21C8AF79900CDECC8 /* shtille_earth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = shtille_earth.cpp; path = ../../../apps/ShtilleEarth/shtille_earth.cpp; sourceTree = "<group>"; };
+		52BA7F2C1B03FC6900E39529 /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Source.cpp; path = ../../../apps/TestProject/Source.cpp; sourceTree = "<group>"; };
 		52BA7F331B04005200E39529 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		52C4D96B1C26E0AB008291DD /* scope_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scope_timer.h; path = time/scope_timer.h; sourceTree = "<group>"; };
 		52C4D96C1C26E0AB008291DD /* update_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = update_timer.h; path = time/update_timer.h; sourceTree = "<group>"; };

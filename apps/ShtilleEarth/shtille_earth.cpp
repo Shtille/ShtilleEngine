@@ -1,10 +1,10 @@
-#include "../sht/include/sht.h"
-#include "../sht/graphics/include/model/sphere_model.h"
-#include "../sht/graphics/include/renderer/text.h"
-#include "../sht/utility/include/console.h"
-#include "../sht/utility/include/camera.h"
-#include "../sht/geo/include/constants.h"
-#include "../sht/geo/include/planet_navigation.h"
+#include "../../sht/include/sht.h"
+#include "../../sht/graphics/include/model/sphere_model.h"
+#include "../../sht/graphics/include/renderer/text.h"
+#include "../../sht/utility/include/console.h"
+#include "../../sht/utility/include/camera.h"
+#include "../../sht/geo/include/constants.h"
+#include "../../sht/geo/include/planet_navigation.h"
 #include <cmath>
 
 namespace {

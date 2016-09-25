@@ -8,6 +8,7 @@
 namespace sht {
 	namespace graphics {
 		class Renderer;
+		class Shader;
 	}
 }
 
@@ -22,7 +23,8 @@ namespace sht {
 		class PlanetCube final : public NonCopyable {
 			friend class PlanetTreeNode;
 		public:
-			PlanetCube(graphics::Renderer * renderer, utility::CameraManager * camera);
+			PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
+				utility::CameraManager * camera);
 			~PlanetCube();
 
 			//! Data video memory objects creation and other things that may fail
@@ -34,6 +36,7 @@ namespace sht {
 			static math::Matrix3 GetFaceTransform(int face);
 
 		private:
+			graphics::Shader * shader_;
 			utility::CameraManager * camera_;
 
 			static constexpr int kNumFaces = 6;

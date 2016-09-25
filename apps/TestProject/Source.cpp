@@ -1,10 +1,10 @@
-#include "../sht/include/sht.h"
-#include "../sht/graphics/include/image/image.h"
-#include "../sht/graphics/include/model/cube_model.h"
-#include "../sht/graphics/include/model/tetrahedron_model.h"
-#include "../sht/graphics/include/model/sphere_model.h"
-#include "../sht/graphics/include/renderer/text.h"
-#include "../sht/utility/include/console.h"
+#include "../../sht/include/sht.h"
+#include "../../sht/graphics/include/image/image.h"
+#include "../../sht/graphics/include/model/cube_model.h"
+#include "../../sht/graphics/include/model/tetrahedron_model.h"
+#include "../../sht/graphics/include/model/sphere_model.h"
+#include "../../sht/graphics/include/renderer/text.h"
+#include "../../sht/utility/include/console.h"
 #include <cmath>
 
 class UserApp : public sht::OpenGlApplication 

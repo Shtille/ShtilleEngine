@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\apps\TestProject\Source.cpp">
+    <ClCompile Include="..\..\..\..\apps\AtmosphericScattering\atmospheric_scattering.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

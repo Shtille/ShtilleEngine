@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\ShtilleEarth\Source.cpp">
+    <ClCompile Include="..\..\..\..\apps\ShtilleEarth\Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

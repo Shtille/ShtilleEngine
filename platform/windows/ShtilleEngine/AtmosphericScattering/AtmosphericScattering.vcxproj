@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9FA10E8A-55F7-4D66-96F8-D63562F14F19}</ProjectGuid>
-    <RootNamespace>ShtilleEarth</RootNamespace>
+    <ProjectGuid>{72EE3DCF-20F5-48BD-BB23-6CA95271F98A}</ProjectGuid>
+    <RootNamespace>AtmosphericScattering</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\apps\ShtilleEarth\shtille_earth.cpp" />
+    <ClCompile Include="..\..\..\..\apps\AtmosphericScattering\atmospheric_scattering.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

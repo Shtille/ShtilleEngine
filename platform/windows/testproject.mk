@@ -4,7 +4,8 @@
 SHT_PATH = ../../sht
 SHT_BIN = ../../bin
 
-SOURCES = ../../TestProject/Source.cpp
+SRC_DIRS = ../../apps/TestProject
+SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 INCLUDE = -I$(SHT_PATH)
 
@@ -12,7 +13,7 @@ CC = g++
 CFLAGS = -g -Wall -std=c++11
 CFLAGS += $(INCLUDE)
 LDFLAGS = -s -mwindows
-OBJECTS = $(SOURCES:.cpp=.o)
+OBJECTS = $(SRC_FILES:.cpp=.o)
 TARGET = TestProject
 TARGET_PATH = ..\..\bin
 EXECUTABLE = $(TARGET).exe
@@ -23,7 +24,7 @@ LIBRARIES = \
         -lglew -lopengl32 \
         -lfreetype -ljpeg -lpng -lz
 
-all: $(SOURCES) $(EXECUTABLE)
+all: $(SRC_FILES) $(EXECUTABLE)
 	echo All is done!
 	
 $(EXECUTABLE): $(OBJECTS)

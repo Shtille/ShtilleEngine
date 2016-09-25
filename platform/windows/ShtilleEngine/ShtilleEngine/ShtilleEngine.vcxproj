@@ -21,7 +21,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp" />
     <ClCompile Include="..\..\..\..\sht\application\opengl\opengl_application.cpp" />
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_cube.cpp" />
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_navigation.cpp" />
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_tile_mesh.cpp" />
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_tree.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_bmp.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_hdr.cpp" />
@@ -94,6 +97,9 @@
     <ClInclude Include="..\..\..\..\sht\containers\sht_vector.h" />
     <ClInclude Include="..\..\..\..\sht\geo\include\constants.h" />
     <ClInclude Include="..\..\..\..\sht\geo\include\planet_navigation.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_cube.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_tile_mesh.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_tree.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\image\image.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\cube_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\model.h" />

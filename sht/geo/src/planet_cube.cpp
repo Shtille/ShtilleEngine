@@ -5,8 +5,10 @@
 namespace sht {
 	namespace geo {
 
-		PlanetCube::PlanetCube(graphics::Renderer * renderer, utility::CameraManager * camera)
-			: camera_(camera)
+		PlanetCube::PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
+			utility::CameraManager * camera)
+			: shader_(shader)
+			, camera_(camera)
 			, grid_size_(17)
 		{
 			for (int i = 0; i < kNumFaces; ++i)
