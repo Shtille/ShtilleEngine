@@ -1,6 +1,8 @@
 #include "planet_tree.h"
 #include "planet_tile_mesh.h"
-#include "planet_cube.h"
+#include "../include/planet_cube.h"
+#include "../include/constants.h"
+#include "../../graphics/include/renderer/shader.h"
 
 namespace sht {
 	namespace geo {
@@ -19,6 +21,7 @@ namespace sht {
 		}
 		void PlanetTreeNode::Render()
 		{
+			graphics::Shader * shader = owner_->cube_->shader_;
 			// Update LOD params (renderable->setFrameOfReference)
 
 			// Calculate scales, offsets for tile position on cube face.
@@ -42,6 +45,12 @@ namespace sht {
 			// bind skirt_height = (1 - cos(angle)) * 1.4f * mPlanetRadius;
 
 			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(owner_->face_);
+			shader->Uniform4f("u_stuv_scale", inv_scale, inv_scale, 1.0f, 1.0f);
+			shader->Uniform4f("u_stuv_position", position_x, position_y, 0.0f, 0.0f);
+			//shader->Uniform1f("u_planet_height", 0.0f);
+			shader->Uniform1f("u_skirt_height", 0.0f);
+			shader->UniformMatrix3fv("u_face_transform", face_transform);
+
 			// Bind face_transform here
 			owner_->cube_->tile_->Render();
 		}

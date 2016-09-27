@@ -24,7 +24,7 @@ namespace sht {
 			friend class PlanetTreeNode;
 		public:
 			PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
-				utility::CameraManager * camera);
+				utility::CameraManager * camera, float radius);
 			~PlanetCube();
 
 			//! Data video memory objects creation and other things that may fail
@@ -32,6 +32,8 @@ namespace sht {
 
 			void Update();
 			void Render();
+
+			const float radius() const;
 
 			static math::Matrix3 GetFaceTransform(int face);
 
@@ -43,6 +45,7 @@ namespace sht {
 			PlanetTree * faces_[kNumFaces];
 
 			const int grid_size_;
+			const float radius_; //!< planet radius
 			PlanetTileMesh * tile_;
 		};
 

@@ -542,14 +542,14 @@
     <ClInclude Include="..\..\..\..\sht\system\include\tasks\service_task.h">
       <Filter>sht\system\include\tasks</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\geo\src\planet_cube.h">
-      <Filter>sht\geo\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_tile_mesh.h">
       <Filter>sht\geo\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_tree.h">
       <Filter>sht\geo\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\include\planet_cube.h">
+      <Filter>sht\geo\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -504,7 +504,8 @@ namespace sht {
 			ray_eye.z = -1.0f;
 			ray_eye.w = 0.0f;
 			// Step 4: 4d World Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
-			ray = (view.GetInverse() * ray_eye).xyz();
+			//ray = (view.GetInverse() * ray_eye).xyz();
+			ray = view.GetInverse().TransformVector(ray_eye.xyz());
 			ray.Normalize();
 		}
         bool RaySphereIntersection(const Vector3& origin, const Vector3& direction, const Vector3& center, float radius, Vector3& intersection)

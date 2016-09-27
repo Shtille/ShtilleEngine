@@ -1,12 +1,14 @@
 #version 330 core
 
+uniform mat4 u_projection_view_model;
+
 uniform vec4  u_stuv_scale;
 uniform vec4  u_stuv_position;
 uniform float u_planet_radius;
 uniform float u_planet_height;
 uniform float u_skirt_height;
 
-uniform highp mat3 u_face_transform;
+uniform mat3 u_face_transform;
 
 layout(location = 0) in vec3 a_position;
 
@@ -23,7 +25,7 @@ void main()
 	float skirt_height = a_position.z * u_skirt_height;
 	vec3 sphere_point = face_point * (u_planet_radius + height + skirt_height);
     
-	gl_Position = gl_ModelViewProjectionMatrix * vec4(sphere_point, 1.0);
+	gl_Position = u_projection_view_model * vec4(sphere_point, 1.0);
 
 	v_texcoord = stuv_point.zw;
 }

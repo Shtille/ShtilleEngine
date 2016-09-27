@@ -5,6 +5,8 @@
 #include "../../sht/utility/include/camera.h"
 #include "../../sht/geo/include/constants.h"
 #include "../../sht/geo/include/planet_navigation.h"
+#include "../../sht/geo/include/planet_cube.h"
+
 #include <cmath>
 
 namespace {
@@ -24,7 +26,8 @@ class ShtilleEarthApp : public sht::OpenGlApplication
 {
 public:
     ShtilleEarthApp()
-    : sphere_(nullptr)
+    : planet_(nullptr)
+	, sphere_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, console_(nullptr)
@@ -104,6 +107,11 @@ public:
         sky_shader_->Uniform1f("u_g", g);
         sky_shader_->Uniform1f("u_g2", g * g);
         sky_shader_->Unbind();
+
+		planet_shader_->Bind();
+		planet_shader_->Uniform1f("u_planet_radius", planet_->radius());
+		planet_shader_->Uniform1i("u_texture", 0);
+		planet_shader_->Unbind();
 	}
 	void BindShaderVariables()
 	{
@@ -147,6 +155,7 @@ public:
         if (!renderer_->AddShader(ground_shader_, "data/shaders/atmosphere/ground", attribs, _countof(attribs))) return false;
         if (!renderer_->AddShader(clouds_shader_, "data/shaders/atmosphere/clouds", attribs, _countof(attribs))) return false;
 		if (!renderer_->AddShader(sky_shader_, "data/shaders/atmosphere/sky", attribs, _countof(attribs))) return false;
+		if (!renderer_->AddShader(planet_shader_, "data/shaders/planet/planet_tile", attribs, 1)) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
         
@@ -173,6 +182,10 @@ public:
         
         planet_navigation_ = new sht::geo::PlanetNavigation(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
 
+		planet_ = new sht::geo::PlanetCube(renderer_, planet_shader_, camera_manager_, sht::geo::kEarthRadius);
+		if (!planet_->Initialize())
+			return false;
+
 		// Finally bind constants
 		BindShaderConstants();
         
@@ -180,6 +193,8 @@ public:
     }
     void Unload() final
     {
+		if (planet_)
+			delete planet_;
         if (planet_navigation_)
             delete planet_navigation_;
         if (camera_manager_)
@@ -270,6 +285,27 @@ public:
         
         renderer_->CullFace(sht::graphics::CullFaceType::kBack);
     }
+	void RenderPlanetCube()
+	{
+		renderer_->PushMatrix();
+		renderer_->Translate(kEarthPosition);
+
+		// Model matrix should be taken after all transforms took place
+		sht::math::Matrix4 mvp = projection_view_matrix_ * renderer_->model_matrix();
+
+		planet_shader_->Bind();
+		planet_shader_->UniformMatrix4fv("u_projection_view_model", mvp);
+
+		renderer_->ChangeTexture(earth_texture_, 0);
+
+		planet_->Render();
+
+		renderer_->ChangeTexture(nullptr, 0);
+
+		planet_shader_->Unbind();
+
+		renderer_->PopMatrix();
+	}
     void RenderInterface()
     {
         renderer_->DisableDepthTest();
@@ -293,9 +329,10 @@ public:
         renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
-        RenderGround();
-        RenderSky();
-        RenderClouds();
+        //RenderGround();
+        //RenderSky();
+        //RenderClouds();
+		RenderPlanetCube();
 
         RenderInterface();
     }
@@ -395,10 +432,12 @@ public:
     }
     
 private:
+	sht::geo::PlanetCube * planet_;
     sht::graphics::Model * sphere_;
     sht::graphics::Shader * ground_shader_;
     sht::graphics::Shader * clouds_shader_;
 	sht::graphics::Shader * sky_shader_;
+	sht::graphics::Shader * planet_shader_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
     sht::graphics::Texture * earth_texture_;
