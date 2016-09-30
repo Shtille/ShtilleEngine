@@ -14,19 +14,55 @@ namespace sht {
 
 		//! Planet tree node class
 		class PlanetTreeNode : public NonCopyable {
+			friend class PlanetCube;
+			friend class PlanetTreeNodeCompareLastOpened;
 		public:
+			enum Slot { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
+
 			explicit PlanetTreeNode(PlanetTree * tree);
 			virtual ~PlanetTreeNode();
 
-			void Render();
+			const float GetPriority() const;
+
+			bool IsSplit();
+
+			void AttachChild(PlanetTreeNode * child, int position);
+			void DetachChild(int position);
+
+			void PropagateLodDistances();
+
+			bool PrepareMapTile(/*PlanetMap* map*/);
+			void CreateMapTile(/*PlanetMap* map*/);
+			void DestroyMapTile();
+
+			void CreateRenderable(/*PlanetMapTile* map*/);
+			void DestroyRenderable();
+
+			bool WillRender();
+			int Render();
 
 		private:
 			PlanetTree * owner_; //!< owner face tree
+			//PlanetMapTile* mMapTile;
+			//PlanetRenderable* mRenderable;
 			int lod_; //!< level of detail
 			int x_;
 			int y_;
 
-			// Temporary not available
+			int last_rendered_;
+			int last_opened_;
+
+			bool has_children_;
+			bool page_out_;
+			bool has_renderable_;
+
+			bool request_page_out_;
+			bool request_map_tile_;
+			bool request_renderable_;
+			bool request_split_;
+			bool request_merge_;
+
+			int parent_slot_;
 			static constexpr int kNumChildren = 4;
 			PlanetTreeNode * parent_;
 			PlanetTreeNode * children_[kNumChildren];
@@ -39,13 +75,20 @@ namespace sht {
 			explicit PlanetTree(PlanetCube * cube, int face);
 			virtual ~PlanetTree();
 
-			void Update();
 			void Render();
 
 		private:
 			PlanetCube * cube_;
 			PlanetTreeNode * root_;
 			int face_;
+		};
+
+		// Quadtree node comparison for LOD age.
+		class PlanetTreeNodeCompareLastOpened {
+		public:
+			bool operator()(const PlanetTreeNode* a, const PlanetTreeNode* b) const {
+				return (a->last_opened_ > b->last_opened_);
+			}
 		};
 
 	} // namespace geo

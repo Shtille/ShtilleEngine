@@ -160,7 +160,7 @@ public:
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
         
 		// Load textures
-        if (!renderer_->AddTexture(earth_texture_, "data/textures/earth.jpg",
+        if (!renderer_->AddTexture(earth_texture_, "data/textures/chess.jpg",
                                    sht::graphics::Texture::Wrap::kClampToEdge,
                                    sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
         if (!renderer_->AddTexture(clouds_texture_, "data/textures/clouds.jpg",
