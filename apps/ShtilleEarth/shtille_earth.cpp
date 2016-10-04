@@ -186,6 +186,8 @@ public:
 		if (!planet_->Initialize())
 			return false;
 
+		planet_->SetParameters(0.7853981f/*fovy*/, height_);
+
 		// Finally bind constants
 		BindShaderConstants();
         
@@ -220,6 +222,8 @@ public:
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
         UpdateProjectionMatrix();
         projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+
+		planet_->Update();
 
 		BindShaderVariables();
     }
@@ -298,7 +302,9 @@ public:
 
 		renderer_->ChangeTexture(earth_texture_, 0);
 
+		//renderer_->EnableWireframeMode();
 		planet_->Render();
+		//renderer_->DisableWireframeMode();
 
 		renderer_->ChangeTexture(nullptr, 0);
 

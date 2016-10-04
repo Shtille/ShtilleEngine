@@ -115,6 +115,9 @@ namespace sht {
 			void Normalize();
 			Vector3 GetNormalized() const;
 
+			void MakeFloor(const Vector3& other);
+			void MakeCeil(const Vector3& other);
+
 			float x, y, z;
 		};
 

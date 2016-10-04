@@ -2,6 +2,8 @@
 #ifndef __SHT_GEO_PLANET_CUBE_H__
 #define __SHT_GEO_PLANET_CUBE_H__
 
+#include "../src/planet_tree.h"
+
 #include "../../common/non_copyable.h"
 #include "../../utility/include/camera.h"
 
@@ -20,8 +22,9 @@ namespace sht {
 	namespace geo {
 
 		// Forward declarations
-		class PlanetTree;
 		class PlanetTileMesh;
+		class PlanetMap;
+		class PlanetMapTile;
 
 		struct LodParams {
 			int limit;
@@ -42,6 +45,7 @@ namespace sht {
 		//! Planet rendering class
 		class PlanetCube final : public NonCopyable {
 			friend class PlanetTreeNode;
+			friend class PlanetRenderable;
 
 			enum {
 				REQUEST_RENDERABLE,
@@ -80,6 +84,7 @@ namespace sht {
 			void Render();
 
 			const float radius() const;
+			const int grid_size() const;
 
 			const int GetLodLimit() const;
 			const int GetTextureSize() const;
@@ -102,7 +107,7 @@ namespace sht {
 			bool HandleMerge(PlanetTreeNode* node);
 
 			void PruneTree();
-			void RefreshMapTile(PlanetTreeNode* node/*, PlanetMapTile* tile*/);
+			void RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile);
 
 		private:
 			graphics::Shader * shader_;
@@ -114,6 +119,7 @@ namespace sht {
 			const int grid_size_;
 			const float radius_; //!< planet radius
 			PlanetTileMesh * tile_;
+			PlanetMap * map_;
 
 			RequestQueue inline_requests_;
 			RequestQueue render_requests_;

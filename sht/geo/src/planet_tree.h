@@ -11,10 +11,14 @@ namespace sht {
 		// Forward declarations
 		class PlanetTree;
 		class PlanetCube;
+		class PlanetMap;
+		class PlanetMapTile;
+		class PlanetRenderable;
 
 		//! Planet tree node class
 		class PlanetTreeNode : public NonCopyable {
 			friend class PlanetCube;
+			friend class PlanetRenderable;
 			friend class PlanetTreeNodeCompareLastOpened;
 		public:
 			enum Slot { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
@@ -31,20 +35,23 @@ namespace sht {
 
 			void PropagateLodDistances();
 
-			bool PrepareMapTile(/*PlanetMap* map*/);
-			void CreateMapTile(/*PlanetMap* map*/);
+			bool PrepareMapTile(PlanetMap* map);
+			void CreateMapTile(PlanetMap* map);
 			void DestroyMapTile();
 
-			void CreateRenderable(/*PlanetMapTile* map*/);
+			void CreateRenderable(PlanetMapTile* map);
 			void DestroyRenderable();
 
 			bool WillRender();
 			int Render();
+			void RenderSelf();
 
 		private:
 			PlanetTree * owner_; //!< owner face tree
-			//PlanetMapTile* mMapTile;
-			//PlanetRenderable* mRenderable;
+
+			PlanetMapTile * map_tile_;
+			PlanetRenderable * renderable_;
+
 			int lod_; //!< level of detail
 			int x_;
 			int y_;
@@ -54,7 +61,6 @@ namespace sht {
 
 			bool has_children_;
 			bool page_out_;
-			bool has_renderable_;
 
 			bool request_page_out_;
 			bool request_map_tile_;
@@ -71,6 +77,7 @@ namespace sht {
 		//! Planet tree class
 		class PlanetTree : public NonCopyable {
 			friend class PlanetTreeNode;
+			friend class PlanetRenderable;
 		public:
 			explicit PlanetTree(PlanetCube * cube, int face);
 			virtual ~PlanetTree();

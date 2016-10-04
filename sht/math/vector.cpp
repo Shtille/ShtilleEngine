@@ -324,6 +324,18 @@ namespace sht {
 		{
 			return (*this) * (1.0f / Length());
 		}
+		void Vector3::MakeFloor(const Vector3& other)
+		{
+			if (other.x < x) x = other.x;
+			if (other.y < y) y = other.y;
+			if (other.z < z) z = other.z;
+		}
+		void Vector3::MakeCeil(const Vector3& other)
+		{
+			if (other.x > x) x = other.x;
+			if (other.y > y) y = other.y;
+			if (other.z > z) z = other.z;
+		}
 		Vector3 operator + (const Vector3 &u, const Vector3 &v)
 		{
 			return Vector3(u.x + v.x, u.y + v.y, u.z + v.z);

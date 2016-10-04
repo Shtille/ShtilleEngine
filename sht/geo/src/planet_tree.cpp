@@ -2,6 +2,10 @@
 #include "planet_tile_mesh.h"
 #include "../include/planet_cube.h"
 #include "../include/constants.h"
+#include "planet_map_tile.h"
+#include "planet_map.h"
+#include "planet_renderable.h"
+
 #include "../../graphics/include/renderer/shader.h"
 
 namespace sht {
@@ -9,12 +13,13 @@ namespace sht {
 
 		PlanetTreeNode::PlanetTreeNode(PlanetTree * tree)
 			: owner_(tree)
+			, map_tile_(nullptr)
+			, renderable_(nullptr)
 			, lod_(0)
 			, x_(0)
 			, y_(0)
 			, has_children_(false)
 			, page_out_(false)
-			, has_renderable_(false)
 			, request_page_out_(false)
 			, request_map_tile_(false)
 			, request_renderable_(false)
@@ -39,13 +44,13 @@ namespace sht {
 		}
 		const float PlanetTreeNode::GetPriority() const
 		{
-			if (!has_renderable_)
+			if (!renderable_)
 			{
 				if (parent_)
 					return parent_->GetPriority();
 				return 0.0f;
 			}
-			return mRenderable->getLODPriority();
+			return renderable_->GetLodPriority();
 		}
 		bool PlanetTreeNode::IsSplit()
 		{
@@ -79,65 +84,61 @@ namespace sht {
 		}
 		void PlanetTreeNode::PropagateLodDistances()
 		{
-			if (has_renderable_)
+			if (renderable_)
 			{
 				float max_child_distance = 0.0f;
 				// Get maximum LOD distance of all children.
 				for (int i = 0; i < kNumChildren; ++i)
 				{
-					if (children_[i] && children_[i]->has_renderable_)
+					if (children_[i] && children_[i]->renderable_)
 					{
 						// Increase LOD distance w/ centroid distances, to ensure proper LOD nesting.
-						float child_distance = children_[i]->mRenderable->getLODDistance();
+						float child_distance = children_[i]->renderable_->GetLodDistance();
 						if (max_child_distance < child_distance)
 							max_child_distance = child_distance;
 					}
 				}
 				// Store in renderable.
-				mRenderable->setChildLODDistance(max_child_distance);
+				renderable_->SetChildLodDistance(max_child_distance);
 			}
 			// Propagate changes to parent.
 			if (parent_)
 				parent_->PropagateLodDistances();
 		}
-		bool PlanetTreeNode::PrepareMapTile(/*PlanetMap* map*/)
+		bool PlanetTreeNode::PrepareMapTile(PlanetMap* map)
 		{
-			return true;
-			//return map->prepareTile(this);
+			return map->PrepareTile(this);
 		}
-		void PlanetTreeNode::CreateMapTile(/*PlanetMap* map*/)
+		void PlanetTreeNode::CreateMapTile(PlanetMap* map)
 		{
-			/*if (mMapTile) {
+			if (map_tile_)
 				throw "Creating map tile that already exists.";
-			}
-			mMapTile = map->finalizeTile(this);*/
+			map_tile_ = map->FinalizeTile(this);
 		}
 		void PlanetTreeNode::DestroyMapTile()
 		{
-			/*if (mMapTile) delete mMapTile;
-			mMapTile = 0;*/
+			if (map_tile_) delete map_tile_;
+			map_tile_ = nullptr;
 		}
-		void PlanetTreeNode::CreateRenderable(/*PlanetMapTile* map*/)
+		void PlanetTreeNode::CreateRenderable(PlanetMapTile* map)
 		{
-			if (has_renderable_)
+			if (renderable_)
 				throw "Creating renderable that already exists.";
 			if (page_out_)
 				page_out_ = false;
-			//mRenderable = new PlanetRenderable(this, map);
-			has_renderable_ = true;
+			renderable_ = new PlanetRenderable(this, map);
 			PropagateLodDistances();
 		}
 		void PlanetTreeNode::DestroyRenderable()
 		{
-			/*if (mRenderable) delete mRenderable;
-			mRenderable = 0;*/
-			has_renderable_ = false;
+			if (renderable_) delete renderable_;
+			renderable_ = nullptr;
 			PropagateLodDistances();
 		}
 		bool PlanetTreeNode::WillRender()
 		{
 			// Being asked to render ourselves.
-			if (!has_renderable_)
+			if (!renderable_)
 			{
 				last_opened_ = last_rendered_ = owner_->cube_->GetFrameCounter();
 
@@ -187,25 +188,25 @@ namespace sht {
 			}
 
 			// If we are renderable, check LOD/visibility.
-			if (has_renderable_)
+			if (renderable_)
 			{
-				mRenderable->setFrameOfReference(lod);
+				renderable_->SetFrameOfReference();
 
 				// If invisible, return immediately.
-				if (mRenderable->isClipped()) {
+				if (renderable_->IsClipped())
 					return 1;
-				}
 
 				// Whether to recurse down.
 				bool recurse = false;
 
 				// If the texture is not fine enough...
-				if (!mRenderable->isInMIPRange()) {
+				if (!renderable_->IsInMIPRange())
+				{
 					// If there is already a native res map-tile...
-					if (mMapTile)
+					if (map_tile_)
 					{
 						// Make sure the renderable is up-to-date.
-						if (mRenderable->getMapTile() == mMapTile)
+						if (renderable_->GetMapTile() == map_tile_)
 						{
 							// Split so we can try this again on the child tiles.
 							recurse = true;
@@ -217,7 +218,7 @@ namespace sht {
 						// Make sure no parents are waiting for tile data update.
 						PlanetTreeNode *ancestor = this;
 						bool parent_request = false;
-						while (ancestor && !ancestor->mMapTile && !ancestor->page_out_)
+						while (ancestor && !ancestor->map_tile_ && !ancestor->page_out_)
 						{
 							if (ancestor->request_map_tile_ || ancestor->request_renderable_)
 							{
@@ -237,7 +238,7 @@ namespace sht {
 				}
 
 				// If the geometry is not fine enough...
-				if ((has_children_ || !request_map_tile_) && !mRenderable->isInLODRange())
+				if ((has_children_ || !request_map_tile_) && !renderable_->IsInLODRange())
 				{
 					// Go down an LOD level.
 					recurse = true;
@@ -263,7 +264,7 @@ namespace sht {
 									min_level = level;
 							}
 							// If we are a shallow node with a tile that is not being rendered or close to being rendered.
-							if (min_level > 1 && mMapTile && mMapTile->getReferences() == 1)
+							if (min_level > 1 && map_tile_ /*&& false*/)
 							{
 								page_out_ = true;
 								DestroyRenderable();
@@ -284,45 +285,28 @@ namespace sht {
 				last_rendered_ = cube->GetFrameCounter();
 
 				// Otherwise, render ourselves.
-				mRenderable->setup();
-				// <----- Render code from code down here
+				RenderSelf();
 
 				return 1;
 			}
 			return 0;
-
+		}
+		void PlanetTreeNode::RenderSelf()
+		{
 			graphics::Shader * shader = owner_->cube_->shader_;
 
-			// Calculate scales, offsets for tile position on cube face.
-			const float inv_scale = 2.0f / (1 << lod_);
-			const float position_x = -1.f + inv_scale * x_;
-			const float position_y = -1.f + inv_scale * y_;
-
-			// Correct for GL texture mapping at borders.
-			//const float uvCorrection = .05f / (256 + 1);
-
-			// Calculate scales, offset for tile position in map tile.
-			//int relativeLOD = lod_ - mMapTile->getNode()->mLOD;
-			//const float invTexScale = 1.0f / (1 << relativeLOD) * (1.0f - uvCorrection);
-			//const float textureX = invTexScale * (x_ - (mMapTile->getNode()->mX << relativeLOD)) + uvCorrection;
-			//const float textureY = invTexScale * (y_ - (mMapTile->getNode()->mY << relativeLOD)) + uvCorrection;
-
-			// bind (inv_scale, inv_scale, invTexScale, invTexScale)
-			// bind (position_x, position_y, textureX, textureY)
-			// bind planet radius
-			// bind planet height
-			// bind skirt_height = (1 - cos(angle)) * 1.4f * mPlanetRadius;
-
 			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(owner_->face_);
-			shader->Uniform4f("u_stuv_scale", inv_scale, inv_scale, 1.0f, 1.0f);
-			shader->Uniform4f("u_stuv_position", position_x, position_y, 0.0f, 0.0f);
-			//shader->Uniform1f("u_planet_height", 0.0f);
-			shader->Uniform1f("u_skirt_height", 0.0f);
+
+			// Vertex shader
+			shader->Uniform4fv("u_stuv_scale", renderable_->stuv_scale_);
+			shader->Uniform4fv("u_stuv_position", renderable_->stuv_position_);
+			shader->Uniform1f("u_skirt_height", renderable_->mDistance);
 			shader->UniformMatrix3fv("u_face_transform", face_transform);
 
-			// Bind face_transform here
+			// Fragment shader
+			shader->Uniform4fv("u_color", renderable_->color_);
+
 			owner_->cube_->tile_->Render();
-			return 0;
 		}
 
 		PlanetTree::PlanetTree(PlanetCube * cube, int face)

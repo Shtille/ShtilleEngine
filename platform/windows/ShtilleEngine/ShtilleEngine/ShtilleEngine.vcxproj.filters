@@ -312,6 +312,15 @@
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_tree.cpp">
       <Filter>sht\geo\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_renderable.cpp">
+      <Filter>sht\geo\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_map.cpp">
+      <Filter>sht\geo\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_map_tile.cpp">
+      <Filter>sht\geo\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -550,6 +559,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\geo\include\planet_cube.h">
       <Filter>sht\geo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_renderable.h">
+      <Filter>sht\geo\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_map.h">
+      <Filter>sht\geo\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\geo\src\planet_map_tile.h">
+      <Filter>sht\geo\src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

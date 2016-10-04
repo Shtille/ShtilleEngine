@@ -1,6 +1,8 @@
 #include "../include/planet_cube.h"
 #include "planet_tree.h"
 #include "planet_tile_mesh.h"
+#include "planet_map.h"
+#include "planet_renderable.h"
 
 namespace {
 	const float kGeoDetail = 6.0f;
@@ -23,9 +25,11 @@ namespace sht {
 			for (int i = 0; i < kNumFaces; ++i)
 				faces_[i] = new PlanetTree(this, i);
 			tile_ = new PlanetTileMesh(renderer, grid_size_);
+			map_ = new PlanetMap();
 		}
 		PlanetCube::~PlanetCube()
 		{
+			delete map_;
 			delete tile_;
 			for (int i = 0; i < kNumFaces; ++i)
 				delete faces_[i];
@@ -161,7 +165,7 @@ namespace sht {
 							// Special case: if unrequesting a maptile current being generated,
 							// make sure temp/unclaimed resources are cleaned up.
 							if ((*i).mType == REQUEST_MAPTILE)
-								mMap->resetTile();
+								map_->ResetTile();
 
 							(*request_queues[q]).erase(i);
 							i = (*request_queues[q]).begin();
@@ -236,24 +240,24 @@ namespace sht {
 
 			// See if we can find a maptile to derive from.
 			PlanetTreeNode * ancestor = node;
-			while (ancestor->mMapTile == 0 && ancestor->parent_) { ancestor = ancestor->parent_; };
+			while (ancestor->map_tile_ == 0 && ancestor->parent_) { ancestor = ancestor->parent_; };
 
 			// See if map tile found is in acceptable LOD range (ie. gridsize <= texturesize).
-			if (ancestor->mMapTile)
+			if (ancestor->map_tile_)
 			{
 				int relativeLOD = node->lod_ - ancestor->lod_;
-				if (relativeLOD <= maxLOD) {
+				if (relativeLOD <= maxLOD)
+				{
 					// Replace existing renderable.
 					node->DestroyRenderable();
 					// Create renderable relative to the map tile.
-					node->CreateRenderable(ancestor->mMapTile);
-					node->mRenderable->setProxy(mProxy);
+					node->CreateRenderable(ancestor->map_tile_);
 					node->request_renderable_ = false;
 				}
 			}
 
 			// If no renderable was created, try creating a map tile.
-			if (node->request_renderable_ && !node->mMapTile && !node->request_map_tile_)
+			if (node->request_renderable_ && !node->map_tile_ && !node->request_map_tile_)
 			{
 				// Request a map tile for this node's LOD level.
 				node->request_map_tile_ = true;
@@ -264,7 +268,7 @@ namespace sht {
 		bool PlanetCube::HandleMapTile(PlanetTreeNode* node)
 		{
 			// See if the map tile object for this node is ready yet.
-			if (!node->PrepareMapTile(mMap))
+			if (!node->PrepareMapTile(map_))
 			{
 				// Needs more work.
 				Request(node, REQUEST_MAPTILE, true);
@@ -273,7 +277,7 @@ namespace sht {
 			else
 			{
 				// Assemble a map tile object for this node.
-				node->CreateMapTile(mMap);
+				node->CreateMapTile(map_);
 				node->request_map_tile_ = false;
 
 				// Request a new renderable to match.
@@ -281,8 +285,11 @@ namespace sht {
 				Request(node, REQUEST_RENDERABLE, true);
 
 				// See if any child renderables use the old maptile.
-				PlanetMapTile * old_tile = node->mRenderable->getMapTile();
-				RefreshMapTile(node, old_tile);
+				if (node->renderable_)
+				{
+					PlanetMapTile * old_tile = node->renderable_->GetMapTile();
+					RefreshMapTile(node, old_tile);
+				}
 				return true;
 			}
 		}
@@ -323,10 +330,10 @@ namespace sht {
 					!old_node->request_merge_ &&
 					(GetFrameCounter() - old_node->last_opened_ > 100))
 				{
-					old_node->mRenderable->setFrameOfReference(mLOD);
+					old_node->renderable_->SetFrameOfReference();
 					// Make sure node's children are too detailed rather than just invisible.
-					if (old_node->mRenderable->isFarAway() ||
-						(old_node->mRenderable->isInLODRange() && old_node->mRenderable->isInMIPRange())
+					if (old_node->renderable_->IsFarAway() ||
+						(old_node->renderable_->IsInLODRange() && old_node->renderable_->IsInMIPRange())
 						)
 					{
 						old_node->request_merge_ = true;
@@ -341,12 +348,12 @@ namespace sht {
 				heap.pop();
 			}
 		}
-		void PlanetCube::RefreshMapTile(PlanetTreeNode* node/*, PlanetMapTile* tile*/)
+		void PlanetCube::RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile)
 		{
 			for (int i = 0; i < 4; ++i)
 			{
 				PlanetTreeNode* child = node->children_[i];
-				if (child && child->has_renderable_ && child->mRenderable->getMapTile() == tile)
+				if (child && child->renderable_ && child->renderable_->GetMapTile() == tile)
 				{
 					child->request_renderable_ = true;
 					Request(child, REQUEST_RENDERABLE, true);
@@ -359,6 +366,10 @@ namespace sht {
 		const float PlanetCube::radius() const
 		{
 			return radius_;
+		}
+		const int PlanetCube::grid_size() const
+		{
+			return grid_size_;
 		}
 		math::Matrix3 PlanetCube::GetFaceTransform(int face)
 		{
