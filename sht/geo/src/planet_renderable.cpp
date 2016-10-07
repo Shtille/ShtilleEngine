@@ -32,7 +32,7 @@ namespace sht {
 			// Bounding box clipping.
 			mIsClipped = false;//!lod.mCameraFrustum.isVisible(mBox);
 
-										   // Get vector from center to camera and normalize it.
+			// Get vector from center to camera and normalize it.
 			math::Vector3 positionOffset = params.camera_position - mCenter;
 			math::Vector3 viewDirection = positionOffset;
 
@@ -48,7 +48,8 @@ namespace sht {
 			// Spherical distance map clipping.
 			math::Vector3 referenceCoordinate = mCenter + referenceOffset;
 			referenceCoordinate.Normalize();
-			mIsFarAway = ((params.sphere_plane & referenceCoordinate) < params.sphere_clip);
+			// TODO: check far away condition
+			mIsFarAway = false;//((params.sphere_plane & referenceCoordinate) < params.sphere_clip);
 			mIsClipped = mIsClipped || mIsFarAway;
 
 			// Find the position offset to the nearest point to the camera (approx).
@@ -69,14 +70,14 @@ namespace sht {
 				std::max(mDistanceSquared, mChildDistanceSquared) * params.geo_factor_squared * lodShortenSquared;
 
 			// Calculate texel resolution relative to near grid-point (approx).
-			//float distance = nearPositionOffset.Length(); // Distance to point
-			//nearPositionOffset.Normalize();
-			//float isotropy = (mSurfaceNormal & positionOffset); // Perspective texture foreshortening along long axis
-			//float isolimit = 1.0;//minf(1.0, (.5 + isotropy) * 8); // Beyond the limit of anisotropic filtering, no point in applying high res
-			//float faceSize = mScaleFactor * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
-			//float res = faceSize / (1 << mMapTile->getNode()->mLOD) / mMap->getWidth(); // Size of a single texel in world units
+			float distance = nearPositionOffset.Length(); // Distance to point
+			nearPositionOffset.Normalize();
+			float isotropy = (mSurfaceNormal & positionOffset); // Perspective texture foreshortening along long axis
+			float isolimit = 1.0;//minf(1.0, (.5 + isotropy) * 8); // Beyond the limit of anisotropic filtering, no point in applying high res
+			float faceSize = mScaleFactor * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
+			float res = faceSize / (1 << mMapTile->GetNode()->lod_) / 256.0f/*mMap->getWidth()*/; // Size of a single texel in world units
 
-			mIsInMIPRange = true;//res * params.tex_factor * isolimit < distance;
+			mIsInMIPRange = res * params.tex_factor * isolimit < distance;
 		}
 		const bool PlanetRenderable::IsInLODRange() const
 		{
@@ -181,7 +182,6 @@ namespace sht {
 			const float uvCorrection = 0.0f; //.05f / (mMap->getWidth() + 1);
 
 			// Calculate scales, offset for tile position in map tile.
-			assert(mMapTile->GetNode()->lod_ == 0);
 			int relativeLOD = mNode->lod_ - mMapTile->GetNode()->lod_;
 			const float invTexScale = 1.0f / (1 << relativeLOD) * (1.0f - uvCorrection);
 			const float textureX = invTexScale * (mNode->x_ - (mMapTile->GetNode()->x_ << relativeLOD)) + uvCorrection;
@@ -198,10 +198,11 @@ namespace sht {
 			stuv_position_.w = textureY;
 
 			// Set color/tint
-			color_.x = cosf(mMapTile->GetNode()->lod_ * 0.70f) * .35f + .85f;
-			color_.y = cosf(mMapTile->GetNode()->lod_ * 1.71f) * .35f + .85f;
-			color_.z = cosf(mMapTile->GetNode()->lod_ * 2.64f) * .35f + .85f;
-			color_.w = 1.0f;
+			//color_.x = cosf(mMapTile->GetNode()->lod_ * 0.70f) * .35f + .85f;
+			//color_.y = cosf(mMapTile->GetNode()->lod_ * 1.71f) * .35f + .85f;
+			//color_.z = cosf(mMapTile->GetNode()->lod_ * 2.64f) * .35f + .85f;
+			//color_.w = 1.0f;
+			color_ = math::Vector4(1.0f);
 
 			// Calculate area of tile relative to even face division.
 			mScaleFactor = sqrt(1.0f / (positionX * positionX + 1.0f) / (positionY * positionY + 1.0f));

@@ -38,7 +38,6 @@ namespace sht {
 			float mLODDifference;
 			float mDistance;
 			float mDistanceSquared;
-			float mCurrentDistance;
 
 			float mScaleFactor;
 

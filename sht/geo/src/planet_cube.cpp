@@ -326,6 +326,7 @@ namespace sht {
 			while (!heap.empty())
 			{
 				PlanetTreeNode* old_node = heap.top();
+				heap.pop();
 				if (!old_node->page_out_ &&
 					!old_node->request_merge_ &&
 					(GetFrameCounter() - old_node->last_opened_ > 100))
@@ -345,7 +346,6 @@ namespace sht {
 						old_node->last_opened_ = GetFrameCounter();
 					}
 				}
-				heap.pop();
 			}
 		}
 		void PlanetCube::RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile)

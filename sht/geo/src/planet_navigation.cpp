@@ -164,8 +164,8 @@ namespace sht {
             const sht::math::Vector3 to_earth = kEarthPosition - *cam_pos;
             const sht::math::Vector3 camera_direction = camera_manager_->GetDirection(); // normalized
             const float cam_distance = to_earth & camera_direction;
-            *znear = cam_distance - kEarthAtmosphereRadius;
-            *zfar = cam_distance + kEarthAtmosphereRadius;
+            *znear = cam_distance - kEarthRadius;
+            *zfar = cam_distance + kEarthRadius;
         }
         math::Vector3 PlanetNavigation::MakePoint(float distance)
         {

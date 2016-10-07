@@ -264,7 +264,7 @@ namespace sht {
 									min_level = level;
 							}
 							// If we are a shallow node with a tile that is not being rendered or close to being rendered.
-							if (min_level > 1 && map_tile_ /*&& false*/)
+							if (min_level > 1 && map_tile_ && false)
 							{
 								page_out_ = true;
 								DestroyRenderable();
