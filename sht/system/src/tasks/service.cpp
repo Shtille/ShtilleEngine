@@ -74,7 +74,7 @@ namespace sht {
 
 				if (task == nullptr)
 				{
-					std::this_thread::sleep_for(std::chrono::seconds(0));
+					std::this_thread::yield();
 					continue;
 				}
 
