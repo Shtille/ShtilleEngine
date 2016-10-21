@@ -13,9 +13,10 @@ namespace sht {
 	namespace geo {
 
 		PlanetCube::PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
-			utility::CameraManager * camera, float radius)
+			utility::CameraManager * camera, math::Frustum * frustum, float radius)
 			: shader_(shader)
 			, camera_(camera)
+			, frustum_(frustum)
 			, grid_size_(17)
 			, radius_(radius)
 			, frame_counter_(0)

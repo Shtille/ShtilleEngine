@@ -16,6 +16,9 @@ namespace sht {
 		class Renderer;
 		class Shader;
 	}
+	namespace math {
+		class Frustum;
+	}
 }
 
 namespace sht {
@@ -72,7 +75,7 @@ namespace sht {
 
 		public:
 			PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
-				utility::CameraManager * camera, float radius);
+				utility::CameraManager * camera, math::Frustum * frustum, float radius);
 			~PlanetCube();
 
 			//! Data video memory objects creation and other things that may fail
@@ -110,8 +113,9 @@ namespace sht {
 			void RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile);
 
 		private:
-			graphics::Shader * shader_;
-			utility::CameraManager * camera_;
+			graphics::Shader * shader_;			//!< pointer to shader object
+			utility::CameraManager * camera_;	//!< pointer to camera object
+			math::Frustum * frustum_;			//!< pointer to frustum object
 
 			static constexpr int kNumFaces = 6;
 			PlanetTree * faces_[kNumFaces];

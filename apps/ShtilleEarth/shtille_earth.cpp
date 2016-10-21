@@ -3,6 +3,7 @@
 #include "../../sht/graphics/include/renderer/text.h"
 #include "../../sht/utility/include/console.h"
 #include "../../sht/utility/include/camera.h"
+#include "../../sht/math/frustum.h"
 #include "../../sht/geo/include/constants.h"
 #include "../../sht/geo/include/planet_navigation.h"
 #include "../../sht/geo/include/planet_cube.h"
@@ -182,7 +183,8 @@ public:
         
         planet_navigation_ = new sht::geo::PlanetNavigation(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
 
-		planet_ = new sht::geo::PlanetCube(renderer_, planet_shader_, camera_manager_, sht::geo::kEarthRadius);
+		planet_ = new sht::geo::PlanetCube(renderer_, planet_shader_, camera_manager_, &frustum_,
+			sht::geo::kEarthRadius);
 		if (!planet_->Initialize())
 			return false;
 
@@ -222,6 +224,8 @@ public:
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
         UpdateProjectionMatrix();
         projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+
+		frustum_.Load(projection_view_matrix_);
 
 		planet_->Update();
 
@@ -454,6 +458,8 @@ private:
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
     sht::geo::PlanetNavigation * planet_navigation_;
+
+	sht::math::Frustum frustum_;
     
     sht::math::Matrix4 projection_view_matrix_;
     

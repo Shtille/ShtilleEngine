@@ -3,6 +3,7 @@
 #define __SHT_GEO_PLANET_RENDERABLE_H__
 
 #include "../../math/vector.h"
+#include "../../math/bounding_box.h"
 
 namespace sht {
 	namespace geo {
@@ -28,9 +29,7 @@ namespace sht {
 
 			PlanetMapTile * GetMapTile();
 
-			float mBoundingRadius;
 			math::Vector3 mCenter;
-			math::Vector3 mBoxCenter;
 			math::Vector3 mSurfaceNormal;
 
 			float mChildDistance;
@@ -59,6 +58,8 @@ namespace sht {
 		private:
 			void AnalyzeTerrain();
 			void InitDisplacementMapping();
+
+			math::BoundingBox bounding_box_;
 		};
 
 	} // namespace geo
