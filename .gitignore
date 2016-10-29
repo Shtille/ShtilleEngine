@@ -245,3 +245,6 @@ $RECYCLE.BIN/
 # My additional ignores
 bin/*
 lib/*
+log.txt
+errorlog.txt
+screenshots/*
