@@ -124,6 +124,12 @@
     <Filter Include="sht\system\src\tasks">
       <UniqueIdentifier>{df85c46c-7e70-4fe6-8738-6f201559c37b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sht\system\include\filesystem">
+      <UniqueIdentifier>{7535b9c7-398d-4343-b6fa-2b02fc2a65c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\system\src\filesystem">
+      <UniqueIdentifier>{a799c01e-7b92-4c57-ab30-8307e769037a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp">
@@ -320,6 +326,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_map_tile.cpp">
       <Filter>sht\geo\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\system\src\filesystem\directory.cpp">
+      <Filter>sht\system\src\filesystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -571,6 +580,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\common\non_copyable.h">
       <Filter>sht\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\system\include\filesystem\directory.h">
+      <Filter>sht\system\include\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

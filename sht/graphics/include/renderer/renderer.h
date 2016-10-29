@@ -47,7 +47,7 @@ namespace sht {
 			u32 GetUsedVertexBuffersSize(void);
 			u32 GetUsedIndexBuffersSize(void);
 
-			void TakeScreenshot(int w, int h, const char* dir, bool is_fullscr);
+			bool TakeScreenshot(const char* directory_name);
 			void Setup2DMatrix();
 
 			// Texture functions

@@ -372,7 +372,7 @@ public:
             }
 			else if (key == sht::PublicKey::kF5)
 			{
-				renderer_->TakeScreenshot(width_, height_, "screenshots", fullscreen_);
+				renderer_->TakeScreenshot("screenshots");
 			}
             else if (key == sht::PublicKey::kEqual)
             {

@@ -16,6 +16,16 @@
 #endif
 
 #include <Windows.h>
+
+// Avoid conflictable Windows defines:
+#ifdef CreateDirectory
+#undef CreateDirectory
+#endif // CreateDirectory
+
+#ifdef RemoveDirectory
+#undef RemoveDirectory
+#endif // RemoveDirectory
+
 #include "../system/include/memory_leaks.h"
 #include <stddef.h>
 

@@ -1,4 +1,7 @@
 #include "../../include/renderer/renderer.h"
+
+#include "../../../system/include/filesystem/directory.h"
+
 #include <ctime>
 #include <algorithm>
 
@@ -135,31 +138,33 @@ namespace sht {
 				s += ib->GetSize();
 			return s;
 		}
-		void Renderer::TakeScreenshot(int w, int h, const char* dir, bool is_fullscr)
+		bool Renderer::TakeScreenshot(const char* directory_name)
 		{
-			// fill our path string
-			char duration[50];
+			// Fill our path string
+			char filename[50];
 			time_t now = time(nullptr);
-			strftime(duration, _countof(duration), "SS.%Y.%m.%d.%H.%M.%S.jpg", localtime(&now));
-			size_t size = strlen(dir) + strlen(duration) + 1;
-			char *filename = new char[size];
-#ifdef TARGET_WINDOWS
-			strcpy(filename, dir);
-			strcat(filename, duration);
+			strftime(filename, _countof(filename), "SS.%Y.%m.%d.%H.%M.%S.jpg", localtime(&now));
+			char delimeter[2] = { system::GetPathDelimeter(), '\0' };
+			size_t size = strlen(directory_name) + strlen(filename) + 2; // 1 is for delimeter, another 1 is for \0
+			char *full_filename = new char[size];
+			strcpy(full_filename, directory_name);
+			strcat(full_filename, delimeter);
+			strcat(full_filename, filename);
 
-			// TODO: exchange CreateDirectory
-			CreateDirectoryA(dir, NULL); // create directory if it doesn't exist
-#else
-            assert(!"Takescreenshot not implemented for this OS");
-#endif
+			system::CreateDirectory(directory_name); // create directory if it doesn't exist
 
 			Image image;
 			// allocate memory and read pixels
-			u8 *data = image.Allocate(w, h, Image::Format::kRGB8);
-			ReadPixels(w, h, data);
-			image.Save(filename);
+			u8 *data = image.Allocate(width_, height_, Image::Format::kRGB8);
+			ReadPixels(width_, height_, data);
+			if (!image.Save(full_filename))
+			{
+				delete[] full_filename;
+				return false;
+			}
 
-			delete[] filename;
+			delete[] full_filename;
+			return true;
 		}
 		void Renderer::Setup2DMatrix()
 		{

@@ -64,6 +64,7 @@
     <ClCompile Include="..\..\..\..\sht\platform\src\main_wrapper.cpp" />
     <ClCompile Include="..\..\..\..\sht\platform\src\windows\window_controller.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\color.cpp" />
+    <ClCompile Include="..\..\..\..\sht\system\src\filesystem\directory.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\keys.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\memory_leaks.cpp" />
     <ClCompile Include="..\..\..\..\sht\system\src\mouse.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="..\..\..\..\sht\platform\src\platform_inner.h" />
     <ClInclude Include="..\..\..\..\sht\platform\src\window_struct.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\color.h" />
+    <ClInclude Include="..\..\..\..\sht\system\include\filesystem\directory.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\keys.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\memory_leaks.h" />
     <ClInclude Include="..\..\..\..\sht\system\include\mouse.h" />
