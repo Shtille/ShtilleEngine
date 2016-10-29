@@ -370,6 +370,10 @@ public:
             {
                 Application::Terminate();
             }
+			else if (key == sht::PublicKey::kF5)
+			{
+				renderer_->TakeScreenshot(width_, height_, "screenshots", fullscreen_);
+			}
             else if (key == sht::PublicKey::kEqual)
             {
                 planet_navigation_->SmoothZoomIn();

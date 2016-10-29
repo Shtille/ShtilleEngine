@@ -569,5 +569,8 @@
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_map_tile.h">
       <Filter>sht\geo\src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\common\non_copyable.h">
+      <Filter>sht\common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

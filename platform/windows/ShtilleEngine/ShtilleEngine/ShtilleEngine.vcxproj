@@ -89,6 +89,7 @@
     <ClInclude Include="..\..\..\..\sht\application\application.h" />
     <ClInclude Include="..\..\..\..\sht\application\opengl\opengl_application.h" />
     <ClInclude Include="..\..\..\..\sht\common\counting_pointer.h" />
+    <ClInclude Include="..\..\..\..\sht\common\non_copyable.h" />
     <ClInclude Include="..\..\..\..\sht\common\platform.h" />
     <ClInclude Include="..\..\..\..\sht\common\singleton.h" />
     <ClInclude Include="..\..\..\..\sht\common\table.h" />
