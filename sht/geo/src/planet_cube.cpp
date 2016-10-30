@@ -5,8 +5,9 @@
 #include "planet_renderable.h"
 
 namespace {
+	// The more detail coefficient is, the less detalization is required
 	const float kGeoDetail = 6.0f;
-	const float kTexDetail = 1.0f;
+	const float kTexDetail = 2.0f;
 }
 
 namespace sht {
@@ -45,7 +46,7 @@ namespace sht {
 		}
 		void PlanetCube::SetParameters(float fovy_in_radians, int screen_height)
 		{
-			float fov = 2.0f * tan(fovy_in_radians);
+			float fov = 2.0f * tan(0.5f * fovy_in_radians);
 
 			float geo_detail = std::max(1.0f, kGeoDetail);
 			lod_params_.geo_factor = screen_height / (geo_detail * fov);

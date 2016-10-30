@@ -1,0 +1,17 @@
+Simple roadmap of things to do in Shtille Earth project.
+
+Total improvements:
+[+] 1. Add bounding box check.
+[+] 2. Fix sphere invisibility.
+[-] 3. Fix geometry LOD computing.
+[-] 4. Fix texture LOD computing.
+[-] 5. Do some refactoring.
+[-] 6. Add Earth position parameter to renderer class.
+[-] 7. Fix camera navigation on low altitudes.
+
+General line of tasks:
+[-] 1. Finish sattelite imagery part implementation.
+[-] 2. Add fetching texture data for quad tree nodes.
+
+Optional:
+[-] 1. Add fetching height data for quad tree nodes.

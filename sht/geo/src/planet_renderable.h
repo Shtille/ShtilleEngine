@@ -48,7 +48,7 @@ namespace sht {
 			bool mIsClipped;
 			bool mIsInMIPRange;
 			bool mIsFarAway;
-			float mLODPriority;
+			float mLODPriority; //!< priority for nodes queue processing
 
 			// Additional params to map to shader
 			math::Vector4 stuv_scale_;
@@ -59,7 +59,8 @@ namespace sht {
 			void AnalyzeTerrain();
 			void InitDisplacementMapping();
 
-			math::BoundingBox bounding_box_;
+			math::BoundingBox bounding_box_; //!< bounding box in world coordinates
+			math::Vector3 corner_points_[4]; //!< points in the corners of node
 		};
 
 	} // namespace geo

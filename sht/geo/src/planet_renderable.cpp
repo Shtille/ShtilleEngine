@@ -34,28 +34,6 @@ namespace sht {
 			// Bounding box clipping.
 			mIsClipped = !frustum->IsBoxIn(bounding_box_);
 
-			// Get vector from center to camera and normalize it.
-			math::Vector3 position_offset = params.camera_position - mCenter;
-			math::Vector3 viewDirection = position_offset;
-
-			// Find the offset between the center of the grid and the grid point closest to the camera (rough approx).
-			//math::Vector3 reference_offset = 0.5f * (viewDirection - (mSurfaceNormal & viewDirection) * mSurfaceNormal);
-			//float tile_radius = planet_radius / (float)(1 << mNode->lod_);
-			//if (reference_offset.Length() > tile_radius)
-			//{
-			//	reference_offset.Normalize();
-			//	reference_offset = reference_offset * tile_radius;
-			//}
-
-			const float tile_radius = planet_radius / (float)(1 << mNode->lod_);
-			const float reference_length = math::kPi * 0.375f * planet_radius / (float)(1 << mNode->lod_);
-			math::Vector3 reference_offset = viewDirection - ((viewDirection & mSurfaceNormal) * mSurfaceNormal);
-			if (reference_offset.Sqr() > reference_length * reference_length)
-			{
-				reference_offset.Normalize();
-				reference_offset *= reference_length;
-			}
-
 			// Spherical distance map clipping via five points check.
 			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(mNode->owner_->face_);
 			const float inv_scale = 2.0f / (float)(1 << mNode->lod_);
@@ -80,32 +58,50 @@ namespace sht {
 			mIsFarAway = !is_visible;
 			mIsClipped = mIsClipped || mIsFarAway;
 
+			//math::Vector3 view_directions[_countof(tile_points)];
+			//float min_distance_squared = view_directions[0].Sqr();
+			//int min_index = 0;
+			//for (int i = 1; i < _countof(view_directions); ++i)
+			//{
+			//	math::Vector3& view_direction = view_directions[i];
+			//	view_direction = params.camera_position - tile_points[i] * planet_radius;
+			//	float distance_squared = view_direction.Sqr();
+			//	if (distance_squared < min_distance_squared)
+			//	{
+			//		min_distance_squared = distance_squared;
+			//		min_index = i;
+			//	}
+			//}
+			//math::Vector3 near_position_offset = view_directions[min_index];
+
+			// Get vector from center to camera and normalize it.
+			math::Vector3 position_offset = params.camera_position - mCenter;
+			math::Vector3 view_direction = position_offset;
+
+			// Find the offset between the center of the grid and the grid point closest to the camera (rough approx).
+			const float reference_length = math::kPi * 0.375f * planet_radius / (float)(1 << mNode->lod_);
+			math::Vector3 reference_offset = view_direction - ((view_direction & mSurfaceNormal) * mSurfaceNormal);
+			if (reference_offset.Sqr() > reference_length * reference_length)
+			{
+				reference_offset.Normalize();
+				reference_offset *= reference_length;
+			}
+
 			// Find the position offset to the nearest point to the camera (approx).
-			math::Vector3 nearPositionOffset = position_offset + reference_offset;
+			math::Vector3 near_position_offset = position_offset - reference_offset;
+			float near_position_distance = near_position_offset.Length();
 
 			// Determine LOD priority.
-			math::Vector3 priorityAngle = nearPositionOffset;
-			priorityAngle.Normalize();
-			mLODPriority = -(priorityAngle & params.camera_front) / nearPositionOffset.Length();
+			mLODPriority = -(near_position_offset & params.camera_front) / near_position_distance;
 
-			// Determine factor to shrink LOD by due to perspective foreshortening.
-			// Pad shortening factor based on LOD level to compensate for grid curving.
-			float lodSpan = tile_radius * nearPositionOffset.Length();
-			viewDirection.Normalize();
-			float lodShorten = std::min(1.0f, (mSurfaceNormal ^ viewDirection).Length() + lodSpan);
-			float lodShortenSquared = lodShorten * lodShorten;
-			mIsInLODRange = nearPositionOffset.Sqr() >
-				std::max(mDistanceSquared, mChildDistanceSquared) * params.geo_factor_squared * lodShortenSquared;
+			mIsInLODRange = GetLodDistance() * params.geo_factor < near_position_distance;
 
 			// Calculate texel resolution relative to near grid-point (approx).
-			float distance = nearPositionOffset.Length(); // Distance to point
-			nearPositionOffset.Normalize();
-			float isotropy = (mSurfaceNormal & position_offset); // Perspective texture foreshortening along long axis
-			float isolimit = 1.0;//minf(1.0, (.5 + isotropy) * 8); // Beyond the limit of anisotropic filtering, no point in applying high res
-			float faceSize = mScaleFactor * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
-			float res = faceSize / (1 << mMapTile->GetNode()->lod_) / 256.0f/*mMap->getWidth()*/; // Size of a single texel in world units
+			float face_size = mScaleFactor * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
+			float cube_side_pixels = static_cast<float>(256 << mMapTile->GetNode()->lod_);
+			float texel_size = face_size / cube_side_pixels; // Size of a single texel in world units
 
-			mIsInMIPRange = res * params.tex_factor * isolimit < distance;
+			mIsInMIPRange = texel_size * params.tex_factor < near_position_distance;
 		}
 		const bool PlanetRenderable::IsInLODRange() const
 		{
@@ -226,14 +222,15 @@ namespace sht {
 			stuv_position_.w = texture_y;
 
 			// Set color/tint
-			//color_.x = cosf(mMapTile->GetNode()->lod_ * 0.70f) * .35f + .85f;
-			//color_.y = cosf(mMapTile->GetNode()->lod_ * 1.71f) * .35f + .85f;
-			//color_.z = cosf(mMapTile->GetNode()->lod_ * 2.64f) * .35f + .85f;
-			//color_.w = 1.0f;
-			color_ = math::Vector4(1.0f);
+			color_.x = cosf(mMapTile->GetNode()->lod_ * 0.70f) * .35f + .85f;
+			color_.y = cosf(mMapTile->GetNode()->lod_ * 1.71f) * .35f + .85f;
+			color_.z = cosf(mMapTile->GetNode()->lod_ * 2.64f) * .35f + .85f;
+			color_.w = 1.0f;
+			//color_ = math::Vector4(1.0f);
 
 			// Calculate area of tile relative to even face division.
 			mScaleFactor = sqrt(1.0f / (position_x * position_x + 1.0f) / (position_y * position_y + 1.0f));
+			//mScaleFactor = 1.0f / static_cast<float>(2 << mNode->lod_);
 		}
 
 	} // namespace geo
