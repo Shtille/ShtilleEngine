@@ -38,8 +38,6 @@ namespace sht {
 			float mDistance;
 			float mDistanceSquared;
 
-			float mScaleFactor;
-
 			PlanetMapTile* mMapTile;
 			//Image* mMap;
 			const PlanetTreeNode * mNode;
@@ -60,7 +58,9 @@ namespace sht {
 			void InitDisplacementMapping();
 
 			math::BoundingBox bounding_box_; //!< bounding box in world coordinates
-			math::Vector3 corner_points_[4]; //!< points in the corners of node
+			math::Vector3 corner_points_[5]; //!< points in the corners of node
+
+			float scale_factor_;
 		};
 
 	} // namespace geo

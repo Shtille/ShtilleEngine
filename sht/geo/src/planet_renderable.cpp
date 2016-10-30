@@ -35,23 +35,11 @@ namespace sht {
 			mIsClipped = !frustum->IsBoxIn(bounding_box_);
 
 			// Spherical distance map clipping via five points check.
-			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(mNode->owner_->face_);
-			const float inv_scale = 2.0f / (float)(1 << mNode->lod_);
-			const float position_x = -1.f + inv_scale * mNode->x_;
-			const float position_y = -1.f + inv_scale * mNode->y_;
-			math::Vector3 tile_points[5];
-			tile_points[0].Set(position_x, position_y, 1.0f); // (0,0)
-			tile_points[1].Set(position_x, inv_scale + position_y, 1.0f); // (0,1)
-			tile_points[2].Set(inv_scale + position_x, position_y, 1.0f); // (1,0)
-			tile_points[3].Set(inv_scale + position_x, inv_scale + position_y, 1.0f); // (1,1)
-			tile_points[4].Set(0.5f*inv_scale + position_x, 0.5f*inv_scale + position_y, 1.0f); // (0.5,0.5)
 			bool is_visible = false;
-			for (int i = 0; i < _countof(tile_points); ++i)
+			for (int i = 0; i < _countof(corner_points_); ++i)
 			{
-				math::Vector3& tile_point = tile_points[i];
-				tile_point.Normalize();
-				tile_point = face_transform * tile_point;
-				is_visible = ((params.camera_position & tile_point) > planet_radius);
+				math::Vector3& corner_point = corner_points_[i];
+				is_visible = ((params.camera_position & corner_point) > planet_radius);
 				if (is_visible)
 					break;
 			}
@@ -94,10 +82,10 @@ namespace sht {
 			// Determine LOD priority.
 			mLODPriority = -(near_position_offset & params.camera_front) / near_position_distance;
 
-			mIsInLODRange = GetLodDistance() * params.geo_factor < near_position_distance;
+			mIsInLODRange = true; //GetLodDistance() * params.geo_factor < near_position_distance;
 
 			// Calculate texel resolution relative to near grid-point (approx).
-			float face_size = mScaleFactor * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
+			float face_size = scale_factor_ * (planet_radius * math::kPi); // Curved width/height of texture cube face on the sphere
 			float cube_side_pixels = static_cast<float>(256 << mMapTile->GetNode()->lod_);
 			float texel_size = face_size / cube_side_pixels; // Size of a single texel in world units
 
@@ -143,17 +131,30 @@ namespace sht {
 		{
 			const int sGridSize = mNode->owner_->cube_->grid_size();
 			const float planet_radius = mNode->owner_->cube_->radius();
+			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(mNode->owner_->face_);
 
 			// Calculate scales, offsets for tile position on cube face.
-			const float invScale = 2.0f / (float)(1 << mNode->lod_);
-			const float positionX = -1.f + invScale * mNode->x_;
-			const float positionY = -1.f + invScale * mNode->y_;
+			const float inv_scale = 2.0f / (float)(1 << mNode->lod_);
+			const float position_x = -1.f + inv_scale * mNode->x_;
+			const float position_y = -1.f + inv_scale * mNode->y_;
+
+			// Calculate corner point normals
+			corner_points_[0].Set(position_x, position_y, 1.0f); // (0,0)
+			corner_points_[1].Set(position_x, inv_scale + position_y, 1.0f); // (0,1)
+			corner_points_[2].Set(inv_scale + position_x, position_y, 1.0f); // (1,0)
+			corner_points_[3].Set(inv_scale + position_x, inv_scale + position_y, 1.0f); // (1,1)
+			corner_points_[4].Set(0.5f*inv_scale + position_x, 0.5f*inv_scale + position_y, 1.0f); // (0.5,0.5)
+			bool is_visible = false;
+			for (int i = 0; i < _countof(corner_points_); ++i)
+			{
+				math::Vector3& corner_point = corner_points_[i];
+				corner_point.Normalize();
+				corner_point = face_transform * corner_point;
+			}
 
 			// Keep track of extents.
 			math::Vector3 min = math::Vector3(1e8), max = math::Vector3(-1e8);
 			mCenter = math::Vector3(0, 0, 0);
-
-			math::Matrix3 faceTransform = PlanetCube::GetFaceTransform(mNode->owner_->face_);
 
 			// Lossy representation of heightmap
 			mLODDifference = 0.0f;
@@ -174,15 +175,15 @@ namespace sht {
 					float x = (float)i / (float)(sGridSize - 1);
 					float y = (float)j / (float)(sGridSize - 1);
 
-					math::Vector3 spherePoint(x * invScale + positionX, y * invScale + positionY, 1);
-					spherePoint.Normalize();
-					spherePoint = faceTransform * spherePoint;
-					spherePoint *= planet_radius;
+					math::Vector3 sphere_point(x * inv_scale + position_x, y * inv_scale + position_y, 1.0f);
+					sphere_point.Normalize();
+					sphere_point = face_transform * sphere_point;
+					sphere_point *= planet_radius;
 
-					mCenter += spherePoint;
+					mCenter += sphere_point;
 
-					min.MakeFloor(spherePoint);
-					max.MakeCeil(spherePoint);
+					min.MakeFloor(sphere_point);
+					max.MakeCeil(sphere_point);
 				}
 			}
 
@@ -229,8 +230,8 @@ namespace sht {
 			//color_ = math::Vector4(1.0f);
 
 			// Calculate area of tile relative to even face division.
-			mScaleFactor = sqrt(1.0f / (position_x * position_x + 1.0f) / (position_y * position_y + 1.0f));
-			//mScaleFactor = 1.0f / static_cast<float>(2 << mNode->lod_);
+			scale_factor_ = sqrt(1.0f / (position_x * position_x + 1.0f) / (position_y * position_y + 1.0f));
+			//scale_factor_ = 1.0f / static_cast<float>(2 << mNode->lod_);
 		}
 
 	} // namespace geo

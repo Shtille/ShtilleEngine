@@ -7,7 +7,7 @@
 namespace {
 	// The more detail coefficient is, the less detalization is required
 	const float kGeoDetail = 6.0f;
-	const float kTexDetail = 2.0f;
+	const float kTexDetail = 3.0f;
 }
 
 namespace sht {
