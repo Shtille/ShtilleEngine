@@ -56,6 +56,7 @@ namespace sht {
 			bool ReadCodeLine(char string[256]); //!< reading line of text, ignoring comments '//'
 			bool PrintString(const char *string, ...); //!< writes formatted string to stream
 			bool ScanString(const char *string, ...); //!< reads formatted string from line of stream
+			bool PrintLine(const char *string, ...); //!< writes formatted line of text to stream
 		};
 
 		template <class T>

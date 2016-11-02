@@ -26,6 +26,7 @@ namespace sht {
             // Make some functions public
             using Stream::WriteLine;
             using Stream::PrintString;
+            using Stream::PrintLine;
             
         protected:
             UniqueLogStream()
@@ -67,7 +68,7 @@ namespace sht {
 } // namespace sht
 
 // Useful defines
-#define LOG_INFO sht::system::CommonLogStream::GetInstance()->PrintString
-#define LOG_ERROR sht::system::ErrorLogStream::GetInstance()->PrintString
+#define LOG_INFO sht::system::CommonLogStream::GetInstance()->PrintLine
+#define LOG_ERROR sht::system::ErrorLogStream::GetInstance()->PrintLine
 
 #endif
