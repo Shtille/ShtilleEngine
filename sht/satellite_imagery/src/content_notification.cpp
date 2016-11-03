@@ -3,12 +3,12 @@
 namespace sht {
     namespace satellite_imagery {
 
-        ContentNotification::ContentNotification(const RawKey& key, const Content& content)
+        ContentNotification::ContentNotification(const DataKey& key, const Content& content)
             : key_(key)
             , content_(content)
         {
         }
-        const RawKey& ContentNotification::key() const
+        const DataKey& ContentNotification::key() const
         {
             return key_;
         }

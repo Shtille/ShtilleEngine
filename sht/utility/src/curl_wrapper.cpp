@@ -12,7 +12,7 @@ namespace sht {
             curl_ = curl_easy_init();
             if (!curl_)
             {
-				system::ErrorLogStream::GetInstance()->PrintString("failed to init libcurl");
+				LOG_ERROR("failed to init libcurl");
             }
         }
         CurlWrapper::~CurlWrapper()
@@ -36,7 +36,7 @@ namespace sht {
                     return true;
                 else
                 {
-                    system::ErrorLogStream::GetInstance()->PrintString("curl_easy_perform error %i", res);
+                    LOG_ERROR("curl_easy_perform error %i", res);
                     return false;
                 }
             }

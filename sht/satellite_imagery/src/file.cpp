@@ -51,7 +51,7 @@ namespace sht {
             }
             else
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fopen failed");
+                LOG_ERROR("Satellite Imagery: fopen failed");
                 return false;
             }
         }
@@ -66,7 +66,7 @@ namespace sht {
                 }
                 else
                 {
-                    system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fopen failed: %s", GetFileName().c_str());
+                    LOG_ERROR("Satellite Imagery: fopen failed: %s", GetFileName().c_str());
                     return false;
                 }
             }
@@ -102,7 +102,7 @@ namespace sht {
             }
             else
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: file regeneration has failed.");
+                LOG_ERROR("Satellite Imagery: file regeneration has failed.");
                 operation_successful_ = false;
             }
         }
@@ -110,7 +110,7 @@ namespace sht {
         {
             if (0 != fseek(file_, offset, SEEK_SET))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fseek failed");
+                LOG_ERROR("Satellite Imagery: fseek failed");
                 operation_successful_ = false;
             }
         }
@@ -118,7 +118,7 @@ namespace sht {
         {
             if (0 != fseek(file_, offset, SEEK_CUR))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fseek failed");
+                LOG_ERROR("Satellite Imagery: fseek failed");
                 operation_successful_ = false;
             }
         }
@@ -126,7 +126,7 @@ namespace sht {
         {
             if (0 != fseek(file_, offset, SEEK_END))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fseek failed");
+                LOG_ERROR("Satellite Imagery: fseek failed");
                 operation_successful_ = false;
             }
         }
@@ -138,7 +138,7 @@ namespace sht {
         {
             if (0 == fwrite(&x, sizeof(x), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
         }
@@ -146,7 +146,7 @@ namespace sht {
         {
             if (0 == fwrite(&x, sizeof(x), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
         }
@@ -154,7 +154,7 @@ namespace sht {
         {
             if (0 == fwrite(&x, sizeof(x), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
         }
@@ -162,7 +162,7 @@ namespace sht {
         {
             if (0 == fwrite(data, size, 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
         }
@@ -171,12 +171,12 @@ namespace sht {
             unsigned int length = static_cast<unsigned int>(str.size());
             if (0 == fwrite(&length, sizeof(length), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
             if (0 == fwrite(&str[0], length * sizeof(char), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fwrite failed");
+                LOG_ERROR("Satellite Imagery: fwrite failed");
                 operation_successful_ = false;
             }
         }
@@ -184,7 +184,7 @@ namespace sht {
         {
             if (0 == fread(x, sizeof(unsigned char), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
         }
@@ -192,7 +192,7 @@ namespace sht {
         {
             if (0 == fread(x, sizeof(int), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
         }
@@ -200,7 +200,7 @@ namespace sht {
         {
             if (0 == fread(x, sizeof(unsigned int), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
         }
@@ -208,7 +208,7 @@ namespace sht {
         {
             if (0 == fread(data, size, 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
         }
@@ -217,13 +217,13 @@ namespace sht {
             unsigned int length = 0;
             if (0 == fread(&length, sizeof(unsigned int), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
             str->resize(length);
             if (0 == fread(&(*str)[0], length * sizeof(char), 1, file_))
             {
-                system::ErrorLogStream::GetInstance()->PrintString("Satellite Imagery: fread failed");
+                LOG_ERROR("Satellite Imagery: fread failed");
                 operation_successful_ = false;
             }
         }

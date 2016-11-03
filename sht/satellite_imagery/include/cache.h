@@ -35,19 +35,19 @@ namespace sht {
 			//! Should be called before any RegionServiceLoadQuery call
 			bool Region_Add(const RegionInfo& region_info);
 
-			bool Region_Rename(const char* old_name, const char* new_name);
+            bool Region_Rename(const std::string& old_name, const std::string& new_name);
 
-			bool Region_Delete(const char* name);
+            bool Region_Delete(const std::string& name);
 
-			bool Region_MarkStored(const char* name);
+            bool Region_MarkStored(const std::string& name);
 
-			bool Region_MarkInvalid(const char* name);
+            bool Region_MarkInvalid(const std::string& name);
 
 			bool GetRegionInfo(const std::string& name, StoredRegionInfo& info);
 
 			bool GetRegionsInfo(std::vector<StoredRegionInfo>& regions_info);
 
-			BigFileSizeType GetRegionFileSize(const char* name);
+            BigFileSizeType GetRegionFileSize(const std::string& name);
 
 			unsigned int GetKeyCount() const;
 
