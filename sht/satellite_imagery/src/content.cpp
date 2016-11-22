@@ -1,15 +1,11 @@
-#include "../include/content.h"
+#include "content.h"
 
 namespace sht {
     namespace satellite_imagery {
 
-        const std::string& Content::data() const
+        std::string* Content::data()
         {
-            return data_;
-        }
-        std::string& Content::data()
-        {
-            return data_;
+            return &data_;
         }
 
     } // namespace satellite_imagery

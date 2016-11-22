@@ -1,13 +1,13 @@
-#include "../include/service_task.h"
+#include "service_task.h"
 
 namespace sht {
     namespace satellite_imagery {
 
-        ServiceTask::ServiceTask(const DataKey& key, std::shared_ptr<ObserverInterface> observer,
-                Storage * storage, CurlWrapper * curl_wrapper, IDataProvider * provider)
+        ServiceTask::ServiceTask(const DataKey& key, NotificationCenter * notification_center,
+                Storage * storage, utility::CurlWrapper * curl_wrapper, DataProviderInterface * provider)
             : key_(key)
             , storage_(storage)
-            , observer_(observer)
+            , notification_center_(notification_center)
             , curl_wrapper_(curl_wrapper)
             , data_provider_(provider)
         {

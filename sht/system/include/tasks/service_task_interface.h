@@ -8,6 +8,7 @@ namespace sht {
 		//! Service task class interface
 		class ServiceTaskInterface {
 		public:
+			ServiceTaskInterface() = default;
 			virtual ~ServiceTaskInterface() = default;
 
 			virtual bool Execute() = 0;

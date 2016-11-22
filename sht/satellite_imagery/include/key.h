@@ -5,7 +5,13 @@
 #include "raw_key.h"
 #include "packed_key.h"
 
-// Choose our main key type
-typedef PackedKey DataKey;
+namespace sht {
+	namespace satellite_imagery {
+
+		// Choose our main key type
+		typedef PackedKey DataKey;
+
+	} // namespace satellite_imagery
+} // namespace sht
 
 #endif

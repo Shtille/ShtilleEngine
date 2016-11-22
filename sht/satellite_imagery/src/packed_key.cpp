@@ -3,7 +3,7 @@
 
 namespace {
 	// Check minimum requirement
-	static_assert(sizeof(sht::satellite_imagery::PackedKey::HashType) >= 8);
+	static_assert(sizeof(sht::satellite_imagery::PackedKey::HashType) >= 8, "Packed key requires more space");
 
 	// Shifts
 	const sht::satellite_imagery::PackedKey::HashType kYShift = 28ULL;
@@ -14,8 +14,8 @@ namespace {
 	const sht::satellite_imagery::PackedKey::HashType kZMask = 0xFF00000000000000ULL;
 
 	// Do some checks whether all shifts and masks have been set right
-	static_assert((kXMask + 1ULL) == (1ULL << kYShift));
-	static_assert((kXMask + kYMask + 1ULL) == (1ULL << kZShift));
+	static_assert((kXMask + 1ULL) == (1ULL << kYShift), "Error in masks and/or shifts");
+	static_assert((kXMask + kYMask + 1ULL) == (1ULL << kZShift), "Error in masks and/or shifts");
 }
 
 namespace sht {
@@ -53,12 +53,12 @@ namespace sht {
 		{
 			return static_cast<int>((hash_ & kZMask) >> kZShift) - 1;
 		}
-		PackedKey& operator =(const PackedKey& other)
+		PackedKey& PackedKey::operator =(const PackedKey& other)
 		{
 			Set(other.x(), other.y(), other.z());
 			return *this;
 		}
-		PackedKey& operator =(const RawKey& other)
+		PackedKey& PackedKey::operator =(const RawKey& other)
 		{
 			Set(other.x(), other.y(), other.z());
 			return *this;

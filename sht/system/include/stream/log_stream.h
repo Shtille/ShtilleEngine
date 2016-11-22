@@ -5,6 +5,8 @@
 #include "file_stream.h"
 #include "../../../common/singleton.h"
 
+#include <assert.h>
+
 namespace sht {
 	namespace system {
 

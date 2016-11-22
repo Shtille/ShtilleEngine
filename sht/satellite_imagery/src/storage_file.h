@@ -3,7 +3,7 @@
 #define __SHT_SATELLITE_IMAGERY_STORAGE_FILE_H__
 
 #include "file.h"
-#include "../include/key.h"
+#include "../include/key_pair.h"
 
 namespace sht {
     namespace satellite_imagery {
@@ -25,7 +25,6 @@ namespace sht {
             static BigFileSizeType GetEstimatedFileSize(unsigned int num_tiles, unsigned int data_size);
 
             bool Flush();
-            void Shrink(const KeyOffsetMap& offsets);
 
             void MarkOperationsBegin();
             void MarkOperationsEnd();

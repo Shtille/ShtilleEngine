@@ -2,10 +2,10 @@
 #ifndef __SHT_SATELLITE_IMAGERY_KEY_REGION_H__
 #define __SHT_SATELLITE_IMAGERY_KEY_REGION_H__
 
+#include "key.h"
+
 namespace sht {
     namespace satellite_imagery {
-
-        class DataKey;
     
         //! Key region
         // NOTE: this region works only with one or none breaks

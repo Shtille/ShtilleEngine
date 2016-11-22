@@ -10,7 +10,8 @@
 #include <memory>
 
 namespace sht {
-	namespace system {
+	class NotificationCenter;
+	namespace utility {
 		class CurlWrapper;
 	}
 }
@@ -19,14 +20,13 @@ namespace sht {
 	namespace satellite_imagery {
 
 		class Content;
-		class ObserverInterface;
 		class Storage;
-		class IDataProvider;
+		class DataProviderInterface;
 
-		class ServiceTask : public ServiceTaskInterface {
+		class ServiceTask : public system::ServiceTaskInterface {
 		public:
-			explicit ServiceTask(const DataKey& key, std::shared_ptr<ObserverInterface> observer,
-				Storage * storage, CurlWrapper * curl_wrapper, IDataProvider * provider);
+			explicit ServiceTask(const DataKey& key, NotificationCenter * notification_center,
+				Storage * storage, utility::CurlWrapper * curl_wrapper, DataProviderInterface * provider);
 			virtual ~ServiceTask();
 
 			Content& content();
@@ -39,9 +39,9 @@ namespace sht {
 			DataKey key_;
 			Content content_;
 			Storage * const storage_;
-			std::weak_ptr<ObserverInterface> observer_;
-			CurlWrapper * const curl_wrapper_;
-			IDataProvider * const data_provider_;
+			NotificationCenter * const notification_center_;
+			utility::CurlWrapper * const curl_wrapper_;
+			DataProviderInterface * const data_provider_;
 		};
 
 	} // namespace satellite_imagery

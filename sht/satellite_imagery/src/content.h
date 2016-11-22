@@ -9,8 +9,7 @@ namespace sht {
 
     	class Content {
     	public:
-    		const std::string& data() const { return data_; }
-    		std::string& data() { return data_; }
+			std::string* data();
 
     	private:
     		std::string data_;

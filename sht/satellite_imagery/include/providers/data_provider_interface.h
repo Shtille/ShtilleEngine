@@ -171,7 +171,12 @@ namespace sht {
             template <typename T>
             T Clip(T x, T min_x, T max_x)
             {
-                return std::min(std::max(x, min_x), max_x);
+				if (x < min_x)
+					return min_x;
+				else if (max_x < x)
+					return max_x;
+				else
+					return x;
             }
             //! Determines the ground resolution (in meters per pixel) at a specified
             // latitude and level of detail.

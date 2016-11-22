@@ -34,7 +34,7 @@ namespace sht {
             + sizeof(unsigned int)  // block capacity
             + sizeof(unsigned int); // blocks count
 
-        static_assert(sizeof(StoredKeyPair) == sizeof(DataKey) + sizeof(StoredDataInfo));
+        static_assert(sizeof(StoredKeyPair) == sizeof(DataKey) + sizeof(StoredDataInfo), "Data sizes mismatch");
 
         const FileOffsetType StorageFile::GetMaxFileSizeTolerance()
         {
@@ -67,35 +67,35 @@ namespace sht {
         }
         void StorageFile::WriteKeyPair(const StoredKeyPair& p)
         {
-            if (0 == fwrite(&(p.first), sizeof(DataKey::HashType), 1, mFile))
+            if (0 == fwrite(&(p.first), sizeof(DataKey::HashType), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fwrite failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
-            if (0 == fwrite(&(p.second), sizeof(StoredDataInfo), 1, mFile))
+            if (0 == fwrite(&(p.second), sizeof(StoredDataInfo), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fwrite failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
         }
         void StorageFile::ReadKeyPair(StoredKeyPair *p)
         {
-            if (0 == fread(&(p->first), sizeof(DataKey::HashType), 1, mFile))
+            if (0 == fread(&(p->first), sizeof(DataKey::HashType), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fread failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
-            if (0 == fread(&(p->second), sizeof(StoredDataInfo), 1, mFile))
+            if (0 == fread(&(p->second), sizeof(StoredDataInfo), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fread failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
         }
         bool StorageFile::Flush()
         {
             if (OpenForWrite())
             {
-                mOperationSuccessful = true;
+                operation_successful_ = true;
                 blocks_count_ = 0;
                 WriteHeader();
                 Close();
@@ -103,31 +103,6 @@ namespace sht {
             }
             else
                 return false;
-        }
-        void StorageFile::Shrink(const KeyOffsetMap& offsets)
-        {
-            assert(false);
-            if (!need_to_shrink_) return;
-
-            // Main database shrink code here
-            bool fail = false;
-            if (OpenForWrite())
-            {
-                WriteHeader();
-                if (success())
-                {
-                    WriteAllKeys(offsets);
-                }
-                else
-                    fail = true;
-                Close();
-            }
-            else
-                fail = true;
-            if (fail)
-            {
-                LOG_ERROR("Satellite Imagery: storage shrink failed");
-            }
         }
         void StorageFile::WriteHeader()
         {
@@ -152,7 +127,7 @@ namespace sht {
             if (signature != kFormatSignature)
             {
                 LOG_ERROR("Satellite Imagery: wrong file signature, terminating");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
                 return false;
             }
             // Read version
@@ -271,18 +246,18 @@ namespace sht {
         }
         void StorageFile::WriteBlockKeys(const BlockKeys& keys)
         {
-            if (0 == fwrite(keys.key_offsets, sizeof(keys.key_offsets), 1, mFile))
+            if (0 == fwrite(keys.key_offsets, sizeof(keys.key_offsets), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fwrite failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
         }
         void StorageFile::ReadBlockKeys(BlockKeys *keys)
         {
-            if (0 == fread(keys->key_offsets, sizeof(keys->key_offsets), 1, mFile))
+            if (0 == fread(keys->key_offsets, sizeof(keys->key_offsets), 1, file_))
             {
                 LOG_ERROR("Satellite Imagery: fread failed");
-                mOperationSuccessful = false;
+                operation_successful_ = false;
             }
         }
         StorageFile::SaveResult StorageFile::ReplaceKey(const DataKey& key, const std::string * data,

@@ -130,6 +130,18 @@
     <Filter Include="sht\system\src\filesystem">
       <UniqueIdentifier>{a799c01e-7b92-4c57-ab30-8307e769037a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sht\satellite_imagery">
+      <UniqueIdentifier>{3e33760d-bc5f-44af-ac23-b964021c2780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\satellite_imagery\include">
+      <UniqueIdentifier>{7e0a52c3-cab0-48f1-93bf-d42a854ed58b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\satellite_imagery\src">
+      <UniqueIdentifier>{2a295a00-dcbc-46d9-a859-1301eec812da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sht\satellite_imagery\include\providers">
+      <UniqueIdentifier>{b30fbf52-b74d-4a5a-976c-e867519376f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\sht\application\application.cpp">
@@ -330,6 +342,54 @@
     <ClCompile Include="..\..\..\..\sht\system\src\filesystem\directory.cpp">
       <Filter>sht\system\src\filesystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\cache.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\content.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\content_notification.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\data_info.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\file.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\key_pair.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\key_region.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\packed_key.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\raw_key.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\regions_header_file.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\service_task.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\storage.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\storage_file.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\tile_service_task.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\satellite_imagery\src\base_service.cpp">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\system\src\filesystem\file_operations.cpp">
+      <Filter>sht\system\src\filesystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -494,9 +554,6 @@
     <ClInclude Include="..\..\..\..\sht\system\include\mouse.h">
       <Filter>sht\system\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\system\include\notification.h">
-      <Filter>sht\system\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\sht\system\include\stream\file_stream.h">
       <Filter>sht\system\include\stream</Filter>
     </ClInclude>
@@ -582,6 +639,84 @@
       <Filter>sht\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\system\include\filesystem\directory.h">
+      <Filter>sht\system\include\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\cache.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\content_notification.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\data_info.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\defines.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\key.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\key_pair.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\key_region.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\packed_key.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\raw_key.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\region_info.h">
+      <Filter>sht\satellite_imagery\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\providers\arcgis_data_provider.h">
+      <Filter>sht\satellite_imagery\include\providers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\providers\basemap_data_provider.h">
+      <Filter>sht\satellite_imagery\include\providers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\providers\bing_data_provider.h">
+      <Filter>sht\satellite_imagery\include\providers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\providers\data_provider_interface.h">
+      <Filter>sht\satellite_imagery\include\providers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\providers\digital_globe_data_provider.h">
+      <Filter>sht\satellite_imagery\include\providers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\file.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\regions_header_file.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\service_task.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\storage.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\storage_file.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\tile_service.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\tile_service_task.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\base_service.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\content.h">
+      <Filter>sht\satellite_imagery\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\common\notification.h">
+      <Filter>sht\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\system\include\filesystem\file_operations.h">
       <Filter>sht\system\include\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
