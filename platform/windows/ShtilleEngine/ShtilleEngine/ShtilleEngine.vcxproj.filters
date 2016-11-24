@@ -644,9 +644,6 @@
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\cache.h">
       <Filter>sht\satellite_imagery\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\content_notification.h">
-      <Filter>sht\satellite_imagery\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\data_info.h">
       <Filter>sht\satellite_imagery\include</Filter>
     </ClInclude>
@@ -718,6 +715,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\system\include\filesystem\file_operations.h">
       <Filter>sht\system\include\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\content_notification.h">
+      <Filter>sht\satellite_imagery\src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

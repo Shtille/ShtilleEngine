@@ -2,7 +2,7 @@
 #ifndef __SHT_SATELLITE_IMAGERY_CONTENT_NOTIFICATION_H__
 #define __SHT_SATELLITE_IMAGERY_CONTENT_NOTIFICATION_H__
 
-#include "key.h"
+#include "../include/key.h"
 #include "../../common/notification.h"
 
 namespace sht {

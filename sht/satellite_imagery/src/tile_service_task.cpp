@@ -1,7 +1,7 @@
 #include "tile_service_task.h"
 
 #include "../include/providers/data_provider_interface.h"
-#include "../include/content_notification.h"
+#include "content_notification.h"
 #include "content.h"
 #include "storage.h"
 

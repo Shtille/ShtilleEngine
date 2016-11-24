@@ -165,7 +165,6 @@
     <ClInclude Include="..\..\..\..\sht\platform\src\platform_inner.h" />
     <ClInclude Include="..\..\..\..\sht\platform\src\window_struct.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\cache.h" />
-    <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\content_notification.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\data_info.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\defines.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\key.h" />
@@ -180,6 +179,7 @@
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\raw_key.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\include\region_info.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\content.h" />
+    <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\content_notification.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\file.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\regions_header_file.h" />
     <ClInclude Include="..\..\..\..\sht\satellite_imagery\src\base_service.h" />

@@ -1,4 +1,4 @@
-#include "../include/content_notification.h"
+#include "content_notification.h"
 
 namespace sht {
     namespace satellite_imagery {
