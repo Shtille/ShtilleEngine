@@ -29,12 +29,14 @@ namespace sht {
 			if (!info)
 			{
 				error_log->PrintString("png_create_info_struct failed during saving '%s'\n", filename);
+				png_destroy_write_struct(&png, NULL, NULL);
 				return false;
 			}
 
 			if (setjmp(png_jmpbuf(png)))
 			{
 				error_log->PrintString("set_jmp failed during saving '%s'\n", filename);
+				png_destroy_write_struct(&png, NULL, NULL);
 				return false;
 			}
 
@@ -57,21 +59,24 @@ namespace sht {
 			// Use png_set_filler().
 			//png_set_filler(png, 0, PNG_FILLER_AFTER);
 			png_bytepp row_pointers = new png_bytep[height_];
+			int row_stride = width_ * bpp_;
             if (inverted_row_order_)
             {
-                for(int y = 0; y < height_; ++y)
-                    row_pointers[height_-1-y] = (png_bytep)&pixels_[y*width_*bpp_];
+                for(int y = height_-1; y >= 0; --y)
+                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
             }
             else // normal row order
             {
                 for(int y = 0; y < height_; ++y)
-                    row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
             }
 
 			png_write_image(png, row_pointers);
 			png_write_end(png, NULL);
 			
 			delete[] row_pointers;
+
+			png_destroy_write_struct(&png, NULL, NULL);
 
             stream.Close();
 
@@ -100,12 +105,14 @@ namespace sht {
 			if (!info)
 			{
 				error_log->PrintString("png_create_info_struct failed during loading '%s'\n", filename);
+				png_destroy_read_struct(&png, NULL, NULL);
 				return false;
 			}
 
 			if (setjmp(png_jmpbuf(png)))
 			{
 				error_log->PrintString("setjmp failed during loading '%s'\n", filename);
+				png_destroy_read_struct(&png, NULL, NULL);
 				return false;
 			}
 
@@ -155,21 +162,25 @@ namespace sht {
 			pixels_ = new u8[image_size];
 			
 			png_bytepp row_pointers = new png_bytep[height_];
+			int row_stride = width_ * bpp_;
             
             if (inverted_row_order_)
             {
-                for(int y = 0; y < height_; ++y)
-                    row_pointers[height_-1-y] = (png_bytep)&pixels_[y*width_*bpp_];
+                for(int y = height_-1; y >= 0; --y)
+                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
             }
             else // normal row order
             {
                 for(int y = 0; y < height_; ++y)
-                    row_pointers[y] = (png_bytep)&pixels_[y*width_*bpp_];
+                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
             }
 
 			png_read_image(png, row_pointers);
+			png_read_end(png, NULL);
 			
 			delete[] row_pointers;
+
+			png_destroy_read_struct(&png, NULL, NULL);
 
             stream.Close();
 
