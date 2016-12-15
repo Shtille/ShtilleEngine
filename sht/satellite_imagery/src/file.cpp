@@ -43,7 +43,8 @@ namespace sht {
                 fclose(file_);
                 was_open_for_write_ = false;
             }
-            if (file_ = fopen(GetFileName().c_str(), "wb"))
+			file_ = fopen(GetFileName().c_str(), "wb");
+            if (file_)
             {
                 was_open_for_write_ = true;
                 operation_successful_ = true;
@@ -59,7 +60,8 @@ namespace sht {
         {
             if (!file_)
             {
-                if (file_ = fopen(GetFileName().c_str(), "rb+")) // we will also use this option to update the file
+				file_ = fopen(GetFileName().c_str(), "rb+"); // we will also use this option to update the file
+                if (file_)
                 {
                     operation_successful_ = true;
                     return true;

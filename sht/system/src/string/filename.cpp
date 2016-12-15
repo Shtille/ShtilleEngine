@@ -46,7 +46,7 @@ namespace sht {
 			{
 				ext = filename_.substr(found+1);
 				char* p = &ext[0];
-				while ((*p = tolower(*p))) ++p;
+				while ((*p = (char)tolower(*p))) ++p;
 			}
 			return ext;
 		}

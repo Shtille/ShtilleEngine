@@ -3,7 +3,7 @@
 #include "../../application/application.h"
 #include "../../system/include/time/update_timer.h"
 
-int MainWrapper(int argc, const char** argv)
+int MainWrapper(int, const char**)
 {
 	if (!PlatformInit())
 		return 1;

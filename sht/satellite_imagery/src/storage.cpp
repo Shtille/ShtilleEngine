@@ -422,7 +422,7 @@ namespace sht {
 
             // Need to reinitialize key set
             {//---
-                std::lock_guard<std::mutex> guard(key_set_mutex_);
+                std::lock_guard<std::mutex> guard_key_set(key_set_mutex_);
                 InitializeKeySet();
             }//---
 

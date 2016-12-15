@@ -42,7 +42,7 @@ namespace sht {
 				nodes_.remove(widget);
                 widget->parent_ = nullptr;
 			}
-			void Widget::Update(f32 sec)
+			void Widget::Update(f32)
 			{
 				
 			}

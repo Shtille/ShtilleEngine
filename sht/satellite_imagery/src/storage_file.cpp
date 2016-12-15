@@ -208,7 +208,7 @@ namespace sht {
             FileOffsetType block_offset = Tell();
 
             // Assumed that we've read the header
-            for (unsigned int i = 0; i < blocks_count_; ++i)
+            for (unsigned int j = 0; j < blocks_count_; ++j)
             {
                 // Seek to the block position
                 OffsetFromBeginning(block_offset);
