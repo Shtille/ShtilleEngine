@@ -222,6 +222,30 @@ namespace sht {
 				return false;
 			}
 		}
+		bool Image::LoadFromBuffer(const char* buffer, size_t length)
+		{
+			// TODO: We need to recognize image type from buffer
+			assert(false);
+			FileFormat fmt = Image::FileFormat::kJpg;
+			switch (fmt)
+			{
+			case Image::FileFormat::kBmp:
+				return LoadFromBufferBmp(buffer, length);
+			case Image::FileFormat::kJpg:
+				return LoadFromBufferJpeg(buffer, length);
+			case Image::FileFormat::kPng:
+				return LoadFromBufferPng(buffer, length);
+			case Image::FileFormat::kTga:
+				return LoadFromBufferTga(buffer, length);
+			case Image::FileFormat::kTif:
+				return LoadFromBufferTiff(buffer, length);
+			case Image::FileFormat::kHdr:
+				return LoadFromBufferHdr(buffer, length);
+			default:
+				assert(!"unknown image format");
+				return false;
+			}
+		}
 		bool Image::LoadCubemapFromFile(const char* filename, int ind)
 		{
 			if (!LoadFromFile(filename))

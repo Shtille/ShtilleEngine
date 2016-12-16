@@ -14,6 +14,11 @@ namespace sht {
 			assert(!"not implemented yet");
 			return true;
 		}
+		bool Image::LoadFromBufferHdr(const char *buffer, size_t size)
+		{
+			assert(!"not implemented yet");
+			return true;
+		}
 
 	} // namespace graphics
 } // namespace sht

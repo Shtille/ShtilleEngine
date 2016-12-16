@@ -29,14 +29,14 @@ namespace sht {
 			if (!info)
 			{
 				error_log->PrintString("png_create_info_struct failed during saving '%s'\n", filename);
-				png_destroy_write_struct(&png, NULL, NULL);
+				png_destroy_write_struct(&png, NULL);
 				return false;
 			}
 
 			if (setjmp(png_jmpbuf(png)))
 			{
 				error_log->PrintString("set_jmp failed during saving '%s'\n", filename);
-				png_destroy_write_struct(&png, NULL, NULL);
+				png_destroy_write_struct(&png, NULL);
 				return false;
 			}
 
@@ -63,12 +63,12 @@ namespace sht {
             if (inverted_row_order_)
             {
                 for(int y = height_-1; y >= 0; --y)
-                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
+                    row_pointers[y] = (png_bytep)(pixels_ + y*row_stride);
             }
             else // normal row order
             {
                 for(int y = 0; y < height_; ++y)
-                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
+                    row_pointers[y] = (png_bytep)(pixels_ + y*row_stride);
             }
 
 			png_write_image(png, row_pointers);
@@ -76,7 +76,7 @@ namespace sht {
 			
 			delete[] row_pointers;
 
-			png_destroy_write_struct(&png, NULL, NULL);
+			png_destroy_write_struct(&png, NULL);
 
             stream.Close();
 
@@ -167,12 +167,12 @@ namespace sht {
             if (inverted_row_order_)
             {
                 for(int y = height_-1; y >= 0; --y)
-                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
+                    row_pointers[y] = (png_bytep)(pixels_ + y*row_stride);
             }
             else // normal row order
             {
                 for(int y = 0; y < height_; ++y)
-                    row_pointers[y] = (png_bytep)(pixels + y*row_stride);
+                    row_pointers[y] = (png_bytep)(pixels_ + y*row_stride);
             }
 
 			png_read_image(png, row_pointers);
@@ -184,6 +184,11 @@ namespace sht {
 
             stream.Close();
 
+			return true;
+		}
+		bool Image::LoadFromBufferPng(const char *buffer, size_t size)
+		{
+			assert(!"not implemented yet");
 			return true;
 		}
 
