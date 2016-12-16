@@ -222,7 +222,7 @@ namespace sht {
 				return false;
 			}
 		}
-		bool Image::LoadFromBuffer(const char* buffer, size_t length)
+		bool Image::LoadFromBuffer(const u8* buffer, size_t length)
 		{
 			// TODO: We need to recognize image type from buffer
 			assert(false);

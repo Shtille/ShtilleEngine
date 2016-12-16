@@ -14,7 +14,7 @@ namespace sht {
 			assert(!"not implemented yet");
 			return true;
 		}
-		bool Image::LoadFromBufferTiff(const char *buffer, size_t size)
+		bool Image::LoadFromBufferTiff(const u8* buffer, size_t length)
 		{
 			assert(!"not implemented yet");
 			return true;

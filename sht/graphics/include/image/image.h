@@ -49,7 +49,7 @@ namespace sht {
 			bool Save(const char* filename);							//!< saves image to file with specified format
 
 			bool LoadFromFile(const char* filename);					//!< loads image from file
-			bool LoadFromBuffer(const char* buffer, size_t length);		//!< loads image from buffer
+			bool LoadFromBuffer(const u8* buffer, size_t length);		//!< loads image from buffer
 			bool LoadCubemapFromFile(const char* filename, int ind);	//!< loads cubemap part with specified index from file
 			bool LoadNMapFromHMap(const char* filename);				//!< loads normalmap from heightmap file
 			bool LoadNHMapFromHMap(const char* filename);				//!< loads normalheightmap from heightmap file
@@ -77,12 +77,12 @@ namespace sht {
 			bool LoadHdr(const char *filename);
 
 			// Load from buffer routines
-			bool LoadFromBufferJpeg(const char *buffer, size_t size);
-			bool LoadFromBufferPng(const char *buffer, size_t size);
-			bool LoadFromBufferBmp(const char *buffer, size_t size);
-			bool LoadFromBufferTiff(const char *buffer, size_t size);
-			bool LoadFromBufferTga(const char *buffer, size_t size);
-			bool LoadFromBufferHdr(const char *buffer, size_t size);
+			bool LoadFromBufferJpeg(const u8* buffer, size_t length);
+			bool LoadFromBufferPng(const u8* buffer, size_t length);
+			bool LoadFromBufferBmp(const u8* buffer, size_t length);
+			bool LoadFromBufferTiff(const u8* buffer, size_t length);
+			bool LoadFromBufferTga(const u8* buffer, size_t length);
+			bool LoadFromBufferHdr(const u8* buffer, size_t length);
 
 		private:
 
