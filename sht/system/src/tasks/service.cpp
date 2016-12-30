@@ -24,8 +24,9 @@ namespace sht {
 		void Service::StopService()
 		{
 			{//---
-				std::lock_guard<std::mutex> guard(mutex_);
+				std::unique_lock<std::mutex> guard(mutex_);
 				finishing_ = true;
+				condition_variable_.notify_one();
 			}//---
 			thread_->join();
 			delete thread_;
@@ -40,17 +41,19 @@ namespace sht {
 		}
 		void Service::ClearTasks()
 		{
-			std::lock_guard<std::mutex> guard(mutex_);
+			std::unique_lock<std::mutex> guard(mutex_);
 			while (!tasks_.empty())
 			{
 				delete tasks_.front();
 				tasks_.pop_front();
 			}
+			condition_variable_.notify_one();
 		}
 		void Service::AddTask(ServiceTaskInterface * task)
 		{
-			std::lock_guard<std::mutex> guard(mutex_);
+			std::unique_lock<std::mutex> guard(mutex_);
 			tasks_.push_back(task);
+			condition_variable_.notify_one();
 		}
 		void Service::ThreadFunc()
 		{
@@ -74,7 +77,9 @@ namespace sht {
 
 				if (task == nullptr)
 				{
-					std::this_thread::yield();
+					std::unique_lock<std::mutex> guard(mutex_);
+					while (!finishing_ && tasks_.empty())
+						condition_variable_.wait(guard);
 					continue;
 				}
 

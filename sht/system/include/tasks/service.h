@@ -3,6 +3,7 @@
 #define __SHT_SYSTEM_SERVICE_H__
 
 #include <mutex>
+#include <condition_variable>
 #include <thread>
 #include <list>
 
@@ -27,6 +28,7 @@ namespace sht {
 			virtual void ThreadFunc();
 
 			std::mutex mutex_;
+			std::condition_variable condition_variable_;
 			std::thread * thread_;
 			std::list<ServiceTaskInterface*> tasks_;
 			bool finishing_;
