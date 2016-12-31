@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="deps">
+      <UniqueIdentifier>{0bc3398f-f49c-4c76-b207-81a06a828940}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{07fed3da-61d3-40d5-ac81-d15869875458}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{3a8c0600-5ba9-4959-9724-4d0cdd439416}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\rasterizer">
+      <UniqueIdentifier>{4d1e1657-a705-47c4-826c-27733d277c29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\util">
+      <UniqueIdentifier>{3ac42268-35eb-4ad8-9153-d048c7b3f808}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\deps\tinycthread.c">
+      <Filter>deps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_file_op.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_list.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_map.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_memory.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_set.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_stack.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_string.c">
+      <Filter>src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_buffer.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_cache_info_list.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_info.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_info_pair.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_map.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_data_pair.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_data_pair_list.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_decoder_jpeg.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_decoder_png.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_mercator.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_rasterizer.c">
+      <Filter>src\rasterizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_cache.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_curl_wrapper.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_data_key.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_file.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_offset_map.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_pair.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_region.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_set.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_manager.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_map_nodes_list.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_provider.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_info.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_map.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_map_pair.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_service.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_service_task.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_regions_header_file.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_file.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info_map.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info_pair.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_tile_service.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_tile_service_task.c">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\deps\tinycthread.h">
+      <Filter>deps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\include\saim.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\include\saim_provider_info.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_file_op.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_list.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_map.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_memory.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_set.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_stack.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\util\saim_string.h">
+      <Filter>src\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_buffer.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_cache_info.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_cache_info_list.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_info.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_info_pair.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_bitmap_map.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_data_pair.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_data_pair_list.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_decoder_jpeg.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_decoder_png.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_mercator.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\rasterizer\saim_rasterizer.h">
+      <Filter>src\rasterizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_cache.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_curl_wrapper.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_data_info.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_data_key.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_defines.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_file.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_offset_map.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_pair.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_region.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_key_set.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_manager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_map_nodes_list.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_provider.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_info.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_map.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_map_pair.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_service.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_region_service_task.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_regions_header_file.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_file.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info_map.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_storage_info_pair.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_tile_service.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\thirdparty\libsaim\src\saim_tile_service_task.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
