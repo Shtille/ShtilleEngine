@@ -61,6 +61,12 @@ static size_t s_allocated_bytes = 0;
 
 #endif
 
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+
+static saim_user_memory_functions s_user_functions;
+
+#endif
+
 bool saim_memory_init()
 {
 #ifdef SAIM_MEMORY_DEBUG
@@ -71,6 +77,9 @@ bool saim_memory_init()
 	}
 	s_number_allocated = 0;
 	s_allocated_bytes = 0;
+#endif
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+	memset(&s_user_functions, 0, sizeof(saim_user_memory_functions));
 #endif
 	return true;
 }
@@ -168,3 +177,32 @@ char * saim_strdup(const char* str, const char* filename, int line)
 #endif
 	return strdup(str);
 }
+
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+
+saim_user_memory_functions * saim_memory_get_functions_ptr()
+{
+	return &s_user_functions;
+}
+void * saim_user_malloc(size_t size)
+{
+	return s_user_functions->user_malloc(size);
+}
+void * saim_user_calloc(size_t num, size_t size)
+{
+	return s_user_functions->user_calloc(num, size);
+}
+void * saim_user_realloc(void * what, size_t size)
+{
+	return s_user_functions->user_realloc(what, size);
+}
+void saim_user_free(void * what)
+{
+	s_user_functions->user_free(what);
+}
+char * saim_user_strdup(const char* str)
+{
+	return s_user_functions->user_strdup(str);
+}
+
+#endif

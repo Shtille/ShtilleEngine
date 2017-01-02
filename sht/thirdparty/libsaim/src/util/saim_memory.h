@@ -28,7 +28,8 @@
 #define __SAIM_MEMORY_H__
 
 /*
-* Debug versions of memory allocation and freeing functions
+* Debug versions of memory allocation and freeing functions.
+* Note: user should define SAIM_USING_USER_MEMORY_FUNCTIONS to enable functionality.
 */
 
 #include <stdbool.h>
@@ -46,6 +47,35 @@ void * saim_calloc(size_t num, size_t size, const char* filename, int line);
 void * saim_realloc(void * what, size_t size, const char* filename, int line);
 void saim_free(void * what);
 char * saim_strdup(const char* str, const char* filename, int line);
+
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+
+typedef struct {
+	void* (*user_malloc)(size_t /*size*/);
+	void* (*user_calloc)(size_t /*num*/, size_t /*size*/);
+	void* (*user_realloc)(void* /*what*/, size_t /*size*/);
+	void (*user_free)(void* /*what*/);
+	char* (*user_strdup)(const char* /*str*/);
+} saim_user_memory_functions;
+
+saim_user_memory_functions * saim_memory_get_functions_ptr();
+void * saim_user_malloc(size_t size);
+void * saim_user_calloc(size_t num, size_t size);
+void * saim_user_realloc(void * what, size_t size);
+void saim_user_free(void * what);
+char * saim_user_strdup(const char* str);
+#endif
+
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+
+#define SAIM_MALLOC(size)		saim_user_malloc(size)
+#define SAIM_CALLOC(num,size)	saim_user_calloc(num,size)
+#define SAIM_REALLOC(what,size)	saim_user_realloc(what,size)
+#define SAIM_FREE(what)			saim_user_free(what)
+
+#define SAIM_STRDUP(str)		saim_user_strdup(str)
+
+#else // !SAIM_USING_USER_MEMORY_FUNCTIONS
 
 #ifndef NDEBUG // debug
 
@@ -87,5 +117,7 @@ char * saim_strdup(const char* str, const char* filename, int line);
 #define SAIM_STRDUP(str)		strdup(str)
 
 #endif // NDEBUG
+
+#endif // SAIM_USING_USER_MEMORY_FUNCTIONS
 
 #endif

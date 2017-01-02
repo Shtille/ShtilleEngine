@@ -28,9 +28,11 @@
 
 #include "saim_manager.h"
 #include "rasterizer/saim_rasterizer.h"
+#include "util/saim_memory.h"
 
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 char s_path[260];
 
@@ -92,6 +94,29 @@ void saim_set_target(unsigned char * buffer, int width, int height, int bytes_pe
 	s_rasterizer->target_width = width;
 	s_rasterizer->target_height = height;
 	s_rasterizer->target_bpp = bytes_per_pixel;
+}
+void saim_set_bitmap_cache_size(unsigned int size)
+{
+	s_rasterizer->max_bitmap_cache_size = size;
+}
+void saim_set_memory_functions(
+	void* (*user_malloc)(size_t /*size*/),
+	void* (*user_calloc)(size_t /*num*/, size_t /*size*/),
+	void* (*user_realloc)(void* /*what*/, size_t /*size*/),
+	void(*user_free)(void* /*what*/),
+	char* (*user_strdup)(const char* /*str*/)
+)
+{
+#ifdef SAIM_USING_USER_MEMORY_FUNCTIONS
+	saim_user_memory_functions * funcs = saim_memory_get_functions_ptr();
+	funcs->user_malloc = user_malloc;
+	funcs->user_calloc = user_calloc;
+	funcs->user_realloc = user_realloc;
+	funcs->user_free = user_free;
+	funcs->user_strdup = user_strdup;
+#else
+	assert(!"You should define SAIM_USING_USER_MEMORY_FUNCTIONS to use this function");
+#endif
 }
 int saim_render_aligned(double upper_latitude, double left_longitude, double lower_latitude, double right_longitude)
 {

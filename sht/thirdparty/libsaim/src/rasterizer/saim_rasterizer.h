@@ -59,6 +59,7 @@ typedef struct {
 	int render_counter;                 //!< counter for optimal cache sort
 	int sort_shift_counter;             //!< counter to not do sort every frame
 	saim_bitmap_cache_info_list bitmap_cache;
+	unsigned int max_bitmap_cache_size; //!< maximum bitmap cache size
 } saim_rasterizer;
 
 bool saim_rasterizer__create(saim_rasterizer * rasterizer);

@@ -43,6 +43,8 @@ extern saim_rasterizer * s_rasterizer;
 
 bool saim_rasterizer__create(saim_rasterizer * rasterizer)
 {
+	const unsigned int kDefaultBitmapCapacity = 500;
+
 	if (mtx_init(&rasterizer->mutex, mtx_plain) == thrd_error)
 	{
 		fprintf(stderr, "saim: mutex init failed\n");
@@ -65,6 +67,7 @@ bool saim_rasterizer__create(saim_rasterizer * rasterizer)
 	rasterizer->y_pixels = 0;
 	rasterizer->render_counter = 0;
 	rasterizer->sort_shift_counter = 0;
+	rasterizer->max_bitmap_cache_size = kDefaultBitmapCapacity;
 
 	return true;
 }
@@ -335,8 +338,7 @@ void saim_rasterizer__data_transform(saim_rasterizer * rasterizer)
 		// Check for skipped data
 		if (pair->data.length != 0)
 		{
-			const unsigned int kBitmapCapacity = 500;
-			if (saim_bitmap_map__size(&rasterizer->bitmap_map) == kBitmapCapacity)
+			if (saim_bitmap_map__size(&rasterizer->bitmap_map) == rasterizer->max_bitmap_cache_size)
 			{
 				// Our cache is full, so we gonna replace existing bitmaps
 				info = saim_bitmap_cache_info_list__pop_front(&rasterizer->bitmap_cache);
