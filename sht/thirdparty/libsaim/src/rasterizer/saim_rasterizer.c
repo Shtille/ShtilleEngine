@@ -141,37 +141,35 @@ int saim_rasterizer__render_mapped_cube(saim_rasterizer * rasterizer,
 		fprintf(stderr, "saim: target buffer hasn't been set\n");
 		return -1;
 	}
-	// Calculate min max
-	saim_cube_point_to_lat_lon(face, u_min, v_min, &min_latitude, &min_longitude);
+	double points[8][2] = {
+		// Angular points
+		{ u_min, v_min },
+		{ u_max, v_min },
+		{ u_max, v_max },
+		{ u_min, v_max },
+		// Middle points
+		{ u_min, 0.5*(v_min + v_max) },
+		{ u_max, 0.5*(v_min + v_max) },
+		{ 0.5*(u_min + u_max), v_min },
+		{ 0.5*(u_min + u_max), v_max }
+	};
+	saim_cube_point_to_lat_lon(face, points[0][0], points[0][1], &min_latitude, &min_longitude);
+	min_longitude = saim_normalized_longitude(min_longitude);
 	max_latitude = min_latitude;
 	max_longitude = min_longitude;
-	saim_cube_point_to_lat_lon(face, u_max, v_min, &latitude, &longitude);
-	if (latitude < min_latitude)
-		min_latitude = latitude;
-	if (longitude < min_longitude)
-		min_longitude = longitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
-	saim_cube_point_to_lat_lon(face, u_max, v_max, &latitude, &longitude);
-	if (latitude < min_latitude)
-		min_latitude = latitude;
-	if (longitude < min_longitude)
-		min_longitude = longitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
-	saim_cube_point_to_lat_lon(face, u_min, v_max, &latitude, &longitude);
-	if (latitude < min_latitude)
-		min_latitude = latitude;
-	if (longitude < min_longitude)
-		min_longitude = longitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
-	if (latitude > max_latitude)
-		max_latitude = latitude;
+	for (int i = 1; i < 8; ++i)
+	{
+		saim_cube_point_to_lat_lon(face, points[i][0], points[i][1], &latitude, &longitude);
+		longitude = saim_normalized_longitude(longitude);
+		if (latitude < min_latitude)
+			min_latitude = latitude;
+		if (longitude < min_longitude)
+			min_longitude = longitude;
+		if (latitude > max_latitude)
+			max_latitude = latitude;
+		if (longitude > max_longitude)
+			max_longitude = longitude;
+	}
 	// Request tiles to load and process loaded ones
 	saim_rasterizer__pre_render(rasterizer,
 		max_latitude, min_longitude, min_latitude, max_longitude,
