@@ -300,11 +300,13 @@ namespace sht {
 			// Vertex shader
 			shader->Uniform4fv("u_stuv_scale", renderable_->stuv_scale_);
 			shader->Uniform4fv("u_stuv_position", renderable_->stuv_position_);
-			shader->Uniform1f("u_skirt_height", renderable_->mDistance);
+			shader->Uniform1f("u_skirt_height", renderable_->distance_);
 			shader->UniformMatrix3fv("u_face_transform", face_transform);
 
 			// Fragment shader
 			shader->Uniform4fv("u_color", renderable_->color_);
+
+			renderable_->GetMapTile()->BindTexture();
 
 			owner_->cube_->tile_->Render();
 		}

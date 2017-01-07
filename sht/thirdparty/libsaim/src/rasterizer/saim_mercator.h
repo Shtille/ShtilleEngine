@@ -76,4 +76,6 @@ void saim_lat_long_to_tile_xy(double latitude, double longitude, int level_of_de
 // @return Optimal level of detail
 int saim_get_optimal_level_of_detail(double screen_pixel_size_x);
 
+void saim_cube_point_to_lat_lon(int face, double u, double v, double* latitude, double* longitude);
+
 #endif

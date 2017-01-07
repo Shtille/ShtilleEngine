@@ -99,3 +99,52 @@ int saim_get_optimal_level_of_detail(double screen_pixel_size_x)
 	return clip_int((int)(log((360.0/(double)s_provider->bitmap_width)/screen_pixel_size_x) * kInvLog2) + 1,
 		s_provider->min_lod, s_provider->max_lod);
 }
+void saim_cube_point_to_lat_lon(int face, double u, double v, double* latitude, double* longitude)
+{
+	double length;
+	double x1, y1, z1;
+	double x, y, z;
+	// (u, v, 1) -> (x, y, z)
+	length = sqrt(u*u + v*v + 1.0);
+	x1 = u / length;
+	y1 = v / length;
+	z1 = 1.0 / length;
+	// Transform vector to face
+	switch (face)
+	{
+	case 0:
+		x = z1;
+		y = y1;
+		z = x1;
+		break;
+	case 1:
+		x = -z1;
+		y = y1;
+		z = -x1;
+		break;
+	case 2:
+		x = x1;
+		y = z1;
+		z = y1;
+		break;
+	case 3:
+		x = x1;
+		y = -z1;
+		z = -y1;
+		break;
+	case 4:
+		x = -x1;
+		y = y1;
+		z = z1;
+		break;
+	case 5:
+		x = x1;
+		y = y1;
+		z = -z1;
+		break;
+	}
+	// Transform sphere point to latitude and longitude
+	const double kRadToDeg = 180.0 / M_PI;
+	*latitude = asin(y) * kRadToDeg;
+	*longitude = atan2(-z, x) * kRadToDeg;
+}

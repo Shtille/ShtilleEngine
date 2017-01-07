@@ -177,6 +177,10 @@ namespace sht {
 				ApiAddTexture(texture, image, wrap, filt);
 			return texture != nullptr;
 		}
+		void Renderer::AddTextureFromImage(Texture* &texture, const Image& image, Texture::Wrap wrap, Texture::Filter filt)
+		{
+			ApiAddTexture(texture, image, wrap, filt);
+		}
 		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filename)
 		{
 			texture = nullptr;

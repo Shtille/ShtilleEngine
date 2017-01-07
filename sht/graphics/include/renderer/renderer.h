@@ -54,6 +54,9 @@ namespace sht {
 			bool AddTexture(Texture* &texture, const char* filename,
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
 				Texture::Filter filt = Texture::Filter::kTrilinear);
+			void AddTextureFromImage(Texture* &texture, const Image& image,
+				Texture::Wrap wrap = Texture::Wrap::kRepeat,
+				Texture::Filter filt = Texture::Filter::kTrilinear);
 			bool AddTextureCubemap(Texture* &texture, const char* filename);
 			bool CreateTextureNormalMapFromHeightMap(Texture* &texture, const char* filename,
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
@@ -146,7 +149,7 @@ namespace sht {
             virtual void CullFace(CullFaceType mode) = 0;
 
 		protected:
-			virtual void ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
+			virtual void ApiAddTexture(Texture* &tex, const Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
 			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
             virtual void ApiViewport(int width, int height) = 0;

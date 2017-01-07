@@ -120,19 +120,23 @@ namespace sht {
 		{
 			return pixels_;
 		}
-		Image::Format Image::format()
+		const u8* Image::pixels() const
+		{
+			return pixels_;
+		}
+		Image::Format Image::format() const
 		{
 			return format_;
 		}
-		int Image::width()
+		int Image::width() const
 		{
 			return width_;
 		}
-		int Image::height()
+		int Image::height() const
 		{
 			return height_;
 		}
-		int Image::bpp()
+		int Image::bpp() const
 		{
 			return bpp_;
 		}

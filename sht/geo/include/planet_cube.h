@@ -36,13 +36,9 @@ namespace sht {
 			math::Vector3 camera_front;
 
 			math::Vector3 sphere_plane;
-			float sphere_clip;
 
 			float geo_factor;
-			float geo_factor_squared;
-
 			float tex_factor;
-			float tex_factor_squared;
 		};
 
 		//! Planet rendering class
@@ -58,10 +54,10 @@ namespace sht {
 			};
 
 			struct RequestType {
-				PlanetTreeNode* mNode;
-				int mType;
+				PlanetTreeNode* node;
+				int type;
 
-				RequestType(PlanetTreeNode* node, int type) : mNode(node), mType(type) {};
+				RequestType(PlanetTreeNode* node, int type) : node(node), type(type) {};
 			};
 
 			class RequestComparePriority {

@@ -48,7 +48,7 @@ namespace sht {
 
 			glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 		}
-		void OpenGlRenderer::ApiAddTexture(Texture* &tex, Image &img, Texture::Wrap wrap, Texture::Filter filt)
+		void OpenGlRenderer::ApiAddTexture(Texture* &tex, const Image &img, Texture::Wrap wrap, Texture::Filter filt)
 		{
 			tex = new OpenGlTexture();
 			tex->width_ = img.width();

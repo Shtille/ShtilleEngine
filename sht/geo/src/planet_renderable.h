@@ -29,24 +29,9 @@ namespace sht {
 
 			PlanetMapTile * GetMapTile();
 
-			math::Vector3 mCenter;
-			math::Vector3 mSurfaceNormal;
-
-			float mChildDistance;
-			float mChildDistanceSquared;
-			float mLODDifference;
-			float mDistance;
-			float mDistanceSquared;
-
-			PlanetMapTile* mMapTile;
-			//Image* mMap;
-			const PlanetTreeNode * mNode;
-
-			bool mIsInLODRange;
-			bool mIsClipped;
-			bool mIsInMIPRange;
-			bool mIsFarAway;
-			float mLODPriority; //!< priority for nodes queue processing
+			float child_distance_;
+			float lod_difference_;
+			float distance_;
 
 			// Additional params to map to shader
 			math::Vector4 stuv_scale_;
@@ -57,10 +42,22 @@ namespace sht {
 			void AnalyzeTerrain();
 			void InitDisplacementMapping();
 
+			PlanetMapTile* map_tile_;
+			//Image* mMap;
+			const PlanetTreeNode * node_;
+
 			math::BoundingBox bounding_box_; //!< bounding box in world coordinates
 			math::Vector3 corner_points_[5]; //!< points in the corners of node
 
-			float scale_factor_;
+			math::Vector3 center_;
+			math::Vector3 surface_normal_;
+
+			float lod_priority_; //!< priority for nodes queue processing
+
+			bool is_in_lod_range_;
+			bool is_in_mip_range_;
+			bool is_clipped_;
+			bool is_far_away_;
 		};
 
 	} // namespace geo

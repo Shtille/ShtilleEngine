@@ -19,6 +19,7 @@ namespace sht {
 		class PlanetTreeNode : public NonCopyable {
 			friend class PlanetCube;
 			friend class PlanetRenderable;
+			friend class PlanetMap;
 			friend class PlanetTreeNodeCompareLastOpened;
 		public:
 			enum Slot { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
@@ -78,6 +79,7 @@ namespace sht {
 		class PlanetTree : public NonCopyable {
 			friend class PlanetTreeNode;
 			friend class PlanetRenderable;
+			friend class PlanetMap;
 		public:
 			explicit PlanetTree(PlanetCube * cube, int face);
 			virtual ~PlanetTree();

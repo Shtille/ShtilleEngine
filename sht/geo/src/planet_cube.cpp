@@ -27,14 +27,14 @@ namespace sht {
 			for (int i = 0; i < kNumFaces; ++i)
 				faces_[i] = new PlanetTree(this, i);
 			tile_ = new PlanetTileMesh(renderer, grid_size_);
-			map_ = new PlanetMap();
+			map_ = new PlanetMap(renderer);
 		}
 		PlanetCube::~PlanetCube()
 		{
-			delete map_;
-			delete tile_;
 			for (int i = 0; i < kNumFaces; ++i)
 				delete faces_[i];
+			delete tile_;
+			delete map_; // should be deleted after faces are done
 		}
 		bool PlanetCube::Initialize()
 		{
@@ -42,6 +42,8 @@ namespace sht {
 	        tile_->Create();
 	        if (!tile_->MakeRenderable())
 	            return false;
+			if (!map_->Initialize())
+				return false;
 			return true;
 		}
 		void PlanetCube::SetParameters(float fovy_in_radians, int screen_height)
@@ -50,11 +52,9 @@ namespace sht {
 
 			float geo_detail = std::max(1.0f, kGeoDetail);
 			lod_params_.geo_factor = screen_height / (geo_detail * fov);
-			lod_params_.geo_factor_squared = lod_params_.geo_factor * lod_params_.geo_factor;
 
 			float tex_detail = std::max(1.0f, kTexDetail);
 			lod_params_.tex_factor = screen_height / (tex_detail * fov);
-			lod_params_.tex_factor_squared = lod_params_.tex_factor * lod_params_.tex_factor;
 		}
 		void PlanetCube::Update()
 		{
@@ -81,21 +81,6 @@ namespace sht {
 
 				lod_params_.sphere_plane = lod_params_.camera_position;
 				lod_params_.sphere_plane.Normalize();
-
-				const float planet_height = 100.0f;
-
-				float camera_distance = lod_params_.camera_position.Length();
-				if (camera_distance > radius_)
-				{
-					lod_params_.sphere_clip = cos(
-						acos((radius_ + planet_height / 2.0f) / (radius_ + planet_height)) +
-						acos(radius_ / camera_distance)
-						);
-				}
-				else {
-					lod_params_.sphere_clip = -1.0f;
-				}
-
 			}
 
 			for (int i = 0; i < kNumFaces; ++i)
@@ -159,14 +144,14 @@ namespace sht {
 				RequestQueue::iterator i = (*request_queues[q]).begin(), j;
 				while (i != (*request_queues[q]).end())
 				{
-					if ((*i).mNode == node)
+					if ((*i).node == node)
 					{
 						// Remove item at front of queue.
 						if (i == (*request_queues[q]).begin())
 						{
 							// Special case: if unrequesting a maptile current being generated,
 							// make sure temp/unclaimed resources are cleaned up.
-							if ((*i).mType == REQUEST_MAPTILE)
+							if ((*i).type == REQUEST_MAPTILE)
 								map_->ResetTile();
 
 							(*request_queues[q]).erase(i);
@@ -199,19 +184,19 @@ namespace sht {
 
 			while (requests.size() > 0) {
 				RequestType request = *requests.begin();
-				PlanetTreeNode* node = request.mNode;
+				PlanetTreeNode* node = request.node;
 
 				// If not a root level task.
 				if (node->parent_)
 				{
 					// Verify job limits.
 					if (limit <= 0) return;
-					limit -= weights[request.mType];
+					limit -= weights[request.type];
 				}
 
 				requests.pop_front();
 				// Call handler.
-				if ((this->*handlers[request.mType])(node))
+				if ((this->*handlers[request.type])(node))
 				{
 					// Job was completed. We can re-sort the priority queue.
 					if (!sorted)
@@ -424,7 +409,7 @@ namespace sht {
 		}
 		bool PlanetCube::RequestComparePriority::operator()(const RequestType& a, const RequestType& b) const
 		{
-			return (a.mNode->GetPriority() > b.mNode->GetPriority());
+			return (a.node->GetPriority() > b.node->GetPriority());
 		}
 
 	} // namespace geo

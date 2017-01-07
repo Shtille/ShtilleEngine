@@ -38,10 +38,11 @@ namespace sht {
 			~Image();
 
 			u8* pixels();
-			Format format();
-			int width();
-			int height();
-			int bpp();
+			const u8* pixels() const;
+			Format format() const;
+			int width() const;
+			int height() const;
+			int bpp() const;
 
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
             void FillWithZeroes();

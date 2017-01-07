@@ -29,6 +29,8 @@
 
 #include "saim_provider_info.h"
 
+#include <stdlib.h>
+
 #ifndef SAIM_VERSION
 #define SAIM_VERSION 102
 #endif
@@ -119,6 +121,8 @@ int saim_render_aligned(double upper_latitude, double left_longitude, double low
  *			   				   -1 in case of error.
 */
 int saim_render_common(double upper_latitude, double left_longitude, double lower_latitude, double right_longitude, float angle);
+
+int saim_render_mapped_cube(int face, double u_min, double v_min, double u_max, double v_max);
 
 #ifdef __cplusplus
 }

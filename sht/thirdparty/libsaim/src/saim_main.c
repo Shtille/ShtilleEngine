@@ -128,3 +128,8 @@ int saim_render_common(double upper_latitude, double left_longitude, double lowe
 	return saim_rasterizer__render_common(s_rasterizer,
 		upper_latitude, left_longitude, lower_latitude, right_longitude, angle);
 }
+int saim_render_mapped_cube(int face, double u_min, double v_min, double u_max, double v_max)
+{
+	return saim_rasterizer__render_mapped_cube(s_rasterizer,
+		face, u_min, v_min, u_max, v_max);
+}

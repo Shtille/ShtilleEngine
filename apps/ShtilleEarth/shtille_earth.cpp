@@ -304,13 +304,13 @@ public:
 		planet_shader_->Bind();
 		planet_shader_->UniformMatrix4fv("u_projection_view_model", mvp);
 
-		renderer_->ChangeTexture(earth_texture_, 0);
+		//renderer_->ChangeTexture(earth_texture_, 0);
 
 		//renderer_->EnableWireframeMode();
 		planet_->Render();
 		//renderer_->DisableWireframeMode();
 
-		renderer_->ChangeTexture(nullptr, 0);
+		//renderer_->ChangeTexture(nullptr, 0);
 
 		planet_shader_->Unbind();
 
