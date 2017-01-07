@@ -47,7 +47,8 @@ namespace sht {
 			const PlanetTreeNode * node_;
 
 			math::BoundingBox bounding_box_; //!< bounding box in world coordinates
-			math::Vector3 corner_points_[5]; //!< points in the corners of node
+			float cos_sector_angle_;
+			float sin_sector_angle_;
 
 			math::Vector3 center_;
 			math::Vector3 surface_normal_;

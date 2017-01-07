@@ -33,16 +33,34 @@ namespace sht {
 			// Bounding box clipping.
 			is_clipped_ = !frustum->IsBoxIn(bounding_box_);
 
-			// Spherical distance map clipping via five points check.
-			bool is_visible = false;
-			for (int i = 0; i < _countof(corner_points_); ++i)
+			// Spherical distance map clipping.
+			float point_dot_n = params.camera_position & surface_normal_;
+			float cos_camera_angle = point_dot_n / params.camera_distance;
+			// We should exclude collinear cases
+			if (cos_camera_angle > 0.99f)
 			{
-				math::Vector3& corner_point = corner_points_[i];
-				is_visible = ((params.camera_position & corner_point) > planet_radius);
-				if (is_visible)
-					break;
+				// Always visible
+				is_far_away_ = false;
 			}
-			is_far_away_ = !is_visible;
+			else if (cos_camera_angle < -0.9f)
+			{
+				// Always invisible
+				is_far_away_ = true;
+			}
+			else if (cos_camera_angle > cos_sector_angle_)
+			{
+				// Always visible
+				is_far_away_ = false;
+			}
+			else
+			{
+				// Normal case, we have to compute visibility
+				math::Vector3 side, normal;
+				side = params.camera_position - point_dot_n * surface_normal_;
+				side.Normalize();
+				normal = surface_normal_ * cos_sector_angle_ + side * sin_sector_angle_;
+				is_far_away_ = !((params.camera_position & normal) > planet_radius);
+			}
 			is_clipped_ = is_clipped_ || is_far_away_;
 
 			// Get vector from center to camera and normalize it.
@@ -124,20 +142,6 @@ namespace sht {
 			const float position_x = -1.f + inv_scale * node_->x_;
 			const float position_y = -1.f + inv_scale * node_->y_;
 
-			// Calculate corner point normals
-			corner_points_[0].Set(position_x, position_y, 1.0f); // (0,0)
-			corner_points_[1].Set(position_x, inv_scale + position_y, 1.0f); // (0,1)
-			corner_points_[2].Set(inv_scale + position_x, position_y, 1.0f); // (1,0)
-			corner_points_[3].Set(inv_scale + position_x, inv_scale + position_y, 1.0f); // (1,1)
-			corner_points_[4].Set(0.5f*inv_scale + position_x, 0.5f*inv_scale + position_y, 1.0f); // (0.5,0.5)
-			bool is_visible = false;
-			for (int i = 0; i < _countof(corner_points_); ++i)
-			{
-				math::Vector3& corner_point = corner_points_[i];
-				corner_point.Normalize();
-				corner_point = face_transform * corner_point;
-			}
-
 			// Keep track of extents.
 			math::Vector3 min = math::Vector3(1e8), max = math::Vector3(-1e8);
 			center_.Set(0.0f, 0.0f, 0.0f);
@@ -178,6 +182,26 @@ namespace sht {
 			// Set bounding box
 			bounding_box_.center = 0.5f * (max + min);
 			bounding_box_.extent = 0.5f * (max - min);
+
+			// Calculate sector angles
+			math::Vector3 corner_points[4];
+			corner_points[0].Set(position_x, position_y, 1.0f); // (0,0)
+			corner_points[1].Set(position_x, inv_scale + position_y, 1.0f); // (0,1)
+			corner_points[2].Set(inv_scale + position_x, position_y, 1.0f); // (1,0)
+			corner_points[3].Set(inv_scale + position_x, inv_scale + position_y, 1.0f); // (1,1)
+			float cos_angle = 1.0f;
+			for (int i = 0; i < _countof(corner_points); ++i)
+			{
+				math::Vector3& corner_point = corner_points[i];
+				corner_point.Normalize();
+				corner_point = face_transform * corner_point;
+				float dot = corner_point & surface_normal_;
+				if (dot < cos_angle)
+					cos_angle = dot;
+			}
+			// Because angle is always less than Pi/2 thus we may easy compute sin(angle)
+			cos_sector_angle_ = cos_angle;
+			sin_sector_angle_ = sqrtf(1.0f - cos_angle * cos_angle);
 		}
 		void PlanetRenderable::InitDisplacementMapping()
 		{

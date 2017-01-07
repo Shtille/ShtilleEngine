@@ -2,7 +2,7 @@ Simple roadmap of things to do in Shtille Earth project.
 
 Total improvements:
 [+] 1. Add bounding box check.
-[-] 2. Fix sphere invisibility.
+[+] 2. Fix sphere invisibility.
 [+] 3. Fix geometry LOD computing.
 [+] 4. Fix texture LOD computing.
 [-] 5. Do some refactoring.

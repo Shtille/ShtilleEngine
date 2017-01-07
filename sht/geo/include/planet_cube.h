@@ -32,10 +32,9 @@ namespace sht {
 		struct LodParams {
 			int limit;
 
-			math::Vector3 camera_position;
-			math::Vector3 camera_front;
-
-			math::Vector3 sphere_plane;
+			math::Vector3 camera_position;	//!< position of camera in geocentric coordinate system
+			math::Vector3 camera_front;		//!< forward direction vector of camera
+			float camera_distance;			//!< length of camera_position vector (to not compute per each tile)
 
 			float geo_factor;
 			float tex_factor;

@@ -75,12 +75,9 @@ namespace sht {
 			// Update LOD state.
 			if (!lod_freeze_)
 			{
-				// TODO: need to compensate for full transform on camera position.
-				lod_params_.camera_position = *camera_->position();
+				lod_params_.camera_position = *camera_->position() /*- planet_position;*/;
 				lod_params_.camera_front = camera_->GetForward();
-
-				lod_params_.sphere_plane = lod_params_.camera_position;
-				lod_params_.sphere_plane.Normalize();
+				lod_params_.camera_distance = lod_params_.camera_position.Length();
 			}
 
 			for (int i = 0; i < kNumFaces; ++i)
