@@ -26,6 +26,7 @@
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_map_tile.cpp" />
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_navigation.cpp" />
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_renderable.cpp" />
+    <ClCompile Include="..\..\..\..\sht\geo\src\planet_service.cpp" />
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_tile_mesh.cpp" />
     <ClCompile Include="..\..\..\..\sht\geo\src\planet_tree.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image.cpp" />
@@ -105,6 +106,7 @@
     <ClInclude Include="..\..\..\..\sht\geo\include\constants.h" />
     <ClInclude Include="..\..\..\..\sht\geo\include\planet_cube.h" />
     <ClInclude Include="..\..\..\..\sht\geo\include\planet_navigation.h" />
+    <ClInclude Include="..\..\..\..\sht\geo\include\planet_service.h" />
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_map.h" />
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_map_tile.h" />
     <ClInclude Include="..\..\..\..\sht\geo\src\planet_renderable.h" />

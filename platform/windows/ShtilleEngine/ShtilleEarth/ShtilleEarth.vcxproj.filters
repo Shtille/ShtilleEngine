@@ -14,5 +14,13 @@
     <ClCompile Include="..\..\..\..\apps\ShtilleEarth\shtille_earth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\apps\ShtilleEarth\earth_service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\apps\ShtilleEarth\earth_service.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

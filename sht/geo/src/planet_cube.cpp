@@ -13,7 +13,7 @@ namespace {
 namespace sht {
 	namespace geo {
 
-		PlanetCube::PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
+		PlanetCube::PlanetCube(PlanetService * albedo_service, graphics::Renderer * renderer, graphics::Shader * shader,
 			utility::CameraManager * camera, math::Frustum * frustum, float radius)
 			: shader_(shader)
 			, camera_(camera)
@@ -27,7 +27,7 @@ namespace sht {
 			for (int i = 0; i < kNumFaces; ++i)
 				faces_[i] = new PlanetTree(this, i);
 			tile_ = new PlanetTileMesh(renderer, grid_size_);
-			map_ = new PlanetMap(renderer);
+			map_ = new PlanetMap(albedo_service, renderer);
 		}
 		PlanetCube::~PlanetCube()
 		{

@@ -1,17 +1,16 @@
 #include "planet_map.h"
 #include "planet_map_tile.h"
 #include "planet_tree.h"
+#include "../include/planet_service.h"
 
 #include "../../graphics/include/renderer/renderer.h"
-
-#include "../../../thirdparty/libsaim/include/saim.h"
 
 namespace sht {
 	namespace geo {
 
-		PlanetMap::PlanetMap(graphics::Renderer * renderer)
-			: renderer_(renderer)
-			, image_(nullptr)
+		PlanetMap::PlanetMap(PlanetService * albedo_service, graphics::Renderer * renderer)
+			: albedo_service_(albedo_service)
+			, renderer_(renderer)
 			, albedo_texture_(nullptr)
 			, step_(0)
 		{
@@ -19,25 +18,19 @@ namespace sht {
 		PlanetMap::~PlanetMap()
 		{
 			Deinitialize();
-			if (image_)
-				delete image_;
 		}
 		bool PlanetMap::Initialize()
 		{
-			if (saim_init("", nullptr, 0) != 0)
+			if (!albedo_service_->Initialize())
 				return false;
-			// Create image object
-			image_ = new graphics::Image();
-			image_->Allocate(256, 256, graphics::Image::Format::kRGB8);
-			memset(image_->pixels(), 0xFF, image_->width() * image_->height() * image_->bpp()); // temporary
-			// Some library settings
-			saim_set_bitmap_cache_size(50);
-			saim_set_target(image_->pixels(), image_->width(), image_->height(), image_->bpp());
+			// Run services
+			albedo_service_->RunService();
 			return true;
 		}
 		void PlanetMap::Deinitialize()
 		{
-			saim_cleanup();
+			albedo_service_->StopService();
+			albedo_service_->Deinitialize();
 		}
 		void PlanetMap::ResetTile()
 		{
@@ -52,33 +45,17 @@ namespace sht {
 			{
 			case 0:
 				// Albedo texture generation step
-				{
-					const float inv_scale = 2.0f / (float)(1 << node->lod_);
-					const float position_x = -1.f + inv_scale * node->x_;
-					const float position_y = -1.f + inv_scale * node->y_;
-
-					// Calculate corner point normals
-					double u_min = static_cast<double>(position_x);
-					double v_min = static_cast<double>(position_y);
-					double u_max = static_cast<double>(position_x + inv_scale);
-					double v_max = static_cast<double>(position_y + inv_scale);
-					// Render
-					if (saim_render_mapped_cube(node->owner_->face_, u_min, v_min, u_max, v_max) > 0)
-						step_done = false;
-				}
+				step_done = albedo_service_->CheckRegionStatus(node->owner_->face_, node->lod_, node->x_, node->y_);
 				break;
 			case 1:
 				// Albedo texture creation step
-				renderer_->AddTextureFromImage(albedo_texture_, *image_, graphics::Texture::Wrap::kClampToEdge);
+				renderer_->AddTextureFromImage(albedo_texture_, albedo_service_->image(), graphics::Texture::Wrap::kClampToEdge);
 				break;
-			case 2:
-				// Height texture generation step
-				// TODO
-				break;
+			// case 3: Height texture generation step
 			}
 			if (step_done)
 				++step_;
-			return step_ > 2;
+			return step_ > 1;
 		}
 		PlanetMapTile * PlanetMap::FinalizeTile(PlanetTreeNode * node)
 		{

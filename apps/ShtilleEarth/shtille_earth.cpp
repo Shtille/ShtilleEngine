@@ -7,6 +7,7 @@
 #include "../../sht/geo/include/constants.h"
 #include "../../sht/geo/include/planet_navigation.h"
 #include "../../sht/geo/include/planet_cube.h"
+#include "earth_service.h"
 
 #include <cmath>
 
@@ -27,16 +28,17 @@ class ShtilleEarthApp : public sht::OpenGlApplication
 {
 public:
     ShtilleEarthApp()
-    : planet_(nullptr)
-	, sphere_(nullptr)
-	, font_(nullptr)
-	, fps_text_(nullptr)
-	, console_(nullptr)
-    , camera_manager_(nullptr)
-    , planet_navigation_(nullptr)
-    , angle_(0.0f)
-    , need_update_projection_matrix_(true)
-    , camera_animation_stopped_(false)
+		: planet_(nullptr)
+		, sphere_(nullptr)
+		, font_(nullptr)
+		, fps_text_(nullptr)
+		, console_(nullptr)
+		, camera_manager_(nullptr)
+		, planet_navigation_(nullptr)
+		, earth_service_(nullptr)
+		, angle_(0.0f)
+		, need_update_projection_matrix_(true)
+		, camera_animation_stopped_(false)
     {
     }
     const char* GetTitle() final
@@ -180,11 +182,12 @@ public:
         console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
 
         camera_manager_ = new sht::utility::CameraManager();
+
+		earth_service_ = new EarthService();
         
         planet_navigation_ = new sht::geo::PlanetNavigation(camera_manager_, sht::geo::kEarthRadius, kCameraDistance, 100.0f);
 
-		planet_ = new sht::geo::PlanetCube(renderer_, planet_shader_, camera_manager_, &frustum_,
-			sht::geo::kEarthRadius);
+		planet_ = new sht::geo::PlanetCube(earth_service_, renderer_, planet_shader_, camera_manager_, &frustum_, sht::geo::kEarthRadius);
 		if (!planet_->Initialize())
 			return false;
 
@@ -201,6 +204,8 @@ public:
 			delete planet_;
         if (planet_navigation_)
             delete planet_navigation_;
+		if (earth_service_)
+			delete earth_service_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
@@ -304,13 +309,9 @@ public:
 		planet_shader_->Bind();
 		planet_shader_->UniformMatrix4fv("u_projection_view_model", mvp);
 
-		//renderer_->ChangeTexture(earth_texture_, 0);
-
 		//renderer_->EnableWireframeMode();
 		planet_->Render();
 		//renderer_->DisableWireframeMode();
-
-		//renderer_->ChangeTexture(nullptr, 0);
 
 		planet_shader_->Unbind();
 
@@ -339,9 +340,6 @@ public:
         renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         renderer_->ClearColorAndDepthBuffers();
         
-        //RenderGround();
-        //RenderSky();
-        //RenderClouds();
 		RenderPlanetCube();
 
         RenderInterface();
@@ -462,6 +460,8 @@ private:
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
     sht::geo::PlanetNavigation * planet_navigation_;
+
+	EarthService * earth_service_;
 
 	sht::math::Frustum frustum_;
     

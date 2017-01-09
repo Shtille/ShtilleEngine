@@ -28,6 +28,7 @@ namespace sht {
 		class PlanetTileMesh;
 		class PlanetMap;
 		class PlanetMapTile;
+		class PlanetService;
 
 		struct LodParams {
 			int limit;
@@ -69,7 +70,7 @@ namespace sht {
 			typedef std::priority_queue<PlanetTreeNode*, std::vector<PlanetTreeNode*>, PlanetTreeNodeCompareLastOpened> NodeHeap;
 
 		public:
-			PlanetCube(graphics::Renderer * renderer, graphics::Shader * shader,
+			PlanetCube(PlanetService * albedo_service, graphics::Renderer * renderer, graphics::Shader * shader,
 				utility::CameraManager * camera, math::Frustum * frustum, float radius);
 			~PlanetCube();
 

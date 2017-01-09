@@ -5,7 +5,6 @@
 namespace sht {
 	namespace graphics {
 		class Renderer;
-		class Image;
 		class Texture;
 	} // namespace graphics
 } // namespace sht
@@ -15,10 +14,11 @@ namespace sht {
 
 		class PlanetTreeNode;
 		class PlanetMapTile;
+		class PlanetService;
 
 		class PlanetMap {
 		public:
-			PlanetMap(graphics::Renderer * renderer);
+			PlanetMap(PlanetService * albedo_service, graphics::Renderer * renderer);
 			~PlanetMap();
 
 			bool Initialize();
@@ -33,8 +33,8 @@ namespace sht {
 
 			void Deinitialize();
 
+			PlanetService * albedo_service_;		//!< service for filling albedo texture data
 			graphics::Renderer * renderer_;			//!< pointer to renderer object
-			graphics::Image * image_;
 			graphics::Texture * albedo_texture_;
 			int step_;
 		};

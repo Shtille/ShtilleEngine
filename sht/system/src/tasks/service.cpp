@@ -1,8 +1,6 @@
 #include "../../include/tasks/service.h"
 #include "../../include/tasks/service_task_interface.h"
 
-#include <chrono>
-
 namespace sht {
 	namespace system {
 
