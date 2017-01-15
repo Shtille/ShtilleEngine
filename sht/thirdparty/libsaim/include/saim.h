@@ -122,7 +122,7 @@ int saim_render_aligned(double upper_latitude, double left_longitude, double low
 */
 int saim_render_common(double upper_latitude, double left_longitude, double lower_latitude, double right_longitude, float angle);
 
-int saim_render_mapped_cube(int face, double u_min, double v_min, double u_max, double v_max);
+int saim_render_mapped_cube(int face, int lod, int x, int y);
 
 #ifdef __cplusplus
 }
