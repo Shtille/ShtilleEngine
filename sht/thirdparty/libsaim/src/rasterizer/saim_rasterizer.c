@@ -946,7 +946,8 @@ void saim_rasterizer__render_mapped_cube_impl(saim_rasterizer * rasterizer,
 
 			const saim_buffered_bitmap_info * info;
 			info = saim_rasterizer__get_bitmap_from_buffer(rasterizer, key_x, key_y);
-			if (!info || info->bitmap == NULL)
+			assert(info);
+			if (info->bitmap == NULL)
 			{
 				// Tile hasn't been loaded yet
 				dst_index += screen_bpp;
@@ -992,7 +993,7 @@ void saim_rasterizer__initialize_bitmap_buffer(saim_rasterizer * rasterizer,
     	width += (1 << level_of_detail);
 	height = key_max_y - key_min_y + 1;
 
-	assert(width * height <= rasterizer->max_bitmap_cache_size && "enlarge bitmap cache size");
+	assert((unsigned int)(width * height) <= rasterizer->max_bitmap_cache_size && "enlarge bitmap cache size");
 
 	if (buffer->data) // there was some data
 	{
