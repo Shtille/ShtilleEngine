@@ -497,13 +497,15 @@ void saim_rasterizer__pre_render_cube(saim_rasterizer * rasterizer,
 	double screen_pixel_size_x = (90.0 / two_power_lod) / (double)rasterizer->target_width;
 	*optimal_lod = saim_get_optimal_level_of_detail(screen_pixel_size_x);
 
+	int tiles_per_side = 1 << *optimal_lod;
+
 	// Calculate bounding box via two different methods
-	double max_latitude, min_longitude, min_latitude, max_longitude;
-	min_latitude = 100.0;
-	max_latitude = -100.0;
-	min_longitude = 200.0;
-	max_longitude = -200.0;
-	if (lod != 0) // normal case
+	if (lod == 0) // bad case
+	{
+		left = top = 0;
+		right = bottom = tiles_per_side - 1;
+	}
+	else // lod != 0, normal case
 	{
 		const double inv_scale = 2. / two_power_lod;
 		const double position_x = -1. + inv_scale * x;
@@ -515,7 +517,6 @@ void saim_rasterizer__pre_render_cube(saim_rasterizer * rasterizer,
 		double v_max = position_y + inv_scale;
 
 		// Calculate bounding box
-		double latitude, longitude;
 		double points[4][2] = {
 			// Angular points
 			{ u_min, v_min },
@@ -523,68 +524,41 @@ void saim_rasterizer__pre_render_cube(saim_rasterizer * rasterizer,
 			{ u_max, v_max },
 			{ u_min, v_max }
 		};
+		double latitude, longitude;
+		double max_latitude, min_longitude, min_latitude, max_longitude;
+		min_latitude = 100.0;
+		min_longitude = 200.0;
+		max_latitude = -100.0;
+		max_longitude = -200.0;
 		for (int i = 0; i < 4; ++i)
 		{
 			saim_cube_point_to_lat_lon(face, points[i][0], points[i][1], &latitude, &longitude);
+			const double kEpsilon = 0.000001;
+			const bool is_pole = (latitude > 90.0 - kEpsilon) || (latitude < -90.0 + kEpsilon); // latitude == 90.0 or -90.0
+			const bool is_jump = (longitude > 180.0 - kEpsilon) || (longitude < -180.0 + kEpsilon); // longitude == 180.0 or -180.0
+			if (is_jump)
+			{
+				// Correct sign of longitude to the center of the tile
+				double center_latitude, center_longitude;
+				saim_cube_point_to_lat_lon(face, 0.5 * (u_min + u_max), 0.5 * (v_min + v_max), &center_latitude, &center_longitude);
+				longitude = (center_longitude > 0.0) ? 180.0 : -180.0;
+			}
 			if (latitude < min_latitude)
 				min_latitude = latitude;
-			if (longitude < min_longitude)
+			if (longitude < min_longitude && !is_pole)
 				min_longitude = longitude;
 			if (latitude > max_latitude)
 				max_latitude = latitude;
-			if (longitude > max_longitude)
+			if (longitude > max_longitude && !is_pole)
 				max_longitude = longitude;
 		}
+
+		// Compute tile keys for bound rect
+		saim_lat_long_to_tile_xy(max_latitude, saim_normalized_longitude(min_longitude),
+			*optimal_lod, &left, &top);
+		saim_lat_long_to_tile_xy(min_latitude, saim_normalized_longitude(max_longitude),
+			*optimal_lod, &right, &bottom);
 	}
-	else // lod == 0, bad case
-	{
-		// Subdivide our area into four regions like lod == 1
-		int xs[4] = { 0, 0, 1, 1 };
-		int ys[4] = { 0, 1, 0, 1 };
-		// Duplicate code as in normal case, but do it four times for each (x,y) pair
-		int it;
-		for (it = 0; it < 4; ++it)
-		{
-			const double inv_scale = 1. / two_power_lod;
-			const double position_x = -1. + inv_scale * xs[it];
-			const double position_y = -1. + inv_scale * ys[it];
-
-			double u_min = position_x;
-			double v_min = position_y;
-			double u_max = position_x + inv_scale;
-			double v_max = position_y + inv_scale;
-
-			// Calculate bounding box
-			double latitude, longitude;
-			double points[4][2] = {
-				// Angular points
-				{ u_min, v_min },
-				{ u_max, v_min },
-				{ u_max, v_max },
-				{ u_min, v_max }
-			};
-			for (int i = 0; i < 4; ++i)
-			{
-				saim_cube_point_to_lat_lon(face, points[i][0], points[i][1], &latitude, &longitude);
-				if (latitude < min_latitude)
-					min_latitude = latitude;
-				if (longitude < min_longitude)
-					min_longitude = longitude;
-				if (latitude > max_latitude)
-					max_latitude = latitude;
-				if (longitude > max_longitude)
-					max_longitude = longitude;
-			}
-		} // for it
-	}
-
-	// Compute tile keys for bound rect
-	saim_lat_long_to_tile_xy(max_latitude, saim_normalized_longitude(min_longitude),
-		*optimal_lod, &left, &top);
-	saim_lat_long_to_tile_xy(min_latitude, saim_normalized_longitude(max_longitude),
-		*optimal_lod, &right, &bottom);
-
-	int tiles_per_side = 1 << *optimal_lod;
 
 	// Calculate number of tiles (bitmaps) in longitude (x) direction
 	int num_x = right - left + 1;
@@ -1017,6 +991,8 @@ void saim_rasterizer__initialize_bitmap_buffer(saim_rasterizer * rasterizer,
 	if (width <= 0)
     	width += (1 << level_of_detail);
 	height = key_max_y - key_min_y + 1;
+
+	assert(width * height <= rasterizer->max_bitmap_cache_size && "enlarge bitmap cache size");
 
 	if (buffer->data) // there was some data
 	{

@@ -83,6 +83,12 @@ namespace sht {
 			volatile bool done = false;
 			for (;;)
 			{
+				{//---
+					std::lock_guard<std::mutex> guard(mutex_);
+					finishing = finishing_;
+					has_task = has_task_;
+				}//---
+
 				if (finishing)
 					break;
 
@@ -91,13 +97,10 @@ namespace sht {
 					std::unique_lock<std::mutex> guard(mutex_);
 					while (!finishing_ && !has_task_)
 						condition_variable_.wait(guard);
-					finishing = finishing_;
-					has_task = has_task_;
 					continue;
 				}
 
 				done = Execute();
-				has_task = !done;
 
 				if (done)
 				{

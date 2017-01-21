@@ -15,7 +15,7 @@ bool EarthService::Initialize()
 	// Create image object
 	image_.Allocate(256, 256, sht::graphics::Image::Format::kRGB8);
 	// Some library settings
-	saim_set_bitmap_cache_size(50);
+	saim_set_bitmap_cache_size(100);
 	saim_set_target(image_.pixels(), image_.width(), image_.height(), image_.bpp());
 	return true;
 }
