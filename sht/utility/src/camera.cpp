@@ -465,8 +465,8 @@ namespace sht {
 			int path_size = static_cast<int>(paths_.size());
 			if (path_size == 0)
 			{
-                assert(current_camera_ptr_);
-                need_view_matrix_update_ = current_camera_ptr_->need_update_orientation_;
+				assert(current_camera_ptr_ && "camera hasn't been set");
+				need_view_matrix_update_ = current_camera_ptr_->need_update_orientation_;
 			}
 			else if ((path_size == 1) || (current_path_index_ + 1 == path_size && !is_path_cycled_))
 			{
