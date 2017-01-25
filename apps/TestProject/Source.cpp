@@ -210,7 +210,8 @@ public:
     {
         Application::OnSize(w, h);
         // To have correct perspective when resizing
-        renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+        if (renderer_)
+            renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
     }
     
 private:

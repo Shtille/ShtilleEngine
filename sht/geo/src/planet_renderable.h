@@ -29,22 +29,18 @@ namespace sht {
 
 			PlanetMapTile * GetMapTile();
 
-			float child_distance_;
-			float lod_difference_;
-			float distance_;
-
 			// Additional params to map to shader
 			math::Vector4 stuv_scale_;
 			math::Vector4 stuv_position_;
 			math::Vector4 color_;
+			float distance_;
 
 		private:
 			void AnalyzeTerrain();
 			void InitDisplacementMapping();
 
-			PlanetMapTile* map_tile_;
-			//Image* mMap;
 			const PlanetTreeNode * node_;
+			PlanetMapTile* map_tile_;
 
 			math::BoundingBox bounding_box_; //!< bounding box in world coordinates
 			float cos_sector_angle_;
@@ -54,6 +50,8 @@ namespace sht {
 			math::Vector3 surface_normal_;
 
 			float lod_priority_; //!< priority for nodes queue processing
+			float child_distance_;
+			float lod_difference_;
 
 			bool is_in_lod_range_;
 			bool is_in_mip_range_;

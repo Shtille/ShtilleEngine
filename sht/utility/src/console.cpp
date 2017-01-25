@@ -7,7 +7,6 @@ namespace sht {
                          sht::graphics::Shader * gui_shader, sht::graphics::Shader * text_shader,
                          f32 bottom, f32 text_height, f32 velocity, f32 aspect_ratio)
         : vertical_board_(renderer, gui_shader, vec4(0.2f, 0.2f, 0.2f, 0.8f), aspect_ratio, 1.0f-bottom, 0.0f, bottom, 1.0f, velocity, false, (u32)ui::Flags::kRenderAlways)
-		, text_height_(text_height)
         , labels_(nullptr)
         , need_to_update_input_(false)
         , need_to_update_all_(false)

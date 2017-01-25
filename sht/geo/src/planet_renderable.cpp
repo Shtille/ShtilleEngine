@@ -3,9 +3,9 @@
 #include "../include/planet_cube.h"
 #include "planet_map_tile.h"
 
-#include "../../math/sht_math.h"
 #include "../../math/frustum.h"
 
+#include <cmath>
 #include <algorithm>
 #include <assert.h>
 

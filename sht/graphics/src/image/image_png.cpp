@@ -3,6 +3,8 @@
 #include "../../../system/include/stream/log_stream.h"
 #include "../../../thirdparty/libpng/include/png.h"
 
+#include <cstring>
+
 namespace sht {
 	namespace graphics {
 
@@ -191,7 +193,7 @@ namespace sht {
 			size_t offset; // that we've read
 			size_t size;
 		};
-		static void ReadDataFromBuffer(png_structp png_ptr, png_bytep data, png_uint_32 length)
+		static void ReadDataFromBuffer(png_structp png_ptr, png_bytep data, png_size_t length)
 		{
 			PngReadState * state = (PngReadState *) png_get_io_ptr(png_ptr);
 			if (state->offset + length <= state->size)

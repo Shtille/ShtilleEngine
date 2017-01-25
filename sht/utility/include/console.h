@@ -46,7 +46,6 @@ namespace sht {
             void RecognizeString();
             
             ui::VerticalBoard vertical_board_;
-			f32 text_height_; //!< height of text in screen coordinates
             u32 max_lines_; //!< maximum number of lines
             ui::Label * * labels_; // pointers to labels
             std::vector<std::wstring> lines_;

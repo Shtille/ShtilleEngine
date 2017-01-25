@@ -1,6 +1,6 @@
 #include "../include/planet_service.h"
 
-#include "../../../thirdparty/libsaim/include/saim.h"
+#include "../../thirdparty/libsaim/include/saim.h"
 
 namespace sht {
 	namespace geo {

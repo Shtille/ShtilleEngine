@@ -308,9 +308,6 @@ namespace sht {
 		}
 		bool Image::LoadFromBufferJpeg(const u8* buffer, size_t length)
 		{
-			// Get access to error log
-			system::ErrorLogStream * error_log = system::ErrorLogStream::GetInstance();
-
 			/* This struct contains the JPEG decompression parameters and pointers to
 			* working space (which is allocated as needed by the JPEG library).
 			*/
