@@ -52,6 +52,7 @@ FT_MAKEFILE = sht/thirdparty/freetype/$(PLATFORM_SUFFIX).mk
 GLEW_MAKEFILE = sht/thirdparty/glew/$(PLATFORM_SUFFIX).mk
 SAIM_MAKEFILE = sht/thirdparty/libsaim/$(PLATFORM_SUFFIX).mk
 ODE_MAKEFILE = sht/thirdparty/ode/$(PLATFORM_SUFFIX).mk
+BULLET_MAKEFILE = sht/thirdparty/bullet/$(PLATFORM_SUFFIX).mk
 
 ### Engine Makefile ###
 ENGINE_MAKEFILE = sht/$(PLATFORM_SUFFIX).mk
@@ -92,3 +93,6 @@ saim:
 
 ode:
 	$(MAKE) -f $(ODE_MAKEFILE) IS_STATIC=YES
+
+bullet:
+	$(MAKE) -f $(BULLET_MAKEFILE) IS_STATIC=YES
