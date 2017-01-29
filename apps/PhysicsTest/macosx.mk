@@ -12,7 +12,7 @@ AR = ar rcs
 CP = cp
 RM = rm -f
 
-INCLUDE = -I$(ROOT_PATH)/sht -I$(ROOT_PATH)/sht/thirdparty/ode/include
+INCLUDE = -I$(ROOT_PATH)/sht -I$(ROOT_PATH)/sht/thirdparty/bullet/src
 DEFINES = -DdIDESINGLE -DCCD_IDESINGLE
 
 CFLAGS = -g -Wall -O3 -std=c++11
@@ -26,7 +26,7 @@ SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
-LIBRARIES = -lode \
+LIBRARIES = -lbullet \
 	-lShtilleEngine -framework Cocoa -framework OpenGL -framework Foundation -lstdc++ -lfreetype -ljpeg -lpng -lz
 
 LIBRARY_PATH = -L$(INSTALL_PATH)

@@ -1,4 +1,5 @@
 #include "quaternion.h"
+#include "sht_math.h"
 #include <math.h>
 
 namespace sht {
@@ -152,7 +153,25 @@ namespace sht {
 			z = vector.z * sin_ha;
 			w = cosf(halfangle);
 		}
-		void Quaternion::Set(const Vector3& from, const Vector3& to)
+		void Quaternion::Set(const Vector3& from, const Vector3& at)
+		{
+			Vector3 dir = (at - from).GetNormalized();
+			Vector3 up, side;
+			if (dir != UNIT_Y)
+			{
+				side = dir ^ UNIT_Y;
+				side.Normalize();
+				up = side ^ dir;
+			}
+			else
+			{
+				up = -UNIT_X;
+				side = UNIT_Z;
+			}
+			Matrix3 matrix(dir.x, dir.y, dir.z, up.x, up.y, up.z, side.x, side.y, side.z);
+			MatrixToQuaternion(*this, matrix);
+		}
+		void Quaternion::SetFast(const Vector3& from, const Vector3& to)
 		{
 			Vector3 dir = to - from;
 			dir.Normalize();

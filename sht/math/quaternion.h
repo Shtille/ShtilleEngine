@@ -44,6 +44,7 @@ namespace sht {
             void Set(const Quaternion& q);
 			void Set(const Vector3& vector, const float angle);
 			void Set(const Vector3& from, const Vector3& to);
+			void SetFast(const Vector3& from, const Vector3& to);
 			void Normalize();
 			Quaternion GetNormalized() const;
 			Quaternion GetConjugate() const;

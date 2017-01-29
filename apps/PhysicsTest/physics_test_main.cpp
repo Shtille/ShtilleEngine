@@ -4,7 +4,7 @@
 #include "../../sht/utility/include/console.h"
 #include "../../sht/utility/include/camera.h"
 
-#include <ode/ode.h>
+#include "physics_logics.h"
 
 class PhysicsTestApp : public sht::OpenGlApplication
 {
@@ -18,6 +18,7 @@ public:
 	, fps_text_(nullptr)
 	, console_(nullptr)
     , camera_manager_(nullptr)
+    , logics_(nullptr)
     , light_angle_(0.0f)
     , light_distance_(100.0f)
     , need_update_projection_matrix_(true)
@@ -50,7 +51,7 @@ public:
         
 		// Load shaders
         const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
-        if (!renderer_->AddShader(object_shader_, "data/shaders/shader", attribs, 2)) return false;
+        if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PhysicsTest/shader", attribs, 2)) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
 
@@ -66,9 +67,11 @@ public:
         console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
 
         camera_manager_ = new sht::utility::CameraManager();
-		auto cam_id = camera_manager_->Add(vec3(5.0f), vec3(0.0f));
-		camera_manager_->SetCurrent(cam_id);
-		camera_manager_->SetManualUpdate();
+		camera_manager_->MakeFree(vec3(5.0f), vec3(0.0f));
+
+        // Create physics
+        logics_ = new sht::physics::Logics();
+        logics_->SetupObjects();
 
 		// Finally bind constants
 		BindShaderConstants();
@@ -77,6 +80,8 @@ public:
     }
     void Unload() final
     {
+        if (logics_)
+            delete logics_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
@@ -101,6 +106,9 @@ public:
         UpdateProjectionMatrix();
         projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
 
+        // Update physics
+        logics_->Update(frame_time_);
+
 		BindShaderVariables();
     }
 	void RenderObjects()
@@ -113,9 +121,54 @@ public:
         object_shader_->Uniform3fv("u_light_pos", light_pos_eye);
         
         // Draw first model
+        vec3 position;
+        logics_->GetPosition(&position);
+
+        // renderer_->PushMatrix();
+        // renderer_->Translate(2.0f, 0.0f, 0.0f);
+        // object_shader_->Uniform3f("u_color", 1.0f, 0.0f, 0.0f);
+        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
+        // sphere_->Render();
+        // renderer_->PopMatrix();
+        // renderer_->PushMatrix();
+        // renderer_->Translate(3.0f, 0.0f, 0.0f);
+        // object_shader_->Uniform3f("u_color", 1.0f, 0.0f, 0.0f);
+        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
+        // sphere_->Render();
+        // renderer_->PopMatrix();
+
         renderer_->PushMatrix();
-        renderer_->Translate(0.0f, 0.0f, 0.0f);
-        //renderer_->MultMatrix(rotate_matrix);
+        renderer_->Translate(position);
+        object_shader_->Uniform3f("u_color", 0.0f, 1.0f, 0.0f);
+        object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
+        sphere_->Render();
+        renderer_->PopMatrix();
+        // renderer_->PushMatrix();
+        // renderer_->Translate(0.0f, 3.0f, 0.0f);
+        // object_shader_->Uniform3f("u_color", 0.0f, 1.0f, 0.0f);
+        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
+        // sphere_->Render();
+        // renderer_->PopMatrix();
+
+        renderer_->PushMatrix();
+        renderer_->Translate(0.0f, 0.0f, 2.0f);
+        object_shader_->Uniform3f("u_color", 0.0f, 0.0f, 1.0f);
+        object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+        normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
+        object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
+        sphere_->Render();
+        renderer_->PopMatrix();
+        renderer_->PushMatrix();
+        renderer_->Translate(0.0f, 0.0f, 3.0f);
+        object_shader_->Uniform3f("u_color", 0.0f, 0.0f, 1.0f);
         object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
         normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
         object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
@@ -215,6 +268,8 @@ private:
     sht::graphics::DynamicText * fps_text_;
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
+
+    sht::physics::Logics * logics_;
     
     sht::math::Matrix4 projection_view_matrix_;
 
