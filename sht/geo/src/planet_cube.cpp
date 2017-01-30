@@ -4,6 +4,8 @@
 #include "planet_map.h"
 #include "planet_renderable.h"
 
+#include <cmath>
+
 namespace {
 	// The more detail coefficient is, the less detalization is required
 	const float kGeoDetail = 6.0f;

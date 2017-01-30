@@ -1,6 +1,6 @@
 # Makefile for Windows
 
-TARGET = AtmosphericScattering
+TARGET = TestProject
 TARGET_FILE = $(TARGET).exe
 ROOT_PATH = .
 TARGET_PATH = $(ROOT_PATH)\bin

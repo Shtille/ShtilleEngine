@@ -12,8 +12,8 @@ AR = ar rcs
 CP = @copy /Y
 RM = @del /Q
 
-INCLUDE = -I$(ROOT_PATH)/sht -I$(ROOT_PATH)/sht/thirdparty/ode/include
-DEFINES = -DdIDESINGLE -DCCD_IDESINGLE
+INCLUDE = -I$(ROOT_PATH)/sht -I$(ROOT_PATH)/sht/thirdparty/bullet/src
+DEFINES =
 
 CFLAGS = -g -Wall -O3 -std=c++11
 CFLAGS += $(INCLUDE)
@@ -27,6 +27,10 @@ SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
 LIBRARIES = -lbullet -lShtilleEngine -lstdc++ -lgdi32 -lglew -lopengl32 -lfreetype -ljpeg -lpng -lz
+
+ifeq ($(INSTALL_PATH),)
+INSTALL_PATH = $(TARGET_PATH)
+endif
 
 LIBRARY_PATH = -L$(INSTALL_PATH)
 
