@@ -22,6 +22,7 @@ namespace sht {
             explicit Camera(vec3 * pos, const quat& orient);
             explicit Camera(const vec3& pos, quat * orient);
             explicit Camera(vec3 * pos, quat * orient);
+            explicit Camera(const quat& orient, vec3 * target_pos, float distance);
             Camera(const Camera& camera);
             Camera();
             ~Camera();
@@ -39,6 +40,7 @@ namespace sht {
             void Set(vec3 * pos, const quat& orient);
             void Set(const vec3& pos, quat * orient);
             void Set(vec3 * pos, quat * orient);
+            void Set(const quat& orient, vec3 * target_pos, float distance);
 
 			void Move(const vec3& translation);
 
@@ -51,10 +53,12 @@ namespace sht {
             vec3 position_;
             vec3 target_position_;
             quat orientation_;
+            float distance_;
 			bool is_position_; //!< owns position or refers to external pointer
 			bool is_target_position_; //!< owns target position or refers to external pointer
 			bool is_orientation_; //!< owns orientation or refers to external pointer
 			bool need_update_orientation_;
+			bool need_update_position_; //!< the most rare case
 		};
 
 		typedef unsigned int CameraID;
@@ -105,6 +109,7 @@ namespace sht {
 			CameraID Add(vec3 * pos, const quat& orient);
 			CameraID Add(const vec3& pos, quat * orient);
 			CameraID Add(vec3 * pos, quat * orient);
+			CameraID Add(const quat& orient, vec3 * target_pos, float distance);
             CameraID AddAsCurrent();
 			void SetCurrent(CameraID cam_id);
 

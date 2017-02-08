@@ -4,7 +4,8 @@
 #include "../../sht/utility/include/console.h"
 #include "../../sht/utility/include/camera.h"
 
-#include "physics_logics.h"
+#include "physics_engine.h"
+#include "simple_object.h"
 
 class PhysicsTestApp : public sht::OpenGlApplication
 {
@@ -14,11 +15,15 @@ public:
     , object_shader_(nullptr)
     , gui_shader_(nullptr)
     , text_shader_(nullptr)
+    , ball_texture_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, console_(nullptr)
     , camera_manager_(nullptr)
-    , logics_(nullptr)
+    , physics_(nullptr)
+    , ball_(nullptr)
+    , ball2_(nullptr)
+    , box_(nullptr)
     , light_angle_(0.0f)
     , light_distance_(100.0f)
     , need_update_projection_matrix_(true)
@@ -51,9 +56,14 @@ public:
         
 		// Load shaders
         const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
-        if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PhysicsTest/shader", attribs, 2)) return false;
+        if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PhysicsTest/shader", attribs, 3)) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
+
+        // Load textures
+        if (!renderer_->AddTexture(ball_texture_, "data/textures/chess.jpg",
+                                   sht::graphics::Texture::Wrap::kClampToEdge,
+                                   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
         // Load fonts
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
@@ -67,11 +77,39 @@ public:
         console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
 
         camera_manager_ = new sht::utility::CameraManager();
-		camera_manager_->MakeFree(vec3(5.0f), vec3(0.0f));
+		//camera_manager_->MakeFree(vec3(5.0f), vec3(0.0f));
 
         // Create physics
-        logics_ = new sht::physics::Logics();
-        logics_->SetupObjects();
+        physics_ = new sht::physics::Engine();
+        //physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
+
+        // Setup our objects
+        sht::physics::Object * object;
+        object = physics_->AddSphere(vec3(0.0f, 3.0f, 0.0f), 1.0f, 1.0f);
+        object->SetFriction(0.1f);
+        //object->SetRollingFriction(0.3f);
+        object->SetSpinningFriction(0.1f);
+        object->SetRestitution(0.8f);
+        //object->SetSpinningFriction(0.1f);
+        ball_ = new sht::SimpleObject(renderer_, object_shader_, sphere_, object);
+
+        object = physics_->AddSphere(vec3(0.5f, 1.0f, 0.5f), 1.0f, 1.0f);
+        object->SetFriction(0.1f);
+        //object->SetRollingFriction(0.3f);
+        object->SetSpinningFriction(0.1f);
+        // object->SetRestitution(1.0f);
+        ball2_ = new sht::SimpleObject(renderer_, object_shader_, sphere_, object);
+
+        // Ground
+        object = physics_->AddBox(vec3(0.0f, -50.0f, 0.0f), 0.0f, 50.0f, 50.0f, 50.0f);
+        object->SetFriction(1.0f);
+        //object->SetRollingFriction(1.0f);
+
+        // Create camera attached to the controlled ball
+        auto cam_id = camera_manager_->Add(quat(vec3(5.0f), vec3(0.0f)), 
+            const_cast<vec3*>(ball_->body()->GetPositionPtr()), 10.0f);
+        camera_manager_->SetCurrent(cam_id);
+        camera_manager_->SetManualUpdate();
 
 		// Finally bind constants
 		BindShaderConstants();
@@ -80,8 +118,14 @@ public:
     }
     void Unload() final
     {
-        if (logics_)
-            delete logics_;
+        if (box_)
+            delete box_;
+        if (ball2_)
+            delete ball2_;
+        if (ball_)
+            delete ball_;
+        if (physics_)
+            delete physics_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
@@ -90,6 +134,26 @@ public:
 			delete fps_text_;
 		if (sphere_)
 			delete sphere_;
+    }
+    void UpdatePhysics()
+    {
+        const float kPushPower = 10.0f;
+        sht::math::Vector3 force(0.0f);
+        if (keys_.key_down(sht::PublicKey::kLeft))
+            force.z += kPushPower;
+        if (keys_.key_down(sht::PublicKey::kRight))
+            force.z -= kPushPower;
+        if (keys_.key_down(sht::PublicKey::kDown))
+            force.x += kPushPower;
+        if (keys_.key_down(sht::PublicKey::kUp))
+            force.x -= kPushPower;
+        // Update forces
+        ball_->body()->Activate(); // this body may be sleeping, thus we activate it
+        ball_->body()->ApplyForce(force, vec3(0.0f, 1.0f, 0.0f)); // not central force to make ball roll
+        //ball_->body()->ApplyCentralForce(force);
+
+        // Update physics engine
+        physics_->Update(frame_time_);
     }
     void Update() final
     {
@@ -106,8 +170,7 @@ public:
         UpdateProjectionMatrix();
         projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
 
-        // Update physics
-        logics_->Update(frame_time_);
+        UpdatePhysics();
 
 		BindShaderVariables();
     }
@@ -119,61 +182,12 @@ public:
         object_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
         object_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
         object_shader_->Uniform3fv("u_light_pos", light_pos_eye);
-        
-        // Draw first model
-        vec3 position;
-        logics_->GetPosition(&position);
+        object_shader_->Uniform1i("u_texture", 0);
 
-        // renderer_->PushMatrix();
-        // renderer_->Translate(2.0f, 0.0f, 0.0f);
-        // object_shader_->Uniform3f("u_color", 1.0f, 0.0f, 0.0f);
-        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        // sphere_->Render();
-        // renderer_->PopMatrix();
-        // renderer_->PushMatrix();
-        // renderer_->Translate(3.0f, 0.0f, 0.0f);
-        // object_shader_->Uniform3f("u_color", 1.0f, 0.0f, 0.0f);
-        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        // sphere_->Render();
-        // renderer_->PopMatrix();
-
-        renderer_->PushMatrix();
-        renderer_->Translate(position);
-        object_shader_->Uniform3f("u_color", 0.0f, 1.0f, 0.0f);
-        object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        sphere_->Render();
-        renderer_->PopMatrix();
-        // renderer_->PushMatrix();
-        // renderer_->Translate(0.0f, 3.0f, 0.0f);
-        // object_shader_->Uniform3f("u_color", 0.0f, 1.0f, 0.0f);
-        // object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        // normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        // object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        // sphere_->Render();
-        // renderer_->PopMatrix();
-
-        renderer_->PushMatrix();
-        renderer_->Translate(0.0f, 0.0f, 2.0f);
-        object_shader_->Uniform3f("u_color", 0.0f, 0.0f, 1.0f);
-        object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        sphere_->Render();
-        renderer_->PopMatrix();
-        renderer_->PushMatrix();
-        renderer_->Translate(0.0f, 0.0f, 3.0f);
-        object_shader_->Uniform3f("u_color", 0.0f, 0.0f, 1.0f);
-        object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-        normal_matrix_ = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-        object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix_);
-        sphere_->Render();
-        renderer_->PopMatrix();
+        renderer_->ChangeTexture(ball_texture_, 0);
+        ball_->Render();
+        ball2_->Render();
+        renderer_->ChangeTexture(nullptr, 0);
 	}
     void RenderInterface()
     {
@@ -264,12 +278,16 @@ private:
     sht::graphics::Shader * object_shader_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
+    sht::graphics::Texture * ball_texture_;
     sht::graphics::Font * font_;
     sht::graphics::DynamicText * fps_text_;
     sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
 
-    sht::physics::Logics * logics_;
+    sht::physics::Engine * physics_;
+    sht::SimpleObject * ball_;
+    sht::SimpleObject * ball2_;
+    sht::SimpleObject * box_;
     
     sht::math::Matrix4 projection_view_matrix_;
 
