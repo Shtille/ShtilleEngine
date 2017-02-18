@@ -1,6 +1,6 @@
 # Makefile for Windows
 
-TARGET = PhysicsTest
+TARGET = BallsGame
 TARGET_FILE = $(TARGET).exe
 ROOT_PATH = .
 TARGET_PATH = $(ROOT_PATH)\bin

@@ -63,6 +63,8 @@ all:
 	$(MAKE) -f apps/AtmosphericScattering/$(PLATFORM_SUFFIX).mk
 	$(MAKE) -f apps/TestProject/$(PLATFORM_SUFFIX).mk
 	$(MAKE) -f apps/PhysicsTest/$(PLATFORM_SUFFIX).mk
+	$(MAKE) -f apps/BallsGame/$(PLATFORM_SUFFIX).mk
+	$(MAKE) -f apps/ProjectX/$(PLATFORM_SUFFIX).mk
 
 engine:
 	$(MAKE) -f $(ENGINE_MAKEFILE) IS_STATIC=YES

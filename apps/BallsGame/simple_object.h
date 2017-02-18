@@ -2,12 +2,12 @@
 #ifndef __SHT_SIMPLE_OBJECT_H__
 #define __SHT_SIMPLE_OBJECT_H__
 
-#include "graphics/include/renderable.h"
+#include "utility/include/scene_renderable.h"
 #include "physics/include/physics_object.h"
 
 namespace sht {
 
-	class SimpleObject : public graphics::Renderable
+	class SimpleObject : public utility::SceneRenderable
 	{
 	public:
 		explicit SimpleObject(graphics::Renderer * renderer, graphics::Shader * shader, graphics::Model * model,

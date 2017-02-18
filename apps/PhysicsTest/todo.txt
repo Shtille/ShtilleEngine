@@ -6,6 +6,6 @@ Conclusion: Central force doesnt work with friction koefficient (1.0 for the gro
 	        Objects take into account friction value of surface they are rolling on.
 	        So use 1.0 friction for surfaces like stone, marble, tree, etc (check for non-rolling objects).
 	        And 0.1 (for example) for surfaces with low friction (like ice).
-[-] 3. Remove all redundant code modules.
-[-] 4. Make camera to face first object all the time.
-[-] 5. Make first ball to roll over the second one.
+[+] 3. Remove all redundant code modules.
+[+] 4. Make camera to face first object all the time.
+[+] 5. Make first ball to roll over the second one (big one).

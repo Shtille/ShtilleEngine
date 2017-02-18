@@ -5,9 +5,14 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-#include <btBulletDynamicsCommon.h>
-
 #include <vector>
+
+// Forward Bullet declarations
+class btDefaultCollisionConfiguration;
+class btCollisionDispatcher;
+class btBroadphaseInterface;
+class btSequentialImpulseConstraintSolver;
+class btDiscreteDynamicsWorld;
 
 namespace sht {
 	namespace physics {

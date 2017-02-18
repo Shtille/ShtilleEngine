@@ -12,8 +12,8 @@ AR = ar rcs
 CP = cp
 RM = rm -f
 
-INCLUDE = -I$(ROOT_PATH)/sht -I$(ROOT_PATH)/sht/thirdparty/bullet/src
-DEFINES = -DdIDESINGLE -DCCD_IDESINGLE
+INCLUDE = -I$(ROOT_PATH)/sht
+DEFINES =
 
 CFLAGS = -g -Wall -O3 -std=c++11
 CFLAGS += $(INCLUDE)

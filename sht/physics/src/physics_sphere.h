@@ -2,7 +2,7 @@
 #ifndef __SHT_PHYSICS_SPHERE_H__
 #define __SHT_PHYSICS_SPHERE_H__
 
-#include "physics_object.h"
+#include "../include/physics_object.h"
 
 namespace sht {
 	namespace physics {

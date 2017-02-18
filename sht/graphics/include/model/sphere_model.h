@@ -9,7 +9,7 @@ namespace sht {
         
         class SphereModel final : public Model {
         public:
-            SphereModel(Renderer * renderer, u32 slices = 20, u32 loops = 10);
+            SphereModel(Renderer * renderer, u32 slices = 20, u32 loops = 10, float radius = 1.0f);
             ~SphereModel();
             
             void Create();
@@ -17,6 +17,7 @@ namespace sht {
         protected:
             u32 slices_;    //!< number of vertices in sphere's longitude direction
             u32 loops_;     //!< number of vertices in sphere's latitude direction
+            float radius_;  //!< radius of the sphere
         };
         
     } // namespace graphics

@@ -12,6 +12,7 @@ SRC_DIRS = \
 	$(ROOT_PATH)/sht/graphics/src/renderer \
 	$(ROOT_PATH)/sht/graphics/src/renderer/opengl \
 	$(ROOT_PATH)/sht/math \
+	$(ROOT_PATH)/sht/physics/src \
 	$(ROOT_PATH)/sht/platform/src \
 	$(ROOT_PATH)/sht/system/src \
 	$(ROOT_PATH)/sht/system/src/filesystem \
@@ -30,4 +31,5 @@ INCLUDE = \
 	-I$(ROOT_PATH)/sht/thirdparty/libpng/include \
     -I$(ROOT_PATH)/sht/thirdparty/libpng/src \
     -I$(ROOT_PATH)/sht/thirdparty/freetype/include \
-    -I$(ROOT_PATH)/sht/thirdparty/libcurl/include
+    -I$(ROOT_PATH)/sht/thirdparty/libcurl/include \
+    -I$(ROOT_PATH)/sht/thirdparty/bullet/src

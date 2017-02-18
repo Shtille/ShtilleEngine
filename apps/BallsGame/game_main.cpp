@@ -55,7 +55,7 @@ public:
 		sphere_model_->Create();
         if (!sphere_model_->MakeRenderable())
             return false;
-        ground_box_ = new sht::graphics::SphereModel(renderer_, 20, 10, 50.0f);
+        ground_box_ = new sht::graphics::BoxModel(renderer_, 50.0f, 10.0f, 50.0f);
         ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
         ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
         ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
@@ -87,7 +87,7 @@ public:
 
         // Create physics
         physics_ = new sht::physics::Engine();
-        physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
+        //physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
 
         // Setup our objects
         sht::physics::Object * object;
@@ -98,20 +98,22 @@ public:
         object->SetRestitution(0.8f);
         ball_ = new sht::SimpleObject(renderer_, object_shader_, sphere_model_, object);
 
-        object = physics_->AddSphere(vec3(0.0f, -50.0f, 0.0f), 0.0f, 50.0f);
-        object->SetFriction(1.0f);
-        ball2_ = new sht::SimpleObject(renderer_, object_shader_, ground_box_, object);
+        object = physics_->AddSphere(vec3(1.0f, 0.0f, 1.0f), 1.0f, 1.0f);
+        object->SetFriction(0.5f);
+        object->SetRollingFriction(0.1f);
+        object->SetSpinningFriction(0.1f);
+        object->SetRestitution(0.8f);
+        ball2_ = new sht::SimpleObject(renderer_, object_shader_, sphere_model_, object);
 
         // Ground
-        // object = physics_->AddBox(vec3(0.0f, -50.0f, 0.0f), 0.0f, 50.0f, 50.0f, 50.0f);
-        // object->SetFriction(1.0f);
-        // //object->SetRollingFriction(1.0f);
-        // box_ = new sht::SimpleObject(renderer_, object_shader_, ground_box_, object);
+        object = physics_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 50.0f, 10.0f, 50.0f);
+        object->SetFriction(1.0f);
+        box_ = new sht::SimpleObject(renderer_, object_shader_, ground_box_, object);
 
         // Create camera attached to the controlled ball
         camera_manager_ = new sht::utility::CameraManager();
         auto cam_id = camera_manager_->Add(quat(vec3(5.0f, 5.0f, 0.0f), vec3(0.0f)), 
-            const_cast<vec3*>(ball_->body()->GetPositionPtr()), 10.0f);
+            ball_->body()->GetPositionPtr(), 10.0f);
         camera_manager_->SetCurrent(cam_id);
         camera_manager_->SetManualUpdate();
 
@@ -144,19 +146,7 @@ public:
     void UpdatePhysics()
     {
         const float kPushPower = 5.0f;
-        // sht::math::Vector3 force(0.0f);
-        // if (keys_.key_down(sht::PublicKey::kLeft))
-        //     force.z += kPushPower;
-        // if (keys_.key_down(sht::PublicKey::kRight))
-        //     force.z -= kPushPower;
-        // if (keys_.key_down(sht::PublicKey::kDown))
-        //     force.x += kPushPower;
-        // if (keys_.key_down(sht::PublicKey::kUp))
-        //     force.x -= kPushPower;
-
-        sht::math::Vector3 force = ball2_->body()->position() - ball_->body()->position();
-        force.Normalize();
-        force *= 10.0; // gravity force
+        sht::math::Vector3 force(0.0f);
         if (keys_.key_down(sht::PublicKey::kLeft))
             force.z += kPushPower;
         if (keys_.key_down(sht::PublicKey::kRight))
@@ -180,10 +170,10 @@ public:
 
         UpdatePhysics();
 
-        console_->Update(frame_time_);
-
         // Camera should be updated after physics
         camera_manager_->Update(frame_time_);
+
+        console_->Update(frame_time_);
 
         // Update matrices
         UpdateProjectionMatrix();
@@ -205,7 +195,7 @@ public:
         renderer_->ChangeTexture(ball_texture_, 0);
         ball_->Render();
         ball2_->Render();
-        //box_->Render();
+        box_->Render();
         renderer_->ChangeTexture(nullptr, 0);
 	}
     void RenderInterface()
@@ -262,6 +252,10 @@ public:
             else if ((key == sht::PublicKey::kGraveAccent) && !(mods & sht::ModifierKey::kShift))
             {
                 console_->Move();
+            }
+            else if (key == sht::PublicKey::kSpace)
+            {
+                ball_->body()->SetPosition(vec3(0.0f, 3.0f, 0.0f));
             }
         }
     }

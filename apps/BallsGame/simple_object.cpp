@@ -7,7 +7,7 @@ namespace sht {
 
 	SimpleObject::SimpleObject(graphics::Renderer * renderer, graphics::Shader * shader, graphics::Model * model,
 			physics::Object * physics_object)
-	: graphics::Renderable(renderer, shader, model)
+	: utility::SceneRenderable(renderer, shader, model)
 	, physics_object_(physics_object)
 	{
 	}

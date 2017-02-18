@@ -14,15 +14,15 @@ namespace sht {
 			friend class CameraManager;
         public:
             explicit Camera(const vec3& pos, const vec3& target_pos);
-            explicit Camera(vec3 * pos, const vec3& target_pos);
-            explicit Camera(const vec3& pos, vec3 * target_pos);
-            explicit Camera(vec3 * pos, vec3 * target_pos);
+            explicit Camera(const vec3 * pos, const vec3& target_pos);
+            explicit Camera(const vec3& pos, const vec3 * target_pos);
+            explicit Camera(const vec3 * pos, const vec3 * target_pos);
             explicit Camera(const vec3& pos, const quat& orient);
             explicit Camera(const vec3& pos, const quat& orient, const vec3& target_pos);
-            explicit Camera(vec3 * pos, const quat& orient);
-            explicit Camera(const vec3& pos, quat * orient);
-            explicit Camera(vec3 * pos, quat * orient);
-            explicit Camera(const quat& orient, vec3 * target_pos, float distance);
+            explicit Camera(const vec3 * pos, const quat& orient);
+            explicit Camera(const vec3& pos, const quat * orient);
+            explicit Camera(const vec3 * pos, const quat * orient);
+            explicit Camera(const quat& orient, const vec3 * target_pos, float distance);
             Camera(const Camera& camera);
             Camera();
             ~Camera();
@@ -32,24 +32,24 @@ namespace sht {
 		protected:
             
             void Set(const vec3& pos, const vec3& target_pos);
-            void Set(vec3 * pos, const vec3& target_pos);
-            void Set(const vec3& pos, vec3 * target_pos);
-            void Set(vec3 * pos, vec3 * target_pos);
+            void Set(const vec3 * pos, const vec3& target_pos);
+            void Set(const vec3& pos, const vec3 * target_pos);
+            void Set(const vec3 * pos, const vec3 * target_pos);
             void Set(const vec3& pos, const quat& orient);
             void Set(const vec3& pos, const quat& orient, const vec3& target_pos);
-            void Set(vec3 * pos, const quat& orient);
-            void Set(const vec3& pos, quat * orient);
-            void Set(vec3 * pos, quat * orient);
-            void Set(const quat& orient, vec3 * target_pos, float distance);
+            void Set(const vec3 * pos, const quat& orient);
+            void Set(const vec3& pos, const quat * orient);
+            void Set(const vec3 * pos, const quat * orient);
+            void Set(const quat& orient, const vec3 * target_pos, float distance);
 
 			void Move(const vec3& translation);
 
 			void Update(); //!< update orientation
 
 		private:
-			vec3 * position_ptr_;
-			vec3 * target_position_ptr_;
-			quat * orientation_ptr_;
+			const vec3 * position_ptr_;
+			const vec3 * target_position_ptr_;
+			const quat * orientation_ptr_;
             vec3 position_;
             vec3 target_position_;
             quat orientation_;
@@ -97,19 +97,19 @@ namespace sht {
 			void MakeFree(const vec3& pos, const quat& orient);
             void MakeFree(CameraID camera_id);
             void MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos);
-			void MakeAttached(vec3 * pos, quat * orient);
+			void MakeAttached(const vec3 * pos, const quat * orient);
 
 			void Clear();
 			CameraID Add(const vec3& pos, const vec3& target_pos);
-			CameraID Add(vec3 * pos, const vec3& target_pos);
-			CameraID Add(const vec3& pos, vec3 * target_pos);
-			CameraID Add(vec3 * pos, vec3 * target_pos);
+			CameraID Add(const vec3* pos, const vec3& target_pos);
+			CameraID Add(const vec3& pos, const vec3* target_pos);
+			CameraID Add(const vec3* pos, const vec3* target_pos);
 			CameraID Add(const vec3& pos, const quat& orient);
             CameraID Add(const vec3& pos, const quat& orient, const vec3& target_pos);
-			CameraID Add(vec3 * pos, const quat& orient);
-			CameraID Add(const vec3& pos, quat * orient);
-			CameraID Add(vec3 * pos, quat * orient);
-			CameraID Add(const quat& orient, vec3 * target_pos, float distance);
+			CameraID Add(const vec3* pos, const quat& orient);
+			CameraID Add(const vec3& pos, const quat* orient);
+			CameraID Add(const vec3* pos, const quat* orient);
+			CameraID Add(const quat& orient, const vec3* target_pos, float distance);
             CameraID AddAsCurrent();
 			void SetCurrent(CameraID cam_id);
 

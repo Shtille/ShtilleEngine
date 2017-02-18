@@ -1,4 +1,4 @@
-#include "physics_object.h"
+#include "../include/physics_object.h"
 
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
@@ -62,6 +62,18 @@ namespace sht {
 		{
 			world_transform.getOpenGLMatrix(matrix_.sa);
 		}
+		void Object::SetPosition(const math::Vector3& position)
+		{
+			math::Vector3 direction(position);
+			direction.x -= matrix_.sa[12];
+			direction.y -= matrix_.sa[13];
+			direction.z -= matrix_.sa[14];
+			body_->translate(btVector3(direction.x, direction.y, direction.z));
+		}
+		void Object::Translate(const math::Vector3& direction)
+		{
+			body_->translate(btVector3(direction.x, direction.y, direction.z));
+		}
 		void Object::SetFriction(float friction)
 		{
 			body_->setFriction(friction);
@@ -92,13 +104,31 @@ namespace sht {
 			body_->applyForce(btVector3(force.x, force.y, force.z),
 							  btVector3(rel_pos.x, rel_pos.y, rel_pos.z));
 		}
+		void Object::ApplyTorque(const math::Vector3& torque)
+		{
+			body_->applyTorque(btVector3(torque.x, torque.y, torque.z));
+		}
+		void Object::ApplyCentralImpulse(const math::Vector3& impulse)
+		{
+			body_->applyCentralImpulse(btVector3(impulse.x, impulse.y, impulse.z));
+		}
+		void Object::ApplyTorqueImpulse(const math::Vector3& impulse)
+		{
+			body_->applyTorqueImpulse(btVector3(impulse.x, impulse.y, impulse.z));
+		}
+		void Object::ApplyImpulse(const math::Vector3& impulse, const math::Vector3& rel_pos)
+		{
+			body_->applyImpulse(btVector3(impulse.x, impulse.y, impulse.z),
+								btVector3(rel_pos.x, rel_pos.y, rel_pos.z));
+		}
 		const math::Matrix4& Object::matrix() const
 		{
 			return matrix_;
 		}
-		const math::Vector3 Object::position() const
+		const math::Vector3& Object::position() const
 		{
-			return math::Vector3(matrix_.sa[12], matrix_.sa[13], matrix_.sa[14]);
+			// Vector3 is a simple struct, thus we can use reinterpret_cast here
+			return * reinterpret_cast<const math::Vector3*>(matrix_.sa + 12);
 		}
 		const math::Vector3 * Object::GetPositionPtr() const
 		{

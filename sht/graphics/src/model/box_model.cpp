@@ -1,17 +1,18 @@
-#include "../../include/model/cube_model.h"
+#include "../../include/model/box_model.h"
 
 namespace sht {
     namespace graphics {
         
-        CubeModel::CubeModel(Renderer * renderer)
+        BoxModel::BoxModel(Renderer * renderer, float size_x, float size_y, float size_z)
         : Model(renderer)
+        , sizes_(size_x, size_y, size_z)
         {
         }
-        CubeModel::~CubeModel()
+        BoxModel::~BoxModel()
         {
             
         }
-        void CubeModel::Create()
+        void BoxModel::Create()
         {
             vertices_.resize(24);
             
@@ -98,6 +99,10 @@ namespace sht {
             vertices_[23].position.Set(-1.0f, -1.0f,  1.0f);
             vertices_[23].normal.Set(0.0f, -1.0f,  0.0f);
             vertices_[23].texcoord.Set(0.0f,  0.0f);
+
+            // Scale box
+            for (auto& v : vertices_)
+                v.position *= sizes_;
             
             indices_.resize(34);
             indices_ = {
@@ -108,6 +113,10 @@ namespace sht {
                 16,17,18,19, 19,20,
                 20,21,22,23
             };
+        }
+        const math::Vector3& BoxModel::sizes() const
+        {
+            return sizes_;
         }
         
     } // namespace graphics

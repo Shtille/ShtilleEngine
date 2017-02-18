@@ -9,15 +9,15 @@ namespace sht {
 		{
             Set(pos, target_pos);
 		}
-		Camera::Camera(vec3 * pos, const vec3& target_pos)
+		Camera::Camera(const vec3 * pos, const vec3& target_pos)
 		{
             Set(pos, target_pos);
 		}
-		Camera::Camera(const vec3& pos, vec3 * target_pos)
+		Camera::Camera(const vec3& pos, const vec3 * target_pos)
 		{
             Set(pos, target_pos);
 		}
-		Camera::Camera(vec3 * pos, vec3 * target_pos)
+		Camera::Camera(const vec3 * pos, const vec3 * target_pos)
 		{
 			Set(pos, target_pos);
 		}
@@ -29,19 +29,19 @@ namespace sht {
         {
             Set(pos, orient, target_pos);
         }
-		Camera::Camera(vec3 * pos, const quat& orient)
+		Camera::Camera(const vec3 * pos, const quat& orient)
 		{
 			Set(pos, orient);
 		}
-		Camera::Camera(const vec3& pos, quat * orient)
+		Camera::Camera(const vec3& pos, const quat * orient)
 		{
 			Set(pos, orient);
 		}
-		Camera::Camera(vec3 * pos, quat * orient)
+		Camera::Camera(const vec3 * pos, const quat * orient)
 		{
 			Set(pos, orient);
 		}
-        Camera::Camera(const quat& orient, vec3 * target_pos, float distance)
+        Camera::Camera(const quat& orient, const vec3 * target_pos, float distance)
         {
             Set(orient, target_pos, distance);
         }
@@ -58,10 +58,12 @@ namespace sht {
 		}
 		Camera& Camera::operator =(const Camera& camera)
 		{
+            need_update_position_ = camera.need_update_position_;
 			need_update_orientation_ = camera.need_update_orientation_;
 			is_position_ = camera.is_position_;
 			is_target_position_ = camera.is_target_position_;
 			is_orientation_ = camera.is_orientation_;
+            distance_ = camera.distance_;
 			if (is_position_)
             {
 				position_ = camera.position_;
@@ -99,7 +101,7 @@ namespace sht {
             need_update_orientation_ = false;
             need_update_position_ = false;
         }
-        void Camera::Set(vec3 * pos, const vec3& target_pos)
+        void Camera::Set(const vec3 * pos, const vec3& target_pos)
         {
             is_position_ = false;
             position_ptr_ = pos;
@@ -112,7 +114,7 @@ namespace sht {
             need_update_orientation_ = true;
             need_update_position_ = false;
         }
-        void Camera::Set(const vec3& pos, vec3 * target_pos)
+        void Camera::Set(const vec3& pos, const vec3 * target_pos)
         {
             is_position_ = true;
             position_ = pos;
@@ -125,7 +127,7 @@ namespace sht {
             need_update_orientation_ = true;
             need_update_position_ = false;
         }
-        void Camera::Set(vec3 * pos, vec3 * target_pos)
+        void Camera::Set(const vec3 * pos, const vec3 * target_pos)
         {
             is_position_ = false;
             position_ptr_ = pos;
@@ -164,7 +166,7 @@ namespace sht {
             need_update_orientation_ = false;
             need_update_position_ = false;
         }
-        void Camera::Set(vec3 * pos, const quat& orient)
+        void Camera::Set(const vec3 * pos, const quat& orient)
         {
             is_position_ = false;
             position_ptr_ = pos;
@@ -176,7 +178,7 @@ namespace sht {
             need_update_orientation_ = false;
             need_update_position_ = false;
         }
-        void Camera::Set(const vec3& pos, quat * orient)
+        void Camera::Set(const vec3& pos, const quat * orient)
         {
             is_position_ = true;
             position_ = pos;
@@ -188,7 +190,7 @@ namespace sht {
             need_update_orientation_ = false;
             need_update_position_ = false;
         }
-        void Camera::Set(vec3 * pos, quat * orient)
+        void Camera::Set(const vec3 * pos, const quat * orient)
         {
             is_position_ = false;
             position_ptr_ = pos;
@@ -199,13 +201,13 @@ namespace sht {
             need_update_orientation_ = false;
             need_update_position_ = false;
         }
-        void Camera::Set(const quat& orient, vec3 * target_pos, float distance)
+        void Camera::Set(const quat& orient, const vec3 * target_pos, float distance)
         {
             is_position_ = true;
             position_ = *target_pos - orient.Direction() * distance;
             position_ptr_ = &position_;
             is_target_position_ = false;
-            target_position_ptr_ = &target_position_;
+            target_position_ptr_ = target_pos;
             is_orientation_ = true;
             orientation_.Set(orient);
             orientation_ptr_ = &orientation_;
@@ -227,9 +229,7 @@ namespace sht {
                 orientation_.Set(*position_ptr_, *target_position_ptr_);
 
             if (need_update_position_ && target_position_ptr_)
-            {
                 position_ = *target_position_ptr_ - orientation_ptr_->Direction() * distance_;
-            }
 		}
 		CameraManager::CameraManager()
 		: animation_time_(0.0f)
@@ -292,24 +292,24 @@ namespace sht {
 		{
 			quat orient(UNIT_X, angle);
             assert(current_camera_ptr_->is_orientation_);
-			*current_camera_ptr_->orientation_ptr_ = *current_camera_ptr_->orientation_ptr_ * orient;
-            current_camera_ptr_->orientation_ptr_->Normalize();
+			current_camera_ptr_->orientation_ = *current_camera_ptr_->orientation_ptr_ * orient;
+            current_camera_ptr_->orientation_.Normalize();
 			manual_rotation_ = true;
 		}
 		void CameraManager::RotateAroundY(f32 angle)
 		{
 			quat orient(UNIT_Y, angle);
             assert(current_camera_ptr_->is_orientation_);
-            *current_camera_ptr_->orientation_ptr_ = *current_camera_ptr_->orientation_ptr_ * orient;
-            current_camera_ptr_->orientation_ptr_->Normalize();
+            current_camera_ptr_->orientation_ = *current_camera_ptr_->orientation_ptr_ * orient;
+            current_camera_ptr_->orientation_.Normalize();
 			manual_rotation_ = true;
 		}
 		void CameraManager::RotateAroundZ(f32 angle)
 		{
 			quat orient(UNIT_Z, angle);
             assert(current_camera_ptr_->is_orientation_);
-            *current_camera_ptr_->orientation_ptr_ = *current_camera_ptr_->orientation_ptr_ * orient;
-            current_camera_ptr_->orientation_ptr_->Normalize();
+            current_camera_ptr_->orientation_ = *current_camera_ptr_->orientation_ptr_ * orient;
+            current_camera_ptr_->orientation_.Normalize();
 			manual_rotation_ = true;
 		}
         void CameraManager::RotateAroundTargetInX(f32 angle)
@@ -320,7 +320,7 @@ namespace sht {
             
             RotateAroundX(-angle);
             f32 distance = (*current_camera_ptr_->target_position_ptr_ - *current_camera_ptr_->position_ptr_).Length();
-            *current_camera_ptr_->position_ptr_ = *current_camera_ptr_->target_position_ptr_
+            current_camera_ptr_->position_ = *current_camera_ptr_->target_position_ptr_
                 - distance * current_camera_ptr_->orientation_ptr_->Direction();
         }
         void CameraManager::RotateAroundTargetInY(f32 angle)
@@ -331,7 +331,7 @@ namespace sht {
             
             RotateAroundY(-angle);
             f32 distance = (*current_camera_ptr_->target_position_ptr_ - *current_camera_ptr_->position_ptr_).Length();
-            *current_camera_ptr_->position_ptr_ = *current_camera_ptr_->target_position_ptr_
+            current_camera_ptr_->position_ = *current_camera_ptr_->target_position_ptr_
                 - distance * current_camera_ptr_->orientation_ptr_->Direction();
         }
         void CameraManager::RotateAroundTargetInZ(f32 angle)
@@ -342,7 +342,7 @@ namespace sht {
             
             RotateAroundZ(-angle);
             f32 distance = (*current_camera_ptr_->target_position_ptr_ - *current_camera_ptr_->position_ptr_).Length();
-            *current_camera_ptr_->position_ptr_ = *current_camera_ptr_->target_position_ptr_
+            current_camera_ptr_->position_ = *current_camera_ptr_->target_position_ptr_
                 - distance * current_camera_ptr_->orientation_ptr_->Direction();
         }
 		void CameraManager::Move(const vec3& translation)
@@ -378,7 +378,7 @@ namespace sht {
             current_camera_ptr_ = &current_camera_;
             manual_rotation_ = true;
         }
-		void CameraManager::MakeAttached(vec3 * pos, quat * orient)
+		void CameraManager::MakeAttached(const vec3 * pos, const quat * orient)
 		{
 			is_current_ = true;
 			current_camera_.Set(pos, orient);
@@ -398,21 +398,21 @@ namespace sht {
 			cameras_.push_back(camera);
 			return cam_id;
 		}
-		CameraID CameraManager::Add(vec3 * pos, const vec3& target_pos)
+		CameraID CameraManager::Add(const vec3 * pos, const vec3& target_pos)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, target_pos);
             cameras_.push_back(camera);
 			return cam_id;
 		}
-		CameraID CameraManager::Add(const vec3& pos, vec3 * target_pos)
+		CameraID CameraManager::Add(const vec3& pos, const vec3 * target_pos)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, target_pos);
             cameras_.push_back(camera);
 			return cam_id;
 		}
-		CameraID CameraManager::Add(vec3 * pos, vec3 * target_pos)
+		CameraID CameraManager::Add(const vec3 * pos, const vec3 * target_pos)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, target_pos);
@@ -433,28 +433,28 @@ namespace sht {
             cameras_.push_back(camera);
             return cam_id;
         }
-		CameraID CameraManager::Add(vec3 * pos, const quat& orient)
+		CameraID CameraManager::Add(const vec3 * pos, const quat& orient)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, orient);
             cameras_.push_back(camera);
 			return cam_id;
 		}
-		CameraID CameraManager::Add(const vec3& pos, quat * orient)
+		CameraID CameraManager::Add(const vec3& pos, const quat * orient)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, orient);
             cameras_.push_back(camera);
 			return cam_id;
 		}
-		CameraID CameraManager::Add(vec3 * pos, quat * orient)
+		CameraID CameraManager::Add(const vec3 * pos, const quat * orient)
 		{
 			CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(pos, orient);
             cameras_.push_back(camera);
 			return cam_id;
 		}
-        CameraID CameraManager::Add(const quat& orient, vec3 * target_pos, float distance)
+        CameraID CameraManager::Add(const quat& orient, const vec3 * target_pos, float distance)
         {
             CameraID cam_id = static_cast<CameraID>(cameras_.size());
             Camera camera(orient, target_pos, distance);
@@ -503,14 +503,16 @@ namespace sht {
 			{
 				assert(current_camera_ptr_ && "camera hasn't been set");
                 current_camera_ptr_->Update();
-				need_view_matrix_update_ = current_camera_ptr_->need_update_orientation_;
+				need_view_matrix_update_ = current_camera_ptr_->need_update_position_ 
+                                        || current_camera_ptr_->need_update_orientation_;
 			}
 			else if ((path_size == 1) || (current_path_index_ + 1 == path_size && !is_path_cycled_))
 			{
 				// Update the single camera
 				CameraID cam_id = paths_[0].camera_id;
 				cameras_[cam_id].Update();
-                need_view_matrix_update_ = cameras_[cam_id].need_update_orientation_;
+                need_view_matrix_update_ = cameras_[cam_id].need_update_position_ 
+                                        || cameras_[cam_id].need_update_orientation_;
 			}
 			else
 			{

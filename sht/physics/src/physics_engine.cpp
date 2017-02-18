@@ -1,7 +1,9 @@
-#include "physics_engine.h"
+#include "../include/physics_engine.h"
 
 #include "physics_sphere.h"
 #include "physics_box.h"
+
+#include <btBulletDynamicsCommon.h>
 
 namespace sht {
 	namespace physics {
@@ -63,9 +65,9 @@ namespace sht {
 		}
 		void Engine::Update(float sec)
 		{
-			const int kMaxSubSteps = 10;
-			const float kFixedTimeStep = 0.01;
-			dynamics_world_->stepSimulation(sec, kMaxSubSteps, kFixedTimeStep);
+			//const int kMaxSubSteps = 10;
+			//const float kFixedTimeStep = 0.01;
+			dynamics_world_->stepSimulation(sec/*, kMaxSubSteps, kFixedTimeStep*/);
 		}
 
 	} // namespace physics

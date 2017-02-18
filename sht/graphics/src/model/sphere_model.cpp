@@ -5,10 +5,11 @@
 namespace sht {
     namespace graphics {
         
-        SphereModel::SphereModel(Renderer * renderer, u32 slices, u32 loops)
+        SphereModel::SphereModel(Renderer * renderer, u32 slices, u32 loops, float radius)
         : Model(renderer)
         , slices_(slices)
         , loops_(loops)
+        , radius_(radius)
         {
         }
         SphereModel::~SphereModel()
@@ -17,8 +18,6 @@ namespace sht {
         }
         void SphereModel::Create()
         {
-            const float kRadius = 1.0f;
-            
             if (HasTexture())
             {
                 vertices_.resize((slices_ + 1)*(loops_));
@@ -37,7 +36,7 @@ namespace sht {
                         float ai = (math::kTwoPi / (float)slices_) * (float)i;
                         
                         vertices_[ind].normal.Set(sin_aj*cosf(ai), -cos_aj, -sin_aj*sinf(ai));
-                        vertices_[ind].position = vertices_[ind].normal * kRadius;
+                        vertices_[ind].position = vertices_[ind].normal * radius_;
                         vertices_[ind].texcoord.Set(part_i, part_j);
                         ++ind;
                     }
@@ -73,11 +72,11 @@ namespace sht {
                 
                 volatile u32 ind = 0;
                 
-                vertices_[ind].position.Set(0.0f, -kRadius, 0.0f);
+                vertices_[ind].position.Set(0.0f, -radius_, 0.0f);
                 vertices_[ind].normal.Set(0.0f, -1.0f, 0.0f);
                 vertices_[ind].texcoord.Set(0.0f, 0.0f);
                 ++ind;
-                vertices_[ind].position.Set(0.0f, kRadius, 0.0f);
+                vertices_[ind].position.Set(0.0f, radius_, 0.0f);
                 vertices_[ind].normal.Set(0.0f, 1.0f, 0.0f);
                 vertices_[ind].texcoord.Set(0.0f, 1.0f);
                 ++ind;
@@ -94,7 +93,7 @@ namespace sht {
                         float ai = (math::kTwoPi / (float)slices_) * (float)i;
                         
                         vertices_[ind].normal.Set(sin_aj*cosf(ai), -cos_aj, -sin_aj*sinf(ai));
-                        vertices_[ind].position = vertices_[ind].normal * kRadius;
+                        vertices_[ind].position = vertices_[ind].normal * radius_;
                         vertices_[ind].texcoord.Set(part_i, part_j);
                         ++ind;
                     }

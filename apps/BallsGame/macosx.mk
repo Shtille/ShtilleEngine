@@ -1,16 +1,16 @@
-# Makefile for Windows
+# Makefile for Unix
 
-TARGET = PhysicsTest
-TARGET_FILE = $(TARGET).exe
+TARGET = BallsGame
+TARGET_FILE = $(TARGET).app
 ROOT_PATH = .
-TARGET_PATH = $(ROOT_PATH)\bin
-APP_PATH = $(ROOT_PATH)\apps\$(TARGET)
+TARGET_PATH = $(ROOT_PATH)/bin
+APP_PATH = $(ROOT_PATH)/apps/$(TARGET)
 
-CC = g++
+CC = clang++
 AR = ar rcs
 
-CP = @copy /Y
-RM = @del /Q
+CP = cp
+RM = rm -f
 
 INCLUDE = -I$(ROOT_PATH)/sht
 DEFINES =
@@ -19,14 +19,15 @@ CFLAGS = -g -Wall -O3 -std=c++11
 CFLAGS += $(INCLUDE)
 CFLAGS += $(DEFINES)
 
-LDFLAGS = -s -mwindows
+LDFLAGS =
 
 SRC_DIRS = $(APP_PATH)
 SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
-LIBRARIES = -lbullet -lShtilleEngine -lstdc++ -lgdi32 -lglew -lopengl32 -lfreetype -ljpeg -lpng -lz
+LIBRARIES = -lbullet \
+	-lShtilleEngine -framework Cocoa -framework OpenGL -framework Foundation -lstdc++ -lfreetype -ljpeg -lpng -lz
 
 LIBRARY_PATH = -L$(INSTALL_PATH)
 
@@ -34,15 +35,15 @@ all: $(SRC_FILES) create_dir clean $(TARGET_FILE) install
 	@echo All is done!
 
 create_dir:
-	@if not exist $(TARGET_PATH) mkdir $(TARGET_PATH)
+	@test -d $(TARGET_PATH) || mkdir $(TARGET_PATH)
 
 clean:
-	@for /r %%R in ($(APP_PATH)\*.o) do (if exist %%R del /Q %%R)
+	@find $(APP_PATH) -name "*.o" -type f -delete
 
 install:
 	@echo installing to $(TARGET_PATH)
-	@$(RM) $(TARGET_PATH)\$(TARGET_FILE)
-	@$(CP) $(TARGET_FILE) $(TARGET_PATH)\$(TARGET_FILE)
+	@$(RM) $(TARGET_PATH)/$(TARGET_FILE)
+	@$(CP) $(TARGET_FILE) $(TARGET_PATH)/$(TARGET_FILE)
 	@$(RM) $(TARGET_FILE)
 
 $(TARGET_FILE): $(OBJECTS)
