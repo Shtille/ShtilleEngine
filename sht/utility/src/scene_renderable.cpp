@@ -15,6 +15,18 @@ namespace sht {
 		{
 
 		}
+		size_t SceneRenderable::hash()
+		{
+			return reinterpret_cast<size_t>(shader_);
+		}
+		sht::graphics::Shader * SceneRenderable::shader()
+		{
+			return shader_;
+		}
+		sht::graphics::Model * SceneRenderable::model()
+		{
+			return model_;
+		}
 
 	} // namespace utility
 } // namespace sht

@@ -13,7 +13,7 @@ CP = cp
 RM = rm -f
 
 INCLUDE = -I$(ROOT_PATH)/sht
-DEFINES =
+DEFINES = 
 
 CFLAGS = -g -Wall -O3 -std=c++11
 CFLAGS += $(INCLUDE)

@@ -2,30 +2,28 @@
 #include "../../sht/graphics/include/model/sphere_model.h"
 #include "../../sht/graphics/include/model/box_model.h"
 #include "../../sht/graphics/include/renderer/text.h"
-#include "../../sht/utility/include/console.h"
 #include "../../sht/utility/include/camera.h"
 #include "../../sht/physics/include/physics_engine.h"
 
 #include "simple_object.h"
+#include "parser.h"
+#include "game_console.h"
+#include "object_manager.h"
 
-class PhysicsTestApp : public sht::OpenGlApplication
+class BallsGameApp : public sht::OpenGlApplication
 {
 public:
-    PhysicsTestApp()
-    : sphere_model_(nullptr)
-    , ground_box_(nullptr)
-    , object_shader_(nullptr)
-    , gui_shader_(nullptr)
+    BallsGameApp()
+    : gui_shader_(nullptr)
     , text_shader_(nullptr)
-    , ball_texture_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
-	, console_(nullptr)
     , camera_manager_(nullptr)
+    , console_(nullptr)
+    , parser_(nullptr)
     , physics_(nullptr)
+    , object_manager_(nullptr)
     , ball_(nullptr)
-    , ball2_(nullptr)
-    , box_(nullptr)
     , light_angle_(0.0f)
     , light_distance_(100.0f)
     , need_update_projection_matrix_(true)
@@ -33,11 +31,11 @@ public:
     }
     const char* GetTitle() final
     {
-        return "Physics test";
+        return "Balls game";
     }
     const bool IsMultisample() final
     {
-        return true;
+        return false;
     }
 	void BindShaderConstants()
 	{
@@ -47,32 +45,10 @@ public:
 	}
     bool Load() final
     {
-        // Sphere model
-		sphere_model_ = new sht::graphics::SphereModel(renderer_, 20, 10);
-		sphere_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-		sphere_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-		sphere_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
-		sphere_model_->Create();
-        if (!sphere_model_->MakeRenderable())
-            return false;
-        ground_box_ = new sht::graphics::BoxModel(renderer_, 50.0f, 10.0f, 50.0f);
-        ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-        ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-        ground_box_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
-        ground_box_->Create();
-        if (!ground_box_->MakeRenderable())
-            return false;
-        
 		// Load shaders
         const char *attribs[] = {"a_position", "a_normal", "a_texcoord"};
-        if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PhysicsTest/shader", attribs, 3)) return false;
         if (!renderer_->AddShader(text_shader_, "data/shaders/text", attribs, 1)) return false;
         if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored", attribs, 1)) return false;
-
-        // Load textures
-        if (!renderer_->AddTexture(ball_texture_, "data/textures/chess.jpg",
-                                   sht::graphics::Texture::Wrap::kClampToEdge,
-                                   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
         // Load fonts
         renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
@@ -82,33 +58,23 @@ public:
 		fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
         if (!fps_text_)
             return false;
+
+        // Wrapper to console parser
+        parser_ = new Parser();
         
-        console_ = new sht::utility::Console(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+        console_ = new GameConsole(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+        console_->set_parser(parser_->object());
 
         // Create physics
         physics_ = new sht::physics::Engine();
         //physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
 
-        // Setup our objects
-        sht::physics::Object * object;
-        object = physics_->AddSphere(vec3(0.0f, 3.0f, 0.0f), 1.0f, 1.0f);
-        object->SetFriction(0.5f);
-        object->SetRollingFriction(0.1f);
-        object->SetSpinningFriction(0.1f);
-        object->SetRestitution(0.8f);
-        ball_ = new sht::SimpleObject(renderer_, object_shader_, sphere_model_, object);
+        object_manager_ = new ObjectManager(renderer_, physics_, &light_pos_eye_);
 
-        object = physics_->AddSphere(vec3(1.0f, 0.0f, 1.0f), 1.0f, 1.0f);
-        object->SetFriction(0.5f);
-        object->SetRollingFriction(0.1f);
-        object->SetSpinningFriction(0.1f);
-        object->SetRestitution(0.8f);
-        ball2_ = new sht::SimpleObject(renderer_, object_shader_, sphere_model_, object);
-
-        // Ground
-        object = physics_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 50.0f, 10.0f, 50.0f);
-        object->SetFriction(1.0f);
-        box_ = new sht::SimpleObject(renderer_, object_shader_, ground_box_, object);
+        // Populate our scene with objects
+        ball_ = object_manager_->AddSphere(vec3(0.0f, 3.0f, 0.0f), 1.0f, 1.0f, "metal");
+        object_manager_->AddSphere(vec3(1.0f, 0.0f, 1.0f), 1.0f, 1.0f, "metal");
+        object_manager_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 50.0f, 10.0f, 50.0f, "metal");
 
         // Create camera attached to the controlled ball
         camera_manager_ = new sht::utility::CameraManager();
@@ -124,24 +90,18 @@ public:
     }
     void Unload() final
     {
-        if (box_)
-            delete box_;
-        if (ball2_)
-            delete ball2_;
-        if (ball_)
-            delete ball_;
+        if (object_manager_)
+            delete object_manager_;
         if (physics_)
             delete physics_;
         if (camera_manager_)
             delete camera_manager_;
 		if (console_)
 			delete console_;
+        if (parser_)
+            delete parser_;
 		if (fps_text_)
 			delete fps_text_;
-        if (ground_box_)
-            delete ground_box_;
-		if (sphere_model_)
-			delete sphere_model_;
     }
     void UpdatePhysics()
     {
@@ -179,24 +139,13 @@ public:
         UpdateProjectionMatrix();
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
         projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+        light_pos_eye_ = renderer_->view_matrix() * light_position_;
 
 		BindShaderVariables();
     }
 	void RenderObjects()
 	{
-        vec3 light_pos_eye = renderer_->view_matrix() * light_position_;
-
-        object_shader_->Bind();
-        object_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-        object_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-        object_shader_->Uniform3fv("u_light_pos", light_pos_eye);
-        object_shader_->Uniform1i("u_texture", 0);
-
-        renderer_->ChangeTexture(ball_texture_, 0);
-        ball_->Render();
-        ball2_->Render();
-        box_->Render();
-        renderer_->ChangeTexture(nullptr, 0);
+        object_manager_->RenderAll();
 	}
     void RenderInterface()
     {
@@ -255,6 +204,7 @@ public:
             }
             else if (key == sht::PublicKey::kSpace)
             {
+                // For debug purposes only
                 ball_->body()->SetPosition(vec3(0.0f, 3.0f, 0.0f));
             }
         }
@@ -287,21 +237,17 @@ public:
     }
     
 private:
-    sht::graphics::Model * sphere_model_;
-    sht::graphics::Model * ground_box_;
-    sht::graphics::Shader * object_shader_;
     sht::graphics::Shader * gui_shader_;
     sht::graphics::Shader * text_shader_;
-    sht::graphics::Texture * ball_texture_;
     sht::graphics::Font * font_;
     sht::graphics::DynamicText * fps_text_;
-    sht::utility::Console * console_;
     sht::utility::CameraManager * camera_manager_;
-
+    GameConsole * console_;
+    Parser * parser_;
     sht::physics::Engine * physics_;
+    ObjectManager * object_manager_;
+
     sht::SimpleObject * ball_;
-    sht::SimpleObject * ball2_;
-    sht::SimpleObject * box_;
     
     sht::math::Matrix4 projection_view_matrix_;
 
@@ -311,8 +257,9 @@ private:
     float light_angle_;
     float light_distance_;
     sht::math::Vector3 light_position_;
+    sht::math::Vector3 light_pos_eye_;
     
     bool need_update_projection_matrix_;
 };
 
-DECLARE_MAIN(PhysicsTestApp);
+DECLARE_MAIN(BallsGameApp);

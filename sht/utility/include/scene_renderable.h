@@ -21,6 +21,11 @@ namespace sht {
 			explicit SceneRenderable(graphics::Renderer * renderer, graphics::Shader * shader, graphics::Model * model);
 			virtual ~SceneRenderable();
 
+			virtual size_t hash() override;
+
+			sht::graphics::Shader * shader();
+			sht::graphics::Model * model();
+
 		protected:
 			graphics::Renderer * renderer_;
 			graphics::Shader * shader_;

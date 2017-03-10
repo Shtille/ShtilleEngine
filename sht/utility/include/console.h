@@ -21,11 +21,11 @@ namespace sht {
             Console(sht::graphics::Renderer * renderer, sht::graphics::Font * font,
                     sht::graphics::Shader * gui_shader, sht::graphics::Shader * text_shader,
                     f32 bottom, f32 text_height, f32 velocity, f32 aspect_ratio);
-			~Console();
+			virtual ~Console();
 
             bool IsActive(); //!< down position
 			void Move();
-            void AddString(const wchar_t* text);
+            void AddString(const std::wstring& text);
             
             void Update(f32 sec);
 			void Render();
@@ -33,17 +33,18 @@ namespace sht {
             void ProcessKeyInput(sht::PublicKey key, int mods);
             void ProcessCharInput(unsigned short code);
 
+        protected:
+            std::wstring& input_string();
+            virtual void RecognizeString();
+
 		private:
             Console(const Console&) = delete;
             Console& operator =(const Console&) = delete;
-            
-            std::wstring& input_string();
             
             void InsertSymbol(wchar_t symbol);
             void RemoveSymbol();
             void PushString();
             void InsertString();
-            void RecognizeString();
             
             ui::VerticalBoard vertical_board_;
             u32 max_lines_; //!< maximum number of lines

@@ -35,7 +35,7 @@ namespace sht {
 		{
             vertical_board_.Move();
 		}
-        void Console::AddString(const wchar_t* text)
+        void Console::AddString(const std::wstring& text)
         {
             for (u32 i = 0; i < max_lines_-2; ++i)
             {
@@ -125,8 +125,7 @@ namespace sht {
         }
         void Console::RecognizeString()
         {
-            // Need to add some script engine here
-            // input_string is the one to recognize
+            // Inheritants should override this function
         }
 
 	} // namespace utility

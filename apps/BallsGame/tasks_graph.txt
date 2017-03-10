@@ -1,0 +1,37 @@
+Design:
+	- We need a editor to store game levels.
+		Editor should possibly store script commands to create objects.
+	- We need a script engine to match user functions with string commands.
+		AddSphere(...), AddBox(...), etc.
+	- We need a way to store objects in level file.
+	- Editor should have separate view mode.
+Physics:
+	- Determine optimal physics friction koefficients.
+Engine:
+	- Add scene node class.
+	- Add scene manager class.
+Graphics:
+	- Add textures.
+Controls:
+	All game controls is pretty fine by now.
+Audio:
+	By now we are skipping this phase.
+
+	model
+   /     \
+shader  physics_object
+ | \     /
+ | material
+ |   |
+texture
+
+We need to only the material that is gonna be used next time.
+Thus there's no need to load all the shaders / models / textures.
+As example, one level creation looks like:
+	AddSphere(material1, position1, mass1, radius1)
+	AddSphere(material1, position2, mass2, radius2)
+	AddBox(material2, position3, mass3, sizes3)
+So first call to AddSphere uses MaterialDatabase class that tries to find an existing material.
+It doesn't find it due to first call, thus just calls appropriate loading function.
+Call to material load loads a shader and a texture.
+On the second use of AddSphere we MaterialDatabase class just returns existing material pointer.

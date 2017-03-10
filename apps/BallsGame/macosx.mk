@@ -13,9 +13,9 @@ CP = cp
 RM = rm -f
 
 INCLUDE = -I$(ROOT_PATH)/sht
-DEFINES =
+DEFINES = -DPARSER_WIDE_STRING
 
-CFLAGS = -g -Wall -O3 -std=c++11
+CFLAGS = -g -Wall -O3 -std=c++14
 CFLAGS += $(INCLUDE)
 CFLAGS += $(DEFINES)
 
@@ -26,7 +26,7 @@ SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
-LIBRARIES = -lbullet \
+LIBRARIES = -lbullet -lscript \
 	-lShtilleEngine -framework Cocoa -framework OpenGL -framework Foundation -lstdc++ -lfreetype -ljpeg -lpng -lz
 
 LIBRARY_PATH = -L$(INSTALL_PATH)

@@ -15,8 +15,19 @@ namespace sht {
 			virtual void Update();
 			virtual void Render();
 
+			void RenderAll();
+
 			void Attach(SceneNode * node);
 			void Detach(SceneNode * node);
+
+			typedef bool (*SortPredicate)(SceneNode *, SceneNode *);
+			void Sort(SortPredicate predicate);
+
+			virtual size_t hash();
+
+			SceneNode * parent();
+			SceneNode * child(size_t index);
+			size_t num_children();
 
 		private:
 			SceneNode * parent_;
