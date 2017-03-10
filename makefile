@@ -4,7 +4,7 @@
 ifeq ($(OS),Windows_NT)
     #CCFLAGS += -D WIN32
     MAKE := mingw32-make.exe
-    THIRDPARTY_LIBRARIES = zlib png jpeg curl freetype glew bullet
+    THIRDPARTY_LIBRARIES = zlib png jpeg curl freetype glew bullet script
     PLATFORM_SUFFIX = mingw32
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
         #CCFLAGS += -D AMD64
@@ -18,7 +18,7 @@ ifeq ($(OS),Windows_NT)
     endif
 else
 	MAKE := make
-	THIRDPARTY_LIBRARIES = zlib png jpeg freetype bullet
+	THIRDPARTY_LIBRARIES = zlib png jpeg freetype bullet script
     INSTALL_PATH := /usr/local/lib
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
@@ -52,6 +52,7 @@ FT_MAKEFILE = sht/thirdparty/freetype/$(PLATFORM_SUFFIX).mk
 GLEW_MAKEFILE = sht/thirdparty/glew/$(PLATFORM_SUFFIX).mk
 BULLET_MAKEFILE = sht/thirdparty/bullet/$(PLATFORM_SUFFIX).mk
 SAIM_MAKEFILE = sht/thirdparty/libsaim/$(PLATFORM_SUFFIX).mk
+SCRIPT_MAKEFILE = sht/thirdparty/script/$(PLATFORM_SUFFIX).mk
 
 ### Engine Makefile ###
 ENGINE_MAKEFILE = sht/$(PLATFORM_SUFFIX).mk
@@ -94,3 +95,6 @@ bullet:
 
 saim:
 	$(MAKE) -f $(SAIM_MAKEFILE) IS_STATIC=YES
+
+script:
+	$(MAKE) -f $(SCRIPT_MAKEFILE) IS_STATIC=YES

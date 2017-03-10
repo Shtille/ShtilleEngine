@@ -1,0 +1,1 @@
+SRC_DIRS = $(LIB_PATH)/src
