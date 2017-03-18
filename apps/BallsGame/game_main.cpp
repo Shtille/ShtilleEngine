@@ -59,12 +59,6 @@ public:
         if (!fps_text_)
             return false;
 
-        // Wrapper to console parser
-        parser_ = new Parser();
-        
-        console_ = new GameConsole(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
-        console_->set_parser(parser_->object());
-
         // Create physics
         physics_ = new sht::physics::Engine();
         //physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
@@ -72,14 +66,21 @@ public:
         object_manager_ = new ObjectManager(renderer_, physics_, &light_pos_eye_);
 
         // Populate our scene with objects
-        ball_ = object_manager_->AddSphere(vec3(0.0f, 3.0f, 0.0f), 1.0f, 1.0f, "metal");
-        object_manager_->AddSphere(vec3(1.0f, 0.0f, 1.0f), 1.0f, 1.0f, "metal");
-        object_manager_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 50.0f, 10.0f, 50.0f, "metal");
+        object_manager_->AddSphere(0.0f, 3.0f, 0.0f, 1.0f, 1.0f, "metal");
+        ball_ = object_manager_->last_object();
+        object_manager_->AddSphere(1.0f, 0.0f, 1.0f, 1.0f, 1.0f, "metal");
+        object_manager_->AddBox(0.0f, -10.0f, 0.0f, 0.0f, 50.0f, 10.0f, 50.0f, "metal");
+
+        // Wrapper to console parser
+        parser_ = new Parser(object_manager_);
+        
+        console_ = new GameConsole(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+        console_->set_parser(parser_->object());
 
         // Create camera attached to the controlled ball
         camera_manager_ = new sht::utility::CameraManager();
         auto cam_id = camera_manager_->Add(quat(vec3(5.0f, 5.0f, 0.0f), vec3(0.0f)), 
-            ball_->body()->GetPositionPtr(), 10.0f);
+            ball_->body()->GetPositionPtr(), 10.0f/* distance */);
         camera_manager_->SetCurrent(cam_id);
         camera_manager_->SetManualUpdate();
 
@@ -90,16 +91,16 @@ public:
     }
     void Unload() final
     {
+        if (camera_manager_)
+            delete camera_manager_;
+        if (console_)
+            delete console_;
+        if (parser_)
+            delete parser_;
         if (object_manager_)
             delete object_manager_;
         if (physics_)
             delete physics_;
-        if (camera_manager_)
-            delete camera_manager_;
-		if (console_)
-			delete console_;
-        if (parser_)
-            delete parser_;
 		if (fps_text_)
 			delete fps_text_;
     }
@@ -131,6 +132,14 @@ public:
         UpdatePhysics();
 
         // Camera should be updated after physics
+        if (object_manager_->editor_mode_changed())
+        {
+            object_manager_->reset_editor_mode();
+            if (object_manager_->editor_mode())
+                camera_manager_->MakeFree(0); // CameraID
+            else
+                camera_manager_->SetCurrent(0); // i guess CameraID will be 0
+        }
         camera_manager_->Update(frame_time_);
 
         console_->Update(frame_time_);

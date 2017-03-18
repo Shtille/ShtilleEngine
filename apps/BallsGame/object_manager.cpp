@@ -14,12 +14,38 @@ ObjectManager::ObjectManager(sht::graphics::Renderer * renderer, sht::physics::E
 , model_db_(renderer)
 , material_db_(renderer, &shader_db_, &texture_db_, light_pos_eye)
 , root_node_()
+, last_object_(nullptr)
 , need_sort_(false)
+, editor_mode_(false)
+, editor_mode_changed_(false)
 {
 
 }
 ObjectManager::~ObjectManager()
 {
+}
+sht::SimpleObject * ObjectManager::last_object()
+{
+	return last_object_;
+}
+void ObjectManager::set_editor_mode(bool editor_mode)
+{
+	editor_mode_ = editor_mode;
+	// Since no event system performed i gonna use flags
+	editor_mode_changed_ = true;
+	//OnEditorModeChanged()
+}
+void ObjectManager::reset_editor_mode()
+{
+	editor_mode_changed_ = false;
+}
+bool ObjectManager::editor_mode()
+{
+	return editor_mode_;
+}
+bool ObjectManager::editor_mode_changed()
+{
+	return editor_mode_changed_;
 }
 void ObjectManager::RenderAll()
 {
@@ -54,8 +80,8 @@ void ObjectManager::RenderAll()
 		}
 	}
 }
-sht::SimpleObject * ObjectManager::AddSphere(const vec3& position, float mass, float radius,
-		const std::string& material_name)
+void ObjectManager::AddSphere(float pos_x, float pos_y, float pos_z, float mass, float radius,
+		std::string material_name)
 {
 	const char * kModelName = "sphere";
 
@@ -64,6 +90,7 @@ sht::SimpleObject * ObjectManager::AddSphere(const vec3& position, float mass, f
 	sht::graphics::Model * model = model_db_.Get(kModelName);
 
 	sht::physics::Object * object;
+	sht::math::Vector3 position(pos_x, pos_y, pos_z);
     object = physics_engine_->AddSphere(position, mass, radius);
     object->SetFriction(surface->linear_friction);
     object->SetRollingFriction(surface->rolling_friction);
@@ -72,13 +99,13 @@ sht::SimpleObject * ObjectManager::AddSphere(const vec3& position, float mass, f
 
     sht::SimpleObject * simple_object;
     simple_object = new sht::SimpleObject(renderer_, material->shader(), model, object, material);
-
+    last_object_ = simple_object;
     root_node_.Attach(simple_object);
+
     need_sort_ = true;
-    return simple_object;
 }
-sht::SimpleObject * ObjectManager::AddBox(const vec3& position, float mass, float size_x, float size_y, float size_z,
-		const std::string& material_name)
+void ObjectManager::AddBox(float pos_x, float pos_y, float pos_z, float mass, float size_x, float size_y, float size_z,
+		std::string material_name)
 {
 	const char * kModelName = "box";
 
@@ -87,6 +114,7 @@ sht::SimpleObject * ObjectManager::AddBox(const vec3& position, float mass, floa
 	sht::graphics::Model * model = model_db_.Get(kModelName);
 
 	sht::physics::Object * object;
+	sht::math::Vector3 position(pos_x, pos_y, pos_z);
     object = physics_engine_->AddBox(position, mass, size_x, size_y, size_z);
     object->SetFriction(surface->linear_friction);
     object->SetRollingFriction(surface->rolling_friction);
@@ -95,8 +123,8 @@ sht::SimpleObject * ObjectManager::AddBox(const vec3& position, float mass, floa
 
     sht::SimpleObject * simple_object;
     simple_object = new sht::SimpleObject(renderer_, material->shader(), model, object, material);
-
+    last_object_ = simple_object;
     root_node_.Attach(simple_object);
+
     need_sort_ = true;
-    return simple_object;
 }

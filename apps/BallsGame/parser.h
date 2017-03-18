@@ -4,9 +4,11 @@
 
 #include "thirdparty/script/src/script.h"
 
+class ObjectManager;
+
 class Parser {
 public:
-	Parser();
+	Parser(ObjectManager * object_manager);
 	~Parser();
 
 	console_script::Parser * object();
@@ -15,6 +17,7 @@ protected:
 	void SetupFunctions();
 
 private:
+	ObjectManager * object_manager_;
 	console_script::Parser parser_;
 };
 

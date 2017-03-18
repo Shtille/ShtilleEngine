@@ -1,10 +1,12 @@
 Design:
 	- We need a editor to store game levels.
 		Editor should possibly store script commands to create objects.
-	- We need a script engine to match user functions with string commands.
+	+ We need a script engine to match user functions with string commands.
 		AddSphere(...), AddBox(...), etc.
 	- We need a way to store objects in level file.
 	- Editor should have separate view mode.
+	- We should assign IDs to objects. This way we can easily select and manipulate them.
+	- Need event system to perform some events.
 Physics:
 	- Determine optimal physics friction koefficients.
 Engine:

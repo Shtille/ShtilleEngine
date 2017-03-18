@@ -23,12 +23,19 @@ public:
 	ObjectManager(sht::graphics::Renderer * renderer, sht::physics::Engine * physics_engine, const vec3* light_pos_eye);
 	~ObjectManager();
 
+	sht::SimpleObject * last_object();
+
+	void set_editor_mode(bool editor_mode);
+	void reset_editor_mode();
+	bool editor_mode();
+	bool editor_mode_changed();
+
 	void RenderAll();
 
-	sht::SimpleObject * AddSphere(const vec3& position, float mass, float radius,
-		const std::string& material_name);
-	sht::SimpleObject * AddBox(const vec3& position, float mass, float size_x, float size_y, float size_z,
-		const std::string& material_name);
+	void AddSphere(float pos_x, float pos_y, float pos_z, float mass, float radius,
+		std::string material_name);
+	void AddBox(float pos_x, float pos_y, float pos_z, float mass, float size_x, float size_y, float size_z,
+		std::string material_name);
 
 private:
 	sht::graphics::Renderer * renderer_;
@@ -39,7 +46,10 @@ private:
 	ModelDatabase model_db_;
 	MaterialDatabase material_db_;
 	sht::utility::SceneNode root_node_;
+	sht::SimpleObject * last_object_;
 	bool need_sort_;
+	bool editor_mode_;
+	bool editor_mode_changed_;
 };
 
 #endif
