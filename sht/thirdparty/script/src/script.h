@@ -35,10 +35,15 @@ namespace console_script {
 		void AddVariable(const String& str, Float* ptr);
 		void AddVariable(const String& str, String* ptr);
 
-		template <typename F>
-		void AddFunction(const String& str, F* func) {
+		template <typename R, typename... Args>
+		void AddFunction(const String& str, R(*func)(Args...)) {
 			Base& base = Base::GetInstance();
-			base.AddFunction<F>(str, func);
+			base.AddFunction<R, Args...>(str, func);
+		}
+		template <typename R, typename C, typename... Args>
+		void AddClassFunction(const String& str, R(C::*func)(Args...), C * object) {
+			Base& base = Base::GetInstance();
+			base.AddClassFunction<R, C, Args...>(str, func, object);
 		}
 
 		const String& error() const { return error_; }

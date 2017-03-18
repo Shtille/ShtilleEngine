@@ -25,7 +25,7 @@ CP = @copy /Y
 RM = @del /Q
 
 INCLUDE = -I$(LIB_PATH)/src
-DEFINES = -DPARSER_WIDE_STRING
+#DEFINES = -DPARSER_WIDE_STRING
 
 CFLAGS = -g -Wall -O3 -std=c++14
 CFLAGS += $(INCLUDE)

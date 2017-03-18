@@ -83,10 +83,25 @@ namespace console_script {
 		}
 	};
 
-	template <typename F>
-	class FunctionTypeObtainer;
+	template <typename R, typename C, typename... Args>
+	class ClassFunctionCaller {
+	public:
+		template <std::size_t ... Is>
+		static void Call(Value* ret, std::vector<Variant>& args_vec, std::index_sequence<Is...>, R(C::*f)(Args...), C * obj) {
+			*ret = (obj->*f)(args_vec.at(Is).get<Args>()...);
+		}
+	};
+	template <typename C, typename... Args>
+	class ClassFunctionCaller <void, C, Args...> {
+	public:
+		template <std::size_t ... Is>
+		static void Call(Value* ret, std::vector<Variant>& args_vec, std::index_sequence<Is...>, void(C::*f)(Args...), C * obj) {
+			(obj->*f)(args_vec.at(Is).get<Args>()...);
+		}
+	};
+
 	template <typename R, typename...Args>
-	class FunctionTypeObtainer <R(Args...)> {
+	class FunctionTypeObtainer {
 	public:
 		static void Get(Value::Type &return_type, std::vector<Value::Type> &arguments_type) {
 			ValueTypeSetter<R>::Fill(return_type);
@@ -113,7 +128,7 @@ namespace console_script {
 		}
 	};
 	template <typename R>
-	class FunctionTypeObtainer <R(void)> {
+	class FunctionTypeObtainer <R> {
 	public:
 		static void Get(Value::Type &return_type, std::vector<Value::Type> &arguments_type) {
 			ValueTypeSetter<R>::Fill(return_type);
@@ -127,8 +142,8 @@ namespace console_script {
 		virtual void Call(Value* ret, std::vector<Variant>& args_vec) const = 0;
 	};
 
-	template <typename F> class Function;
-	template <typename R, typename... Args> class Function<R(Args...)> : public BaseFunc
+	template <typename R, typename... Args>
+	class Function : public BaseFunc
 	{
 	public:
 		Function(R(*f)(Args...)) : f(f) {}
@@ -139,6 +154,21 @@ namespace console_script {
 
 	private:
 		R(*f)(Args...);
+	};
+
+	template <typename R, typename C, typename... Args>
+	class ClassFunction : public BaseFunc
+	{
+	public:
+		ClassFunction(R(C::*f)(Args...), C * object) : f(f), object(object) {}
+		void Call(Value* ret, std::vector<Variant>& args_vec) const override
+		{
+			ClassFunctionCaller<R, C, Args...>::Call(ret, args_vec, std::make_index_sequence<sizeof...(Args)>{}, f, object);
+		}
+
+	private:
+		R(C::*f)(Args...);
+		C * object;
 	};
 
 	class FunctionInfo {
@@ -172,11 +202,17 @@ namespace console_script {
 
 		void AddVariable(const String& str, void* ptr, Value::Type type);
 
-		template <typename F>
-		void AddFunction(const String& str, F* f) {
+		template <typename R, typename... Args>
+		void AddFunction(const String& str, R(*f)(Args...)) {
 			FunctionInfo& info = function_ptrs_[str];
-			info.func_ = std::make_unique< Function<F> >(f);
-			FunctionTypeObtainer<F>::Get(info.return_type_, info.arguments_type_);
+			info.func_ = std::make_unique< Function<R, Args...> >(f);
+			FunctionTypeObtainer<R, Args...>::Get(info.return_type_, info.arguments_type_);
+		}
+		template <typename R, typename C, typename... Args>
+		void AddClassFunction(const String& str, R(C::*f)(Args...), C * object) {
+			FunctionInfo& info = function_ptrs_[str];
+			info.func_ = std::make_unique< ClassFunction<R, C, Args...> >(f, object);
+			FunctionTypeObtainer<R, Args...>::Get(info.return_type_, info.arguments_type_);
 		}
 		void CallFunction(const String& func_name, std::vector<Variant>& args_vec, Value* ret);
 

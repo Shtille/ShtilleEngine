@@ -154,6 +154,8 @@ namespace console_script {
 		int i_pos = 0;
 		for (String::size_type i = 0; i < str.size(); ++i)
 		{
+			if (str[i] == CS_TEXT('\0')) // assume 0 symbol as the end of input
+				break;
 			switch (str[i])
 			{
 			case CS_TEXT(' '): // skip spaces

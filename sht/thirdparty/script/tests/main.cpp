@@ -9,16 +9,27 @@ void foo(int a, int b) {
 void bar() {
 	printf("void func\n");
 }
+void woo(console_script::String str) {
+#ifndef PARSER_WIDE_STRING
+	printf("woo %s\n", str.data());
+#else
+	wprintf(L"woo %ls\n", str.data());
+#endif
+}
 
-// class C {
-// public:
-// 	C() {}
+class C {
+public:
+	C() {}
 
-// 	void c(int x)
-// 	{
-// 		printf("C::c: %i\n", x);
-// 	}
-// };
+	void ci(int x)
+	{
+		printf("C::ci: %i\n", x);
+	}
+	void cv()
+	{
+		printf("C::cv\n");
+	}
+};
 
 int main(int argc, char* argv[])
 {
@@ -26,29 +37,43 @@ int main(int argc, char* argv[])
 
 	int x = 1;
 	int y = 2;
-	script->AddVariable("x", &x);
-	script->AddVariable("y", &y);
-	script->AddFunction("p", &plus);
-	script->AddFunction("f", &foo);
-	script->AddFunction("b", &bar);
-	//C c;
-	//script->AddFunction("c", std::bind(&C::c, &c));
+	script->AddVariable(CS_TEXT("x"), &x);
+	script->AddVariable(CS_TEXT("y"), &y);
+	script->AddFunction(CS_TEXT("p"), &plus);
+	script->AddFunction(CS_TEXT("f"), &foo);
+	script->AddFunction(CS_TEXT("b"), &bar);
+	script->AddFunction(CS_TEXT("w"), &woo);
+	C c;
+	script->AddClassFunction(CS_TEXT("ci"), &C::ci, &c);
+	script->AddClassFunction(CS_TEXT("cv"), &C::cv, &c);
 
-	char buffer[256];
+	console_script::String buffer(256, CS_TEXT('\0'));
 	for (;;)
 	{
-		if (fgets(buffer, 256, stdin) != nullptr)
+#ifndef PARSER_WIDE_STRING
+		if (fgets(&buffer[0], 256, stdin) != nullptr)
+#else
+		if (fgetws(&buffer[0], 256, stdin) != nullptr)
+#endif
 		{
-			if (buffer[0] == '\0')
+			if (buffer[0] == CS_TEXT('\n'))
 				break;
-			std::string str;
+			console_script::String str;
 			if (script->Evaluate(buffer, &str))
 			{
+#ifndef PARSER_WIDE_STRING
 				printf("> %s\n", str.data());
+#else
+				wprintf(L"> %ls\n", str.data());
+#endif
 			}
 			else
 			{
+#ifndef PARSER_WIDE_STRING
 				printf(">! %s\n", script->error().c_str());
+#else
+				wprintf(L">! %ls\n", script->error().c_str());
+#endif
 			}
 		}
 	}
