@@ -1,19 +1,30 @@
 #include "script.h"
 #include "script_base.h"
 
+namespace {
+	const CS_CHAR * kTrueString = CS_TEXT("true");
+	const CS_CHAR * kFalseString = CS_TEXT("false");
+}
+
 namespace console_script {
 
-	bool match_bool(const String& str)
+	static bool partial_match_bool(const String& str)
 	{
-		const CS_CHAR * true_str = CS_TEXT("true");
-		const CS_CHAR * false_str = CS_TEXT("false");
 #ifndef PARSER_WIDE_STRING
-		return strstr(true_str, str.data()) == true_str || strstr(false_str, str.data()) == false_str;
+		return strstr(kTrueString, str.data()) == kTrueString || strstr(kFalseString, str.data()) == kFalseString;
 #else
-		return wcsstr(true_str, str.data()) == true_str || wcsstr(false_str, str.data()) == false_str;
+		return wcsstr(kTrueString, str.data()) == kTrueString || wcsstr(kFalseString, str.data()) == kFalseString;
 #endif
 	}
-	bool match_int(const String& str)
+	static bool full_match_bool(const String& str)
+	{
+#ifndef PARSER_WIDE_STRING
+		return strcmp(kTrueString, str.data()) == 0 || strcmp(kFalseString, str.data()) == 0;
+#else
+		return wcscmp(kTrueString, str.data()) == 0 || wcscmp(kFalseString, str.data()) == 0;
+#endif
+	}
+	static bool match_int(const String& str)
 	{
 		const CS_CHAR * p = str.c_str();
 		const CS_CHAR * s = p;
@@ -32,7 +43,7 @@ namespace console_script {
 		}
 		return is_match;
 	}
-	bool match_float(const String& str)
+	static bool match_float(const String& str)
 	{
 		const CS_CHAR * p = str.c_str();
 		const CS_CHAR * s = p;
@@ -86,7 +97,7 @@ namespace console_script {
 		}
 		return is_match;
 	}
-	bool match_string(const String& str)
+	static bool match_string(const String& str)
 	{
 		const CS_CHAR * p = str.c_str();
 		const CS_CHAR * s = p;
@@ -115,11 +126,15 @@ namespace console_script {
 		}
 		return is_match;
 	}
-	bool match_constant(const String& str)
+	static bool partial_match_constant(const String& str)
 	{
-		return match_bool(str) || match_int(str) || match_float(str) || match_string(str);
+		return match_int(str) || match_float(str) || match_string(str) || partial_match_bool(str);
 	}
-	bool match_variable(const String& str)
+	static bool full_match_constant(const String& str)
+	{
+		return match_int(str) || match_float(str) || match_string(str) || full_match_bool(str);
+	}
+	static bool match_variable(const String& str)
 	{
 		const CS_CHAR * p = str.c_str();
 		const CS_CHAR * s = p;
@@ -291,7 +306,10 @@ namespace console_script {
 					{
 						pushed = true;
 						new_str.pop_back();
-						AddLexem(new_str, Lexem::Type::kUnprocessed, ++i_pos);
+						if (full_match_bool(new_str))
+							AddLexem(new_str, Lexem::Type::kConstant, ++i_pos);
+						else
+							AddLexem(new_str, Lexem::Type::kUnprocessed, ++i_pos);
 						i = j - 1;
 						break;
 					}
@@ -304,28 +322,34 @@ namespace console_script {
 				continue;
 			}
 			// Constant
-			if (match_constant(new_str))
+			if (partial_match_constant(new_str))
 			{
 				bool pushed = false;
 				for (String::size_type j = i + 1; j < str.size(); ++j)
 				{
 					new_str += str[j];
-					if (match_constant(new_str))
+					if (partial_match_constant(new_str))
 					{
 						continue;
 					}
 					else
 					{
-						pushed = true;
 						new_str.pop_back();
-						AddLexem(new_str, Lexem::Type::kConstant, ++i_pos);
-						i = j - 1;
+						if (full_match_constant(new_str))
+						{
+							pushed = true;
+							AddLexem(new_str, Lexem::Type::kConstant, ++i_pos);
+							i = j - 1;
+						}
 						break;
 					}
 				}
 				if (!pushed) // end of the string
 				{
-					AddLexem(new_str, Lexem::Type::kConstant, ++i_pos);
+					if (full_match_constant(new_str))
+						AddLexem(new_str, Lexem::Type::kConstant, ++i_pos);
+					else
+						AddLexem(new_str, Lexem::Type::kUnprocessed, ++i_pos);
 					i = str.size() - 1;
 				}
 				continue;
