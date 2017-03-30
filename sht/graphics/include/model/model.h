@@ -23,6 +23,9 @@ namespace sht {
             bool HasTexture() const;
             
             void Render();
+
+            void ScaleVertices(const math::Vector3& scale);
+            void ScaleTexcoord(const math::Vector2& scale);
             
         protected:            
             std::vector<Vertex> vertices_;

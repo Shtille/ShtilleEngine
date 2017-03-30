@@ -62,6 +62,7 @@ namespace sht {
     	void ScreenToRay(const Vector2& screen, const Vector4& viewport, const Matrix4& proj, const Matrix4& view, Vector3& ray);
         
         bool RaySphereIntersection(const Vector3& origin, const Vector3& direction, const Vector3& center, float radius, Vector3& intersection);
+        bool RayPlaneIntersection(const Vector3& origin, const Vector3& direction, const Vector4& plane, Vector3& intersection);
 
 	} // namespace sht
 } // namespace math

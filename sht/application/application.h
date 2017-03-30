@@ -41,7 +41,7 @@ namespace sht {
         
         // Cursor operations
         void GetCursorPos(float& x, float& y); // x=[0,w]; y=[0,h]
-        void SetCursorPos(float x, float y); // x=[0,a]; y=[0,1]
+        void SetCursorPos(float x, float y); // x=[0,w]; y=[0,h]
         void CursorToCenter();
         void ShowCursor();
         void HideCursor();

@@ -19,6 +19,7 @@ console_script::Parser * Parser::object()
 void Parser::SetupFunctions()
 {
 	parser_.AddClassFunction("AddSphere", &ObjectManager::AddSphere, object_manager_);
+	parser_.AddClassFunction("AddBox", &ObjectManager::AddBox, object_manager_);
 
 	parser_.AddClassFunction("SetEditorMode", &ObjectManager::set_editor_mode, object_manager_);
 }

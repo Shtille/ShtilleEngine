@@ -151,6 +151,16 @@ namespace sht {
             renderer_->context()->BindVertexArrayObject(vertex_array_object_);
             renderer_->context()->DrawElements(primitive_mode_, num_indices_, index_data_type_);
         }
+        void Model::ScaleVertices(const math::Vector3& scale)
+        {
+            for (auto& v : vertices_)
+                v.position *= scale;
+        }
+        void Model::ScaleTexcoord(const math::Vector2& scale)
+        {
+            for (auto& v : vertices_)
+                v.texcoord *= scale;
+        }
 
     } // namespace graphics
 } // namespace sht

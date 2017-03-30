@@ -6,7 +6,7 @@ namespace sht {
 	namespace physics {
 
 		Sphere::Sphere(const math::Vector3& position, float mass, float radius)
-		: Object(position)
+		: Object(position, math::Vector3(radius))
 		, mass_(mass)
 		, radius_(radius)
 		{

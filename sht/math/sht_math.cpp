@@ -526,6 +526,19 @@ namespace sht {
                 return false;
             return true;
         }
+        bool RayPlaneIntersection(const Vector3& origin, const Vector3& direction, const Vector4& plane, Vector3& intersection)
+        {
+        	float denom = direction.x * plane.x + direction.y * plane.y + direction.z * plane.z;
+        	if (denom > 0.001f || denom < -0.001f)
+        	{
+        		float t = -(origin.x * plane.x + origin.y * plane.y + origin.z * plane.z + plane.w)
+        		     / denom;
+        		intersection = origin + t * direction;
+        		return true;
+        	}
+        	else
+        		return false;
+        }
 
 	} // namespace math
 } // namespace sht

@@ -1,7 +1,7 @@
 #include "model_database.h"
 
 #include "graphics/include/model/sphere_model.h"
-#include "graphics/include/model/box_model.h"
+#include "graphics/include/model/cube_model.h"
 
 ModelDatabase::ModelDatabase(sht::graphics::Renderer * renderer)
 : renderer_(renderer)
@@ -53,7 +53,7 @@ sht::graphics::Model * ModelDatabase::GetModelByName(const std::string& name)
 	}
 	else if (name == "box")
 	{
-		model = new sht::graphics::BoxModel(renderer_, 50.0f, 10.0f, 50.0f);
+		model = new sht::graphics::CubeModel(renderer_);
         model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
         model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
         model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));

@@ -74,7 +74,7 @@ public:
         // Wrapper to console parser
         parser_ = new Parser(object_manager_);
         
-        console_ = new GameConsole(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.1f, 0.8f, aspect_ratio_);
+        console_ = new GameConsole(renderer_, font_, gui_shader_, text_shader_, 0.7f, 0.05f, 0.8f, aspect_ratio_);
         console_->set_parser(parser_->object());
 
         // Create camera attached to the controlled ball
@@ -106,19 +106,22 @@ public:
     }
     void UpdatePhysics()
     {
-        const float kPushPower = 5.0f;
-        sht::math::Vector3 force(0.0f);
-        if (keys_.key_down(sht::PublicKey::kLeft))
-            force.z += kPushPower;
-        if (keys_.key_down(sht::PublicKey::kRight))
-            force.z -= kPushPower;
-        if (keys_.key_down(sht::PublicKey::kDown))
-            force.x += kPushPower;
-        if (keys_.key_down(sht::PublicKey::kUp))
-            force.x -= kPushPower;
-        // Update forces
-        ball_->body()->Activate(); // this body may be sleeping, thus we activate it
-        ball_->body()->ApplyCentralForce(force);
+        if (!object_manager_->editor_mode())
+        {
+            const float kPushPower = 5.0f;
+            sht::math::Vector3 force(0.0f);
+            if (keys_.key_down(sht::PublicKey::kLeft))
+                force.z += kPushPower;
+            if (keys_.key_down(sht::PublicKey::kRight))
+                force.z -= kPushPower;
+            if (keys_.key_down(sht::PublicKey::kDown))
+                force.x += kPushPower;
+            if (keys_.key_down(sht::PublicKey::kUp))
+                force.x -= kPushPower;
+            // Update forces
+            ball_->body()->Activate(); // this body may be sleeping, thus we activate it
+            ball_->body()->ApplyCentralForce(force);
+        }
 
         // Update physics engine
         physics_->Update(frame_time_);
@@ -136,7 +139,9 @@ public:
         {
             object_manager_->reset_editor_mode();
             if (object_manager_->editor_mode())
+            {
                 camera_manager_->MakeFree(0); // CameraID
+            }
             else
                 camera_manager_->SetCurrent(0); // i guess CameraID will be 0
         }
@@ -220,12 +225,39 @@ public:
     }
     void OnMouseDown(sht::MouseButton button, int modifiers) final
     {
+        if (object_manager_->editor_mode() && button == sht::MouseButton::kLeft)
+        {
+            vec2 mouse_pos(mouse_.x(), mouse_.y());
+            vec3 ray;
+            sht::math::ScreenToRay(mouse_pos, renderer_->viewport(),
+                renderer_->projection_matrix(), renderer_->view_matrix(), ray);
+            vec4 plane(0.0f, 1.0f, 0.0f, 0.0f);
+            vec3 intersection;
+            if (sht::math::RayPlaneIntersection(*camera_manager_->position(), ray, plane, intersection))
+            {
+                old_intersection_ = intersection;
+            }
+        }
     }
     void OnMouseUp(sht::MouseButton button, int modifiers) final
     {
     }
     void OnMouseMove() final
     {
+        if (object_manager_->editor_mode() && mouse_.button_down(sht::MouseButton::kLeft))
+        {
+            vec2 mouse_pos(mouse_.x(), mouse_.y());
+            vec3 ray;
+            sht::math::ScreenToRay(mouse_pos, renderer_->viewport(),
+                renderer_->projection_matrix(), renderer_->view_matrix(), ray);
+            vec4 plane(0.0f, 1.0f, 0.0f, 0.0f);
+            vec3 intersection;
+            if (sht::math::RayPlaneIntersection(*camera_manager_->position(), ray, plane, intersection))
+            {
+                camera_manager_->Move(old_intersection_ - intersection);
+                old_intersection_ = intersection;
+            }
+        }
     }
     void OnSize(int w, int h) final
     {
@@ -261,6 +293,8 @@ private:
     sht::math::Matrix4 projection_view_matrix_;
 
     sht::math::Matrix3 normal_matrix_; //!< added to not allocate memory per each call
+
+    sht::math::Vector3 old_intersection_;
 
     // Light parameters
     float light_angle_;

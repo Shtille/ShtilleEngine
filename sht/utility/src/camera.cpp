@@ -349,6 +349,7 @@ namespace sht {
 		{
 			if (is_current_)
 				current_camera_ptr_->Move(translation);
+            manual_rotation_ = true; // need to update matrix anyway
 		}
 		void CameraManager::MakeFree(const vec3& pos, const vec3& target_pos)
 		{
@@ -368,8 +369,10 @@ namespace sht {
         {
             assert(camera_id < static_cast<CameraID>(cameras_.size()));
             is_current_ = true;
-            current_camera_ = cameras_[camera_id];
+            const Camera& camera = cameras_[camera_id];
+            current_camera_.Set(*camera.position_ptr_, *camera.target_position_ptr_);
             current_camera_ptr_ = &current_camera_;
+            manual_rotation_ = true;
         }
         void CameraManager::MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos)
         {

@@ -101,8 +101,7 @@ namespace sht {
             vertices_[23].texcoord.Set(0.0f,  0.0f);
 
             // Scale box
-            for (auto& v : vertices_)
-                v.position *= sizes_;
+            ScaleVertices(sizes_);
             
             indices_.resize(34);
             indices_ = {

@@ -59,6 +59,7 @@ namespace sht {
 			btRigidBody::btRigidBodyConstructionInfo rb_info(mass, object, shape, local_inertia);
 			btRigidBody * body = new btRigidBody(rb_info);
 			dynamics_world_->addRigidBody(body);
+			object->ApplyScale();
 			object->body_ = body;
 			// Finally
 			objects_.push_back(object);
