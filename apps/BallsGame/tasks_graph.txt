@@ -20,6 +20,11 @@
 		[-] Add some parameter like material density to its properties.
 		[-] Use material density to control texture wrap value.
 		- Add OBJ files loader.
+		- Add file containing models (INI file as beginning).
+		+ Add .ini file parser.
+		+ Test INI file parser.
+		- Add XML parser.
+		- Add event handling.
 - Engine
 
 	model
