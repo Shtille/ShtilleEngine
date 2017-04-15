@@ -4,10 +4,10 @@
 
 #if defined(_WIN32) && defined(_DEBUG)
 
-#include <crtdbg.h>
-
-#define DEBUG_CLIENTBLOCK   new( _CLIENT_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_CLIENTBLOCK
+//#include <crtdbg.h>
+//
+//#define DEBUG_CLIENTBLOCK   new( _CLIENT_BLOCK, __FILE__, __LINE__)
+//#define new DEBUG_CLIENTBLOCK
 
 #else
 
