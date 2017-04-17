@@ -21,10 +21,14 @@
 		[-] Use material density to control texture wrap value.
 		- Add OBJ files loader.
 		- Add file containing models (INI file as beginning).
-		+ Add .ini file parser.
-		+ Test INI file parser.
-		- Add XML parser.
-		- Add event handling.
+		- Add event handling. (Depends on Stage entity - some game root object)
+		+ Make universal INI file per application.
+		- Add compile time string id.
+		[-] Parsers
+			+ Add .ini file parser.
+			+ Test INI file parser.
+			[-] Add XML parser.
+			[-] Add JSON parser.
 - Engine
 
 	model
@@ -34,3 +38,10 @@ shader  physics_object
  | material
  |   |
 texture
+
+ResourceManager
+	ShaderManager, TextureManager, MeshManager, etc.
+Entity (GameObject)
+	Scene
+
+Take a look for OGRE classes.

@@ -13,6 +13,7 @@ namespace sht {
 
 class TextureDatabase : public ResourceDatabase<sht::graphics::Texture> {
 	typedef std::map<std::string, std::string> MatchingTable;
+	friend class TextureIniFileReader;
 public:
 	TextureDatabase(sht::graphics::Renderer * renderer);
 	~TextureDatabase();

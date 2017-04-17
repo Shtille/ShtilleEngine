@@ -13,6 +13,7 @@ namespace sht {
 
 class ShaderDatabase : public ResourceDatabase<sht::graphics::Shader> {
 	typedef std::map<std::string, std::string> MatchingTable;
+	friend class ShaderIniFileReader;
 public:
 	ShaderDatabase(sht::graphics::Renderer * renderer);
 	~ShaderDatabase();

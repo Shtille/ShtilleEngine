@@ -27,7 +27,7 @@ namespace sht {
 		{
 			for (u32 i = 0; i < num_args_; ++i)
 			{
-				KeyValuePair & pair = args_[i];
+				const KeyValuePair & pair = args_[i];
 				if (pair.key == key)
 				{
 					assert(pair.value.type == Value::kInteger);
@@ -41,7 +41,7 @@ namespace sht {
 		{
 			for (u32 i = 0; i < num_args_; ++i)
 			{
-				KeyValuePair & pair = args_[i];
+				const KeyValuePair & pair = args_[i];
 				if (pair.key == key)
 				{
 					assert(pair.value.type == Value::kFloat);
@@ -55,7 +55,7 @@ namespace sht {
 		{
 			for (u32 i = 0; i < num_args_; ++i)
 			{
-				KeyValuePair & pair = args_[i];
+				const KeyValuePair & pair = args_[i];
 				if (pair.key == key)
 				{
 					assert(pair.value.type == Value::kBoolean);
@@ -69,7 +69,7 @@ namespace sht {
 		{
 			for (u32 i = 0; i < num_args_; ++i)
 			{
-				KeyValuePair & pair = args_[i];
+				const KeyValuePair & pair = args_[i];
 				if (pair.key == key)
 				{
 					assert(pair.value.type == Value::kStringId);

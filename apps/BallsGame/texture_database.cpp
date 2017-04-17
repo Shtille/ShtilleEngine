@@ -1,12 +1,42 @@
 #include "texture_database.h"
 
 #include "graphics/include/renderer/renderer.h"
+#include "utility/include/ini_file.h"
+
+#include <cstring>
+
+class TextureIniFileReader final : public sht::utility::IniFileReaderInterface {
+public:
+	TextureIniFileReader(TextureDatabase * database)
+	: database_(database)
+	, interesed_section_(false)
+	{
+	}
+    void OnSection(const char* section_name) final
+    {
+        interesed_section_ = (strcmp(section_name, "textures") == 0);
+    }
+    void OnPair(const char* key, const char* value) final
+    {
+    	if (interesed_section_)
+    		database_->table_.insert(std::make_pair(key, value));
+    }
+private:
+	TextureDatabase * database_;
+	bool interesed_section_;
+};
 
 TextureDatabase::TextureDatabase(sht::graphics::Renderer * renderer)
 : renderer_(renderer)
 {
 	// Fill the matching table
-	table_.insert(std::make_pair("metal", "data/textures/chess.jpg"));
+	sht::utility::IniFile file;
+	if (file.OpenForRead("data/ini/apps/BallsGame/app.ini"))
+	{
+		TextureIniFileReader reader(this);
+		file.Read(&reader);
+		file.Close();
+	}
 }
 TextureDatabase::~TextureDatabase()
 {
