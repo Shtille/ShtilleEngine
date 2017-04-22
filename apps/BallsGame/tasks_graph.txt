@@ -21,9 +21,11 @@
 		[-] Use material density to control texture wrap value.
 		- Add OBJ files loader.
 		- Add file containing models (INI file as beginning).
+		+ Add event class.
 		- Add event handling. (Depends on Stage entity - some game root object)
 		+ Make universal INI file per application.
-		- Add compile time string id.
+		+ Add compile time string id.
+		+ Test compile time string id.
 		[-] Parsers
 			+ Add .ini file parser.
 			+ Test INI file parser.

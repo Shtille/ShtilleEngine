@@ -53,7 +53,7 @@ namespace sht {
 
 		public:
 
-			explicit Event(const char* type);
+			explicit Event(StringId type);
 			~Event();
 
 			const StringId type() const;
@@ -65,10 +65,10 @@ namespace sht {
 			const StringId GetValueStringId(StringId key) const;
 
 			void ResetArgs();
-			void AddArg(const char* key, int value);
-			void AddArg(const char* key, float value);
-			void AddArg(const char* key, bool value);
-			void AddArg(const char* key, StringId value);
+			void AddArg(StringId key, int value);
+			void AddArg(StringId key, float value);
+			void AddArg(StringId key, bool value);
+			void AddArg(StringId key, StringId value);
 
 		private:
 
@@ -76,6 +76,12 @@ namespace sht {
 			StringId type_;
 			u32 num_args_;
 			KeyValuePair args_[kMaxArgs];
+		};
+
+		//! Event listener interface class
+		class EventListenerInterface {
+		public:
+			virtual void OnEvent(const Event * event);
 		};
 	
 	} // namespace utility

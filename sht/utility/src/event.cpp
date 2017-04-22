@@ -5,8 +5,8 @@
 namespace sht {
 	namespace utility {
 
-		Event::Event(const char* type)
-		: type_(SID(type))
+		Event::Event(StringId type)
+		: type_(type)
 		, num_args_(0)
 		{
 
@@ -83,48 +83,48 @@ namespace sht {
 		{
 			num_args_ = 0;
 		}
-		void Event::AddArg(const char* key, int value)
+		void Event::AddArg(StringId key, int value)
 		{
 			if (num_args_ < kMaxArgs)
 			{
 				KeyValuePair & pair = args_[num_args_];
-				pair.key = SID(key);
+				pair.key = key;
 				pair.value.Set(value);
 				++num_args_;
 			}
 			else
 				assert(!"Need larger args buffer");
 		}
-		void Event::AddArg(const char* key, float value)
+		void Event::AddArg(StringId key, float value)
 		{
 			if (num_args_ < kMaxArgs)
 			{
 				KeyValuePair & pair = args_[num_args_];
-				pair.key = SID(key);
+				pair.key = key;
 				pair.value.Set(value);
 				++num_args_;
 			}
 			else
 				assert(!"Need larger args buffer");
 		}
-		void Event::AddArg(const char* key, bool value)
+		void Event::AddArg(StringId key, bool value)
 		{
 			if (num_args_ < kMaxArgs)
 			{
 				KeyValuePair & pair = args_[num_args_];
-				pair.key = SID(key);
+				pair.key = key;
 				pair.value.Set(value);
 				++num_args_;
 			}
 			else
 				assert(!"Need larger args buffer");
 		}
-		void Event::AddArg(const char* key, StringId value)
+		void Event::AddArg(StringId key, StringId value)
 		{
 			if (num_args_ < kMaxArgs)
 			{
 				KeyValuePair & pair = args_[num_args_];
-				pair.key = SID(key);
+				pair.key = key;
 				pair.value.Set(value);
 				++num_args_;
 			}
