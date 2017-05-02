@@ -77,12 +77,6 @@ namespace sht {
 			u32 num_args_;
 			KeyValuePair args_[kMaxArgs];
 		};
-
-		//! Event listener interface class
-		class EventListenerInterface {
-		public:
-			virtual void OnEvent(const Event * event);
-		};
 	
 	} // namespace utility
 } // namespace sht

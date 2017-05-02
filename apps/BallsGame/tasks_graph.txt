@@ -11,6 +11,8 @@
 		- Add debug renderer.
 		- Add textures.
 		- Add realistic lighting model.
+		- Add height map mesh object.
+		- Add height map decal mesh object.
 	- Controls
 		All game controls is pretty fine by now.
 	- Audio
@@ -22,10 +24,11 @@
 		- Add OBJ files loader.
 		- Add file containing models (INI file as beginning).
 		+ Add event class.
-		- Add event handling. (Depends on Stage entity - some game root object)
+		+ Add event handling. (Depends on Stage entity - some game root object)
 		+ Make universal INI file per application.
 		+ Add compile time string id.
 		+ Test compile time string id.
+		- Add some kind of a stage object.
 		[-] Parsers
 			+ Add .ini file parser.
 			+ Test INI file parser.
@@ -47,3 +50,9 @@ Entity (GameObject)
 	Scene
 
 Take a look for OGRE classes.
+
+Dependency graph:
+object manager -> object -> resources
+
+Stages change:
+	Level2.Load(), Level1.Unload();

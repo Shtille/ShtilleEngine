@@ -20,15 +20,14 @@ namespace sht {
 
 class ObjectManager {
 public:
-	ObjectManager(sht::graphics::Renderer * renderer, sht::physics::Engine * physics_engine, const vec3* light_pos_eye);
+	ObjectManager(sht::graphics::Renderer * renderer, sht::physics::Engine * physics_engine, const vec3* light_pos_eye,
+		sht::utility::EventListenerInterface * event_listener);
 	~ObjectManager();
 
 	sht::SimpleObject * last_object();
 
 	void set_editor_mode(bool editor_mode);
-	void reset_editor_mode();
-	bool editor_mode();
-	bool editor_mode_changed();
+	bool editor_mode() const;
 
 	void RenderAll();
 
@@ -38,8 +37,10 @@ public:
 		std::string material_name);
 
 private:
+
 	sht::graphics::Renderer * renderer_;
 	sht::physics::Engine * physics_engine_;
+	sht::utility::EventListenerInterface * event_listener_; //!< game application event listener
 	ShaderDatabase shader_db_;
 	TextureDatabase texture_db_;
 	SurfaceDatabase surface_db_;
@@ -49,7 +50,6 @@ private:
 	sht::SimpleObject * last_object_;
 	bool need_sort_;
 	bool editor_mode_;
-	bool editor_mode_changed_;
 };
 
 #endif

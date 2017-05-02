@@ -2,12 +2,14 @@
 #ifndef __SHT_UTILITY_SCENE_NODE_H__
 #define __SHT_UTILITY_SCENE_NODE_H__
 
+#include "event_listener.h"
+
 #include <vector>
 
 namespace sht {
 	namespace utility {
 
-		class SceneNode {
+		class SceneNode : public EventListenerInterface {
 		public:
 			SceneNode();
 			virtual ~SceneNode();
@@ -28,6 +30,8 @@ namespace sht {
 			SceneNode * parent();
 			SceneNode * child(size_t index);
 			size_t num_children();
+
+			virtual void OnEvent(const Event * event) override;
 
 		private:
 			SceneNode * parent_;

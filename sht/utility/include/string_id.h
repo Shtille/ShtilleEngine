@@ -32,11 +32,11 @@ namespace sht {
 		static constexpr uint32_t crc_table[] = { CRC_A(0) };
 
 		// Constexpr implementation
-		constexpr uint32_t crc32_impl(const uint8_t* p, size_t len, uint32_t crc)
+		constexpr uint32_t crc32_impl(const char* p, size_t len, uint32_t crc)
 		{
 			return len ? crc32_impl(p+1, len-1, (crc << 8) ^ crc_table[((crc >> 24) ^ *p) & 0xFF]) : crc;
 		}
-		constexpr uint32_t crc32(const uint8_t* data, size_t length)
+		constexpr uint32_t crc32(const char* data, size_t length)
 		{
 			return crc32_impl(data, length, 0U);
 		}
@@ -54,7 +54,7 @@ namespace sht {
 //! Function for compile time string ID generation
 constexpr uint32_t SID(const char* str)
 {
-	return sht::utility::crc32((uint8_t*)str, sht::utility::strlen_c(str));
+	return sht::utility::crc32(str, sht::utility::strlen_c(str));
 }
 
 // Runtime string ID generation

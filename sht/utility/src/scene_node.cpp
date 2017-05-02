@@ -67,6 +67,9 @@ namespace sht {
 		{
 			return children_.size();
 		}
+		void SceneNode::OnEvent(const Event *)
+		{
+		}
 
 	} // namespace utility
 } // namespace sht

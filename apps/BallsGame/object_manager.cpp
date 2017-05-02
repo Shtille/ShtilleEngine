@@ -3,11 +3,13 @@
 #include "material.h"
 
 #include "physics/include/physics_engine.h"
+#include "utility/include/event.h"
 
 ObjectManager::ObjectManager(sht::graphics::Renderer * renderer, sht::physics::Engine * physics_engine,
-	const vec3* light_pos_eye)
+	const vec3* light_pos_eye, sht::utility::EventListenerInterface * event_listener)
 : renderer_(renderer)
 , physics_engine_(physics_engine)
+, event_listener_(event_listener)
 , shader_db_(renderer)
 , texture_db_(renderer)
 , surface_db_()
@@ -17,7 +19,6 @@ ObjectManager::ObjectManager(sht::graphics::Renderer * renderer, sht::physics::E
 , last_object_(nullptr)
 , need_sort_(false)
 , editor_mode_(false)
-, editor_mode_changed_(false)
 {
 
 }
@@ -31,21 +32,13 @@ sht::SimpleObject * ObjectManager::last_object()
 void ObjectManager::set_editor_mode(bool editor_mode)
 {
 	editor_mode_ = editor_mode;
-	// Since no event system performed i gonna use flags
-	editor_mode_changed_ = true;
-	//OnEditorModeChanged()
+
+	sht::utility::Event event(SID("editor_mode_changed"));
+	event_listener_->OnEvent(&event);
 }
-void ObjectManager::reset_editor_mode()
-{
-	editor_mode_changed_ = false;
-}
-bool ObjectManager::editor_mode()
+bool ObjectManager::editor_mode() const
 {
 	return editor_mode_;
-}
-bool ObjectManager::editor_mode_changed()
-{
-	return editor_mode_changed_;
 }
 void ObjectManager::RenderAll()
 {

@@ -3,6 +3,7 @@
 #include "../../sht/graphics/include/model/box_model.h"
 #include "../../sht/graphics/include/renderer/text.h"
 #include "../../sht/utility/include/camera.h"
+#include "../../sht/utility/include/event.h"
 #include "../../sht/physics/include/physics_engine.h"
 
 #include "simple_object.h"
@@ -10,7 +11,9 @@
 #include "game_console.h"
 #include "object_manager.h"
 
-class BallsGameApp : public sht::OpenGlApplication
+class BallsGameApp
+    : public sht::OpenGlApplication
+    , private sht::utility::EventListenerInterface
 {
 public:
     BallsGameApp()
@@ -63,7 +66,7 @@ public:
         physics_ = new sht::physics::Engine();
         //physics_->SetGravity(vec3(0.0f, 0.0f, 0.0f));
 
-        object_manager_ = new ObjectManager(renderer_, physics_, &light_pos_eye_);
+        object_manager_ = new ObjectManager(renderer_, physics_, &light_pos_eye_, this);
 
         // Populate our scene with objects
         object_manager_->AddSphere(0.0f, 3.0f, 0.0f, 1.0f, 1.0f, "metal");
@@ -135,16 +138,6 @@ public:
         UpdatePhysics();
 
         // Camera should be updated after physics
-        if (object_manager_->editor_mode_changed())
-        {
-            object_manager_->reset_editor_mode();
-            if (object_manager_->editor_mode())
-            {
-                camera_manager_->MakeFree(0); // CameraID
-            }
-            else
-                camera_manager_->SetCurrent(0); // i guess CameraID will be 0
-        }
         camera_manager_->Update(frame_time_);
 
         console_->Update(frame_time_);
@@ -274,6 +267,18 @@ public:
             const float znear = 0.1f;
             const float zfar = 100.0f;
             renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
+        }
+    }
+    void OnEvent(const sht::utility::Event * event) final
+    {
+        switch (event->type())
+        {
+        case SID("editor_mode_changed"):
+            if (object_manager_->editor_mode())
+                camera_manager_->MakeFree(0); // CameraID
+            else
+                camera_manager_->SetCurrent(0); // i guess CameraID will be 0
+            break;
         }
     }
     
