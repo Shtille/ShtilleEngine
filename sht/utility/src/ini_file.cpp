@@ -65,7 +65,8 @@ namespace sht {
 							reader->OnPair(buffer, p + 1);
 							break;
 						}
-					assert(found_pair);
+					if (!found_pair)
+						reader->OnPair(buffer, nullptr);
 				}
 			}
 		}

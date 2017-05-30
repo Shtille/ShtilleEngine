@@ -28,7 +28,8 @@
 		+ Make universal INI file per application.
 		+ Add compile time string id.
 		+ Test compile time string id.
-		- Add some kind of a stage object.
+		+ Add some kind of a stage object.
+		+ Add global time manager.
 		[-] Parsers
 			+ Add .ini file parser.
 			+ Test INI file parser.
@@ -56,3 +57,7 @@ object manager -> object -> resources
 
 Stages change:
 	Level2.Load(), Level1.Unload();
+
+	1. How to populate scene object with resource ids. -> level parser
+	2. How to register all the resources. -> ini file parser
+	3. How to change scenes.

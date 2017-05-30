@@ -1,0 +1,8 @@
+We need a model class that consists of:
+1) a number of meshes
+2) a number of materials
+3) a number of shaders
+4) a number of skeletons
+5) a nimber of animations
+
+Basically we need a model class and a material class.
