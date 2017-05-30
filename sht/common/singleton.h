@@ -4,7 +4,7 @@
 
 namespace sht {
 
-	// Simple singleton class
+	//! Simple singleton class
 	template <class T>
 	class Singleton {
 	public:
@@ -20,7 +20,35 @@ namespace sht {
 		Singleton& operator = (const Singleton&) = delete;
 	};
 
-	// Singleton which counting references
+	//! Singleton class with instance management
+	template <class T>
+	class ManagedSingleton {
+	public:
+		static void CreateInstance() {
+			instance_ = new T();
+		}
+		static void DestroyInstance()
+		{
+			delete instance_;
+			instance_ = nullptr;
+		}
+		static T * GetInstance() {
+			return instance_;
+		}
+
+	protected:
+        ManagedSingleton() = default;
+        ManagedSingleton(const ManagedSingleton&) = delete;
+		virtual ~ManagedSingleton() = default;
+		ManagedSingleton& operator = (const ManagedSingleton&) = delete;
+
+	private:
+		static T * instance_;
+	};
+	template <class T>
+	T* ManagedSingleton<T>::instance_ = nullptr;
+
+	//! Singleton which counting references
 	template <class T>
 	class CountingSingleton {
 	public:
