@@ -22,6 +22,7 @@ SRC_DIRS = \
 	$(ROOT_PATH)/sht/system/src/time \
 	$(ROOT_PATH)/sht/utility/src \
 	$(ROOT_PATH)/sht/utility/src/ui \
+	$(ROOT_PATH)/sht/utility/src/scene \
 	#
 
 INCLUDE = \
