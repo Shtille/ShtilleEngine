@@ -3,6 +3,7 @@
 #define __SHT_GRAPHICS_FONT_H__
 
 #include "../../../common/types.h"
+#include "../resource.h"
 
 #include <unordered_map>
 
@@ -32,7 +33,7 @@ namespace sht {
         };
         
         //! Font class
-        class Font {
+        class Font : public Resource {
             friend class Renderer;
             friend class OpenGlRenderer;
             

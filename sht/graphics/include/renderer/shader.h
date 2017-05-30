@@ -3,13 +3,14 @@
 #define __SHT_GRAPHICS_SHADER_H__
 
 #include "../../../common/types.h"
+#include "../resource.h"
 #include "context.h"
 
 namespace sht {
     namespace graphics {
         
         //! Shader class
-        class Shader {
+        class Shader : public Resource {
             friend class Renderer;
             friend class OpenGlRenderer;
             

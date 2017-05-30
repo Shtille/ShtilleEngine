@@ -3,13 +3,14 @@
 #define __SHT_GRAPHICS_RENDERER_TEXTURE_H__
 
 #include "../../../common/types.h"
+#include "../resource.h"
 #include "../../../graphics/include/image/image.h"
 
 namespace sht {
 	namespace graphics {
 
 		//! Texture class
-		class Texture {
+		class Texture : public Resource {
             friend class Font;
 			friend class Renderer;
 			friend class OpenGlRenderer;
