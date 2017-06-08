@@ -6,6 +6,7 @@
 
 #include "utility/include/event_listener.h"
 #include "graphics/include/renderer/text.h"
+#include "graphics/include/model/complex_mesh.h"
 #include "utility/include/camera.h"
 #include "physics/include/physics_engine.h"
 
@@ -31,8 +32,8 @@ private:
 
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Font * font_;
-	//sht::graphics::Mesh * sphere_mesh_;
-	//sht::graphics::Mesh * table_mesh_;
+	sht::graphics::ComplexMesh * sphere_mesh_;
+	sht::graphics::ComplexMesh * table_mesh_;
 
 	sht::graphics::DynamicText * fps_text_;
 	sht::utility::CameraManager * camera_manager_;

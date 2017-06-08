@@ -7,6 +7,8 @@ GameScene::GameScene(sht::graphics::Renderer * renderer)
 : Scene(renderer)
 , text_shader_(nullptr)
 , font_(nullptr)
+, sphere_mesh_(nullptr)
+, table_mesh_(nullptr)
 , fps_text_(nullptr)
 , camera_manager_(nullptr)
 , physics_(nullptr)
@@ -14,6 +16,8 @@ GameScene::GameScene(sht::graphics::Renderer * renderer)
 	// Register resources to load automatically on scene change
 	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
 	font_id_ = AddResourceIdByName(ConstexprStringId("font_good_dog"));
+	sphere_mesh_id_ = AddResourceIdByName(ConstexprStringId("mesh_sphere"));
+	table_mesh_id_ = AddResourceIdByName(ConstexprStringId("mesh_table"));
 }
 GameScene::~GameScene()
 {
@@ -35,7 +39,8 @@ void GameScene::Update()
 }
 void GameScene::RenderObjects()
 {
-
+	sphere_mesh_->Render();
+	table_mesh_->Render();
 }
 void GameScene::RenderInterface()
 {
@@ -63,6 +68,8 @@ void GameScene::Load()
 	sht::utility::ResourceManager * resource_manager = sht::utility::ResourceManager::GetInstance();
 	text_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(text_shader_id_));
 	font_ = dynamic_cast<sht::graphics::Font *>(resource_manager->GetResource(font_id_));
+	sphere_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(sphere_mesh_id_));
+	table_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_mesh_id_));
 
 	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
 

@@ -5,6 +5,7 @@
 #include "loading_scene.h"
 #include "game_scene.h"
 
+#include "graphics/include/model/complex_mesh.h"
 #include "utility/include/ini_file.h"
 #include "utility/include/event.h"
 
@@ -50,11 +51,22 @@ static void ShaderUnloadingFunc(void * user_data, sht::graphics::Resource * reso
 }
 static sht::graphics::Resource * ModelLoadingFunc(void * user_data, sht::utility::ResourceID id)
 {
-	return nullptr;
+	GameSceneManager * scene_manager = reinterpret_cast<GameSceneManager *>(user_data);
+	sht::graphics::Renderer * renderer = scene_manager->renderer();
+	const char* filename = scene_manager->GetResourcePath(id);
+	sht::graphics::ComplexMesh * mesh = new sht::graphics::ComplexMesh(renderer);
+	if (!mesh->LoadFromFile(filename))
+	{
+		delete mesh;
+		mesh = nullptr;
+		// Mesh loading has failed
+	}
+	return mesh;
 }
 static void ModelUnloadingFunc(void * user_data, sht::graphics::Resource * resource)
 {
-
+	sht::graphics::ComplexMesh * mesh = dynamic_cast<sht::graphics::ComplexMesh *>(resource);
+	delete mesh;
 }
 static sht::graphics::Resource * FontLoadingFunc(void * user_data, sht::utility::ResourceID id)
 {

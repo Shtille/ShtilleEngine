@@ -13,6 +13,7 @@ namespace sht {
         
         //! Standart mesh class
         class Mesh {
+            friend class ComplexMesh;
         public:
             Mesh(Renderer * renderer);
             virtual ~Mesh();

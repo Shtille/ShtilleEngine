@@ -29,7 +29,19 @@ namespace sht {
 			if (vertex_format_)
 				renderer_->DeleteVertexFormat(vertex_format_);
 		}
-		bool ComplexMesh::LoadFromFile(const char* filename)
+		bool ComplexMesh::SaveToFile(const char* filename)
+		{
+			FileFormat fmt = ExtractFileFormat(filename);
+			switch (fmt)
+			{
+			case FileFormat::kObj:
+				return SaveToFileObj(filename);
+			default:
+				assert(!"unknown model format");
+				return false;
+			}
+		}
+		bool ComplexMesh::LoadFromFile(const char* filename);
 		{
 			FileFormat fmt = ExtractFileFormat(filename);
 			switch (fmt)
@@ -40,6 +52,10 @@ namespace sht {
 				assert(!"unknown model format");
 				return false;
 			}
+		}
+		void ComplexMesh::Create()
+		{
+			
 		}
 		void ComplexMesh::AddFormat(const VertexAttribute& attrib)
 		{

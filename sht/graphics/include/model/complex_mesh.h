@@ -2,52 +2,54 @@
 #ifndef __SHT_GRAPHICS_COMPLEX_MESH_H__
 #define __SHT_GRAPHICS_COMPLEX_MESH_H__
 
+#include "../resource.h"
 #include "../renderer/vertex_format.h"
 
 #include <vector>
 
 namespace sht {
-    namespace graphics {
+	namespace graphics {
 
-        class Renderer;
-        class Mesh;
-        
-        //! Complex mesh class
-        class ComplexMesh {
-        public:
+		class Renderer;
+		class Mesh;
+		
+		//! Complex mesh class
+		class ComplexMesh : public Resource {
+		public:
 
-            enum class FileFormat {
-                kUnknown,
-                kObj
-            };
+			enum class FileFormat {
+				kUnknown,
+				kObj
+			};
 
-            ComplexMesh(Renderer * renderer);
-            virtual ~ComplexMesh();
+			ComplexMesh(Renderer * renderer);
+			virtual ~ComplexMesh();
 
-            bool LoadFromFile(const char* filename);
-            
-            virtual void Create() = 0;
-            void AddFormat(const VertexAttribute& attrib);
-            bool MakeRenderable();
-            
-            void Render();
-            
-        protected:
-            // Save routines
-            bool SaveToFileObj(const char *filename);
+			bool SaveToFile(const char* filename);
+			bool LoadFromFile(const char* filename);
+			
+			virtual void Create();
 
-            // Load routines
-            bool LoadFromFileObj(const char *filename);
-            
-        private:            
-            Renderer * renderer_;
-            VertexFormat * vertex_format_;
+			void AddFormat(const VertexAttribute& attrib);
+			bool MakeRenderable();
+			
+			void Render();
+			
+		private:
+			// Save routines
+			bool SaveToFileObj(const char *filename);
 
-            std::vector<VertexAttribute> attribs_;
-            std::vector<Mesh*> meshes_;
-        };
-        
-    }
+			// Load routines
+			bool LoadFromFileObj(const char *filename);
+
+			Renderer * renderer_;
+			VertexFormat * vertex_format_;
+
+			std::vector<VertexAttribute> attribs_;
+			std::vector<Mesh*> meshes_;
+		};
+		
+	}
 }
 
 #endif
