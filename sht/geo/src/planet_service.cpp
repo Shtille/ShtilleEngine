@@ -2,6 +2,8 @@
 
 #include "../../thirdparty/libsaim/include/saim.h"
 
+#include <functional>
+
 namespace sht {
 	namespace geo {
 

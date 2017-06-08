@@ -1,6 +1,8 @@
 #include "script.h"
 #include "script_base.h"
 
+#include <cstring>
+
 namespace {
 	const CS_CHAR * kTrueString = CS_TEXT("true");
 	const CS_CHAR * kFalseString = CS_TEXT("false");

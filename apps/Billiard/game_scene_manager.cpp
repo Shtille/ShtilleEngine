@@ -106,7 +106,7 @@ public:
 	void OnPair(const char* key, const char* value) final
 	{
 		sht::utility::ResourceID id = -1;
-		sht::utility::StringId string_id = MakeStringId(key);
+		sht::utility::StringId string_id = RuntimeStringId(key);
 		void * user_data = reinterpret_cast<void*>(scene_manager_);
 		sht::utility::ResourceManager * resource_manager = sht::utility::ResourceManager::GetInstance();
 		switch (section_type_)
@@ -184,14 +184,14 @@ void GameSceneManager::OnEvent(const sht::utility::Event * event)
 {
 	switch (event->type())
 	{
-	case SID("logotype_scene_finished"):
+	case ConstexprStringId("logotype_scene_finished"):
 		RequestImmediateTransition(menu_scene_);
 		break;
-	case SID("menu_scene_finished"):
+	case ConstexprStringId("menu_scene_finished"):
 		//RequestImmediateTransition(game_scene_);
 		RequestDeferredTransition(game_scene_, loading_scene_, loading_scene_);
 		break;
-	case SID("loading_scene_loaded"):
+	case ConstexprStringId("loading_scene_loaded"):
 		// Detach loading scene upon loading
 		menu_scene_->SetNextScene(nullptr);
 		break;

@@ -18,8 +18,8 @@ LogoScene::LogoScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 	timer_ = time_manager->AddTimer(kTimerInterval);
 
 	// Register resources to load automatically on scene change
-	text_shader_id_ = AddResourceIdByName(SID("shader_text"));
-	font_id_ = AddResourceIdByName(SID("font_good_dog"));
+	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
+	font_id_ = AddResourceIdByName(ConstexprStringId("font_good_dog"));
 }
 LogoScene::~LogoScene()
 {
@@ -46,7 +46,7 @@ void LogoScene::Update()
 	if (timer_->HasExpired())
 	{
 		timer_->Stop();
-		sht::utility::Event event(SID("logotype_scene_finished"));
+		sht::utility::Event event(ConstexprStringId("logotype_scene_finished"));
 		event_listener_->OnEvent(&event);
 	}
 }

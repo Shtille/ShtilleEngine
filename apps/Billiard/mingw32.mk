@@ -26,7 +26,11 @@ SRC_FILES = $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.cpp))
 
 OBJECTS = $(SRC_FILES:.cpp=.o)
 
-LIBRARIES = -lscript -lbullet -lShtilleEngine -lstdc++ -lgdi32 -lglew -lopengl32 -lfreetype -ljpeg -lpng -lz
+LIBRARIES = -lscript -lShtilleEngine -lbullet -lstdc++ -lgdi32 -lglew -lopengl32 -lfreetype -ljpeg -lpng -lz
+
+ifeq ($(INSTALL_PATH),)
+INSTALL_PATH = $(TARGET_PATH)
+endif
 
 LIBRARY_PATH = -L$(INSTALL_PATH)
 

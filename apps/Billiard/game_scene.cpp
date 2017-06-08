@@ -12,8 +12,8 @@ GameScene::GameScene(sht::graphics::Renderer * renderer)
 , physics_(nullptr)
 {
 	// Register resources to load automatically on scene change
-	text_shader_id_ = AddResourceIdByName(SID("shader_text"));
-	font_id_ = AddResourceIdByName(SID("font_good_dog"));
+	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
+	font_id_ = AddResourceIdByName(ConstexprStringId("font_good_dog"));
 }
 GameScene::~GameScene()
 {

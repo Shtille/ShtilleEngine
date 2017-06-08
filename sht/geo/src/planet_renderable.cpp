@@ -190,7 +190,7 @@ namespace sht {
 			corner_points[2].Set(inv_scale + position_x, position_y, 1.0f); // (1,0)
 			corner_points[3].Set(inv_scale + position_x, inv_scale + position_y, 1.0f); // (1,1)
 			float cos_angle = 1.0f;
-			for (int i = 0; i < _countof(corner_points); ++i)
+			for (unsigned int i = 0; i < _countof(corner_points); ++i)
 			{
 				math::Vector3& corner_point = corner_points[i];
 				corner_point.Normalize();

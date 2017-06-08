@@ -52,12 +52,12 @@ namespace sht {
 } // namespace sht
 
 //! Function for compile time string ID generation
-constexpr uint32_t SID(const char* str)
+constexpr uint32_t ConstexprStringId(const char* str)
 {
 	return sht::utility::crc32(str, sht::utility::strlen_c(str));
 }
 
 // Runtime string ID generation
-#define MakeStringId(x) (sht::utility::crc32_runtime(x))
+#define RuntimeStringId(x) (sht::utility::crc32_runtime(x))
 
 #endif

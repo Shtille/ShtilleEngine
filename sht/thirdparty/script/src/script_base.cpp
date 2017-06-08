@@ -1,6 +1,7 @@
 #include "script_base.h"
 #include "script_func.h"
 
+#include <cstring>
 #include <assert.h>
 
 namespace console_script {

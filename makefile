@@ -60,12 +60,12 @@ ENGINE_MAKEFILE = sht/$(PLATFORM_SUFFIX).mk
 
 export INSTALL_PATH
 
-all:
 	#$(MAKE) -f apps/AtmosphericScattering/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/TestProject/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/PhysicsTest/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/BallsGame/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/ProjectX/$(PLATFORM_SUFFIX).mk
+all:
 	$(MAKE) -f apps/Billiard/$(PLATFORM_SUFFIX).mk
 
 engine:

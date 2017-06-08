@@ -10,7 +10,7 @@
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 #else
-#error OpenGL includes haven't been defined
+#error "OpenGL includes haven't been defined"
 #endif
 
 #endif

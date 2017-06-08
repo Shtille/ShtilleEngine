@@ -10,8 +10,8 @@ MenuScene::MenuScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 , text_(nullptr)
 {
 	// Register resources to load automatically on scene change
-	text_shader_id_ = AddResourceIdByName(SID("shader_text"));
-	font_id_ = AddResourceIdByName(SID("font_good_dog"));
+	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
+	font_id_ = AddResourceIdByName(ConstexprStringId("font_good_dog"));
 }
 MenuScene::~MenuScene()
 {
@@ -53,7 +53,7 @@ void MenuScene::OnKeyDown(sht::PublicKey key, int mods)
 {
 	if (key == sht::PublicKey::kSpace)
 	{
-		sht::utility::Event event(SID("menu_scene_finished"));
+		sht::utility::Event event(ConstexprStringId("menu_scene_finished"));
 		event_listener_->OnEvent(&event);
 	}
 }

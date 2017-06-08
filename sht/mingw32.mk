@@ -53,7 +53,7 @@ create_dir:
 	@if not exist $(INSTALL_PATH) mkdir $(INSTALL_PATH)
 
 clean:
-	@for /r %%R in ($(ROOT_PATH)\sht\*.o) do (if exist %%R del /Q %%R)
+	@for /r $(ROOT_PATH)\sht %%R in (*.o) do (if exist %%R del /Q %%R)
 
 install:
 	@echo installing to $(INSTALL_PATH)

@@ -14,8 +14,8 @@ LoadingScene::LoadingScene(sht::graphics::Renderer * renderer, sht::utility::Eve
 , text_(nullptr)
 {
 	// Register resources to load automatically on scene change
-	text_shader_id_ = AddResourceIdByName(SID("shader_text"));
-	font_id_ = AddResourceIdByName(SID("font_good_dog"));
+	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
+	font_id_ = AddResourceIdByName(ConstexprStringId("font_good_dog"));
 }
 LoadingScene::~LoadingScene()
 {
@@ -45,7 +45,7 @@ void LoadingScene::Load()
 
 	text_ = sht::graphics::StaticText::Create(renderer_, font_, 0.05f, 0.1f, 0.8f, L"loading scene");
 
-	sht::utility::Event event(SID("loading_scene_loaded"));
+	sht::utility::Event event(ConstexprStringId("loading_scene_loaded"));
 	event_listener_->OnEvent(&event);
 }
 void LoadingScene::Unload()
