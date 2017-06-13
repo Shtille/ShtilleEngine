@@ -104,8 +104,8 @@ public:
 		{
 			need_update_projection_matrix_ = false;
 			
-			const float znear = 0.1f;
-			const float zfar = 100.0f;
+			const float znear = 10.0f;
+			const float zfar = 10000.0f;
 			renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
 		}
 	}

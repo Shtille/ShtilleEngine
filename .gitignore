@@ -248,3 +248,4 @@ lib/*
 log.txt
 errorlog.txt
 screenshots/*
+!data/*

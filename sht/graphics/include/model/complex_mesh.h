@@ -4,6 +4,7 @@
 
 #include "../resource.h"
 #include "../renderer/vertex_format.h"
+#include "math/bounding_box.h"
 
 #include <vector>
 
@@ -34,6 +35,8 @@ namespace sht {
 			bool MakeRenderable();
 			
 			void Render();
+
+			const math::BoundingBox& bounding_box() const;
 			
 		private:
 			// Save routines
@@ -44,6 +47,7 @@ namespace sht {
 
 			Renderer * renderer_;
 			VertexFormat * vertex_format_;
+			math::BoundingBox bounding_box_;
 
 			std::vector<VertexAttribute> attribs_;
 			std::vector<Mesh*> meshes_;

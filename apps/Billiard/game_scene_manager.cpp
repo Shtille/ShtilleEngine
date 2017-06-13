@@ -54,6 +54,7 @@ static sht::graphics::Resource * ModelLoadingFunc(void * user_data, sht::utility
 	GameSceneManager * scene_manager = reinterpret_cast<GameSceneManager *>(user_data);
 	sht::graphics::Renderer * renderer = scene_manager->renderer();
 	const char* filename = scene_manager->GetResourcePath(id);
+	printf("loading mesh (id = %i): %s\n", id, filename);
 	sht::graphics::ComplexMesh * mesh = new sht::graphics::ComplexMesh(renderer);
 	if (!mesh->LoadFromFile(filename))
 	{
@@ -65,6 +66,7 @@ static sht::graphics::Resource * ModelLoadingFunc(void * user_data, sht::utility
 }
 static void ModelUnloadingFunc(void * user_data, sht::graphics::Resource * resource)
 {
+	printf("unloading mesh\n");
 	sht::graphics::ComplexMesh * mesh = dynamic_cast<sht::graphics::ComplexMesh *>(resource);
 	delete mesh;
 }
@@ -200,7 +202,6 @@ void GameSceneManager::OnEvent(const sht::utility::Event * event)
 		RequestImmediateTransition(menu_scene_);
 		break;
 	case ConstexprStringId("menu_scene_finished"):
-		//RequestImmediateTransition(game_scene_);
 		RequestDeferredTransition(game_scene_, loading_scene_, loading_scene_);
 		break;
 	case ConstexprStringId("loading_scene_loaded"):

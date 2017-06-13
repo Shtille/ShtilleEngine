@@ -41,7 +41,7 @@ namespace sht {
 				return false;
 			}
 		}
-		bool ComplexMesh::LoadFromFile(const char* filename);
+		bool ComplexMesh::LoadFromFile(const char* filename)
 		{
 			FileFormat fmt = ExtractFileFormat(filename);
 			switch (fmt)
@@ -72,7 +72,7 @@ namespace sht {
 
 			for (auto mesh : meshes_)
 			{
-				if (!mesh->MakeRenderable(vertex_format_))
+				if (!mesh->MakeRenderable(vertex_format_, attribs_))
 					return false;
 			}
 
@@ -84,6 +84,10 @@ namespace sht {
 			{
 				mesh->Render();
 			}
+		}
+		const math::BoundingBox& ComplexMesh::bounding_box() const
+		{
+			return bounding_box_;
 		}
 
 	} // namespace graphics

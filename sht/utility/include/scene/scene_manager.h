@@ -48,7 +48,6 @@ namespace sht {
 			Scene * loading_scene_;
 			SceneTransitionListenerInterface * listener_;
 			int transition_phase_;
-			int transition_count_; //!< just to not notify with count = 0
 			Transition transition_type_;
 		};
 

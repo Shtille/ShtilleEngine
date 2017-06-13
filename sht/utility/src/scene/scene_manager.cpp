@@ -11,7 +11,6 @@ namespace sht {
 		, loading_scene_(nullptr)
 		, listener_(nullptr)
 		, transition_phase_(0)
-		, transition_count_(0)
 		, transition_type_(Transition::kNone)
 		{
 
@@ -128,14 +127,13 @@ namespace sht {
 					scene = scene->next();
 				}
 				++transition_phase_;
-				transition_count_ = resource_manager->GetResourcesCountToProcess();
 				if (listener_)
-					listener_->OnObtainCount(transition_count_);
+					listener_->OnObtainCount(resource_manager->GetResourcesCountToProcess());
 				return false;
 			case 1:
 				if (resource_manager->PerformStep())
 					++transition_phase_;
-				if (listener_ && transition_count_ != 0) // we shouldn't call OnStep on empty case
+				else if (listener_)
 					listener_->OnStep();
 				return false;
 			case 2:
