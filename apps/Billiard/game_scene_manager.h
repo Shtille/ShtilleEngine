@@ -10,6 +10,7 @@
 #include <string>
 
 class LoadingScene;
+class MaterialBinder;
 
 class GameSceneManager : public sht::utility::SceneManager {
 	friend class IniFileReader;
@@ -18,6 +19,7 @@ public:
 	~GameSceneManager();
 
 	sht::graphics::Renderer * renderer();
+	MaterialBinder * material_binder();
 
 	const char* GetResourcePath(sht::utility::ResourceID id);
 
@@ -27,6 +29,7 @@ private:
 	void OnEvent(const sht::utility::Event * event) override;
 
 	sht::graphics::Renderer * renderer_;
+	MaterialBinder * material_binder_;
 	sht::utility::Scene * logo_scene_;
 	sht::utility::Scene * menu_scene_;
 	LoadingScene * loading_scene_;

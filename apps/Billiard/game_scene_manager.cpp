@@ -5,6 +5,8 @@
 #include "loading_scene.h"
 #include "game_scene.h"
 
+#include "material_binder.h"
+
 #include "graphics/include/model/complex_mesh.h"
 #include "utility/include/ini_file.h"
 #include "utility/include/event.h"
@@ -53,9 +55,10 @@ static sht::graphics::Resource * ModelLoadingFunc(void * user_data, sht::utility
 {
 	GameSceneManager * scene_manager = reinterpret_cast<GameSceneManager *>(user_data);
 	sht::graphics::Renderer * renderer = scene_manager->renderer();
+	MaterialBinder * material_binder = scene_manager->material_binder();
 	const char* filename = scene_manager->GetResourcePath(id);
 	printf("loading mesh (id = %i): %s\n", id, filename);
-	sht::graphics::ComplexMesh * mesh = new sht::graphics::ComplexMesh(renderer);
+	sht::graphics::ComplexMesh * mesh = new sht::graphics::ComplexMesh(renderer, material_binder);
 	if (!mesh->LoadFromFile(filename))
 	{
 		delete mesh;
@@ -154,10 +157,12 @@ GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 {
 	RegisterAllResources(); // should be done before scenes creation
 
+	material_binder_ = new MaterialBinder();
+
 	logo_scene_ = new LogoScene(renderer, this);
 	menu_scene_ = new MenuScene(renderer, this);
 	loading_scene_ = new LoadingScene(renderer, this);
-	game_scene_ = new GameScene(renderer);
+	game_scene_ = new GameScene(renderer, material_binder_);
 
 	// Make loading scene to load with menu scene
 	menu_scene_->SetNextScene(loading_scene_);
@@ -170,10 +175,16 @@ GameSceneManager::~GameSceneManager()
 	delete loading_scene_;
 	delete menu_scene_;
 	delete logo_scene_;
+
+	delete material_binder_;
 }
 sht::graphics::Renderer * GameSceneManager::renderer()
 {
 	return renderer_;
+}
+MaterialBinder * GameSceneManager::material_binder()
+{
+	return material_binder_;
 }
 void GameSceneManager::RegisterAllResources()
 {

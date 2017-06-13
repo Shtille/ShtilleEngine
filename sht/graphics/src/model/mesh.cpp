@@ -30,10 +30,6 @@ namespace sht {
 				renderer_->context()->DeleteVertexArrayObject(vertex_array_object_);
 			FreeArrays();
 		}
-		void Mesh::SetMaterial(Material * material)
-		{
-			material_ = material;
-		}
 		void Mesh::FreeArrays()
 		{
 			if (vertices_array_)
@@ -145,8 +141,6 @@ namespace sht {
 		}
 		void Mesh::Render()
 		{
-			if (material_)
-				material_->Bind();
 			renderer_->context()->BindVertexArrayObject(vertex_array_object_);
 			if (index_buffer_ == nullptr)
 				renderer_->context()->DrawArrays(primitive_mode_, 0, num_vertices_);

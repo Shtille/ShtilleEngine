@@ -1,10 +1,13 @@
 #include "game_scene.h"
 
+#include "material_binder.h"
+
 #include "utility/include/event.h"
 #include "system/include/time/time_manager.h"
 
-GameScene::GameScene(sht::graphics::Renderer * renderer)
+GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder)
 : Scene(renderer)
+, material_binder_(material_binder)
 , text_shader_(nullptr)
 , object_shader_(nullptr)
 , font_(nullptr)
@@ -117,6 +120,9 @@ void GameScene::Load()
 	cue_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(cue_mesh_id_));
 	rack_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(rack_mesh_id_));
 	table_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_mesh_id_));
+
+	// Bind shader to material binder
+	material_binder_->SetShader(object_shader_);
 
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));

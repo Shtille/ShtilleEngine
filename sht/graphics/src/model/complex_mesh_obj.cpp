@@ -1,6 +1,7 @@
 #include "../../include/model/complex_mesh.h"
 
 #include "../../include/model/mesh.h"
+#include "../../include/material.h"
 
 #include "system/include/stream/log_stream.h"
 #include "system/include/string/filename.h"
@@ -49,6 +50,22 @@ namespace sht {
 			if (!err.empty())
 				error_log->PrintString("%s\n", err.c_str());
 
+			// Fill materials
+			materials_.resize(materials.size());
+			for (size_t i = 0; i < materials.size(); ++i)
+			{
+				Material& material = materials_[i];
+				const tinyobj::material_t& obj_material = materials[i];
+
+				memcpy(&material.ambient.x, &obj_material.ambient[0], 3 * sizeof(float));
+				memcpy(&material.diffuse.x, &obj_material.diffuse[0], 3 * sizeof(float));
+				memcpy(&material.specular.x, &obj_material.specular[0], 3 * sizeof(float));
+				memcpy(&material.transmittance.x, &obj_material.transmittance[0], 3 * sizeof(float));
+				memcpy(&material.emission.x, &obj_material.emission[0], 3 * sizeof(float));
+				material.shininess = obj_material.shininess;
+				material.dissolve = obj_material.dissolve;
+			}
+
 			math::Vector3 min = math::Vector3(1e8), max = math::Vector3(-1e8);
 
 			// Make unique mesh per material per shape
@@ -86,6 +103,7 @@ namespace sht {
 						{
 							mesh = new Mesh(renderer_);
 							mesh->primitive_mode_ = PrimitiveType::kTriangles;
+							mesh->material_ = &materials_[material_id];
 							materials_map[material_id].reset(mesh);
 						}
 						else
@@ -117,11 +135,6 @@ namespace sht {
 
 			bounding_box_.center = 0.5f * (max + min);
 			bounding_box_.extent = 0.5f * (max - min);
-
-			// for (const auto& material : materials)
-			// {
-			// 	memcpy(&vertex.position, &material.ambient[0], 3 * sizeof(float));
-			// }
 
 			// Finally fill the meshes
 			for (auto& map : shape_meshes)

@@ -1,6 +1,7 @@
 #include "../../include/model/complex_mesh.h"
 
 #include "../../include/model/mesh.h"
+#include "../../include/material.h"
 #include "../../include/renderer/renderer.h"
 #include "system/include/string/filename.h"
 
@@ -18,14 +19,19 @@ namespace sht {
 			return ComplexMesh::FileFormat::kUnknown;
 		}
 
-		ComplexMesh::ComplexMesh(Renderer * renderer)
+		ComplexMesh::ComplexMesh(Renderer * renderer, MaterialBinderInterface * material_binder)
 		: renderer_(renderer)
+		, material_binder_(material_binder)
 		, vertex_format_(nullptr)
 		{
 
 		}
 		ComplexMesh::~ComplexMesh()
 		{
+			for (auto mesh : meshes_)
+			{
+				delete mesh;
+			}
 			if (vertex_format_)
 				renderer_->DeleteVertexFormat(vertex_format_);
 		}
@@ -82,6 +88,8 @@ namespace sht {
 		{
 			for (auto mesh : meshes_)
 			{
+				if (material_binder_)
+					material_binder_->Bind(mesh->material_);
 				mesh->Render();
 			}
 		}

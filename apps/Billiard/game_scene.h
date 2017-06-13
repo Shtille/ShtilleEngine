@@ -10,9 +10,11 @@
 #include "utility/include/camera.h"
 #include "physics/include/physics_engine.h"
 
+class MaterialBinder;
+
 class GameScene : public sht::utility::Scene {
 public:
-	GameScene(sht::graphics::Renderer * renderer);
+	GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder);
 	virtual ~GameScene();
 
 	void Update();
@@ -28,6 +30,8 @@ private:
 	void RenderCue();
 	void RenderObjects();
 	void RenderInterface();
+
+	MaterialBinder * material_binder_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID object_shader_id_;

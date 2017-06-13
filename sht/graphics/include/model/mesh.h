@@ -9,7 +9,7 @@
 namespace sht {
 	namespace graphics {
 
-		class Material;
+		struct Material;
 		
 		//! Standart mesh class
 		class Mesh {
@@ -17,8 +17,6 @@ namespace sht {
 		public:
 			Mesh(Renderer * renderer);
 			virtual ~Mesh();
-
-			void SetMaterial(Material * material);
 
 			bool MakeRenderable(VertexFormat * vertex_format, const std::vector<VertexAttribute>& attribs);
 			

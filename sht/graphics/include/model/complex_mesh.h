@@ -13,6 +13,8 @@ namespace sht {
 
 		class Renderer;
 		class Mesh;
+		struct Material;
+		class MaterialBinderInterface;
 		
 		//! Complex mesh class
 		class ComplexMesh : public Resource {
@@ -23,7 +25,7 @@ namespace sht {
 				kObj
 			};
 
-			ComplexMesh(Renderer * renderer);
+			ComplexMesh(Renderer * renderer, MaterialBinderInterface * material_binder);
 			virtual ~ComplexMesh();
 
 			bool SaveToFile(const char* filename);
@@ -46,11 +48,13 @@ namespace sht {
 			bool LoadFromFileObj(const char *filename);
 
 			Renderer * renderer_;
+			MaterialBinderInterface * material_binder_;
 			VertexFormat * vertex_format_;
 			math::BoundingBox bounding_box_;
 
 			std::vector<VertexAttribute> attribs_;
 			std::vector<Mesh*> meshes_;
+			std::vector<Material> materials_;
 		};
 		
 	}
