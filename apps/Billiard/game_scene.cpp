@@ -5,6 +5,8 @@
 #include "utility/include/event.h"
 #include "system/include/time/time_manager.h"
 
+#include <cmath> // for sinf and cosf
+
 GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder)
 : Scene(renderer)
 , material_binder_(material_binder)
@@ -51,15 +53,14 @@ void GameScene::Update()
 
 	// Update view matrix
 	renderer_->SetViewMatrix(camera_manager_->view_matrix());
+	projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
 }
 void GameScene::RenderTable()
 {
-	object_shader_->Uniform4f("u_color", 1.0f, 1.0f, 0.0f, 1.0f);
 	table_mesh_->Render();
 }
 void GameScene::RenderBalls()
 {
-	object_shader_->Uniform4f("u_color", 1.0f, 0.0f, 0.0f, 1.0f);
 	ball_mesh_->Render();
 }
 void GameScene::RenderRack()
@@ -72,16 +73,14 @@ void GameScene::RenderCue()
 }
 void GameScene::RenderObjects()
 {
-	sht::math::Matrix3 normal_matrix;
-	vec3 light_pos_eye = renderer_->view_matrix() * light_position_;
+	const sht::math::Vector3 kLightColor(1.0f);
 
 	object_shader_->Bind();
-	object_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-	object_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+	object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
 	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-	object_shader_->Uniform3fv("u_light_pos", light_pos_eye);
-	normal_matrix = sht::math::NormalMatrix(renderer_->view_matrix() * renderer_->model_matrix());
-	object_shader_->UniformMatrix3fv("u_normal_matrix", normal_matrix);
+	object_shader_->Uniform3fv("u_light.position", light_position_);
+	object_shader_->Uniform3fv("u_light.color", kLightColor);
+	object_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
 
 	RenderTable();
 	RenderBalls();

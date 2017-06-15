@@ -57,6 +57,7 @@ private:
 	float light_angle_;
 	float light_distance_;
 	sht::math::Vector3 light_position_;
+	sht::math::Matrix4 projection_view_matrix_;
 };
 
 #endif
