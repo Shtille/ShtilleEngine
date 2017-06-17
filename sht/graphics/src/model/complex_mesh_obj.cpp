@@ -85,8 +85,6 @@ namespace sht {
 				size_t index_offset = 0;
 				for (size_t f = 0; f < shape.mesh.num_face_vertices.size(); ++f)
 				{
-					int fv = shape.mesh.num_face_vertices[f];
-
 					// Per-face material
 					Mesh * mesh = nullptr;
 					int material_id = shape.mesh.material_ids[f];
@@ -111,6 +109,7 @@ namespace sht {
 					}
 
 					// Loop over vertices in the face
+					size_t fv = static_cast<size_t>(shape.mesh.num_face_vertices[f]);
 					for (size_t v = 0; v < fv; ++v)
 					{
 						// Access to vertex
