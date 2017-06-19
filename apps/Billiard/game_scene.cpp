@@ -4,6 +4,7 @@
 
 #include "utility/include/event.h"
 #include "system/include/time/time_manager.h"
+#include "physics/include/physics_object.h"
 
 #include <cmath> // for sinf and cosf
 
@@ -20,6 +21,11 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , fps_text_(nullptr)
 , camera_manager_(nullptr)
 , physics_(nullptr)
+, balls_(nullptr)
+, balls_count_(1)
+, table_(nullptr)
+, rack_(nullptr)
+, cue_(nullptr)
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
 {
@@ -57,19 +63,32 @@ void GameScene::Update()
 }
 void GameScene::RenderTable()
 {
+	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 	table_mesh_->Render();
 }
 void GameScene::RenderBalls()
 {
-	ball_mesh_->Render();
+	for (unsigned int i = 0; i < balls_count_; ++i)
+	{
+		renderer_->PushMatrix();
+		renderer_->MultMatrix(balls_[i]->matrix());
+		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		ball_mesh_->Render();
+		renderer_->PopMatrix();
+	}
 }
 void GameScene::RenderRack()
 {
-
+	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+	rack_mesh_->Render();
 }
 void GameScene::RenderCue()
 {
-
+	//renderer_->PushMatrix();
+	//renderer_->MultMatrix(cue_->matrix());
+	//object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+	//cue_mesh_->Render();
+	//renderer_->PopMatrix();
 }
 void GameScene::RenderObjects()
 {
@@ -77,7 +96,6 @@ void GameScene::RenderObjects()
 
 	object_shader_->Bind();
 	object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
-	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 	object_shader_->Uniform3fv("u_light.position", light_position_);
 	object_shader_->Uniform3fv("u_light.color", kLightColor);
 	object_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
@@ -123,6 +141,38 @@ void GameScene::Load()
 	// Bind shader to material binder
 	material_binder_->SetShader(object_shader_);
 
+	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+
+	// Create camera attached to the controlled ball
+	camera_manager_ = new sht::utility::CameraManager();
+	auto cam_id = camera_manager_->Add(vec3(2000.0f), vec3(0.0f));
+	camera_manager_->SetCurrent(cam_id);
+	camera_manager_->SetManualUpdate();
+
+	// Create physics
+	physics_ = new sht::physics::Engine();
+
+	balls_count_ = 1;
+	balls_ = new sht::physics::Object *[balls_count_];
+
+	const float ball_size = ball_mesh_->bounding_box().extent.x;
+
+	// Setup physics objects
+	sht::physics::Object * object;
+    object = physics_->AddSphere(vec3(0.0f, 2000.0f, 0.0f), 0.150f, ball_size);
+    object->SetFriction(0.5f);
+    object->SetRollingFriction(0.1f);
+    object->SetSpinningFriction(0.1f);
+    object->SetRestitution(0.8f);
+    balls_[0] = object;
+    object = physics_->AddBox(vec3(0.0f, -1.0f, 0.0f), 0.0f, 50.0f, 1.0f, 50.0f); // as mesh
+    object->SetFriction(1.0f);
+    table_ = object;
+	//object = physics_->AddBox(vec3(0.0f, 0.0f, 0.0f), 0.500f,
+	//	cue_mesh_->bounding_box().extent.x, cue_mesh_->bounding_box().extent.y, cue_mesh_->bounding_box().extent.z);
+	//object->SetFriction(1.0f);
+	//cue_ = object;
+
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
@@ -136,20 +186,14 @@ void GameScene::Load()
 	table_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	table_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 	table_mesh_->MakeRenderable();
-
-	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
-
-	// Create camera attached to the controlled ball
-	camera_manager_ = new sht::utility::CameraManager();
-	auto cam_id = camera_manager_->Add(vec3(2000.0f), vec3(0.0f));
-	camera_manager_->SetCurrent(cam_id);
-	camera_manager_->SetManualUpdate();
-
-	// Create physics
-	physics_ = new sht::physics::Engine();
 }
 void GameScene::Unload()
 {
+	if (balls_)
+	{
+		delete[] balls_;
+		balls_ = nullptr;
+	}
 	if (physics_)
 	{
 		delete physics_;
@@ -165,4 +209,21 @@ void GameScene::Unload()
 		delete fps_text_;
 		fps_text_ = nullptr;
 	}
+}
+void GameScene::OnKeyDown(sht::PublicKey key, int mods)
+{
+	const float kPushPower = 5.0f;
+	sht::math::Vector3 impulse(0.0f);
+	if (key == sht::PublicKey::kLeft)
+	    impulse.z += kPushPower;
+	if (key == sht::PublicKey::kRight)
+	    impulse.z -= kPushPower;
+	if (key == sht::PublicKey::kDown)
+	    impulse.x += kPushPower;
+	if (key == sht::PublicKey::kUp)
+	    impulse.x -= kPushPower;
+
+	// Update forces
+	balls_[0]->Activate(); // this body may be sleeping, thus we activate it
+	balls_[0]->ApplyCentralImpulse(impulse);
 }

@@ -417,6 +417,9 @@
     <ClCompile Include="..\..\..\..\sht\utility\src\string_id.cpp">
       <Filter>sht\utility\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\physics\src\physics_mesh.cpp">
+      <Filter>sht\physics\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -751,6 +754,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\utility\include\scene\scene_transition_listener.h">
       <Filter>sht\utility\include\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\physics\src\physics_mesh.h">
+      <Filter>sht\physics\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\physics\include\physics_unit_converter.h">
+      <Filter>sht\physics\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

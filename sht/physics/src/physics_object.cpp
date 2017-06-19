@@ -1,5 +1,7 @@
 #include "../include/physics_object.h"
 
+#include "../include/physics_unit_converter.h"
+
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 
@@ -12,28 +14,8 @@ namespace sht {
 		: shape_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		{
-			matrix_.sa[0] = 1.0f;
-			matrix_.sa[1] = 0.0f;
-			matrix_.sa[2] = 0.0f;
-			matrix_.sa[3] = 0.0f;
-			matrix_.sa[4] = 0.0f;
-			matrix_.sa[5] = 1.0f;
-			matrix_.sa[6] = 0.0f;
-			matrix_.sa[7] = 0.0f;
-			matrix_.sa[8] = 0.0f;
-			matrix_.sa[9] = 0.0f;
-			matrix_.sa[10] = 1.0f;
-			matrix_.sa[11] = 0.0f;
-			matrix_.sa[12] = position.x;
-			matrix_.sa[13] = position.y;
-			matrix_.sa[14] = position.z;
-			matrix_.sa[15] = 1.0f;
-		}
-		Object::Object(const math::Vector3& position, const math::Vector3& scale)
-		: shape_(nullptr)
-		, scale_(scale)
-		, body_(nullptr)
+		, unit_converter_(nullptr)
+		, use_scale_(false)
 		{
 			matrix_.sa[0] = 1.0f;
 			matrix_.sa[1] = 0.0f;
@@ -56,28 +38,8 @@ namespace sht {
 		: shape_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		{
-			matrix_.sa[0] = rotation.e11;
-			matrix_.sa[1] = rotation.e12;
-			matrix_.sa[2] = rotation.e13;
-			matrix_.sa[3] = 0.0f;
-			matrix_.sa[4] = rotation.e21;
-			matrix_.sa[5] = rotation.e22;
-			matrix_.sa[6] = rotation.e23;
-			matrix_.sa[7] = 0.0f;
-			matrix_.sa[8] = rotation.e31;
-			matrix_.sa[9] = rotation.e32;
-			matrix_.sa[10] = rotation.e33;
-			matrix_.sa[11] = 0.0f;
-			matrix_.sa[12] = position.x;
-			matrix_.sa[13] = position.y;
-			matrix_.sa[14] = position.z;
-			matrix_.sa[15] = 1.0f;
-		}
-		Object::Object(const math::Vector3& position, const math::Matrix3& rotation, const math::Vector3& scale)
-		: shape_(nullptr)
-		, scale_(scale)
-		, body_(nullptr)
+		, unit_converter_(nullptr)
+		, use_scale_(false)
 		{
 			matrix_.sa[0] = rotation.e11;
 			matrix_.sa[1] = rotation.e12;
@@ -104,26 +66,42 @@ namespace sht {
 		void Object::getWorldTransform(btTransform &world_transform) const
 		{
 			// Needed for object initialization
-			world_transform.setFromOpenGLMatrix(matrix_.sa);
+			math::Matrix4 initial_matrix(matrix_);
+			if (unit_converter_)
+			{
+				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 12);
+				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 13);
+				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 14);
+			}
+			world_transform.setFromOpenGLMatrix(initial_matrix.sa);
 		}
 		void Object::setWorldTransform(const btTransform &world_transform)
 		{
 			// Called when object state has changed
 			world_transform.getOpenGLMatrix(matrix_.sa);
+			if (unit_converter_)
+			{
+				unit_converter_->LinearScaleFromStandard(matrix_.sa + 12);
+				unit_converter_->LinearScaleFromStandard(matrix_.sa + 13);
+				unit_converter_->LinearScaleFromStandard(matrix_.sa + 14);
+			}
 			ApplyScale();
 		}
 		void Object::ApplyScale()
 		{
-			// We have to adjust object matrix by scale
-			matrix_.sa[0] *= scale_.x;
-			matrix_.sa[1] *= scale_.y;
-			matrix_.sa[2] *= scale_.z;
-			matrix_.sa[4] *= scale_.x;
-			matrix_.sa[5] *= scale_.y;
-			matrix_.sa[6] *= scale_.z;
-			matrix_.sa[8] *= scale_.x;
-			matrix_.sa[9] *= scale_.y;
-			matrix_.sa[10] *= scale_.z;
+			if (use_scale_)
+			{
+				// We have to adjust object matrix by scale
+				matrix_.sa[0] *= scale_.x;
+				matrix_.sa[1] *= scale_.y;
+				matrix_.sa[2] *= scale_.z;
+				matrix_.sa[4] *= scale_.x;
+				matrix_.sa[5] *= scale_.y;
+				matrix_.sa[6] *= scale_.z;
+				matrix_.sa[8] *= scale_.x;
+				matrix_.sa[9] *= scale_.y;
+				matrix_.sa[10] *= scale_.z;
+			}
 		}
 		void Object::SetPosition(const math::Vector3& position)
 		{
@@ -131,11 +109,30 @@ namespace sht {
 			direction.x -= matrix_.sa[12];
 			direction.y -= matrix_.sa[13];
 			direction.z -= matrix_.sa[14];
+			if (unit_converter_)
+			{
+				unit_converter_->LinearScaleToStandard(&direction.x);
+				unit_converter_->LinearScaleToStandard(&direction.y);
+				unit_converter_->LinearScaleToStandard(&direction.z);
+			}
 			body_->translate(btVector3(direction.x, direction.y, direction.z));
 		}
 		void Object::Translate(const math::Vector3& direction)
 		{
-			body_->translate(btVector3(direction.x, direction.y, direction.z));
+			math::Vector3 translation = direction;
+			if (unit_converter_)
+			{
+				unit_converter_->LinearScaleToStandard(&translation.x);
+				unit_converter_->LinearScaleToStandard(&translation.y);
+				unit_converter_->LinearScaleToStandard(&translation.z);
+			}
+			body_->translate(btVector3(translation.x, translation.y, translation.z));
+		}
+		void Object::SetTransform(const math::Matrix4& transform)
+		{
+			btTransform xform;
+			xform.setFromOpenGLMatrix(transform.sa);
+			body_->setCenterOfMassTransform(xform);
 		}
 		void Object::SetFriction(float friction)
 		{
@@ -155,7 +152,6 @@ namespace sht {
 		}
 		void Object::Activate()
 		{
-			assert(body_);
 			body_->activate();
 		}
 		void Object::ApplyCentralForce(const math::Vector3& force)
@@ -205,6 +201,7 @@ namespace sht {
 		void Object::set_scale(const math::Vector3& scale)
 		{
 			scale_ = scale;
+			use_scale_ = true;
 		}
 
 	} // namespace physics

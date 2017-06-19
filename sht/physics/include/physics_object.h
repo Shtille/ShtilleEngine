@@ -13,19 +13,20 @@ class btRigidBody;
 namespace sht {
 	namespace physics {
 
+		class UnitConverter;
+
 		//! This class affects our internal representation
 		class Object : private btMotionState
 		{
 			friend class Engine;
 		public:
 			explicit Object(const math::Vector3& position);
-			explicit Object(const math::Vector3& position, const math::Vector3& scale);
 			explicit Object(const math::Vector3& position, const math::Matrix3& rotation);
-			explicit Object(const math::Vector3& position, const math::Matrix3& rotation, const math::Vector3& scale);
 			virtual ~Object();
 
 			void SetPosition(const math::Vector3& position);
 			void Translate(const math::Vector3& direction);
+			void SetTransform(const math::Matrix4& transform);
 
 			void SetFriction(float friction);
 			void SetRollingFriction(float friction);
@@ -64,6 +65,8 @@ namespace sht {
 			math::Matrix4 matrix_;
 			math::Vector3 scale_;
 			btRigidBody * body_;
+			const UnitConverter * unit_converter_;
+			bool use_scale_; //!< scale is necessary when model has been scaled from unit size
 		};
 
 	} // namespace physics

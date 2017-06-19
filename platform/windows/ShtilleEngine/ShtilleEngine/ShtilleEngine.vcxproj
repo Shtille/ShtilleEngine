@@ -70,6 +70,7 @@
     <ClCompile Include="..\..\..\..\sht\math\vertical_profile.cpp" />
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_box.cpp" />
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_engine.cpp" />
+    <ClCompile Include="..\..\..\..\sht\physics\src\physics_mesh.cpp" />
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_object.cpp" />
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_sphere.cpp" />
     <ClCompile Include="..\..\..\..\sht\platform\src\main_wrapper.cpp" />
@@ -178,7 +179,9 @@
     <ClInclude Include="..\..\..\..\sht\math\vertical_profile.h" />
     <ClInclude Include="..\..\..\..\sht\physics\include\physics_engine.h" />
     <ClInclude Include="..\..\..\..\sht\physics\include\physics_object.h" />
+    <ClInclude Include="..\..\..\..\sht\physics\include\physics_unit_converter.h" />
     <ClInclude Include="..\..\..\..\sht\physics\src\physics_box.h" />
+    <ClInclude Include="..\..\..\..\sht\physics\src\physics_mesh.h" />
     <ClInclude Include="..\..\..\..\sht\physics\src\physics_sphere.h" />
     <ClInclude Include="..\..\..\..\sht\platform\include\main_wrapper.h" />
     <ClInclude Include="..\..\..\..\sht\platform\include\window_controller.h" />

@@ -2,6 +2,8 @@
 #ifndef __SHT_PHYSICS_ENGINE_H__
 #define __SHT_PHYSICS_ENGINE_H__
 
+#include "physics_unit_converter.h"
+
 #include "math/vector.h"
 #include "math/matrix.h"
 
@@ -22,7 +24,7 @@ namespace sht {
 		class Engine
 		{
 		public:
-			Engine();
+			Engine(const UnitConverter * unit_converter = nullptr);
 			~Engine();
 
 			void Update(float sec);
@@ -40,6 +42,7 @@ namespace sht {
 			void AddCustomObject(Object * object, float mass);
 			
 		private:
+			UnitConverter const * const unit_converter_;
 			btDefaultCollisionConfiguration * collision_configuration_;
 			btCollisionDispatcher * dispatcher_;
 			btBroadphaseInterface * broadphase_;

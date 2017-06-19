@@ -8,7 +8,8 @@
 namespace sht {
 	namespace physics {
 
-		Engine::Engine()
+		Engine::Engine(const UnitConverter * unit_converter)
+		: unit_converter_(unit_converter)
 		{
 			collision_configuration_ = new btDefaultCollisionConfiguration();
 			dispatcher_ = new btCollisionDispatcher(collision_configuration_);

@@ -31,6 +31,8 @@ private:
 	void RenderObjects();
 	void RenderInterface();
 
+	void OnKeyDown(sht::PublicKey key, int mods) override;
+
 	MaterialBinder * material_binder_;
 
 	sht::utility::ResourceID text_shader_id_;
@@ -52,6 +54,11 @@ private:
 	sht::graphics::DynamicText * fps_text_;
 	sht::utility::CameraManager * camera_manager_;
 	sht::physics::Engine * physics_;
+	sht::physics::Object * *balls_;
+	unsigned int balls_count_;
+	sht::physics::Object * table_;
+	sht::physics::Object * rack_;
+	sht::physics::Object * cue_;
 
 	// Light parameters
 	float light_angle_;
