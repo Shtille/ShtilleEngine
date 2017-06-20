@@ -145,12 +145,11 @@ void GameScene::Load()
 
 	// Create camera attached to the controlled ball
 	camera_manager_ = new sht::utility::CameraManager();
-	auto cam_id = camera_manager_->Add(vec3(2000.0f), vec3(0.0f));
-	camera_manager_->SetCurrent(cam_id);
-	camera_manager_->SetManualUpdate();
+	camera_manager_->MakeFree(vec3(2000.0f), vec3(0.0f));
 
 	// Create physics
 	physics_ = new sht::physics::Engine();
+	physics_->SetGravity(vec3(0.0f, -500.0f, 0.0f));
 
 	balls_count_ = 1;
 	balls_ = new sht::physics::Object *[balls_count_];
@@ -165,13 +164,10 @@ void GameScene::Load()
     object->SetSpinningFriction(0.1f);
     object->SetRestitution(0.8f);
     balls_[0] = object;
-    object = physics_->AddBox(vec3(0.0f, -1.0f, 0.0f), 0.0f, 50.0f, 1.0f, 50.0f); // as mesh
+    sht::graphics::MeshVerticesEnumerator enumerator(table_mesh_);
+    object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
     object->SetFriction(1.0f);
     table_ = object;
-	//object = physics_->AddBox(vec3(0.0f, 0.0f, 0.0f), 0.500f,
-	//	cue_mesh_->bounding_box().extent.x, cue_mesh_->bounding_box().extent.y, cue_mesh_->bounding_box().extent.z);
-	//object->SetFriction(1.0f);
-	//cue_ = object;
 
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
@@ -214,16 +210,25 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
 	const float kPushPower = 5.0f;
 	sht::math::Vector3 impulse(0.0f);
-	if (key == sht::PublicKey::kLeft)
+	if (key == sht::PublicKey::kA)
 	    impulse.z += kPushPower;
-	if (key == sht::PublicKey::kRight)
+	if (key == sht::PublicKey::kD)
 	    impulse.z -= kPushPower;
-	if (key == sht::PublicKey::kDown)
+	if (key == sht::PublicKey::kS)
 	    impulse.x += kPushPower;
-	if (key == sht::PublicKey::kUp)
+	if (key == sht::PublicKey::kW)
 	    impulse.x -= kPushPower;
 
 	// Update forces
 	balls_[0]->Activate(); // this body may be sleeping, thus we activate it
 	balls_[0]->ApplyCentralImpulse(impulse);
+
+	if (key == sht::PublicKey::kLeft)
+		camera_manager_->RotateAroundTargetInY(-0.1f);
+	else if (key == sht::PublicKey::kRight)
+		camera_manager_->RotateAroundTargetInY(0.1f);
+	else if (key == sht::PublicKey::kUp)
+		camera_manager_->RotateAroundTargetInZ(0.1f);
+	else if (key == sht::PublicKey::kDown)
+		camera_manager_->RotateAroundTargetInZ(-0.1f);
 }

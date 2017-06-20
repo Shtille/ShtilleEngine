@@ -420,6 +420,9 @@
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_mesh.cpp">
       <Filter>sht\physics\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh_vertices_enumerator.cpp">
+      <Filter>sht\graphics\src\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -760,6 +763,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\physics\include\physics_unit_converter.h">
       <Filter>sht\physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh_vertices_enumerator.h">
+      <Filter>sht\graphics\include\model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

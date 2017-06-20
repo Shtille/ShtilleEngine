@@ -4,6 +4,8 @@
 
 #include "../include/physics_object.h"
 
+#include "graphics/include/model/mesh_vertices_enumerator.h"
+
 class btTriangleMesh;
 
 namespace sht {
@@ -13,6 +15,7 @@ namespace sht {
 		{
 		public:
 			explicit Mesh(const math::Vector3& position, float mass, const math::Vector3* vertices, unsigned int num_vertices);
+			explicit Mesh(const math::Vector3& position, float mass, graphics::MeshVerticesEnumerator * enumerator);
 			virtual ~Mesh();
 
 			float mass() const;

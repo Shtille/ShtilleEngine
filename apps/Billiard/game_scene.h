@@ -17,11 +17,11 @@ public:
 	GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder);
 	virtual ~GameScene();
 
-	void Update();
-	void Render();
+	void Update() override;
+	void Render() override;
 
-	void Load();
-	void Unload();
+	void Load() override;
+	void Unload() override;
 
 private:
 	void RenderTable();
@@ -64,6 +64,7 @@ private:
 	float light_angle_;
 	float light_distance_;
 	sht::math::Vector3 light_position_;
+
 	sht::math::Matrix4 projection_view_matrix_;
 };
 

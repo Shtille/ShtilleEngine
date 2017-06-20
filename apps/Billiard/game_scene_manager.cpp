@@ -167,7 +167,7 @@ GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 	// Make loading scene to load with menu scene
 	menu_scene_->SetNextScene(loading_scene_);
 
-	RequestImmediateTransition(logo_scene_);
+	RequestImmediateTransition(menu_scene_); // logo_scene_
 }
 GameSceneManager::~GameSceneManager()
 {

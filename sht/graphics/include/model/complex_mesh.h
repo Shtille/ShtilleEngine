@@ -18,6 +18,7 @@ namespace sht {
 		
 		//! Complex mesh class
 		class ComplexMesh : public Resource {
+			friend class MeshVerticesEnumerator;
 		public:
 
 			enum class FileFormat {

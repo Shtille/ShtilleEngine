@@ -4,6 +4,8 @@
 
 #include "physics_unit_converter.h"
 
+#include "graphics/include/model/mesh_vertices_enumerator.h"
+
 #include "math/vector.h"
 #include "math/matrix.h"
 
@@ -36,6 +38,8 @@ namespace sht {
 				float mass, float radius);
 			Object * AddBox(const math::Vector3& position,
 				float mass, float size_x, float size_y, float size_z);
+			Object * AddMesh(const math::Vector3& position,
+				float mass, graphics::MeshVerticesEnumerator * enumerator);
 
 		protected:
 			void ReleaseObjects();

@@ -2,6 +2,7 @@
 
 #include "physics_sphere.h"
 #include "physics_box.h"
+#include "physics_mesh.h"
 
 #include <btBulletDynamicsCommon.h>
 
@@ -44,6 +45,13 @@ namespace sht {
 			AddCustomObject(object, mass);
 			return object;
 		}
+		Object * Engine::AddMesh(const math::Vector3& position,
+				float mass, graphics::MeshVerticesEnumerator * enumerator)
+		{
+			Mesh * object = new Mesh(position, mass, enumerator);
+			AddCustomObject(object, mass);
+			return object;
+		}
 		void Engine::ReleaseObjects()
 		{
 			for (auto object : objects_)
@@ -67,9 +75,9 @@ namespace sht {
 		}
 		void Engine::Update(float sec)
 		{
-			//const int kMaxSubSteps = 10;
-			//const float kFixedTimeStep = 0.01;
-			dynamics_world_->stepSimulation(sec/*, kMaxSubSteps, kFixedTimeStep*/);
+			const int kMaxSubSteps = 10;
+			const float kFixedTimeStep = 0.01f;
+			dynamics_world_->stepSimulation(sec, kMaxSubSteps, kFixedTimeStep);
 		}
 
 	} // namespace physics
