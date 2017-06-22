@@ -56,9 +56,6 @@ private:
 	sht::physics::Engine * physics_;
 	sht::physics::Object * *balls_;
 	unsigned int balls_count_;
-	sht::physics::Object * table_;
-	sht::physics::Object * rack_;
-	sht::physics::Object * cue_;
 
 	// Light parameters
 	float light_angle_;

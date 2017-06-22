@@ -1,0 +1,24 @@
+- Game
+	- Design
+		+ Editor
+			We don't need a editor at all.
+	- Physics
+		- Determine optimal physics friction koefficients.
+		+ Add custom mesh processing for entity.
+	- Graphics
+		- Add textures.
+		- Add realistic lighting model.
+	- Controls
+		All game controls is pretty fine by now.
+	- Audio
+		By now we are skipping this phase.
+	- Misc
+		+ Add a new (internal) format that we gonna save models in.
+		- Add command line arguments processing.
+		- Add application that will convert models from one format to another.
+		- Add loading of HDR textures.
+- Engine
+	- Graphics
+		- Add debug renderer.
+		- Add height map mesh object.
+		- Add height map decal mesh object.

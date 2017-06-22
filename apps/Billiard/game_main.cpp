@@ -29,6 +29,9 @@ public:
 
 		// Create scene manager
 		scene_manager_ = new GameSceneManager(renderer_);
+
+		// Make screen black
+		renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
 		return true;
 	}
@@ -53,9 +56,6 @@ public:
 	}
 	void Render() final
 	{
-		renderer_->SetViewport(width_, height_);
-		
-		renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		renderer_->ClearColorAndDepthBuffers();
 
 		scene_manager_->Render();
@@ -107,6 +107,8 @@ public:
 			const float znear = 10.0f;
 			const float zfar = 10000.0f;
 			renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), znear, zfar));
+
+			renderer_->SetViewport(width_, height_);
 		}
 	}
 	

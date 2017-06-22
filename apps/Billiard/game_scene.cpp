@@ -23,9 +23,6 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , physics_(nullptr)
 , balls_(nullptr)
 , balls_count_(1)
-, table_(nullptr)
-, rack_(nullptr)
-, cue_(nullptr)
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
 {
@@ -149,25 +146,39 @@ void GameScene::Load()
 
 	// Create physics
 	physics_ = new sht::physics::Engine();
-	physics_->SetGravity(vec3(0.0f, -500.0f, 0.0f));
+	physics_->SetGravity(vec3(0.0f, -1000.0f, 0.0f));
 
 	balls_count_ = 1;
 	balls_ = new sht::physics::Object *[balls_count_];
 
-	const float ball_size = ball_mesh_->bounding_box().extent.x;
+	const float ball_size = 18.0f;//ball_mesh_->bounding_box().extent.x;
 
 	// Setup physics objects
 	sht::physics::Object * object;
     object = physics_->AddSphere(vec3(0.0f, 2000.0f, 0.0f), 0.150f, ball_size);
-    object->SetFriction(0.5f);
-    object->SetRollingFriction(0.1f);
-    object->SetSpinningFriction(0.1f);
-    object->SetRestitution(0.8f);
+    object->SetFriction(0.84f); // like metal
+    object->SetRollingFriction(0.5f);
+    object->SetSpinningFriction(0.5f);
+    object->SetRestitution(0.7f);
     balls_[0] = object;
     sht::graphics::MeshVerticesEnumerator enumerator(table_mesh_);
     object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
-    object->SetFriction(1.0f);
-    table_ = object;
+    object->SetFriction(0.8f);
+    object->SetRestitution(0.3f);
+    // object = physics_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 2000.0f, 20.0f, 2000.0f);
+    // object->SetFriction(0.8f); // leather
+    // object = physics_->AddBox(vec3(1000.0f, 0.0f, 0.0f), 0.0f, 50.0f, 50.0f, 2000.0f);
+    // object->SetFriction(0.8f);
+    // object->SetRestitution(0.3f);
+    // object = physics_->AddBox(vec3(-1000.0f, 0.0f, 0.0f), 0.0f, 50.0f, 50.0f, 2000.0f);
+    // object->SetFriction(0.8f);
+    // object->SetRestitution(0.3f);
+    // object = physics_->AddBox(vec3(0.0f, 0.0f, 1000.0f), 0.0f, 2000.0f, 50.0f, 50.0f);
+    // object->SetFriction(0.8f);
+    // object->SetRestitution(0.3f);
+    // object = physics_->AddBox(vec3(0.0f, 0.0f, -1000.0f), 0.0f, 2000.0f, 50.0f, 50.0f);
+    // object->SetFriction(0.8f);
+    // object->SetRestitution(0.3f);
 
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
@@ -208,20 +219,20 @@ void GameScene::Unload()
 }
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
-	const float kPushPower = 5.0f;
-	sht::math::Vector3 impulse(0.0f);
+	const float kPushPower = 1000.0f;
+	sht::math::Vector3 velocity(0.0f);
 	if (key == sht::PublicKey::kA)
-	    impulse.z += kPushPower;
+	    velocity.z += kPushPower;
 	if (key == sht::PublicKey::kD)
-	    impulse.z -= kPushPower;
+	    velocity.z -= kPushPower;
 	if (key == sht::PublicKey::kS)
-	    impulse.x += kPushPower;
+	    velocity.x += kPushPower;
 	if (key == sht::PublicKey::kW)
-	    impulse.x -= kPushPower;
+	    velocity.x -= kPushPower;
 
 	// Update forces
 	balls_[0]->Activate(); // this body may be sleeping, thus we activate it
-	balls_[0]->ApplyCentralImpulse(impulse);
+	balls_[0]->SetLinearVelocity(velocity);
 
 	if (key == sht::PublicKey::kLeft)
 		camera_manager_->RotateAroundTargetInY(-0.1f);
