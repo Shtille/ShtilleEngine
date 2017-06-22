@@ -16,7 +16,10 @@ namespace sht {
 			std::string ext = fn.ExtractExt();
 			if (ext == "obj")
 				return ComplexMesh::FileFormat::kObj;
-			return ComplexMesh::FileFormat::kUnknown;
+			else if (ext == "scm")
+				return ComplexMesh::FileFormat::kScm;
+			else
+				return ComplexMesh::FileFormat::kUnknown;
 		}
 
 		ComplexMesh::ComplexMesh(Renderer * renderer, MaterialBinderInterface * material_binder)
@@ -42,6 +45,8 @@ namespace sht {
 			{
 			case FileFormat::kObj:
 				return SaveToFileObj(filename);
+			case FileFormat::kScm:
+				return SaveToFileScm(filename);
 			default:
 				assert(!"unknown model format");
 				return false;
@@ -54,6 +59,8 @@ namespace sht {
 			{
 			case FileFormat::kObj:
 				return LoadFromFileObj(filename);
+			case FileFormat::kScm:
+				return LoadFromFileScm(filename);
 			default:
 				assert(!"unknown model format");
 				return false;
@@ -92,6 +99,14 @@ namespace sht {
 					material_binder_->Bind(mesh->material_);
 				mesh->Render();
 			}
+		}
+		void ComplexMesh::ScaleVertices(const math::Vector3& scale)
+		{
+			for (auto mesh : meshes_)
+			{
+				mesh->ScaleVertices(scale);
+			}
+			bounding_box_.extent *= scale;
 		}
 		const math::BoundingBox& ComplexMesh::bounding_box() const
 		{

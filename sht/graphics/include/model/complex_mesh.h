@@ -23,7 +23,8 @@ namespace sht {
 
 			enum class FileFormat {
 				kUnknown,
-				kObj
+				kObj, // Wavefront OBJ
+				kScm // Shtille Complex Mesh
 			};
 
 			ComplexMesh(Renderer * renderer, MaterialBinderInterface * material_binder);
@@ -39,14 +40,18 @@ namespace sht {
 			
 			void Render();
 
+			void ScaleVertices(const math::Vector3& scale);
+
 			const math::BoundingBox& bounding_box() const;
 			
 		private:
 			// Save routines
 			bool SaveToFileObj(const char *filename);
+			bool SaveToFileScm(const char *filename);
 
 			// Load routines
 			bool LoadFromFileObj(const char *filename);
+			bool LoadFromFileScm(const char *filename);
 
 			Renderer * renderer_;
 			MaterialBinderInterface * material_binder_;
