@@ -36,6 +36,9 @@ namespace sht {
 			//! Make a sleeping rigid body to move under our force
 			void Activate();
 
+			void SetLinearVelocity(const math::Vector3& velocity);
+			void SetAngularVelocity(const math::Vector3& velocity);
+
 			void ApplyCentralForce(const math::Vector3& force);
 			void ApplyForce(const math::Vector3& force, const math::Vector3& relative_position);
 

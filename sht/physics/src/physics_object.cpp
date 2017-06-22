@@ -154,6 +154,14 @@ namespace sht {
 		{
 			body_->activate();
 		}
+		void Object::SetLinearVelocity(const math::Vector3& velocity)
+		{
+			body_->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+		}
+		void Object::SetAngularVelocity(const math::Vector3& velocity)
+		{
+			body_->setAngularVelocity(btVector3(velocity.x, velocity.y, velocity.z));
+		}
 		void Object::ApplyCentralForce(const math::Vector3& force)
 		{
 			body_->applyCentralForce(btVector3(force.x, force.y, force.z));
