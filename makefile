@@ -65,6 +65,7 @@ export INSTALL_PATH
 	#$(MAKE) -f apps/PhysicsTest/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/BallsGame/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/ProjectX/$(PLATFORM_SUFFIX).mk
+	#$(MAKE) -f apps/MeshConverter/$(PLATFORM_SUFFIX).mk
 all:
 	$(MAKE) -f apps/Billiard/$(PLATFORM_SUFFIX).mk
 

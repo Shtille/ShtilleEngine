@@ -5,17 +5,16 @@
 	- Physics
 		- Determine optimal physics friction koefficients.
 		+ Add custom mesh processing for entity.
+		- Add surface database class.
 	- Graphics
 		- Add textures.
 		- Add realistic lighting model.
 	- Controls
-		All game controls is pretty fine by now.
 	- Audio
 		By now we are skipping this phase.
 	- Misc
 		+ Add a new (internal) format that we gonna save models in.
-		- Add command line arguments processing.
-		- Add application that will convert models from one format to another.
+		+ Add application that will convert models from one format to another.
 		- Add loading of HDR textures.
 - Engine
 	- Graphics
