@@ -5,7 +5,9 @@
 	- Physics
 		- Determine optimal physics friction koefficients.
 		+ Add custom mesh processing for entity.
-		- Add surface database class.
+		- Use separate mesh for table cuscions.
+		- Use simplified physics objects (boxes) for cuscions.
+		+ Add surface database class.
 	- Graphics
 		- Add textures.
 		- Add realistic lighting model.
