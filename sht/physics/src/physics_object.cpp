@@ -12,9 +12,9 @@ namespace sht {
 
 		Object::Object(const math::Vector3& position)
 		: shape_(nullptr)
+		, unit_converter_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		, unit_converter_(nullptr)
 		, use_scale_(false)
 		{
 			matrix_.sa[0] = 1.0f;
@@ -36,9 +36,9 @@ namespace sht {
 		}
 		Object::Object(const math::Vector3& position, const math::Matrix3& rotation)
 		: shape_(nullptr)
+		, unit_converter_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		, unit_converter_(nullptr)
 		, use_scale_(false)
 		{
 			matrix_.sa[0] = rotation.e11;

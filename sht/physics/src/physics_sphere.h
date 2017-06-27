@@ -10,7 +10,8 @@ namespace sht {
 		class Sphere : public Object
 		{
 		public:
-			explicit Sphere(const math::Vector3& position, float mass, float radius);
+			explicit Sphere(const math::Vector3& position, float mass, float radius,
+				const UnitConverter * unit_converter);
 			virtual ~Sphere();
 
 			float mass() const;
