@@ -57,7 +57,6 @@ namespace sht {
 
 		protected:
 			btCollisionShape * shape_; //!< objects owns collision shape, so it will be destroyed on destruction
-			const UnitConverter * unit_converter_;
 			
 		private:
 			//~~~ Inherited from btMotionState
@@ -69,6 +68,7 @@ namespace sht {
 			math::Matrix4 matrix_;
 			math::Vector3 scale_;
 			btRigidBody * body_;
+			const UnitConverter * unit_converter_;
 			bool use_scale_; //!< scale is necessary when model has been scaled from unit size
 		};
 

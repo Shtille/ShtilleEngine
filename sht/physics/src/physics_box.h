@@ -10,8 +10,7 @@ namespace sht {
 		class Box : public Object
 		{
 		public:
-			explicit Box(const math::Vector3& position, float mass, float size_x, float size_y, float size_z,
-				const UnitConverter * unit_converter);
+			explicit Box(const math::Vector3& position, float mass, float size_x, float size_y, float size_z);
 			virtual ~Box();
 
 			float mass() const;

@@ -34,21 +34,21 @@ namespace sht {
 		Object * Engine::AddSphere(const math::Vector3& position,
 				float mass, float radius)
 		{
-			Sphere * object = new Sphere(position, mass, radius, unit_converter_);
+			Sphere * object = new Sphere(position, mass, radius);
 			AddCustomObject(object, mass);
 			return object;
 		}
 		Object * Engine::AddBox(const math::Vector3& position,
 				float mass, float size_x, float size_y, float size_z)
 		{
-			Box * object = new Box(position, mass, size_x, size_y, size_z, unit_converter_);
+			Box * object = new Box(position, mass, size_x, size_y, size_z);
 			AddCustomObject(object, mass);
 			return object;
 		}
 		Object * Engine::AddMesh(const math::Vector3& position,
 				float mass, graphics::MeshVerticesEnumerator * enumerator)
 		{
-			Mesh * object = new Mesh(position, mass, enumerator, unit_converter_);
+			Mesh * object = new Mesh(position, mass, enumerator);
 			AddCustomObject(object, mass);
 			return object;
 		}
