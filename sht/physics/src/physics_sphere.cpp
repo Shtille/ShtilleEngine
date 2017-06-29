@@ -1,5 +1,7 @@
 #include "physics_sphere.h"
 
+#include "../include/physics_unit_converter.h"
+
 #include <btBulletCollisionCommon.h>
 
 namespace sht {
@@ -10,10 +12,19 @@ namespace sht {
 		, mass_(mass)
 		, radius_(radius)
 		{
-			shape_ = new btSphereShape(radius_);
+			
 		}
 		Sphere::~Sphere()
 		{
+		}
+		void Sphere::CreateShape(const UnitConversion * unit_conversion)
+		{
+			unit_conversion_ = unit_conversion;
+			if (unit_conversion_ && unit_conversion_->linear_to)
+			{
+				unit_conversion_->linear_to(&radius_);
+			}
+			shape_ = new btSphereShape(radius_);
 		}
 		float Sphere::mass() const
 		{

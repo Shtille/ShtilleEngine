@@ -8,12 +8,13 @@
 namespace sht {
 	namespace physics {
 
-		class UnitConverter {
-		public:
-			// Like game to library units conversion
-			virtual void LinearScaleToStandard(float * scale) const = 0;
-			// Like library to game units conversion
-			virtual void LinearScaleFromStandard(float * scale) const = 0;
+		typedef void (* ConversionFunction)(float *);
+
+		struct UnitConversion {
+			ConversionFunction linear_to;
+			ConversionFunction linear_from;
+			ConversionFunction mass_to;
+			ConversionFunction mass_from;
 		};
 
 	} // namespace physics

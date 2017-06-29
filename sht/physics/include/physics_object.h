@@ -13,7 +13,7 @@ class btRigidBody;
 namespace sht {
 	namespace physics {
 
-		class UnitConverter;
+		struct UnitConversion;
 
 		//! This class affects our internal representation
 		class Object : private btMotionState
@@ -68,8 +68,10 @@ namespace sht {
 			math::Matrix4 matrix_;
 			math::Vector3 scale_;
 			btRigidBody * body_;
-			const UnitConverter * unit_converter_;
 			bool use_scale_; //!< scale is necessary when model has been scaled from unit size
+
+		protected:
+			const UnitConversion * unit_conversion_;
 		};
 
 	} // namespace physics

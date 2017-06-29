@@ -14,8 +14,8 @@ namespace sht {
 		: shape_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		, unit_converter_(nullptr)
 		, use_scale_(false)
+		, unit_conversion_(nullptr)
 		{
 			matrix_.sa[0] = 1.0f;
 			matrix_.sa[1] = 0.0f;
@@ -38,8 +38,8 @@ namespace sht {
 		: shape_(nullptr)
 		, scale_(1.0f)
 		, body_(nullptr)
-		, unit_converter_(nullptr)
 		, use_scale_(false)
+		, unit_conversion_(nullptr)
 		{
 			matrix_.sa[0] = rotation.e11;
 			matrix_.sa[1] = rotation.e12;
@@ -67,11 +67,11 @@ namespace sht {
 		{
 			// Needed for object initialization
 			math::Matrix4 initial_matrix(matrix_);
-			if (unit_converter_)
+			if (unit_conversion_ && unit_conversion_->linear_to)
 			{
-				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 12);
-				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 13);
-				unit_converter_->LinearScaleToStandard(initial_matrix.sa + 14);
+				unit_conversion_->linear_to(initial_matrix.sa + 12);
+				unit_conversion_->linear_to(initial_matrix.sa + 13);
+				unit_conversion_->linear_to(initial_matrix.sa + 14);
 			}
 			world_transform.setFromOpenGLMatrix(initial_matrix.sa);
 		}
@@ -79,11 +79,11 @@ namespace sht {
 		{
 			// Called when object state has changed
 			world_transform.getOpenGLMatrix(matrix_.sa);
-			if (unit_converter_)
+			if (unit_conversion_ && unit_conversion_->linear_from)
 			{
-				unit_converter_->LinearScaleFromStandard(matrix_.sa + 12);
-				unit_converter_->LinearScaleFromStandard(matrix_.sa + 13);
-				unit_converter_->LinearScaleFromStandard(matrix_.sa + 14);
+				unit_conversion_->linear_from(matrix_.sa + 12);
+				unit_conversion_->linear_from(matrix_.sa + 13);
+				unit_conversion_->linear_from(matrix_.sa + 14);
 			}
 			ApplyScale();
 		}
@@ -109,22 +109,22 @@ namespace sht {
 			direction.x -= matrix_.sa[12];
 			direction.y -= matrix_.sa[13];
 			direction.z -= matrix_.sa[14];
-			if (unit_converter_)
+			if (unit_conversion_ && unit_conversion_->linear_to)
 			{
-				unit_converter_->LinearScaleToStandard(&direction.x);
-				unit_converter_->LinearScaleToStandard(&direction.y);
-				unit_converter_->LinearScaleToStandard(&direction.z);
+				unit_conversion_->linear_to(&direction.x);
+				unit_conversion_->linear_to(&direction.y);
+				unit_conversion_->linear_to(&direction.z);
 			}
 			body_->translate(btVector3(direction.x, direction.y, direction.z));
 		}
 		void Object::Translate(const math::Vector3& direction)
 		{
 			math::Vector3 translation = direction;
-			if (unit_converter_)
+			if (unit_conversion_ && unit_conversion_->linear_to)
 			{
-				unit_converter_->LinearScaleToStandard(&translation.x);
-				unit_converter_->LinearScaleToStandard(&translation.y);
-				unit_converter_->LinearScaleToStandard(&translation.z);
+				unit_conversion_->linear_to(&translation.x);
+				unit_conversion_->linear_to(&translation.y);
+				unit_conversion_->linear_to(&translation.z);
 			}
 			body_->translate(btVector3(translation.x, translation.y, translation.z));
 		}

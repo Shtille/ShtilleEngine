@@ -6,12 +6,15 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include <cstring>
+
 namespace sht {
 	namespace physics {
 
-		Engine::Engine(const UnitConverter * unit_converter)
-		: unit_converter_(unit_converter)
+		Engine::Engine()
 		{
+			memset(&unit_conversion_, 0, sizeof(unit_conversion_));
+
 			collision_configuration_ = new btDefaultCollisionConfiguration();
 			dispatcher_ = new btCollisionDispatcher(collision_configuration_);
 			broadphase_ = new btDbvtBroadphase();
@@ -31,10 +34,27 @@ namespace sht {
 		{
 			dynamics_world_->setGravity(btVector3(acceleration.x, acceleration.y, acceleration.z));
 		}
+		void Engine::SetLinearToFunction(ConversionFunction function)
+		{
+			unit_conversion_.linear_to = function;
+		}
+		void Engine::SetLinearFromFunction(ConversionFunction function)
+		{
+			unit_conversion_.linear_from = function;
+		}
+		void Engine::SetMassToFunction(ConversionFunction function)
+		{
+			unit_conversion_.mass_to = function;
+		}
+		void Engine::SetMassFromFunction(ConversionFunction function)
+		{
+			unit_conversion_.mass_from = function;
+		}
 		Object * Engine::AddSphere(const math::Vector3& position,
 				float mass, float radius)
 		{
 			Sphere * object = new Sphere(position, mass, radius);
+			object->CreateShape(&unit_conversion_);
 			AddCustomObject(object, mass);
 			return object;
 		}
@@ -42,13 +62,15 @@ namespace sht {
 				float mass, float size_x, float size_y, float size_z)
 		{
 			Box * object = new Box(position, mass, size_x, size_y, size_z);
+			object->CreateShape(&unit_conversion_);
 			AddCustomObject(object, mass);
 			return object;
 		}
 		Object * Engine::AddMesh(const math::Vector3& position,
 				float mass, graphics::MeshVerticesEnumerator * enumerator)
 		{
-			Mesh * object = new Mesh(position, mass, enumerator);
+			Mesh * object = new Mesh(position, mass);
+			object->CreateShape(&unit_conversion_, enumerator);
 			AddCustomObject(object, mass);
 			return object;
 		}
@@ -61,6 +83,8 @@ namespace sht {
 		}
 		void Engine::AddCustomObject(Object * object, float mass)
 		{
+			if (unit_conversion_.mass_to)
+				unit_conversion_.mass_to(&mass);
 			btCollisionShape * shape = object->shape_;
 			btVector3 local_inertia(0.0f, 0.0f, 0.0f);
 			if (mass != 0.0f)

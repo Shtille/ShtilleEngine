@@ -13,6 +13,8 @@ namespace sht {
 			explicit Box(const math::Vector3& position, float mass, float size_x, float size_y, float size_z);
 			virtual ~Box();
 
+			void CreateShape(const UnitConversion * unit_conversion);
+
 			float mass() const;
 
 		protected:

@@ -13,6 +13,8 @@ namespace sht {
 			explicit Sphere(const math::Vector3& position, float mass, float radius);
 			virtual ~Sphere();
 
+			void CreateShape(const UnitConversion * unit_conversion);
+
 			float mass() const;
 			float radius() const;
 

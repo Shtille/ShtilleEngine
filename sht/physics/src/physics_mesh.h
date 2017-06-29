@@ -14,9 +14,10 @@ namespace sht {
 		class Mesh : public Object
 		{
 		public:
-			explicit Mesh(const math::Vector3& position, float mass, const math::Vector3* vertices, unsigned int num_vertices);
-			explicit Mesh(const math::Vector3& position, float mass, graphics::MeshVerticesEnumerator * enumerator);
+			explicit Mesh(const math::Vector3& position, float mass);
 			virtual ~Mesh();
+
+			void CreateShape(const UnitConversion * unit_conversion, graphics::MeshVerticesEnumerator * enumerator);
 
 			float mass() const;
 

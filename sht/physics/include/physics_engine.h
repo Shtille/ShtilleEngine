@@ -26,12 +26,17 @@ namespace sht {
 		class Engine
 		{
 		public:
-			Engine(const UnitConverter * unit_converter = nullptr);
+			Engine();
 			~Engine();
 
 			void Update(float sec);
 
 			void SetGravity(const math::Vector3& acceleration);
+
+			void SetLinearToFunction(ConversionFunction function);
+			void SetLinearFromFunction(ConversionFunction function);
+			void SetMassToFunction(ConversionFunction function);
+			void SetMassFromFunction(ConversionFunction function);
 
 			// We can ignore return value if we don't render this object
 			Object * AddSphere(const math::Vector3& position,
@@ -46,7 +51,7 @@ namespace sht {
 			void AddCustomObject(Object * object, float mass);
 			
 		private:
-			UnitConverter const * const unit_converter_;
+			UnitConversion unit_conversion_;
 			btDefaultCollisionConfiguration * collision_configuration_;
 			btCollisionDispatcher * dispatcher_;
 			btBroadphaseInterface * broadphase_;
