@@ -32,6 +32,14 @@ namespace sht {
 			void SetRollingFriction(float friction);
 			void SetSpinningFriction(float friction);
 			void SetRestitution(float restitution);
+			void SetDamping(float linear, float angular);
+			void SetContactProcessingThreshold(float threshold);
+			void SetContactStiffnessAndDamping(float stiffness, float damping);
+
+			//
+			float GetContactProcessingThreshold();
+			float GetContactStiffness();
+			float GetContactDamping();
 
 			//! Make a sleeping rigid body to move under our force
 			void Activate();

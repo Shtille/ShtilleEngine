@@ -26,7 +26,7 @@ namespace sht {
 		class Engine
 		{
 		public:
-			Engine();
+			Engine(int max_sub_steps = 1, float fixed_time_step = 0.01f);
 			~Engine();
 
 			void Update(float sec);
@@ -52,6 +52,8 @@ namespace sht {
 			
 		private:
 			UnitConversion unit_conversion_;
+			int max_sub_steps_;
+			float fixed_time_step_;
 			btDefaultCollisionConfiguration * collision_configuration_;
 			btCollisionDispatcher * dispatcher_;
 			btBroadphaseInterface * broadphase_;

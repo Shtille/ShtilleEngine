@@ -150,6 +150,30 @@ namespace sht {
 		{
 			body_->setRestitution(restitution);
 		}
+		void Object::SetDamping(float linear, float angular)
+		{
+			body_->setDamping(linear, angular);
+		}
+		void Object::SetContactProcessingThreshold(float threshold)
+		{
+			body_->setContactProcessingThreshold(threshold);
+		}
+		void Object::SetContactStiffnessAndDamping(float stiffness, float damping)
+		{
+			body_->setContactStiffnessAndDamping(stiffness, damping);
+		}
+		float Object::GetContactProcessingThreshold()
+		{
+			return body_->getContactProcessingThreshold();
+		}
+		float Object::GetContactStiffness()
+		{
+			return body_->getContactStiffness();
+		}
+		float Object::GetContactDamping()
+		{
+			return body_->getContactDamping();
+		}
 		void Object::Activate()
 		{
 			body_->activate();

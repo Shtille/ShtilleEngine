@@ -11,7 +11,9 @@
 namespace sht {
 	namespace physics {
 
-		Engine::Engine()
+		Engine::Engine(int max_sub_steps, float fixed_time_step)
+		: max_sub_steps_(max_sub_steps)
+		, fixed_time_step_(fixed_time_step)
 		{
 			memset(&unit_conversion_, 0, sizeof(unit_conversion_));
 
@@ -99,9 +101,7 @@ namespace sht {
 		}
 		void Engine::Update(float sec)
 		{
-			const int kMaxSubSteps = 10;
-			const float kFixedTimeStep = 0.01f;
-			dynamics_world_->stepSimulation(sec, kMaxSubSteps, kFixedTimeStep);
+			dynamics_world_->stepSimulation(sec, max_sub_steps_, fixed_time_step_);
 		}
 
 	} // namespace physics
