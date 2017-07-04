@@ -27,13 +27,16 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , light_distance_(10000.0f)
 {
 	// Register resources to load automatically on scene change
-	text_shader_id_   = AddResourceIdByName(ConstexprStringId("shader_text"));
-	object_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_object"));
-	font_id_          = AddResourceIdByName(ConstexprStringId("font_good_dog"));
-	ball_mesh_id_     = AddResourceIdByName(ConstexprStringId("mesh_ball"));
-	cue_mesh_id_      = AddResourceIdByName(ConstexprStringId("mesh_cue"));
-	rack_mesh_id_     = AddResourceIdByName(ConstexprStringId("mesh_rack"));
-	table_mesh_id_    = AddResourceIdByName(ConstexprStringId("mesh_table"));
+	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
+	object_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_object"));
+	font_id_          					= AddResourceIdByName(ConstexprStringId("font_good_dog"));
+	ball_mesh_id_     					= AddResourceIdByName(ConstexprStringId("mesh_ball"));
+	cue_mesh_id_      					= AddResourceIdByName(ConstexprStringId("mesh_cue"));
+	rack_mesh_id_     					= AddResourceIdByName(ConstexprStringId("mesh_rack"));
+	table_mesh_id_    					= AddResourceIdByName(ConstexprStringId("mesh_table"));
+	table_bed_mesh_id_					= AddResourceIdByName(ConstexprStringId("mesh_table_bed"));
+	table_cushions_graphics_mesh_id_	= AddResourceIdByName(ConstexprStringId("mesh_table_cushions_graphics"));
+	table_cushions_physics_mesh_id_		= AddResourceIdByName(ConstexprStringId("mesh_table_cushions_physics"));
 }
 GameScene::~GameScene()
 {
@@ -62,6 +65,8 @@ void GameScene::RenderTable()
 {
 	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 	table_mesh_->Render();
+	table_bed_mesh_->Render();
+	table_cushions_graphics_mesh_->Render();
 }
 void GameScene::RenderBalls()
 {
@@ -134,6 +139,9 @@ void GameScene::Load()
 	cue_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(cue_mesh_id_));
 	rack_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(rack_mesh_id_));
 	table_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_mesh_id_));
+	table_bed_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_bed_mesh_id_));
+	table_cushions_graphics_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_cushions_graphics_mesh_id_));
+	table_cushions_physics_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(table_cushions_physics_mesh_id_));
 
 	// Bind shader to material binder
 	material_binder_->SetShader(object_shader_);
@@ -145,40 +153,48 @@ void GameScene::Load()
 	camera_manager_->MakeFree(vec3(2000.0f), vec3(0.0f));
 
 	// Create physics
-	physics_ = new sht::physics::Engine();
-	physics_->SetGravity(vec3(0.0f, -1000.0f, 0.0f));
+	physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
+	physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
 
-	balls_count_ = 1;
+	constexpr unsigned int kBallCount = 1;
+	balls_count_ = kBallCount;
 	balls_ = new sht::physics::Object *[balls_count_];
-
-	const float ball_size = 18.0f;//ball_mesh_->bounding_box().extent.x;
 
 	// Setup physics objects
 	sht::physics::Object * object;
-    object = physics_->AddSphere(vec3(0.0f, 2000.0f, 0.0f), 0.150f, ball_size);
-    object->SetFriction(0.84f); // like metal
-    object->SetRollingFriction(0.5f);
-    object->SetSpinningFriction(0.5f);
-    object->SetRestitution(0.7f);
-    balls_[0] = object;
-    sht::graphics::MeshVerticesEnumerator enumerator(table_mesh_);
-    object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
-    object->SetFriction(0.8f);
-    object->SetRestitution(0.3f);
-    // object = physics_->AddBox(vec3(0.0f, -10.0f, 0.0f), 0.0f, 2000.0f, 20.0f, 2000.0f);
-    // object->SetFriction(0.8f); // leather
-    // object = physics_->AddBox(vec3(1000.0f, 0.0f, 0.0f), 0.0f, 50.0f, 50.0f, 2000.0f);
-    // object->SetFriction(0.8f);
-    // object->SetRestitution(0.3f);
-    // object = physics_->AddBox(vec3(-1000.0f, 0.0f, 0.0f), 0.0f, 50.0f, 50.0f, 2000.0f);
-    // object->SetFriction(0.8f);
-    // object->SetRestitution(0.3f);
-    // object = physics_->AddBox(vec3(0.0f, 0.0f, 1000.0f), 0.0f, 2000.0f, 50.0f, 50.0f);
-    // object->SetFriction(0.8f);
-    // object->SetRestitution(0.3f);
-    // object = physics_->AddBox(vec3(0.0f, 0.0f, -1000.0f), 0.0f, 2000.0f, 50.0f, 50.0f);
-    // object->SetFriction(0.8f);
-    // object->SetRestitution(0.3f);
+	{
+		const vec3 ball_positions[2] = {
+			vec3(0.0f, 50.0f, 0.0f),
+			vec3(300.0f, 50.0f, 0.0f)
+		};
+		static_assert(kBallCount <= sizeof(ball_positions)/sizeof(ball_positions[0]), "balls count mismatch");
+		const float ball_size = ball_mesh_->bounding_box().extent.x;
+		for (unsigned int i = 0; i < balls_count_; ++i)
+		{
+			object = physics_->AddSphere(ball_positions[i], 0.150f, ball_size);
+			object->SetFriction(0.28f);
+			object->SetRollingFriction(0.05f);
+			object->SetSpinningFriction(0.5f);
+			object->SetRestitution(0.98f);
+			balls_[i] = object;
+		}
+	}
+	{
+		sht::graphics::MeshVerticesEnumerator enumerator(table_mesh_);
+		object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
+		object->SetRestitution(0.5f);
+	}
+	{
+		sht::graphics::MeshVerticesEnumerator enumerator(table_bed_mesh_);
+		object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
+		object->SetFriction(0.71f);
+	}
+	{
+		sht::graphics::MeshVerticesEnumerator enumerator(table_cushions_physics_mesh_);
+		object = physics_->AddMesh(vec3(0.0f, 0.0f, 0.0f), 0.0f, &enumerator);
+		object->SetFriction(0.2f);
+		object->SetRestitution(0.8f);
+	}
 
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
@@ -193,6 +209,12 @@ void GameScene::Load()
 	table_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	table_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 	table_mesh_->MakeRenderable();
+	table_bed_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+	table_bed_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+	table_bed_mesh_->MakeRenderable();
+	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+	table_cushions_graphics_mesh_->MakeRenderable();
 }
 void GameScene::Unload()
 {
@@ -219,16 +241,16 @@ void GameScene::Unload()
 }
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
-	const float kPushPower = 1000.0f;
+	const float kPushPower = 2500.0f;
 	sht::math::Vector3 velocity(0.0f);
 	if (key == sht::PublicKey::kA)
-	    velocity.z += kPushPower;
+		velocity.z += kPushPower;
 	if (key == sht::PublicKey::kD)
-	    velocity.z -= kPushPower;
+		velocity.z -= kPushPower;
 	if (key == sht::PublicKey::kS)
-	    velocity.x += kPushPower;
+		velocity.x += kPushPower;
 	if (key == sht::PublicKey::kW)
-	    velocity.x -= kPushPower;
+		velocity.x -= kPushPower;
 
 	// Update forces
 	balls_[0]->Activate(); // this body may be sleeping, thus we activate it

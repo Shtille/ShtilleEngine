@@ -42,6 +42,9 @@ private:
 	sht::utility::ResourceID cue_mesh_id_;
 	sht::utility::ResourceID rack_mesh_id_;
 	sht::utility::ResourceID table_mesh_id_;
+	sht::utility::ResourceID table_bed_mesh_id_;
+	sht::utility::ResourceID table_cushions_graphics_mesh_id_;
+	sht::utility::ResourceID table_cushions_physics_mesh_id_;
 
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * object_shader_;
@@ -50,6 +53,9 @@ private:
 	sht::graphics::ComplexMesh * cue_mesh_;
 	sht::graphics::ComplexMesh * rack_mesh_;
 	sht::graphics::ComplexMesh * table_mesh_;
+	sht::graphics::ComplexMesh * table_bed_mesh_;
+	sht::graphics::ComplexMesh * table_cushions_graphics_mesh_;
+	sht::graphics::ComplexMesh * table_cushions_physics_mesh_;
 
 	sht::graphics::DynamicText * fps_text_;
 	sht::utility::CameraManager * camera_manager_;
