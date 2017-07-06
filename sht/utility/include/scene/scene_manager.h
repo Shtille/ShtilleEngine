@@ -25,6 +25,7 @@ namespace sht {
 			virtual ~SceneManager();
 
 			void Update();
+			void UpdatePhysics(float sec);
 			void Render();
 
 			// Desktop-based user input message processing

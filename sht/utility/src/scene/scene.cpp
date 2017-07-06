@@ -21,6 +21,10 @@ namespace sht {
 		{
 			return next_;
 		}
+		void Scene::UpdatePhysics(float sec)
+		{
+
+		}
 		void Scene::Load()
 		{
 

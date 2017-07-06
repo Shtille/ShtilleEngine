@@ -26,7 +26,9 @@ namespace sht {
 		class Engine
 		{
 		public:
-			Engine(int max_sub_steps = 1, float fixed_time_step = 0.01f);
+			// One should choose these parameters to satisfy following equation:
+			// timeStep < maxSubSteps * fixedTimeStep
+			Engine(int max_sub_steps = 10, float fixed_time_step = 0.01f);
 			~Engine();
 
 			void Update(float sec);

@@ -51,15 +51,17 @@ void GameScene::Update()
 	light_angle_ += 0.2f * frame_time;
 	light_position_.Set(light_distance_*cosf(light_angle_), light_distance_, light_distance_*sinf(light_angle_));
 
-	// Update physics engine
-	physics_->Update(frame_time);
-
 	// Camera should be updated after physics
 	camera_manager_->Update(frame_time);
 
 	// Update view matrix
 	renderer_->SetViewMatrix(camera_manager_->view_matrix());
 	projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+}
+void GameScene::UpdatePhysics(float sec)
+{
+	// Update physics engine
+	physics_->Update(sec);
 }
 void GameScene::RenderTable()
 {
@@ -241,20 +243,36 @@ void GameScene::Unload()
 }
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
+	bool velocity_been_set = false;
 	const float kPushPower = 2500.0f;
 	sht::math::Vector3 velocity(0.0f);
 	if (key == sht::PublicKey::kA)
+	{
+		velocity_been_set = true;
 		velocity.z += kPushPower;
+	}
 	if (key == sht::PublicKey::kD)
+	{
+		velocity_been_set = true;
 		velocity.z -= kPushPower;
+	}
 	if (key == sht::PublicKey::kS)
+	{
+		velocity_been_set = true;
 		velocity.x += kPushPower;
+	}
 	if (key == sht::PublicKey::kW)
+	{
+		velocity_been_set = true;
 		velocity.x -= kPushPower;
+	}
 
 	// Update forces
-	balls_[0]->Activate(); // this body may be sleeping, thus we activate it
-	balls_[0]->SetLinearVelocity(velocity);
+	if (velocity_been_set)
+	{
+		balls_[0]->Activate(); // this body may be sleeping, thus we activate it
+		balls_[0]->SetLinearVelocity(velocity);
+	}
 
 	if (key == sht::PublicKey::kLeft)
 		camera_manager_->RotateAroundTargetInY(-0.1f);

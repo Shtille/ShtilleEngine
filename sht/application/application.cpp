@@ -168,7 +168,7 @@ namespace sht {
 #if defined(_DEBUG) || defined(DEBUG)
 		// Clamp update value when debugging step by step
 		if (frame_time_ > 1.0f)
-			frame_time_ = 0.0166f;
+			frame_time_ = 1.0f / GetDesiredFrameRate();
 #endif
 
 		// Compute current frame rate
@@ -237,6 +237,9 @@ namespace sht {
 	void Application::Update()
 	{
 	}
+	void Application::UpdatePhysics(float sec)
+	{
+	}
 	void Application::Render()
 	{
 	}
@@ -259,6 +262,10 @@ namespace sht {
 	const bool Application::IsDecorated()
 	{
 		return true;
+	}
+	const float Application::GetDesiredFrameRate()
+	{
+		return 60.0f;
 	}
     void Application::OnChar(unsigned short code)
     {

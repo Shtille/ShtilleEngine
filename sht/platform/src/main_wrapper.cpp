@@ -1,7 +1,7 @@
 #include "../include/main_wrapper.h"
 #include "platform_inner.h"
 #include "../../application/application.h"
-#include "../../system/include/time/update_timer.h"
+#include "../../system/include/time/clock.h"
 
 int MainWrapper(int, const char**)
 {
@@ -24,22 +24,37 @@ int MainWrapper(int, const char**)
 			app->Show();
 			app->set_visible(true);
 
-			// Start time
-            sht::system::UpdateTimer update_timer;
-			update_timer.Start();
+			sht::system::Clock clock;
+			float time_gameclock = clock.GetTime();
+			float time_physics_prev, time_physics_curr;
+			time_physics_prev = time_physics_curr = time_gameclock;
+			const float kTickTime = 1.0f / app->GetDesiredFrameRate();
 
 			while (!PlatformNeedQuit())
 			{
-				// Calculate dt
-				app->SetFrameTime(update_timer.GetElapsedTime());
-
-				app->Update();
-
+				// Render a frame
 				app->BeginFrame();
 				app->Render();
 				app->EndFrame();
 
-				PlatformPollEvents();
+				// Update physics
+				time_physics_curr = clock.GetTime();
+				app->UpdatePhysics(time_physics_curr - time_physics_prev);
+				time_physics_prev = time_physics_curr;
+
+				// Game clock part of the loop. Ticks for every tick_time at average.
+				float dt = clock.GetTime() - time_gameclock;
+
+				while (dt >= kTickTime)
+				{
+					dt -= kTickTime;
+					time_gameclock += kTickTime;
+
+					PlatformPollEvents();
+
+					app->SetFrameTime(kTickTime);
+					app->Update();
+				}
 			}
 		}
 		app->Unload(); // delete allocated objects (may be allocated partially)

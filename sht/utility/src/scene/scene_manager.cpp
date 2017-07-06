@@ -29,6 +29,13 @@ namespace sht {
 			else if (current_scene_)
 				current_scene_->Update();
 		}
+		void SceneManager::UpdatePhysics(float sec)
+		{
+			if (loading_scene_)
+				loading_scene_->UpdatePhysics(sec);
+			else if (current_scene_)
+				current_scene_->UpdatePhysics(sec);
+		}
 		void SceneManager::Render()
 		{
 			if (loading_scene_)

@@ -18,6 +18,7 @@ public:
 	virtual ~GameScene();
 
 	void Update() override;
+	void UpdatePhysics(float sec) override;
 	void Render() override;
 
 	void Load() override;

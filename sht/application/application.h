@@ -80,6 +80,7 @@ namespace sht {
 		virtual void Unload();
 
 		virtual void Update();
+		virtual void UpdatePhysics(float sec);
 		virtual void Render();
 
 		// Application parameters
@@ -88,6 +89,7 @@ namespace sht {
 		virtual const bool IsBenchmark(); //!< allows to get maximum available FPS (Windows only)
 		virtual const bool IsResizable(); //!< window style is resizable
 		virtual const bool IsDecorated(); //!< window style is decorated
+		virtual const float GetDesiredFrameRate(); //!< average frame rate for application that we desire
 
 		// --- Messages ---
         virtual void OnChar(unsigned short code);

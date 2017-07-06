@@ -22,6 +22,7 @@ namespace sht {
 			Scene * next();
 
 			virtual void Update() = 0;
+			virtual void UpdatePhysics(float sec);
 			virtual void Render() = 0;
 
 			virtual void Load();

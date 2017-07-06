@@ -54,6 +54,11 @@ public:
 		// Update matrices
 		UpdateProjectionMatrix();
 	}
+	void UpdatePhysics(float sec)
+	{
+		// Update scene physics
+		scene_manager_->UpdatePhysics(sec);
+	}
 	void Render() final
 	{
 		renderer_->ClearColorAndDepthBuffers();
