@@ -44,6 +44,10 @@ namespace sht {
 
 		}
 
+		void TimeManager::SetFixedFrameTime(float fixed_frame_time)
+		{
+			fixed_frame_time_ = fixed_frame_time;
+		}
 		void TimeManager::Update()
 		{
 			float current_time = clock_.GetTime();
@@ -112,6 +116,10 @@ namespace sht {
 		{
 			return frame_time_;
 		}
+		float TimeManager::GetFixedFrameTime() const
+		{
+			return fixed_frame_time_;
+		}
 		float TimeManager::GetFrameRate() const
 		{
 			return frame_rate_;
@@ -119,6 +127,7 @@ namespace sht {
 		TimeManager::TimeManager()
 		: clock_()
 		, timer_head_(nullptr)
+		, fixed_frame_time_(1.0f/60.0f)
 		, last_time_(0.0f)
 		, frame_time_(0.0f)
 		, frame_rate_(0.0f)

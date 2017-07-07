@@ -50,8 +50,6 @@ namespace sht {
         void SetClipboardText(const char *text);
         std::string GetClipboardText();
 
-		void SetFrameTime(float ftime);
-
 		// API specific functions
 		virtual bool ShowStartupOptions() = 0;
 		virtual bool InitApi() = 0;
@@ -117,11 +115,8 @@ namespace sht {
 		unsigned char depth_bits_;		//!< number of bits for depth buffer
         unsigned char stencil_bits_;    //!< number of bits for stencil buffer
 		bool need_take_screenshot_;		//!< do we need to take a screenshot?
-		float time_;					//!< total time elapsed from application start
-		float frame_time_;				//!< time elapsed since last update
-		float frame_rate_;				//!< frames per second (FPS)
-		float fps_counter_time_;		//!< for counting FPS
-		float fps_counter_count_;		//!< for counting FPS
+		float frame_time_;				//!< time elapsed since last update (fixed time step)
+		float frame_rate_;				//!< frames per second (obsolete, shows desired value)
 		int framebuffer_size_;			//!< optimal size for framebuffer
 		float inv_framebuffer_size_;	//!< inverted framebuffer size for shaders
 

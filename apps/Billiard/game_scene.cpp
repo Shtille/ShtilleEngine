@@ -45,7 +45,7 @@ GameScene::~GameScene()
 void GameScene::Update()
 {
 	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
-	float frame_time = time_manager->GetFrameTime();
+	float frame_time = time_manager->GetFixedFrameTime();
 
 	// Update light parameters
 	light_angle_ += 0.2f * frame_time;

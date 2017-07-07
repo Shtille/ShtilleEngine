@@ -27,6 +27,9 @@ public:
 		sht::system::TimeManager::CreateInstance();
 		sht::utility::ResourceManager::CreateInstance();
 
+		// Our engine uses fixed time steps, so make it shared for any consumer
+		sht::system::TimeManager::GetInstance()->SetFixedFrameTime(frame_time_);
+
 		// Create scene manager
 		scene_manager_ = new GameSceneManager(renderer_);
 

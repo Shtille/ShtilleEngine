@@ -23,11 +23,8 @@ namespace sht {
 	, depth_bits_(24)
 	, stencil_bits_(0)
 	, need_take_screenshot_(false)
-	, time_(0.0f)
 	, frame_time_(0.0f)
 	, frame_rate_(0.0f)
-	, fps_counter_time_(0.0f)
-	, fps_counter_count_(0.0f)
 	, framebuffer_size_(0)
 	, inv_framebuffer_size_(0.0f)
 	{
@@ -44,6 +41,10 @@ namespace sht {
     int Application::Run(int argc, const char** argv)
 	{
 		app_ = this;
+
+		// Set fixed frame time via desired frame rate
+		frame_time_ = 1.0f / GetDesiredFrameRate();
+		frame_rate_ = GetDesiredFrameRate();
 		
 		// Set proper text encoding to let use non-english characters
 		setlocale(LC_CTYPE, "UTF-8");
@@ -157,32 +158,6 @@ namespace sht {
 		aspect_ratio_ = (float)width_ / (float)height_;
 		fullscreen_ = fullscr;
 		ComputeFramebufferSize();
-	}
-	void Application::SetFrameTime(float ftime)
-	{
-		// Increase time
-		time_ += ftime;
-		// Set value
-		frame_time_ = ftime;
-
-#if defined(_DEBUG) || defined(DEBUG)
-		// Clamp update value when debugging step by step
-		if (frame_time_ > 1.0f)
-			frame_time_ = 1.0f / GetDesiredFrameRate();
-#endif
-
-		// Compute current frame rate
-		if (fps_counter_time_ < 1.0f)
-		{
-			fps_counter_count_ += 1.0f;
-			fps_counter_time_ += frame_time_;
-		}
-		else
-		{
-			frame_rate_ = fps_counter_count_ / fps_counter_time_;
-			fps_counter_count_ = 0.0f;
-			fps_counter_time_ = 0.0f;
-		}
 	}
 	void Application::GetCursorPos(float& x, float& y)
 	{

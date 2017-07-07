@@ -52,7 +52,6 @@ int MainWrapper(int, const char**)
 
 					PlatformPollEvents();
 
-					app->SetFrameTime(kTickTime);
 					app->Update();
 				}
 			}

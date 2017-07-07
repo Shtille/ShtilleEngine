@@ -36,13 +36,16 @@ namespace sht {
 			friend class ManagedSingleton<TimeManager>;
 		public:
 
+			void SetFixedFrameTime(float fixed_frame_time);
+
 			void Update();
 
 			Timer * AddTimer(float interval);
 			void RemoveTimer(Timer * removed_timer);
 
 			float GetTime() const;
-			float GetFrameTime() const; //!< frame time
+			float GetFrameTime() const; //!< real frame time
+			float GetFixedFrameTime() const; //!< fixed frame time for updates
 			float GetFrameRate() const; //!< also known as FPS
 
 		private:
@@ -51,6 +54,7 @@ namespace sht {
 
 			Clock clock_;
 			Timer * timer_head_;
+			float fixed_frame_time_;		//!< our engine uses fixed time steps, so this just shares the value
 			float last_time_;
 			float frame_time_;				//!< time between two updates
 			float frame_rate_;				//!< frames per second (FPS)
