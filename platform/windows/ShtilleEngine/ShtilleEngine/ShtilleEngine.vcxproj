@@ -39,6 +39,7 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\box_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\complex_mesh.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\complex_mesh_obj.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\complex_mesh_scm.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\cube_frame.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\cube_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh.cpp" />

@@ -423,6 +423,9 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh_vertices_enumerator.cpp">
       <Filter>sht\graphics\src\model</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\complex_mesh_scm.cpp">
+      <Filter>sht\graphics\src\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">

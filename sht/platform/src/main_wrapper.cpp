@@ -19,6 +19,7 @@ int MainWrapper(int, const char**)
 
 	if (app->InitApi())
 	{
+		app->InitializeManagers();
 		if (app->Load())
 		{
 			app->Show();
@@ -42,6 +43,8 @@ int MainWrapper(int, const char**)
 				app->UpdatePhysics(time_physics_curr - time_physics_prev);
 				time_physics_prev = time_physics_curr;
 
+				app->UpdateManagers();
+
 				// Game clock part of the loop. Ticks for every tick_time at average.
 				float dt = clock.GetTime() - time_gameclock;
 
@@ -57,6 +60,7 @@ int MainWrapper(int, const char**)
 			}
 		}
 		app->Unload(); // delete allocated objects (may be allocated partially)
+		app->DeinitializeManagers();
         app->DeinitApi();
 	}
 	else

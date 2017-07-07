@@ -1,8 +1,5 @@
 #include "../../sht/include/sht.h"
 
-#include "../../sht/system/include/time/time_manager.h"
-#include "../../sht/utility/include/resource_manager.h"
-
 #include "game_scene_manager.h"
 
 class BilliardGameApp
@@ -24,12 +21,6 @@ public:
 	}
 	bool Load() final
 	{
-		sht::system::TimeManager::CreateInstance();
-		sht::utility::ResourceManager::CreateInstance();
-
-		// Our engine uses fixed time steps, so make it shared for any consumer
-		sht::system::TimeManager::GetInstance()->SetFixedFrameTime(frame_time_);
-
 		// Create scene manager
 		scene_manager_ = new GameSceneManager(renderer_);
 
@@ -42,15 +33,9 @@ public:
 	{
 		if (scene_manager_)
 			delete scene_manager_;
-
-		sht::utility::ResourceManager::DestroyInstance();
-		sht::system::TimeManager::DestroyInstance();
 	}
 	void Update() final
 	{
-		// Update time manager
-		sht::system::TimeManager::GetInstance()->Update();
-
 		// Update scene manager
 		scene_manager_->Update();
 

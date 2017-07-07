@@ -70,6 +70,10 @@ namespace sht {
 
 		void set_visible(bool vis);
 
+		void InitializeManagers();
+		void DeinitializeManagers();
+		void UpdateManagers();
+
 		// --- User defined functions ---
 
 		// User data loading/unloading

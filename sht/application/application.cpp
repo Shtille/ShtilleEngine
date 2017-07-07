@@ -4,6 +4,10 @@
 #include "../graphics/include/renderer/renderer.h"
 #include "../system/include/memory_leaks.h"
 #include "../system/include/stream/file_stream.h"
+
+#include "../system/include/time/time_manager.h"
+#include "../utility/include/resource_manager.h"
+
 #include <cstdlib>
 #include <clocale>
 #include <algorithm> // for std::max
@@ -197,6 +201,24 @@ namespace sht {
 		else
 			framebuffer_size_ = 4096;
 		inv_framebuffer_size_ = 1.0f / (float)framebuffer_size_;
+	}
+	void Application::InitializeManagers()
+	{
+		sht::system::TimeManager::CreateInstance();
+		sht::utility::ResourceManager::CreateInstance();
+
+		// Our engine uses fixed time steps, so make it shared for any consumer
+		sht::system::TimeManager::GetInstance()->SetFixedFrameTime(frame_time_);
+	}
+	void Application::DeinitializeManagers()
+	{
+		sht::utility::ResourceManager::DestroyInstance();
+		sht::system::TimeManager::DestroyInstance();
+	}
+	void Application::UpdateManagers()
+	{
+		// Update time manager
+		sht::system::TimeManager::GetInstance()->Update();
 	}
 	bool Application::PreStartInit()
 	{
