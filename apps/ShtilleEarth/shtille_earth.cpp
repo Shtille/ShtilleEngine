@@ -217,13 +217,15 @@ public:
     }
     void Update() final
     {
-        angle_ += 0.005f * frame_time_;
+        const float kFrameTime = GetFrameTime();
+
+        angle_ += 0.005f * kFrameTime;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
-        console_->Update(frame_time_);
+        console_->Update(kFrameTime);
 
         if (!camera_animation_stopped_)
-            camera_manager_->Update(frame_time_);
+            camera_manager_->Update(kFrameTime);
 
         // Update matrices
         renderer_->SetViewMatrix(camera_manager_->view_matrix());
@@ -325,7 +327,7 @@ public:
         text_shader_->Bind();
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-        fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
         fps_text_->Render();
         
         // Draw console

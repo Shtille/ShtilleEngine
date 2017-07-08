@@ -89,10 +89,12 @@ public:
     }
     void Update() final
     {
-        angle_ += 0.5f * frame_time_;
+        const float kFrameTime = GetFrameTime();
+
+        angle_ += 0.5f * kFrameTime;
         rotate_matrix = sht::math::Rotate4(cos(angle_), sin(angle_), 0.0f, 1.0f, 0.0f);
         
-        light_angle += 0.2f * frame_time_;
+        light_angle += 0.2f * kFrameTime;
         light_position.Set(5.0f*cosf(light_angle), 5.0f, 5.0f*sinf(light_angle));
         
         camera_position.Set(10.0f*cosf(view_theta)*cosf(view_alpha),
@@ -100,7 +102,7 @@ public:
                             10.0f*cosf(view_theta)*sinf(view_alpha));
         renderer_->SetViewMatrix(sht::math::LookAt(camera_position, vec3(0.0f)));
         
-        console_->Update(frame_time_);
+        console_->Update(kFrameTime);
     }
     void Render() final
     {
@@ -143,7 +145,7 @@ public:
         text_shader_->Bind();
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
         text_->Render();
         
         // Draw console

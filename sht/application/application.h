@@ -70,6 +70,9 @@ namespace sht {
 
 		void set_visible(bool vis);
 
+		const float GetFrameTime(); //!< returns fixed frame time (1 / fps desired)
+		const float GetFrameRate(); //!< returns real FPS (not desired)
+
 		void InitializeManagers();
 		void DeinitializeManagers();
 		void UpdateManagers();
@@ -119,8 +122,6 @@ namespace sht {
 		unsigned char depth_bits_;		//!< number of bits for depth buffer
         unsigned char stencil_bits_;    //!< number of bits for stencil buffer
 		bool need_take_screenshot_;		//!< do we need to take a screenshot?
-		float frame_time_;				//!< time elapsed since last update (fixed time step)
-		float frame_rate_;				//!< frames per second (obsolete, shows desired value)
 		int framebuffer_size_;			//!< optimal size for framebuffer
 		float inv_framebuffer_size_;	//!< inverted framebuffer size for shaders
 

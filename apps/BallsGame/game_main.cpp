@@ -127,20 +127,22 @@ public:
         }
 
         // Update physics engine
-        physics_->Update(frame_time_);
+        physics_->Update(GetFrameTime());
     }
     void Update() final
     {
+        const float kFrameTime = GetFrameTime();
+
         // Update light parameters
-        light_angle_ += 0.2f * frame_time_;
+        light_angle_ += 0.2f * kFrameTime;
         light_position_.Set(light_distance_*cosf(light_angle_), light_distance_, light_distance_*sinf(light_angle_));
 
         UpdatePhysics();
 
         // Camera should be updated after physics
-        camera_manager_->Update(frame_time_);
+        camera_manager_->Update(kFrameTime);
 
-        console_->Update(frame_time_);
+        console_->Update(kFrameTime);
 
         // Update matrices
         UpdateProjectionMatrix();
@@ -162,7 +164,7 @@ public:
         text_shader_->Bind();
         text_shader_->Uniform1i("u_texture", 0);
         text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-        fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate_);
+        fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
         fps_text_->Render();
         
         // Draw console

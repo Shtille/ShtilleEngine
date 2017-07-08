@@ -27,8 +27,6 @@ namespace sht {
 	, depth_bits_(24)
 	, stencil_bits_(0)
 	, need_take_screenshot_(false)
-	, frame_time_(0.0f)
-	, frame_rate_(0.0f)
 	, framebuffer_size_(0)
 	, inv_framebuffer_size_(0.0f)
 	{
@@ -45,10 +43,6 @@ namespace sht {
     int Application::Run(int argc, const char** argv)
 	{
 		app_ = this;
-
-		// Set fixed frame time via desired frame rate
-		frame_time_ = 1.0f / GetDesiredFrameRate();
-		frame_rate_ = GetDesiredFrameRate();
 		
 		// Set proper text encoding to let use non-english characters
 		setlocale(LC_CTYPE, "UTF-8");
@@ -202,13 +196,21 @@ namespace sht {
 			framebuffer_size_ = 4096;
 		inv_framebuffer_size_ = 1.0f / (float)framebuffer_size_;
 	}
+	const float Application::GetFrameTime()
+	{
+		return 1.0f / GetDesiredFrameRate();
+	}
+	const float Application::GetFrameRate()
+	{
+		return sht::system::TimeManager::GetInstance()->GetFrameRate();
+	}
 	void Application::InitializeManagers()
 	{
 		sht::system::TimeManager::CreateInstance();
 		sht::utility::ResourceManager::CreateInstance();
 
 		// Our engine uses fixed time steps, so make it shared for any consumer
-		sht::system::TimeManager::GetInstance()->SetFixedFrameTime(frame_time_);
+		sht::system::TimeManager::GetInstance()->SetFixedFrameTime(GetFrameTime());
 	}
 	void Application::DeinitializeManagers()
 	{
