@@ -105,6 +105,8 @@ namespace sht {
 				return Image::FileFormat::kTga;
 			else if (ext == "tif" || ext == "tiff")
 				return Image::FileFormat::kTif;
+			else if (ext == "hdr")
+				return Image::FileFormat::kHdr;
 			return Image::FileFormat::kUnknown;
 		}
 		Image::Image()
