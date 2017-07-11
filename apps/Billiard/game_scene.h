@@ -7,6 +7,7 @@
 #include "utility/include/event_listener.h"
 #include "graphics/include/renderer/text.h"
 #include "graphics/include/model/complex_mesh.h"
+#include "system/include/time/time_manager.h"
 #include "utility/include/camera.h"
 #include "physics/include/physics_engine.h"
 
@@ -32,9 +33,14 @@ private:
 	void RenderObjects();
 	void RenderInterface();
 
+	void RespawnCueBall(const vec3& position);
+	void CheckBallsStatus();
+
 	void OnKeyDown(sht::PublicKey key, int mods) override;
 
 	MaterialBinder * material_binder_;
+	sht::system::Timer * spawn_timer_;
+	sht::system::Timer * pocket_entrance_timer_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID object_shader_id_;

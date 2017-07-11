@@ -3,10 +3,10 @@
 #include "material_binder.h"
 
 #include "utility/include/event.h"
-#include "system/include/time/time_manager.h"
 #include "physics/include/physics_object.h"
 
 #include <cmath> // for sinf and cosf
+#include <cstdio>
 
 GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder)
 : Scene(renderer)
@@ -26,6 +26,11 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
 {
+	// Add timers
+	const float kBallRequestInterval = 1.0f;
+	spawn_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
+	pocket_entrance_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
+
 	// Register resources to load automatically on scene change
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
 	object_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_object"));
@@ -41,6 +46,10 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 GameScene::~GameScene()
 {
 	Unload();
+
+	// Remove timers
+	sht::system::TimeManager::GetInstance()->RemoveTimer(pocket_entrance_timer_);
+	sht::system::TimeManager::GetInstance()->RemoveTimer(spawn_timer_);
 }
 void GameScene::Update()
 {
@@ -53,6 +62,9 @@ void GameScene::Update()
 
 	// Camera should be updated after physics
 	camera_manager_->Update(frame_time);
+
+	// Check balls status
+	CheckBallsStatus();
 
 	// Update view matrix
 	renderer_->SetViewMatrix(camera_manager_->view_matrix());
@@ -158,7 +170,7 @@ void GameScene::Load()
 	physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
 	physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
 
-	constexpr unsigned int kBallCount = 1;
+	constexpr unsigned int kBallCount = 2;
 	balls_count_ = kBallCount;
 	balls_ = new sht::physics::Object *[balls_count_];
 
@@ -241,6 +253,41 @@ void GameScene::Unload()
 		fps_text_ = nullptr;
 	}
 }
+void GameScene::RespawnCueBall(const vec3& position)
+{
+	sht::physics::Object * cue_ball = balls_[0];
+	cue_ball->Activate();
+	cue_ball->SetPosition(position);
+	cue_ball->SetLinearVelocity(vec3(0.0f));
+	cue_ball->SetAngularVelocity(vec3(0.0f));
+	spawn_timer_->Start();
+	printf("respawn has started\n");
+}
+void GameScene::CheckBallsStatus()
+{
+	if (spawn_timer_->enabled() && spawn_timer_->HasExpired())
+	{
+		sht::physics::Object * cue_ball = balls_[0];
+		if (!cue_ball->IsActive())
+		{
+			// Ball has been deactivated
+			spawn_timer_->Stop();
+			printf("respawn has finished\n");
+		}
+		spawn_timer_->Reset();
+	}
+	if (pocket_entrance_timer_->enabled() && pocket_entrance_timer_->HasExpired())
+	{
+		sht::physics::Object * cue_ball = balls_[0];
+		if (cue_ball->position().y < 0.0f)
+		{
+			// Ball has fallen to pocket (or outside the table)
+			pocket_entrance_timer_->Stop();
+			printf("ball has gotten into the pocket\n");
+		}
+		pocket_entrance_timer_->Reset();
+	}
+}
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
 	bool velocity_been_set = false;
@@ -272,6 +319,12 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 	{
 		balls_[0]->Activate(); // this body may be sleeping, thus we activate it
 		balls_[0]->SetLinearVelocity(velocity);
+		pocket_entrance_timer_->Start();
+	}
+
+	if (key == sht::PublicKey::kSpace)
+	{
+		RespawnCueBall(vec3(0.0f, 50.0f, 0.0f));
 	}
 
 	if (key == sht::PublicKey::kLeft)

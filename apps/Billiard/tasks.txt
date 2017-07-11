@@ -2,8 +2,12 @@
 	- Design
 		+ Editor
 			We don't need a editor at all.
+		- Need an additional menu to select point of hit by cue.
 	- Physics
+		- Determine how to make ball stop faster on lower speed.
 		- Determine optimal physics friction koefficients.
+		- Add texture for balls and test rotation.
+		+ Determine the moment the ball has stopped.
 		+ Add custom mesh processing for entity.
 		+ Use separate mesh for table bed.
 		+ Use separate mesh for table cushions.
@@ -12,13 +16,23 @@
 	- Graphics
 		- Add textures.
 		- Add realistic lighting model.
+		- Add logotype rendering (need skybox and logotype model).
 	- Controls
+		- Desktop
+			- Left and right keys to rotate cue left and right respectively.
+			- Up and down keys to increase and decrease cue angle respectively.
+			- Space key to hit the cue ball.
+		[-] Mobile
+	- Gameplay
+		- Make cue ball hittable by cue.
+		- Add balls respawn.
 	- Audio
 		By now we are skipping this phase.
 	- Misc
+		- Add skybox loading with a custom descriptor.
 		+ Add a new (internal) format that we gonna save models in.
 		+ Add application that will convert models from one format to another.
-		- Add loading of HDR textures.
+		+ Add loading of HDR textures.
 - Engine
 	- Graphics
 		- Add debug renderer.

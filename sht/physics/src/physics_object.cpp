@@ -178,6 +178,10 @@ namespace sht {
 		{
 			body_->activate();
 		}
+		bool Object::IsActive()
+		{
+			return body_->isActive();
+		}
 		void Object::SetLinearVelocity(const math::Vector3& velocity)
 		{
 			body_->setLinearVelocity(btVector3(velocity.x, velocity.y, velocity.z));

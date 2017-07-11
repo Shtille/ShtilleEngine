@@ -43,6 +43,7 @@ namespace sht {
 
 			//! Make a sleeping rigid body to move under our force
 			void Activate();
+			bool IsActive();
 
 			void SetLinearVelocity(const math::Vector3& velocity);
 			void SetAngularVelocity(const math::Vector3& velocity);
