@@ -28,6 +28,8 @@ namespace sht {
 			void Translate(const math::Vector3& direction);
 			void SetTransform(const math::Matrix4& transform);
 
+			void MakeKinematic();
+
 			void SetFriction(float friction);
 			void SetRollingFriction(float friction);
 			void SetSpinningFriction(float friction);
@@ -78,6 +80,7 @@ namespace sht {
 			math::Vector3 scale_;
 			btRigidBody * body_;
 			bool use_scale_; //!< scale is necessary when model has been scaled from unit size
+			bool is_kinematic_;
 
 		protected:
 			const UnitConversion * unit_conversion_;

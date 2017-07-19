@@ -15,6 +15,7 @@ namespace sht {
 		, scale_(1.0f)
 		, body_(nullptr)
 		, use_scale_(false)
+		, is_kinematic_(false)
 		, unit_conversion_(nullptr)
 		{
 			matrix_.sa[0] = 1.0f;
@@ -105,34 +106,65 @@ namespace sht {
 		}
 		void Object::SetPosition(const math::Vector3& position)
 		{
-			math::Vector3 direction(position);
-			direction.x -= matrix_.sa[12];
-			direction.y -= matrix_.sa[13];
-			direction.z -= matrix_.sa[14];
-			if (unit_conversion_ && unit_conversion_->linear_to)
+			if (is_kinematic_)
 			{
-				unit_conversion_->linear_to(&direction.x);
-				unit_conversion_->linear_to(&direction.y);
-				unit_conversion_->linear_to(&direction.z);
+				matrix_.sa[12] = position.x;
+				matrix_.sa[13] = position.y;
+				matrix_.sa[14] = position.z;
 			}
-			body_->translate(btVector3(direction.x, direction.y, direction.z));
+			else
+			{
+				math::Vector3 direction(position);
+				direction.x -= matrix_.sa[12];
+				direction.y -= matrix_.sa[13];
+				direction.z -= matrix_.sa[14];
+				if (unit_conversion_ && unit_conversion_->linear_to)
+				{
+					unit_conversion_->linear_to(&direction.x);
+					unit_conversion_->linear_to(&direction.y);
+					unit_conversion_->linear_to(&direction.z);
+				}
+				body_->translate(btVector3(direction.x, direction.y, direction.z));
+			}
 		}
 		void Object::Translate(const math::Vector3& direction)
 		{
-			math::Vector3 translation = direction;
-			if (unit_conversion_ && unit_conversion_->linear_to)
+			if (is_kinematic_)
 			{
-				unit_conversion_->linear_to(&translation.x);
-				unit_conversion_->linear_to(&translation.y);
-				unit_conversion_->linear_to(&translation.z);
+				matrix_.sa[12] += direction.x;
+				matrix_.sa[13] += direction.y;
+				matrix_.sa[14] += direction.z;
 			}
-			body_->translate(btVector3(translation.x, translation.y, translation.z));
+			else
+			{
+				math::Vector3 translation = direction;
+				if (unit_conversion_ && unit_conversion_->linear_to)
+				{
+					unit_conversion_->linear_to(&translation.x);
+					unit_conversion_->linear_to(&translation.y);
+					unit_conversion_->linear_to(&translation.z);
+				}
+				body_->translate(btVector3(translation.x, translation.y, translation.z));
+			}
 		}
 		void Object::SetTransform(const math::Matrix4& transform)
 		{
-			btTransform xform;
-			xform.setFromOpenGLMatrix(transform.sa);
-			body_->setCenterOfMassTransform(xform);
+			if (is_kinematic_)
+			{
+				matrix_ = transform;
+			}
+			else
+			{
+				btTransform xform;
+				xform.setFromOpenGLMatrix(transform.sa);
+				body_->setCenterOfMassTransform(xform);
+			}
+		}
+		void Object::MakeKinematic()
+		{
+			body_->setCollisionFlags(body_->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+			body_->setActivationState(DISABLE_DEACTIVATION);
+			is_kinematic_ = true;
 		}
 		void Object::SetFriction(float friction)
 		{
