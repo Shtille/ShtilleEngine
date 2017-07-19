@@ -4,9 +4,10 @@
 			We don't need a editor at all.
 		- Need an additional menu to select point of hit by cue.
 	- Physics
-		- Determine how to make ball stop faster on lower speed.
-		- Determine optimal physics friction koefficients.
 		- Add texture for balls and test rotation.
+		- Make rack kinematic and test it.
+		+ Determine how to make ball stop faster on lower speed.
+		+ Determine optimal physics friction koefficients.
 		+ Determine the moment the ball has stopped.
 		+ Add custom mesh processing for entity.
 		+ Use separate mesh for table bed.
@@ -14,6 +15,7 @@
 		+ Use simplified physics objects (boxes) for cushions.
 		+ Add surface database class.
 	- Graphics
+		- Use a single shader for rendering both textured and non textured objects.
 		- Add textures.
 		- Add realistic lighting model.
 		- Add logotype rendering (need skybox and logotype model).
@@ -24,8 +26,10 @@
 			- Space key to hit the cue ball.
 		[-] Mobile
 	- Gameplay
+		- Write current game status (some message, a.e.).
 		- Make cue ball hittable by cue.
 		- Add balls respawn.
+		- Add cue ball respawn.
 	- Audio
 		By now we are skipping this phase.
 	- Misc

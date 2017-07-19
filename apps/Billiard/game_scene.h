@@ -2,6 +2,8 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
+#include "game_mode.h"
+
 #include "utility/include/scene/scene.h"
 
 #include "utility/include/event_listener.h"
@@ -15,8 +17,10 @@ class MaterialBinder;
 
 class GameScene : public sht::utility::Scene {
 public:
-	GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder);
+	GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder, GameMode game_mode);
 	virtual ~GameScene();
+
+	void SetGameMode(GameMode game_mode);
 
 	void Update() override;
 	void UpdatePhysics(float sec) override;
@@ -26,6 +30,9 @@ public:
 	void Unload() override;
 
 private:
+	void BindShaderConstants();
+	void BindShaderVariables();
+
 	void RenderTable();
 	void RenderBalls();
 	void RenderRack(); //!< the thing that restricts balls movement during setup
@@ -39,11 +46,14 @@ private:
 	void OnKeyDown(sht::PublicKey key, int mods) override;
 
 	MaterialBinder * material_binder_;
+	GameMode game_mode_;
+
 	sht::system::Timer * spawn_timer_;
 	sht::system::Timer * pocket_entrance_timer_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID object_shader_id_;
+	sht::utility::ResourceID ball_shader_id_;
 	sht::utility::ResourceID font_id_;
 	sht::utility::ResourceID ball_mesh_id_;
 	sht::utility::ResourceID cue_mesh_id_;
@@ -55,6 +65,7 @@ private:
 
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * object_shader_;
+	sht::graphics::Shader * ball_shader_;
 	sht::graphics::Font * font_;
 	sht::graphics::ComplexMesh * ball_mesh_;
 	sht::graphics::ComplexMesh * cue_mesh_;
@@ -68,6 +79,7 @@ private:
 	sht::utility::CameraManager * camera_manager_;
 	sht::physics::Engine * physics_;
 	sht::physics::Object * *balls_;
+	sht::graphics::Texture * *ball_textures_;
 	unsigned int balls_count_;
 
 	// Light parameters

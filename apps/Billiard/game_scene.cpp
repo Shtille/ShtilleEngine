@@ -8,11 +8,13 @@
 #include <cmath> // for sinf and cosf
 #include <cstdio>
 
-GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder)
+GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder, GameMode game_mode)
 : Scene(renderer)
 , material_binder_(material_binder)
+, game_mode_(game_mode)
 , text_shader_(nullptr)
 , object_shader_(nullptr)
+, ball_shader_(nullptr)
 , font_(nullptr)
 , ball_mesh_(nullptr)
 , cue_mesh_(nullptr)
@@ -34,6 +36,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 	// Register resources to load automatically on scene change
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
 	object_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_object"));
+	ball_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_ball"));
 	font_id_          					= AddResourceIdByName(ConstexprStringId("font_good_dog"));
 	ball_mesh_id_     					= AddResourceIdByName(ConstexprStringId("mesh_ball"));
 	cue_mesh_id_      					= AddResourceIdByName(ConstexprStringId("mesh_cue"));
@@ -50,6 +53,10 @@ GameScene::~GameScene()
 	// Remove timers
 	sht::system::TimeManager::GetInstance()->RemoveTimer(pocket_entrance_timer_);
 	sht::system::TimeManager::GetInstance()->RemoveTimer(spawn_timer_);
+}
+void GameScene::SetGameMode(GameMode game_mode)
+{
+	game_mode_ = game_mode;
 }
 void GameScene::Update()
 {
@@ -69,11 +76,41 @@ void GameScene::Update()
 	// Update view matrix
 	renderer_->SetViewMatrix(camera_manager_->view_matrix());
 	projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+
+	// Finally update shader variables
+	BindShaderVariables();
 }
 void GameScene::UpdatePhysics(float sec)
 {
 	// Update physics engine
 	physics_->Update(sec);
+}
+void GameScene::BindShaderConstants()
+{
+	const sht::math::Vector3 kLightColor(1.0f);
+
+	object_shader_->Bind();
+	object_shader_->Uniform3fv("u_light.color", kLightColor);
+
+	ball_shader_->Bind();
+	ball_shader_->Uniform1i("u_texture", 0);
+	ball_shader_->Uniform3fv("u_light.color", kLightColor);
+
+	ball_shader_->Unbind();
+}
+void GameScene::BindShaderVariables()
+{
+	object_shader_->Bind();
+	object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
+	object_shader_->Uniform3fv("u_light.position", light_position_);
+	object_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
+
+	ball_shader_->Bind();
+	ball_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
+	ball_shader_->Uniform3fv("u_light.position", light_position_);
+	ball_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
+
+	ball_shader_->Unbind();
 }
 void GameScene::RenderTable()
 {
@@ -86,12 +123,14 @@ void GameScene::RenderBalls()
 {
 	for (unsigned int i = 0; i < balls_count_; ++i)
 	{
+		renderer_->ChangeTexture(ball_textures_[i]);
 		renderer_->PushMatrix();
 		renderer_->MultMatrix(balls_[i]->matrix());
-		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		ball_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		ball_mesh_->Render();
 		renderer_->PopMatrix();
 	}
+	renderer_->ChangeTexture(nullptr);
 }
 void GameScene::RenderRack()
 {
@@ -108,18 +147,13 @@ void GameScene::RenderCue()
 }
 void GameScene::RenderObjects()
 {
-	const sht::math::Vector3 kLightColor(1.0f);
-
 	object_shader_->Bind();
-	object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
-	object_shader_->Uniform3fv("u_light.position", light_position_);
-	object_shader_->Uniform3fv("u_light.color", kLightColor);
-	object_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
-
 	RenderTable();
-	RenderBalls();
 	RenderRack();
 	RenderCue();
+
+	ball_shader_->Bind();
+	RenderBalls();
 }
 void GameScene::RenderInterface()
 {
@@ -148,6 +182,7 @@ void GameScene::Load()
 
 	text_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(text_shader_id_));
 	object_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(object_shader_id_));
+	ball_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(ball_shader_id_));
 	font_ = dynamic_cast<sht::graphics::Font *>(resource_manager->GetResource(font_id_));
 	ball_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(ball_mesh_id_));
 	cue_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(cue_mesh_id_));
@@ -160,6 +195,7 @@ void GameScene::Load()
 	// Bind shader to material binder
 	material_binder_->SetShader(object_shader_);
 
+	// Create text objects
 	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
 
 	// Create camera attached to the controlled ball
@@ -170,24 +206,41 @@ void GameScene::Load()
 	physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
 	physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
 
-	constexpr unsigned int kBallCount = 2;
+	constexpr unsigned int kBallCount = 16;
 	balls_count_ = kBallCount;
 	balls_ = new sht::physics::Object *[balls_count_];
 
 	// Setup physics objects
 	sht::physics::Object * object;
 	{
-		const vec3 ball_positions[2] = {
-			vec3(0.0f, 50.0f, 0.0f),
-			vec3(300.0f, 50.0f, 0.0f)
+		const float ball_size = ball_mesh_->bounding_box().extent.x;
+		const float lx = 2.0f * ball_size * cosf(sht::math::kPi / 6.0);
+		const float lz = 2.0f * ball_size * sinf(sht::math::kPi / 6.0);
+		const float bx = 0.5f * table_bed_mesh_->bounding_box().extent.x;
+		const vec3 ball_positions[16] = {
+			vec3(-bx, ball_size, 0.0f),
+			vec3(bx - 2.0f * lx, ball_size, 0.0f), // *
+			vec3(bx - 1.0f * lx, ball_size, - 1.0f * lz),
+			vec3(bx - 1.0f * lx, ball_size, - 1.0f * lz + 2.0f * ball_size),
+			vec3(bx, ball_size, 0.0f),
+			vec3(bx, ball_size, -2.0f * ball_size),
+			vec3(bx, ball_size,  2.0f * ball_size),
+			vec3(bx + 1.0f * lx, ball_size, - 1.0f * lz - 2.0f * ball_size),
+			vec3(bx + 1.0f * lx, ball_size, - 1.0f * lz),
+			vec3(bx + 1.0f * lx, ball_size, + 1.0f * lz),
+			vec3(bx + 1.0f * lx, ball_size, + 1.0f * lz + 2.0f * ball_size),
+			vec3(bx + 2.0f * lx, ball_size, -4.0f * ball_size),
+			vec3(bx + 2.0f * lx, ball_size, -2.0f * ball_size),
+			vec3(bx + 2.0f * lx, ball_size, 0.0f),
+			vec3(bx + 2.0f * lx, ball_size, +2.0f * ball_size),
+			vec3(bx + 2.0f * lx, ball_size, +4.0f * ball_size),
 		};
 		static_assert(kBallCount <= sizeof(ball_positions)/sizeof(ball_positions[0]), "balls count mismatch");
-		const float ball_size = ball_mesh_->bounding_box().extent.x;
 		for (unsigned int i = 0; i < balls_count_; ++i)
 		{
 			object = physics_->AddSphere(ball_positions[i], 0.150f, ball_size);
 			object->SetFriction(0.28f);
-			object->SetRollingFriction(0.05f);
+			object->SetRollingFriction(0.1f);
 			object->SetSpinningFriction(0.5f);
 			object->SetRestitution(0.98f);
 			balls_[i] = object;
@@ -210,9 +263,40 @@ void GameScene::Load()
 		object->SetRestitution(0.8f);
 	}
 
+	// Create ball textures
+	ball_textures_ = new sht::graphics::Texture *[balls_count_];
+	if (game_mode_ == GameMode::kSimplePool)
+	{
+		const vec3 ball_colors[16] = {
+			vec3(1.0f, 1.0f, 1.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(1.0f, 0.0f, 0.0f),
+			vec3(0.0f, 0.0f, 0.0f),
+		};
+		static_assert(kBallCount <= sizeof(ball_colors)/sizeof(ball_colors[0]), "enlarge ball_colors array");
+		for (unsigned int i = 0; i < balls_count_; ++i)
+		{
+			const vec3& color = ball_colors[i];
+			renderer_->CreateTextureColor(ball_textures_[i], color.x, color.y, color.z, 1.0f);
+		}
+	}
+
 	// Create meshes that have been loaded earlier
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+	ball_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
 	ball_mesh_->MakeRenderable();
 	cue_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	cue_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
@@ -229,9 +313,21 @@ void GameScene::Load()
 	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 	table_cushions_graphics_mesh_->MakeRenderable();
+
+	BindShaderConstants();
 }
 void GameScene::Unload()
 {
+	if (ball_textures_)
+	{
+		if (game_mode_ == GameMode::kSimplePool)
+		{
+			for (unsigned int i = 0; i < balls_count_; ++i)
+				renderer_->DeleteTexture(ball_textures_[i]);
+		}
+		delete[] ball_textures_;
+		ball_textures_ = nullptr;
+	}
 	if (balls_)
 	{
 		delete[] balls_;
