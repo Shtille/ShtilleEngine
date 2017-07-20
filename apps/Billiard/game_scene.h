@@ -43,6 +43,7 @@ private:
 
 	void SetStatus(const wchar_t* text);
 	void PrepareBeginning();
+	void UpdateCueMatrix();
 	void RespawnCueBall(const vec3& position);
 	void CheckTimerEvents();
 	void OnBallsStopMoving();
@@ -99,6 +100,7 @@ private:
 	sht::graphics::Texture * *ball_textures_;
 	bool *ball_active_;
 	unsigned int balls_count_;
+	float ball_size_;
 
 	sht::math::Matrix4 cue_matrix_;
 	sht::math::Matrix4 rack_matrix_;

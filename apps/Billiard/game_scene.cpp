@@ -160,6 +160,7 @@ void GameScene::RenderCue()
 	{
 		renderer_->PushMatrix();
 		renderer_->MultMatrix(cue_matrix_);
+		renderer_->Translate(vec3(-ball_size_, 0.0f, 0.0f));
 		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		cue_mesh_->Render();
 		renderer_->PopMatrix();
@@ -233,6 +234,7 @@ void GameScene::Load()
 
 	constexpr unsigned int kBallCount = 16;
 	balls_count_ = kBallCount;
+	ball_size_ = ball_mesh_->bounding_box().extent.x;
 	ball_active_ = new bool[balls_count_];
 	for (unsigned int i = 0; i < balls_count_; ++i)
 		ball_active_[i] = true;
@@ -241,32 +243,31 @@ void GameScene::Load()
 	// Setup physics objects
 	sht::physics::Object * object;
 	{
-		const float ball_size = ball_mesh_->bounding_box().extent.x;
-		const float lx = 2.0f * ball_size * cosf(sht::math::kPi / 6.0);
-		const float lz = 2.0f * ball_size * sinf(sht::math::kPi / 6.0);
+		const float lx = 2.0f * ball_size_ * cosf(sht::math::kPi / 6.0);
+		const float lz = 2.0f * ball_size_ * sinf(sht::math::kPi / 6.0);
 		const float bx = 0.5f * table_bed_mesh_->bounding_box().extent.x;
 		const vec3 ball_positions[16] = {
-			vec3(-bx, ball_size, 0.0f),
-			vec3(bx - 2.0f * lx, ball_size, 0.0f), // *
-			vec3(bx - 1.0f * lx, ball_size, - 1.0f * lz),
-			vec3(bx - 1.0f * lx, ball_size, - 1.0f * lz + 2.0f * ball_size),
-			vec3(bx, ball_size, 0.0f),
-			vec3(bx, ball_size, -2.0f * ball_size),
-			vec3(bx, ball_size,  2.0f * ball_size),
-			vec3(bx + 1.0f * lx, ball_size, - 1.0f * lz - 2.0f * ball_size),
-			vec3(bx + 1.0f * lx, ball_size, - 1.0f * lz),
-			vec3(bx + 1.0f * lx, ball_size, + 1.0f * lz),
-			vec3(bx + 1.0f * lx, ball_size, + 1.0f * lz + 2.0f * ball_size),
-			vec3(bx + 2.0f * lx, ball_size, -4.0f * ball_size),
-			vec3(bx + 2.0f * lx, ball_size, -2.0f * ball_size),
-			vec3(bx + 2.0f * lx, ball_size, 0.0f),
-			vec3(bx + 2.0f * lx, ball_size, +2.0f * ball_size),
-			vec3(bx + 2.0f * lx, ball_size, +4.0f * ball_size),
+			vec3(-bx, ball_size_, 0.0f),
+			vec3(bx - 2.0f * lx, ball_size_, 0.0f), // *
+			vec3(bx - 1.0f * lx, ball_size_, - 1.0f * lz),
+			vec3(bx - 1.0f * lx, ball_size_, - 1.0f * lz + 2.0f * ball_size_),
+			vec3(bx, ball_size_, 0.0f),
+			vec3(bx, ball_size_, -2.0f * ball_size_),
+			vec3(bx, ball_size_,  2.0f * ball_size_),
+			vec3(bx + 1.0f * lx, ball_size_, - 1.0f * lz - 2.0f * ball_size_),
+			vec3(bx + 1.0f * lx, ball_size_, - 1.0f * lz),
+			vec3(bx + 1.0f * lx, ball_size_, + 1.0f * lz),
+			vec3(bx + 1.0f * lx, ball_size_, + 1.0f * lz + 2.0f * ball_size_),
+			vec3(bx + 2.0f * lx, ball_size_, -4.0f * ball_size_),
+			vec3(bx + 2.0f * lx, ball_size_, -2.0f * ball_size_),
+			vec3(bx + 2.0f * lx, ball_size_, 0.0f),
+			vec3(bx + 2.0f * lx, ball_size_, +2.0f * ball_size_),
+			vec3(bx + 2.0f * lx, ball_size_, +4.0f * ball_size_),
 		};
 		static_assert(kBallCount <= sizeof(ball_positions)/sizeof(ball_positions[0]), "balls count mismatch");
 		for (unsigned int i = 0; i < balls_count_; ++i)
 		{
-			object = physics_->AddSphere(ball_positions[i], 0.150f, ball_size);
+			object = physics_->AddSphere(ball_positions[i], 0.150f, ball_size_);
 			object->SetFriction(0.28f);
 			object->SetRollingFriction(0.2f);
 			object->SetSpinningFriction(0.5f);
@@ -398,6 +399,15 @@ void GameScene::PrepareBeginning()
 {
 	need_render_rack_ = true;
 	rack_matrix_.Identity();
+}
+void GameScene::UpdateCueMatrix()
+{
+	sht::physics::Object * cue_ball = balls_[0];
+	sht::math::Vector3 direction(
+		cosf(cue_alpha_) * cosf(cue_theta_),
+		sinf(cue_theta_),
+		sinf(cue_alpha_) * cosf(cue_theta_));
+	cue_matrix_ = OrientationMatrix(RotationMatrix(direction), cue_ball->position());
 }
 void GameScene::RespawnCueBall(const vec3& position)
 {
@@ -532,7 +542,7 @@ void GameScene::SwitchToCueTargeting()
 {
 	phase_ = GamePhase::kCueTargeting;
 	need_render_cue_ = true;
-	cue_matrix_.Identity();
+	UpdateCueMatrix();
 }
 void GameScene::RequestCueHit()
 {
@@ -545,6 +555,7 @@ void GameScene::RequestRackRemove()
 }
 void GameScene::HitCueBall()
 {
+	// Impulse simply has the same direction like cue does
 	const float kPushPower = 375.0f;
 	sht::math::Vector3 impulse(
 		kPushPower * cosf(cue_alpha_) * cosf(cue_theta_),
@@ -561,16 +572,31 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 	// Cue targeting
 	if (phase_ == GamePhase::kCueTargeting)
 	{
+		bool rotation_has_changed = false;
 		if (key == sht::PublicKey::kSpace)
 			RequestCueHit();
 		else if (key == sht::PublicKey::kLeft)
+		{
+			rotation_has_changed = true;
 			cue_alpha_ += 0.1f;
+		}
 		else if (key == sht::PublicKey::kRight)
+		{
+			rotation_has_changed = true;
 			cue_alpha_ -= 0.1f;
+		}
 		else if (key == sht::PublicKey::kUp)
+		{
+			rotation_has_changed = true;
 			cue_theta_ += 0.1f;
+		}
 		else if (key == sht::PublicKey::kDown)
+		{
+			rotation_has_changed = true;
 			cue_theta_ -= 0.1f;
+		}
+		if (rotation_has_changed)
+			UpdateCueMatrix();
 	}
 
 	// Camera rotation
