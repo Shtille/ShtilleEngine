@@ -5,7 +5,7 @@
 		- Need an additional menu to select point of hit by cue.
 	- Physics
 		- Add texture for balls and test rotation.
-		- Make rack kinematic and test it.
+		+ Make rack kinematic and test it.
 		+ Determine how to make ball stop faster on lower speed.
 		+ Determine optimal physics friction koefficients.
 		+ Determine the moment the ball has stopped.

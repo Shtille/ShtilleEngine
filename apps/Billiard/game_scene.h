@@ -3,6 +3,7 @@
 #define __GAME_SCENE_H__
 
 #include "game_mode.h"
+#include "game_phase.h"
 
 #include "utility/include/scene/scene.h"
 
@@ -40,16 +41,31 @@ private:
 	void RenderObjects();
 	void RenderInterface();
 
+	void SetStatus(const wchar_t* text);
+	void PrepareBeginning();
 	void RespawnCueBall(const vec3& position);
-	void CheckBallsStatus();
+	void CheckTimerEvents();
+	void OnBallsStopMoving();
+	void OnBallFallIntoThePocket(unsigned int index);
+	void OnPlayerWon();
+	void OnPlayerLost();
+	void IncreaseScore();
+	void SwitchToTheNextPlayer();
+	void SwitchToCueTargeting();
+	void RequestCueHit();
+	void RequestRackRemove();
+	void HitCueBall();
 
 	void OnKeyDown(sht::PublicKey key, int mods) override;
 
 	MaterialBinder * material_binder_;
 	GameMode game_mode_;
+	GamePhase phase_;
 
 	sht::system::Timer * spawn_timer_;
 	sht::system::Timer * pocket_entrance_timer_;
+	sht::system::Timer * cue_animation_timer_;
+	sht::system::Timer * rack_animation_timer_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID object_shader_id_;
@@ -76,11 +92,18 @@ private:
 	sht::graphics::ComplexMesh * table_cushions_physics_mesh_;
 
 	sht::graphics::DynamicText * fps_text_;
+	sht::graphics::DynamicText * status_text_;
 	sht::utility::CameraManager * camera_manager_;
 	sht::physics::Engine * physics_;
 	sht::physics::Object * *balls_;
 	sht::graphics::Texture * *ball_textures_;
+	bool *ball_active_;
 	unsigned int balls_count_;
+
+	sht::math::Matrix4 cue_matrix_;
+	sht::math::Matrix4 rack_matrix_;
+	float cue_alpha_;
+	float cue_theta_;
 
 	// Light parameters
 	float light_angle_;
@@ -88,6 +111,9 @@ private:
 	sht::math::Vector3 light_position_;
 
 	sht::math::Matrix4 projection_view_matrix_;
+
+	bool need_render_cue_;
+	bool need_render_rack_;
 };
 
 #endif

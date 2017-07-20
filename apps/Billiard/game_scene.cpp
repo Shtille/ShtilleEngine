@@ -12,6 +12,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 : Scene(renderer)
 , material_binder_(material_binder)
 , game_mode_(game_mode)
+, phase_(GamePhase::kRackRemoving)
 , text_shader_(nullptr)
 , object_shader_(nullptr)
 , ball_shader_(nullptr)
@@ -21,17 +22,25 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , rack_mesh_(nullptr)
 , table_mesh_(nullptr)
 , fps_text_(nullptr)
+, status_text_(nullptr)
 , camera_manager_(nullptr)
 , physics_(nullptr)
 , balls_(nullptr)
+, ball_active_(nullptr)
 , balls_count_(1)
+, cue_alpha_(0.0f)
+, cue_theta_(0.0f)
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
+, need_render_cue_(false)
+, need_render_rack_(false)
 {
 	// Add timers
 	const float kBallRequestInterval = 1.0f;
 	spawn_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
 	pocket_entrance_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
+	cue_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(3.0f);
+	rack_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(3.0f);
 
 	// Register resources to load automatically on scene change
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
@@ -51,6 +60,8 @@ GameScene::~GameScene()
 	Unload();
 
 	// Remove timers
+	sht::system::TimeManager::GetInstance()->RemoveTimer(rack_animation_timer_);
+	sht::system::TimeManager::GetInstance()->RemoveTimer(cue_animation_timer_);
 	sht::system::TimeManager::GetInstance()->RemoveTimer(pocket_entrance_timer_);
 	sht::system::TimeManager::GetInstance()->RemoveTimer(spawn_timer_);
 }
@@ -70,8 +81,8 @@ void GameScene::Update()
 	// Camera should be updated after physics
 	camera_manager_->Update(frame_time);
 
-	// Check balls status
-	CheckBallsStatus();
+	// Check timers' events
+	CheckTimerEvents();
 
 	// Update view matrix
 	renderer_->SetViewMatrix(camera_manager_->view_matrix());
@@ -134,16 +145,25 @@ void GameScene::RenderBalls()
 }
 void GameScene::RenderRack()
 {
-	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-	rack_mesh_->Render();
+	if (need_render_rack_)
+	{
+		renderer_->PushMatrix();
+		renderer_->MultMatrix(rack_matrix_);
+		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		rack_mesh_->Render();
+		renderer_->PopMatrix();
+	}
 }
 void GameScene::RenderCue()
 {
-	//renderer_->PushMatrix();
-	//renderer_->MultMatrix(cue_->matrix());
-	//object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
-	//cue_mesh_->Render();
-	//renderer_->PopMatrix();
+	if (need_render_cue_)
+	{
+		renderer_->PushMatrix();
+		renderer_->MultMatrix(cue_matrix_);
+		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		cue_mesh_->Render();
+		renderer_->PopMatrix();
+	}
 }
 void GameScene::RenderObjects()
 {
@@ -167,6 +187,9 @@ void GameScene::RenderInterface()
 	float frame_rate = time_manager->GetFrameRate();
 	fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", frame_rate);
 	fps_text_->Render();
+
+	// Draw status text
+	status_text_->Render();
 
 	renderer_->EnableDepthTest();
 }
@@ -197,6 +220,8 @@ void GameScene::Load()
 
 	// Create text objects
 	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+	status_text_ = sht::graphics::DynamicText::Create(renderer_, 64);
+	SetStatus(L"start");
 
 	// Create camera attached to the controlled ball
 	camera_manager_ = new sht::utility::CameraManager();
@@ -208,6 +233,9 @@ void GameScene::Load()
 
 	constexpr unsigned int kBallCount = 16;
 	balls_count_ = kBallCount;
+	ball_active_ = new bool[balls_count_];
+	for (unsigned int i = 0; i < balls_count_; ++i)
+		ball_active_[i] = true;
 	balls_ = new sht::physics::Object *[balls_count_];
 
 	// Setup physics objects
@@ -240,7 +268,7 @@ void GameScene::Load()
 		{
 			object = physics_->AddSphere(ball_positions[i], 0.150f, ball_size);
 			object->SetFriction(0.28f);
-			object->SetRollingFriction(0.1f);
+			object->SetRollingFriction(0.2f);
 			object->SetSpinningFriction(0.5f);
 			object->SetRestitution(0.98f);
 			balls_[i] = object;
@@ -314,10 +342,18 @@ void GameScene::Load()
 	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 	table_cushions_graphics_mesh_->MakeRenderable();
 
+	PrepareBeginning();
+	RequestRackRemove(); // later can be moved after table look overview
+
 	BindShaderConstants();
 }
 void GameScene::Unload()
 {
+	if (ball_active_)
+	{
+		delete[] ball_active_;
+		ball_active_ = nullptr;
+	}
 	if (ball_textures_)
 	{
 		if (game_mode_ == GameMode::kSimplePool)
@@ -343,11 +379,25 @@ void GameScene::Unload()
 		delete camera_manager_;
 		camera_manager_ = nullptr;
 	}
+	if (status_text_)
+	{
+		delete status_text_;
+		status_text_ = nullptr;
+	}
 	if (fps_text_)
 	{
 		delete fps_text_;
 		fps_text_ = nullptr;
 	}
+}
+void GameScene::SetStatus(const wchar_t* text)
+{
+	status_text_->SetText(font_, 0.0f, 0.9f, 0.05f, text);
+}
+void GameScene::PrepareBeginning()
+{
+	need_render_rack_ = true;
+	rack_matrix_.Identity();
 }
 void GameScene::RespawnCueBall(const vec3& position)
 {
@@ -356,10 +406,10 @@ void GameScene::RespawnCueBall(const vec3& position)
 	cue_ball->SetPosition(position);
 	cue_ball->SetLinearVelocity(vec3(0.0f));
 	cue_ball->SetAngularVelocity(vec3(0.0f));
+	ball_active_[0] = true;
 	spawn_timer_->Start();
-	printf("respawn has started\n");
 }
-void GameScene::CheckBallsStatus()
+void GameScene::CheckTimerEvents()
 {
 	if (spawn_timer_->enabled() && spawn_timer_->HasExpired())
 	{
@@ -368,67 +418,168 @@ void GameScene::CheckBallsStatus()
 		{
 			// Ball has been deactivated
 			spawn_timer_->Stop();
-			printf("respawn has finished\n");
 		}
 		spawn_timer_->Reset();
 	}
 	if (pocket_entrance_timer_->enabled() && pocket_entrance_timer_->HasExpired())
 	{
-		sht::physics::Object * cue_ball = balls_[0];
-		if (cue_ball->position().y < 0.0f)
+		bool any_active_ball_is_rolling = false;
+		for (unsigned int i = 0; i < balls_count_; ++i)
 		{
-			// Ball has fallen to pocket (or outside the table)
+			if (ball_active_[i] && balls_[i]->IsActive())
+			{
+				any_active_ball_is_rolling = true;
+				break;
+			}
+		}
+		if (!any_active_ball_is_rolling)
+		{
+			// All the balls have stopped
 			pocket_entrance_timer_->Stop();
-			printf("ball has gotten into the pocket\n");
+			OnBallsStopMoving();
 		}
 		pocket_entrance_timer_->Reset();
 	}
+	if (cue_animation_timer_->enabled() && cue_animation_timer_->HasExpired())
+	{
+		cue_animation_timer_->Stop();
+		cue_animation_timer_->Reset();
+		need_render_cue_ = false;
+		HitCueBall();
+	}
+	if (rack_animation_timer_->enabled() && rack_animation_timer_->HasExpired())
+	{
+		rack_animation_timer_->Stop();
+		rack_animation_timer_->Reset();
+		need_render_rack_ = false;
+		SwitchToCueTargeting();
+	}
+}
+void GameScene::OnBallsStopMoving()
+{
+	// Game mode based logics goes here
+	if (game_mode_ == GameMode::kSimplePool)
+	{
+		const unsigned int kBlackBallIndex = 15;
+		bool cue_ball_has_fallen = (ball_active_[0] && balls_[0]->position().y < 0.0f);
+		bool black_ball_has_fallen = (ball_active_[kBlackBallIndex] && balls_[kBlackBallIndex]->position().y < 0.0f);
+		if (black_ball_has_fallen)
+		{
+			ball_active_[kBlackBallIndex] = false;
+			unsigned int number_of_rest_active_balls = 0;
+			for (unsigned int i = 1; i < balls_count_; ++i)
+				if (ball_active_[i] && balls_[i]->position().y > 0.0f)
+					++number_of_rest_active_balls;
+			if (number_of_rest_active_balls != 0) // not only cue ball has left
+			{
+				// Player has lost
+				OnPlayerLost();
+			}
+			else // cue ball or none have left
+			{
+				// Player has won
+				OnPlayerWon();
+			}
+		}
+		else // black ball hasn't fallen
+		{
+			bool any_ball_has_fallen = false;
+			for (unsigned int i = 1; i < balls_count_; ++i)
+			{
+				if (ball_active_[i] && balls_[i]->position().y < 0.0f)
+				{
+					ball_active_[i] = false;
+					any_ball_has_fallen = true;
+					IncreaseScore();
+				}
+			}
+			if (cue_ball_has_fallen)
+			{
+				ball_active_[0] = false;
+				RespawnCueBall(vec3(0.0f, 50.0f, 0.0f));
+				SwitchToTheNextPlayer();
+			}
+			else if (!any_ball_has_fallen) // player hasn't scored any ball
+			{
+				SwitchToTheNextPlayer();
+				
+			}
+			SwitchToCueTargeting();
+		}
+	}
+	else
+	{
+		//assert(false);
+	}
+}
+void GameScene::OnPlayerWon()
+{
+
+}
+void GameScene::OnPlayerLost()
+{
+
+}
+void GameScene::IncreaseScore()
+{
+
+}
+void GameScene::SwitchToTheNextPlayer()
+{
+
+}
+void GameScene::SwitchToCueTargeting()
+{
+	phase_ = GamePhase::kCueTargeting;
+	need_render_cue_ = true;
+	cue_matrix_.Identity();
+}
+void GameScene::RequestCueHit()
+{
+	cue_animation_timer_->Start();
+}
+void GameScene::RequestRackRemove()
+{
+	phase_ = GamePhase::kRackRemoving;
+	rack_animation_timer_->Start();
+}
+void GameScene::HitCueBall()
+{
+	const float kPushPower = 375.0f;
+	sht::math::Vector3 impulse(
+		kPushPower * cosf(cue_alpha_) * cosf(cue_theta_),
+		kPushPower * sinf(cue_theta_),
+		kPushPower * sinf(cue_alpha_) * cosf(cue_theta_));
+	sht::physics::Object * cue_ball = balls_[0];
+	cue_ball->Activate(); // this body may be sleeping, thus we activate it
+	cue_ball->ApplyCentralImpulse(impulse);
+	phase_ = GamePhase::kBallsRolling;
+	pocket_entrance_timer_->Start();
 }
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
-	bool velocity_been_set = false;
-	const float kPushPower = 2500.0f;
-	sht::math::Vector3 velocity(0.0f);
+	// Cue targeting
+	if (phase_ == GamePhase::kCueTargeting)
+	{
+		if (key == sht::PublicKey::kSpace)
+			RequestCueHit();
+		else if (key == sht::PublicKey::kLeft)
+			cue_alpha_ += 0.1f;
+		else if (key == sht::PublicKey::kRight)
+			cue_alpha_ -= 0.1f;
+		else if (key == sht::PublicKey::kUp)
+			cue_theta_ += 0.1f;
+		else if (key == sht::PublicKey::kDown)
+			cue_theta_ -= 0.1f;
+	}
+
+	// Camera rotation
 	if (key == sht::PublicKey::kA)
-	{
-		velocity_been_set = true;
-		velocity.z += kPushPower;
-	}
-	if (key == sht::PublicKey::kD)
-	{
-		velocity_been_set = true;
-		velocity.z -= kPushPower;
-	}
-	if (key == sht::PublicKey::kS)
-	{
-		velocity_been_set = true;
-		velocity.x += kPushPower;
-	}
-	if (key == sht::PublicKey::kW)
-	{
-		velocity_been_set = true;
-		velocity.x -= kPushPower;
-	}
-
-	// Update forces
-	if (velocity_been_set)
-	{
-		balls_[0]->Activate(); // this body may be sleeping, thus we activate it
-		balls_[0]->SetLinearVelocity(velocity);
-		pocket_entrance_timer_->Start();
-	}
-
-	if (key == sht::PublicKey::kSpace)
-	{
-		RespawnCueBall(vec3(0.0f, 50.0f, 0.0f));
-	}
-
-	if (key == sht::PublicKey::kLeft)
 		camera_manager_->RotateAroundTargetInY(-0.1f);
-	else if (key == sht::PublicKey::kRight)
+	else if (key == sht::PublicKey::kD)
 		camera_manager_->RotateAroundTargetInY(0.1f);
-	else if (key == sht::PublicKey::kUp)
+	else if (key == sht::PublicKey::kW)
 		camera_manager_->RotateAroundTargetInZ(0.1f);
-	else if (key == sht::PublicKey::kDown)
+	else if (key == sht::PublicKey::kS)
 		camera_manager_->RotateAroundTargetInZ(-0.1f);
 }
