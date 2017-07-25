@@ -22,6 +22,7 @@ namespace sht {
 	namespace physics {
 
 		class Object;
+		class GhostObject;
 
 		class Engine
 		{
@@ -48,6 +49,12 @@ namespace sht {
 			Object * AddMesh(const math::Vector3& position,
 				float mass, graphics::MeshVerticesEnumerator * enumerator);
 
+			GhostObject * AddGhostObject(const math::Vector3& position,
+				graphics::MeshVerticesEnumerator * enumerator, bool attach = true);
+
+			void AttachGhostObject(GhostObject * ghost_object);
+			void DetachGhostObject(GhostObject * ghost_object);
+
 		protected:
 			void ReleaseObjects();
 			void AddCustomObject(Object * object, float mass);
@@ -63,6 +70,7 @@ namespace sht {
 			btDiscreteDynamicsWorld * dynamics_world_;
 
 			std::vector<Object*> objects_;
+			std::vector<GhostObject*> ghost_objects_;
 		};
 
 	} // namespace physics

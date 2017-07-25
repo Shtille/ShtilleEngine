@@ -1,9 +1,11 @@
 #include "../include/physics_engine.h"
+#include "../include/physics_ghost_object.h"
 
 #include "physics_sphere.h"
 #include "physics_box.h"
 #include "physics_mesh.h"
 
+#include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 
 #include <cstring>
@@ -76,11 +78,33 @@ namespace sht {
 			AddCustomObject(object, mass);
 			return object;
 		}
+		GhostObject * Engine::AddGhostObject(const math::Vector3& position,
+			graphics::MeshVerticesEnumerator * enumerator, bool attach)
+		{
+			GhostObject * ghost_object = new GhostObject(position);
+			ghost_object->CreateShape(&unit_conversion_, enumerator);
+			if (attach)
+				dynamics_world_->addCollisionObject((btCollisionObject*)ghost_object->object_);
+			ghost_objects_.push_back(ghost_object);
+			return ghost_object;
+		}
+		void Engine::AttachGhostObject(GhostObject * ghost_object)
+		{
+			dynamics_world_->addCollisionObject((btCollisionObject*)ghost_object->object_);
+		}
+		void Engine::DetachGhostObject(GhostObject * ghost_object)
+		{
+			dynamics_world_->removeCollisionObject((btCollisionObject*)ghost_object->object_);
+		}
 		void Engine::ReleaseObjects()
 		{
 			for (auto object : objects_)
 			{
 				delete object;
+			}
+			for (auto ghost_object : ghost_objects_)
+			{
+				delete ghost_object;
 			}
 		}
 		void Engine::AddCustomObject(Object * object, float mass)
