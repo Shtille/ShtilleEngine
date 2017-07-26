@@ -97,6 +97,7 @@ private:
 	sht::utility::CameraManager * camera_manager_;
 	sht::physics::Engine * physics_;
 	sht::physics::Object * *balls_;
+	sht::physics::GhostObject * cue_;
 	sht::graphics::Texture * *ball_textures_;
 	bool *ball_active_;
 	unsigned int balls_count_;

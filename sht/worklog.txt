@@ -2,6 +2,7 @@ Today,  July 9 2017 I decided to start tracking a work in a log file.
 
 [26.07.2017]
 - Added ghost object to physics.
+- Added ghost object contact test to physics. Doesn't find contacts with static objects.
 
 [09.07.2017]
 - Added HDR format loading.

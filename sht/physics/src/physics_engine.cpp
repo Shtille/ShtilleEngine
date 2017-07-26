@@ -10,6 +10,77 @@
 
 #include <cstring>
 
+namespace {
+	class ContactSensorCallback : public btCollisionWorld::ContactResultCallback {
+	public:
+		ContactSensorCallback(btCollisionObject * object)
+		: object_(object)
+		, any_collision_(false)
+		{
+		}
+		//! If you don't want to consider collisions where the bodies are joined by a constraint, override needsCollision:
+		/*! However, if you use a btCollisionObject for #body instead of a btRigidBody,
+		 *  then this is unnecessary—checkCollideWithOverride isn't available */
+		bool needsCollision(btBroadphaseProxy* proxy) const override
+		{
+			// We don't want static objects to be filtered out
+			return true;
+		}
+		//! Called with each contact for your own processing (e.g. test if contacts fall in within sensor parameters)
+		btScalar addSingleResult(btManifoldPoint& cp,
+			const btCollisionObjectWrapper* colObj0, int partId0, int index0,
+			const btCollisionObjectWrapper* colObj1, int partId1, int index1) override
+		{
+			if (colObj0->m_collisionObject == object_ ||
+				colObj1->m_collisionObject == object_)
+				any_collision_ = true;
+			return 0; // There was a planned purpose for the return value of addSingleResult, but it is not used so you can ignore it.
+		}
+		const bool any_collision() const
+		{
+			return any_collision_;
+		}
+	private:
+		btCollisionObject * object_;
+		bool any_collision_;
+	};
+	class ContactPairCallback : public btCollisionWorld::ContactResultCallback {
+	public:
+		ContactPairCallback(btCollisionObject * object1, btCollisionObject * object2)
+		: object1_(object1)
+		, object2_(object2)
+		, any_collision_(false)
+		{
+		}
+		//! If you don't want to consider collisions where the bodies are joined by a constraint, override needsCollision:
+		/*! However, if you use a btCollisionObject for #body instead of a btRigidBody,
+		 *  then this is unnecessary—checkCollideWithOverride isn't available */
+		bool needsCollision(btBroadphaseProxy* proxy) const override
+		{
+			// We don't want static objects to be filtered out
+			return true;
+		}
+		//! Called with each contact for your own processing (e.g. test if contacts fall in within sensor parameters)
+		btScalar addSingleResult(btManifoldPoint& cp,
+			const btCollisionObjectWrapper* colObj0, int partId0, int index0,
+			const btCollisionObjectWrapper* colObj1, int partId1, int index1) override
+		{
+			if ((colObj0->m_collisionObject == object1_ && colObj1->m_collisionObject == object2_) ||
+				(colObj0->m_collisionObject == object2_ && colObj1->m_collisionObject == object1_))
+				any_collision_ = true;
+			return 0; // There was a planned purpose for the return value of addSingleResult, but it is not used so you can ignore it.
+		}
+		const bool any_collision() const
+		{
+			return any_collision_;
+		}
+	private:
+		btCollisionObject * object1_;
+		btCollisionObject * object2_;
+		bool any_collision_;
+	};
+}
+
 namespace sht {
 	namespace physics {
 
@@ -79,22 +150,32 @@ namespace sht {
 			return object;
 		}
 		GhostObject * Engine::AddGhostObject(const math::Vector3& position,
-			graphics::MeshVerticesEnumerator * enumerator, bool attach)
+			graphics::MeshVerticesEnumerator * enumerator)
 		{
 			GhostObject * ghost_object = new GhostObject(position);
 			ghost_object->CreateShape(&unit_conversion_, enumerator);
-			if (attach)
-				dynamics_world_->addCollisionObject((btCollisionObject*)ghost_object->object_);
 			ghost_objects_.push_back(ghost_object);
 			return ghost_object;
 		}
 		void Engine::AttachGhostObject(GhostObject * ghost_object)
 		{
-			dynamics_world_->addCollisionObject((btCollisionObject*)ghost_object->object_);
+			dynamics_world_->addCollisionObject(ghost_object->object_);
 		}
 		void Engine::DetachGhostObject(GhostObject * ghost_object)
 		{
-			dynamics_world_->removeCollisionObject((btCollisionObject*)ghost_object->object_);
+			dynamics_world_->removeCollisionObject(ghost_object->object_);
+		}
+		bool Engine::ContactTest(GhostObject * ghost_object)
+		{
+			ContactSensorCallback callback(ghost_object->object_);
+			dynamics_world_->contactTest(ghost_object->object_, callback);
+			return callback.any_collision();
+		}
+		bool Engine::ContactPairTest(GhostObject * ghost_object, Object * object)
+		{
+			ContactPairCallback callback(ghost_object->object_, object->body_);
+			dynamics_world_->contactPairTest(ghost_object->object_, object->body_, callback);
+			return callback.any_collision();
 		}
 		void Engine::ReleaseObjects()
 		{

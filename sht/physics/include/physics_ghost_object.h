@@ -7,7 +7,7 @@
 #include "graphics/include/model/mesh_vertices_enumerator.h"
 
 class btCollisionShape;
-class btGhostObject;
+class btCollisionObject;
 class btTriangleMesh;
 
 namespace sht {
@@ -23,8 +23,6 @@ namespace sht {
 
 			void CreateShape(const UnitConversion * unit_conversion, graphics::MeshVerticesEnumerator * enumerator);
 
-			int GetNumOverlappingObjects() const;
-
 			void SetPosition(const math::Vector3& position);
 			void Translate(const math::Vector3& direction);
 			void SetTransform(const math::Matrix4& transform);
@@ -33,7 +31,7 @@ namespace sht {
 
 		private:
 			btCollisionShape * shape_;
-			btGhostObject * object_;
+			btCollisionObject * object_;
 			btTriangleMesh * triangle_mesh_;
 			math::Matrix4 matrix_; //!< object matrix
 		};

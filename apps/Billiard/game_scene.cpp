@@ -4,6 +4,7 @@
 
 #include "utility/include/event.h"
 #include "physics/include/physics_object.h"
+#include "physics/include/physics_ghost_object.h"
 
 #include <cmath> // for sinf and cosf
 #include <cstdio>
@@ -26,6 +27,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , camera_manager_(nullptr)
 , physics_(nullptr)
 , balls_(nullptr)
+, cue_(nullptr)
 , ball_active_(nullptr)
 , balls_count_(1)
 , cue_alpha_(0.0f)
@@ -160,7 +162,6 @@ void GameScene::RenderCue()
 	{
 		renderer_->PushMatrix();
 		renderer_->MultMatrix(cue_matrix_);
-		renderer_->Translate(vec3(-ball_size_, 0.0f, 0.0f));
 		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		cue_mesh_->Render();
 		renderer_->PopMatrix();
@@ -291,6 +292,10 @@ void GameScene::Load()
 		object->SetFriction(0.2f);
 		object->SetRestitution(0.8f);
 	}
+	{
+		sht::graphics::MeshVerticesEnumerator enumerator(cue_mesh_);
+		cue_ = physics_->AddGhostObject(vec3(0.0f, 0.0f, 0.0f), &enumerator);
+	}
 
 	// Create ball textures
 	ball_textures_ = new sht::graphics::Texture *[balls_count_];
@@ -360,7 +365,8 @@ void GameScene::Unload()
 		if (game_mode_ == GameMode::kSimplePool)
 		{
 			for (unsigned int i = 0; i < balls_count_; ++i)
-				renderer_->DeleteTexture(ball_textures_[i]);
+				if (ball_textures_[i])
+					renderer_->DeleteTexture(ball_textures_[i]);
 		}
 		delete[] ball_textures_;
 		ball_textures_ = nullptr;
@@ -407,7 +413,14 @@ void GameScene::UpdateCueMatrix()
 		cosf(cue_alpha_) * cosf(cue_theta_),
 		sinf(cue_theta_),
 		sinf(cue_alpha_) * cosf(cue_theta_));
-	cue_matrix_ = OrientationMatrix(RotationMatrix(direction), cue_ball->position());
+	sht::math::Vector3 position = cue_ball->position() - direction * (ball_size_ * 1.1f);
+	cue_matrix_ = OrientationMatrix(RotationMatrix(direction), position);
+	cue_->SetTransform(cue_matrix_);
+	bool any_collisions = physics_->ContactTest(cue_);
+	if (any_collisions)
+		SetStatus(L"some collisions");
+	else
+		SetStatus(L"no collisions");
 }
 void GameScene::RespawnCueBall(const vec3& position)
 {
@@ -588,12 +601,12 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 		else if (key == sht::PublicKey::kUp)
 		{
 			rotation_has_changed = true;
-			cue_theta_ += 0.1f;
+			cue_theta_ -= 0.1f;
 		}
 		else if (key == sht::PublicKey::kDown)
 		{
 			rotation_has_changed = true;
-			cue_theta_ -= 0.1f;
+			cue_theta_ += 0.1f;
 		}
 		if (rotation_has_changed)
 			UpdateCueMatrix();

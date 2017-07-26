@@ -50,10 +50,14 @@ namespace sht {
 				float mass, graphics::MeshVerticesEnumerator * enumerator);
 
 			GhostObject * AddGhostObject(const math::Vector3& position,
-				graphics::MeshVerticesEnumerator * enumerator, bool attach = true);
+				graphics::MeshVerticesEnumerator * enumerator);
 
 			void AttachGhostObject(GhostObject * ghost_object);
 			void DetachGhostObject(GhostObject * ghost_object);
+
+			//! Tests contacts with other objects
+			bool ContactTest(GhostObject * ghost_object);
+			bool ContactPairTest(GhostObject * ghost_object, Object * object);
 
 		protected:
 			void ReleaseObjects();

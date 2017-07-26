@@ -2,7 +2,6 @@
 
 #include "../include/physics_unit_converter.h"
 
-#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 
@@ -59,20 +58,13 @@ namespace sht {
 			}
 			shape_ = new btBvhTriangleMeshShape(triangle_mesh_, true);
 
-			object_ = new btGhostObject();
+			object_ = new btCollisionObject();
 			object_->setCollisionShape(shape_);
 
 			// Set initial object transform
 			btTransform transform;
 			transform.setFromOpenGLMatrix(matrix_);
 			object_->setWorldTransform(transform);
-
-			// Disable collision response with rigid bodies
-			object_->setCollisionFlags(object_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-		}
-		int GhostObject::GetNumOverlappingObjects() const
-		{
-			return object_->getNumOverlappingObjects();
 		}
 		void GhostObject::SetPosition(const math::Vector3& position)
 		{
