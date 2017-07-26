@@ -426,6 +426,12 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\complex_mesh_scm.cpp">
       <Filter>sht\graphics\src\model</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\physics\src\physics_ghost_object.cpp">
+      <Filter>sht\physics\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\physics\src\physics_surface_database.cpp">
+      <Filter>sht\physics\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -769,6 +775,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh_vertices_enumerator.h">
       <Filter>sht\graphics\include\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\physics\include\physics_ghost_object.h">
+      <Filter>sht\physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\physics\include\physics_surface.h">
+      <Filter>sht\physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\physics\include\physics_surface_database.h">
+      <Filter>sht\physics\include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ namespace {
 	float ConvertComponent(int expo, int val)
 	{
 		float v = val / 256.0f;
-		float d = powf(2, expo);
+		float d = powf(2.0f, expo);
 		return v * d;
 	}
 
