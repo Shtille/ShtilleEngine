@@ -108,6 +108,10 @@ namespace sht {
 			}
 			bounding_box_.extent *= scale;
 		}
+		void ComplexMesh::SetMaterialBinder(MaterialBinderInterface * material_binder)
+		{
+			material_binder_ = material_binder;
+		}
 		const math::BoundingBox& ComplexMesh::bounding_box() const
 		{
 			return bounding_box_;

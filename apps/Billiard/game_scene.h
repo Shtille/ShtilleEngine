@@ -4,6 +4,7 @@
 
 #include "game_mode.h"
 #include "game_phase.h"
+#include "albedo_material_binder.h"
 
 #include "utility/include/scene/scene.h"
 
@@ -60,6 +61,7 @@ private:
 	void OnKeyDown(sht::PublicKey key, int mods) override;
 
 	MaterialBinder * material_binder_;
+	AlbedoMaterialBinder albedo_material_binder_;
 	GameMode game_mode_;
 	GamePhase phase_;
 

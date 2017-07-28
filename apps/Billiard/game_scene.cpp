@@ -219,6 +219,10 @@ void GameScene::Load()
 
 	// Bind shader to material binder
 	material_binder_->SetShader(object_shader_);
+	albedo_material_binder_.SetShader(ball_shader_);
+
+	// Assign custom material binders to meshes
+	ball_mesh_->SetMaterialBinder(&albedo_material_binder_);
 
 	// Create text objects
 	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);

@@ -27,6 +27,7 @@ namespace sht {
 				kScm // Shtille Complex Mesh
 			};
 
+			//! Material binder can be null
 			ComplexMesh(Renderer * renderer, MaterialBinderInterface * material_binder);
 			virtual ~ComplexMesh();
 
@@ -41,6 +42,9 @@ namespace sht {
 			void Render();
 
 			void ScaleVertices(const math::Vector3& scale);
+
+			//! Specify separate material binder manually
+			void SetMaterialBinder(MaterialBinderInterface * material_binder);
 
 			const math::BoundingBox& bounding_box() const;
 			
