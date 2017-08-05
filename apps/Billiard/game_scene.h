@@ -45,6 +45,7 @@ private:
 	void SetStatus(const wchar_t* text);
 	void PrepareBeginning();
 	void UpdateCueMatrix();
+	void UpdateCueCollision();
 	void RespawnCueBall(const vec3& position);
 	void CheckTimerEvents();
 	void OnBallsStopMoving();
@@ -73,6 +74,7 @@ private:
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID object_shader_id_;
 	sht::utility::ResourceID ball_shader_id_;
+	sht::utility::ResourceID ghost_shader_id_;
 	sht::utility::ResourceID font_id_;
 	sht::utility::ResourceID ball_mesh_id_;
 	sht::utility::ResourceID cue_mesh_id_;
@@ -85,6 +87,7 @@ private:
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * object_shader_;
 	sht::graphics::Shader * ball_shader_;
+	sht::graphics::Shader * ghost_shader_;
 	sht::graphics::Font * font_;
 	sht::graphics::ComplexMesh * ball_mesh_;
 	sht::graphics::ComplexMesh * cue_mesh_;
@@ -119,6 +122,7 @@ private:
 
 	bool need_render_cue_;
 	bool need_render_rack_;
+	bool cue_collides_;
 };
 
 #endif

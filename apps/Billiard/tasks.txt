@@ -4,7 +4,7 @@
 			We don't need a editor at all.
 		- Need an additional menu to select point of hit by cue.
 	- Physics
-		- Add ghost object to test intersections.
+		+ Add ghost object to test intersections.
 		- Add texture for balls and test rotation.
 		+ Make rack kinematic and test it.
 		+ Determine how to make ball stop faster on lower speed.
@@ -16,7 +16,7 @@
 		+ Use simplified physics objects (boxes) for cushions.
 		+ Add surface database class.
 	- Graphics
-		- Use a single shader for rendering both textured and non textured objects.
+		+ Add another shader for cue in disabed state.
 		- Add textures.
 		- Add realistic lighting model.
 		- Add logotype rendering (need skybox and logotype model).
@@ -30,7 +30,9 @@
 		- Add cue hit animation.
 		- Add rack removing animation.
 		- Show cue intersections with other objects (don't let hit in this case).
-		- Write current game status (some message, a.e.).
+			+ with balls
+			- with table
+		+ Write current game status (some message, a.e.).
 		+ Make cue ball hittable by cue.
 		- Add balls respawn.
 		- Add cue ball respawn.

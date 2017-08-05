@@ -36,6 +36,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , light_distance_(10000.0f)
 , need_render_cue_(false)
 , need_render_rack_(false)
+, cue_collides_(false)
 {
 	// Add timers
 	const float kBallRequestInterval = 1.0f;
@@ -48,6 +49,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
 	object_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_object"));
 	ball_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_ball"));
+	ghost_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_ghost"));
 	font_id_          					= AddResourceIdByName(ConstexprStringId("font_good_dog"));
 	ball_mesh_id_     					= AddResourceIdByName(ConstexprStringId("mesh_ball"));
 	cue_mesh_id_      					= AddResourceIdByName(ConstexprStringId("mesh_cue"));
@@ -109,7 +111,11 @@ void GameScene::BindShaderConstants()
 	ball_shader_->Uniform1i("u_texture", 0);
 	ball_shader_->Uniform3fv("u_light.color", kLightColor);
 
-	ball_shader_->Unbind();
+	ghost_shader_->Bind();
+	// Since ghost shader used for cue rendering in case of block we may set up color just once.
+	ghost_shader_->Uniform4f("u_color", 1.0f, 0.0f, 0.0f, 0.5f);
+
+	ghost_shader_->Unbind();
 }
 void GameScene::BindShaderVariables()
 {
@@ -123,7 +129,10 @@ void GameScene::BindShaderVariables()
 	ball_shader_->Uniform3fv("u_light.position", light_position_);
 	ball_shader_->Uniform3fv("u_eye_position", *camera_manager_->position());
 
-	ball_shader_->Unbind();
+	ghost_shader_->Bind();
+	ghost_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
+
+	ghost_shader_->Unbind();
 }
 void GameScene::RenderTable()
 {
@@ -160,9 +169,17 @@ void GameScene::RenderCue()
 {
 	if (need_render_cue_)
 	{
+		sht::graphics::Shader * shader;
+		if (cue_collides_)
+		{
+			shader = ghost_shader_;
+			shader->Bind();
+		}
+		else
+			shader = object_shader_;
 		renderer_->PushMatrix();
 		renderer_->MultMatrix(cue_matrix_);
-		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		shader->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		cue_mesh_->Render();
 		renderer_->PopMatrix();
 	}
@@ -208,6 +225,7 @@ void GameScene::Load()
 	text_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(text_shader_id_));
 	object_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(object_shader_id_));
 	ball_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(ball_shader_id_));
+	ghost_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(ghost_shader_id_));
 	font_ = dynamic_cast<sht::graphics::Font *>(resource_manager->GetResource(font_id_));
 	ball_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(ball_mesh_id_));
 	cue_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(cue_mesh_id_));
@@ -420,8 +438,12 @@ void GameScene::UpdateCueMatrix()
 	sht::math::Vector3 position = cue_ball->position() - direction * (ball_size_ * 1.1f);
 	cue_matrix_ = OrientationMatrix(RotationMatrix(direction), position);
 	cue_->SetTransform(cue_matrix_);
-	bool any_collisions = physics_->ContactTest(cue_);
-	if (any_collisions)
+	UpdateCueCollision();	
+}
+void GameScene::UpdateCueCollision()
+{
+	cue_collides_ = physics_->ContactTest(cue_);
+	if (cue_collides_)
 		SetStatus(L"some collisions");
 	else
 		SetStatus(L"no collisions");
@@ -435,6 +457,7 @@ void GameScene::RespawnCueBall(const vec3& position)
 	cue_ball->SetAngularVelocity(vec3(0.0f));
 	ball_active_[0] = true;
 	spawn_timer_->Start();
+	UpdateCueMatrix();
 }
 void GameScene::CheckTimerEvents()
 {
@@ -563,7 +586,13 @@ void GameScene::SwitchToCueTargeting()
 }
 void GameScene::RequestCueHit()
 {
-	cue_animation_timer_->Start();
+	if (cue_collides_)
+	{
+		// Play some sound, etc.
+		SetStatus(L"unable to do a hit");
+	}
+	else
+		cue_animation_timer_->Start();
 }
 void GameScene::RequestRackRemove()
 {
