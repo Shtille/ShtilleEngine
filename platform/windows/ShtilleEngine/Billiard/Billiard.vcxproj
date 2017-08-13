@@ -129,14 +129,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\apps\Billiard\albedo_material_binder.h" />
+    <ClInclude Include="..\..\..\..\apps\Billiard\animation.h" />
+    <ClInclude Include="..\..\..\..\apps\Billiard\game_mode.h" />
+    <ClInclude Include="..\..\..\..\apps\Billiard\game_phase.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\game_scene.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\game_scene_manager.h" />
+    <ClInclude Include="..\..\..\..\apps\Billiard\joint_pose.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\loading_scene.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\logo_scene.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\material_binder.h" />
     <ClInclude Include="..\..\..\..\apps\Billiard\menu_scene.h" />
+    <ClInclude Include="..\..\..\..\apps\Billiard\pose_listener.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\apps\Billiard\albedo_material_binder.cpp" />
+    <ClCompile Include="..\..\..\..\apps\Billiard\animation.cpp" />
     <ClCompile Include="..\..\..\..\apps\Billiard\game_main.cpp" />
     <ClCompile Include="..\..\..\..\apps\Billiard\game_scene.cpp" />
     <ClCompile Include="..\..\..\..\apps\Billiard\game_scene_manager.cpp" />
@@ -144,6 +152,7 @@
     <ClCompile Include="..\..\..\..\apps\Billiard\logo_scene.cpp" />
     <ClCompile Include="..\..\..\..\apps\Billiard\material_binder.cpp" />
     <ClCompile Include="..\..\..\..\apps\Billiard\menu_scene.cpp" />
+    <ClCompile Include="..\..\..\..\apps\Billiard\pose_listener.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
