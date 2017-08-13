@@ -5,6 +5,8 @@
 #include "game_mode.h"
 #include "game_phase.h"
 #include "albedo_material_binder.h"
+#include "animation.h"
+#include "pose_listener.h"
 
 #include "utility/include/scene/scene.h"
 
@@ -34,6 +36,7 @@ public:
 private:
 	void BindShaderConstants();
 	void BindShaderVariables();
+	void BuildAnimationClips();
 
 	void RenderTable();
 	void RenderBalls();
@@ -65,6 +68,13 @@ private:
 	AlbedoMaterialBinder albedo_material_binder_;
 	GameMode game_mode_;
 	GamePhase phase_;
+
+	PoseListener rack_pose_listener_;
+
+	AnimationClip * rack_animation_clip_;
+	AnimationClip * cue_animation_clip_;
+	AnimationController * rack_animation_controller_;
+	AnimationController * cue_animation_controller_;
 
 	sht::system::Timer * spawn_timer_;
 	sht::system::Timer * pocket_entrance_timer_;
@@ -109,7 +119,6 @@ private:
 	float ball_size_;
 
 	sht::math::Matrix4 cue_matrix_;
-	sht::math::Matrix4 rack_matrix_;
 	float cue_alpha_;
 	float cue_theta_;
 

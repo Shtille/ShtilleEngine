@@ -9,11 +9,20 @@
 #include <cmath> // for sinf and cosf
 #include <cstdio>
 
+namespace {
+	const float kRackAnimationTime = 7.0f;
+	const float kCueAnimationTime = 3.0f;
+}
+
 GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder, GameMode game_mode)
 : Scene(renderer)
 , material_binder_(material_binder)
 , game_mode_(game_mode)
 , phase_(GamePhase::kRackRemoving)
+, rack_animation_clip_(nullptr)
+, cue_animation_clip_(nullptr)
+, rack_animation_controller_(nullptr)
+, cue_animation_controller_(nullptr)
 , text_shader_(nullptr)
 , object_shader_(nullptr)
 , ball_shader_(nullptr)
@@ -42,8 +51,8 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 	const float kBallRequestInterval = 1.0f;
 	spawn_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
 	pocket_entrance_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kBallRequestInterval);
-	cue_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(3.0f);
-	rack_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(3.0f);
+	cue_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kCueAnimationTime);
+	rack_animation_timer_ = sht::system::TimeManager::GetInstance()->AddTimer(kRackAnimationTime);
 
 	// Register resources to load automatically on scene change
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
@@ -134,6 +143,42 @@ void GameScene::BindShaderVariables()
 
 	ghost_shader_->Unbind();
 }
+void GameScene::BuildAnimationClips()
+{
+	// Rack animation clip
+	rack_animation_clip_ = new AnimationClip();
+	rack_animation_clip_->keys.resize(2);
+	rack_animation_clip_->keys[0].time = 0.0f;
+	rack_animation_clip_->keys[0].pose.position.Set(0.0f, 0.0f, 0.0f);
+	rack_animation_clip_->keys[1].time = kRackAnimationTime;
+	rack_animation_clip_->keys[1].pose.position.Set(0.0f, 1000.0f, 0.0f);
+	rack_animation_clip_->duration = kRackAnimationTime;
+	rack_animation_clip_->playback_rate = 1.0f;
+	rack_animation_clip_->flags = (unsigned short)AnimationClip::Flags::kTranslateFlag;
+	rack_animation_clip_->is_looping = false;
+
+	// Cue animation clip
+	cue_animation_clip_ = new AnimationClip();
+	cue_animation_clip_->keys.resize(3);
+	cue_animation_clip_->keys[0].time = 0.0f;
+	cue_animation_clip_->keys[0].pose.position.Set(0.0f, 0.0f, 0.0f);
+	cue_animation_clip_->keys[1].time = 0.66f * kCueAnimationTime;
+	cue_animation_clip_->keys[1].pose.position.Set(-500.0f, 0.0f, 0.0f);
+	cue_animation_clip_->keys[2].time = kCueAnimationTime;
+	cue_animation_clip_->keys[2].pose.position.Set(0.0f, 0.0f, 0.0f);
+	cue_animation_clip_->duration = kCueAnimationTime;
+	cue_animation_clip_->playback_rate = 1.0f;
+	cue_animation_clip_->flags = (unsigned short)AnimationClip::Flags::kTranslateFlag;
+	cue_animation_clip_->is_looping = false;
+
+	// Rack animation controller
+	rack_animation_controller_ = new AnimationController(nullptr);
+	rack_animation_controller_->SetClip(rack_animation_clip_);
+
+	// Cue animation controller
+	cue_animation_controller_ = new AnimationController(nullptr);
+	cue_animation_controller_->SetClip(cue_animation_clip_);
+}
 void GameScene::RenderTable()
 {
 	object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
@@ -159,7 +204,7 @@ void GameScene::RenderRack()
 	if (need_render_rack_)
 	{
 		renderer_->PushMatrix();
-		renderer_->MultMatrix(rack_matrix_);
+		renderer_->MultMatrix(rack_pose_listener_.world_matrix());
 		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		rack_mesh_->Render();
 		renderer_->PopMatrix();
@@ -370,6 +415,8 @@ void GameScene::Load()
 	table_cushions_graphics_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 	table_cushions_graphics_mesh_->MakeRenderable();
 
+	BuildAnimationClips();
+
 	PrepareBeginning();
 	RequestRackRemove(); // later can be moved after table look overview
 
@@ -418,6 +465,26 @@ void GameScene::Unload()
 		delete fps_text_;
 		fps_text_ = nullptr;
 	}
+	if (cue_animation_controller_)
+	{
+		delete cue_animation_controller_;
+		cue_animation_controller_ = nullptr;
+	}
+	if (rack_animation_controller_)
+	{
+		delete rack_animation_controller_;
+		rack_animation_controller_ = nullptr;
+	}
+	if (cue_animation_clip_)
+	{
+		delete cue_animation_clip_;
+		cue_animation_clip_ = nullptr;
+	}
+	if (rack_animation_clip_)
+	{
+		delete rack_animation_clip_;
+		rack_animation_clip_ = nullptr;
+	}
 }
 void GameScene::SetStatus(const wchar_t* text)
 {
@@ -426,7 +493,8 @@ void GameScene::SetStatus(const wchar_t* text)
 void GameScene::PrepareBeginning()
 {
 	need_render_rack_ = true;
-	rack_matrix_.Identity();
+	vec3 position(0.5f * table_bed_mesh_->bounding_box().extent.x, 0.0f, 0.0f);
+	rack_pose_listener_.SetLocalToWorldMatrix(sht::math::Translate(position));
 }
 void GameScene::UpdateCueMatrix()
 {
@@ -490,19 +558,29 @@ void GameScene::CheckTimerEvents()
 		}
 		pocket_entrance_timer_->Reset();
 	}
-	if (cue_animation_timer_->enabled() && cue_animation_timer_->HasExpired())
+	if (cue_animation_timer_->enabled())
 	{
-		cue_animation_timer_->Stop();
-		cue_animation_timer_->Reset();
-		need_render_cue_ = false;
-		HitCueBall();
+		cue_animation_controller_->Update(cue_animation_timer_->time());
+		if (cue_animation_timer_->HasExpired())
+		{
+			cue_animation_timer_->Stop();
+			cue_animation_timer_->Reset();
+			cue_animation_controller_->Stop();
+			need_render_cue_ = false;
+			HitCueBall();
+		}
 	}
-	if (rack_animation_timer_->enabled() && rack_animation_timer_->HasExpired())
+	if (rack_animation_timer_->enabled())
 	{
-		rack_animation_timer_->Stop();
-		rack_animation_timer_->Reset();
-		need_render_rack_ = false;
-		SwitchToCueTargeting();
+		rack_animation_controller_->Update(rack_animation_timer_->time());
+		if (rack_animation_timer_->HasExpired())
+		{
+			rack_animation_timer_->Stop();
+			rack_animation_timer_->Reset();
+			rack_animation_controller_->Stop();
+			need_render_rack_ = false;
+			SwitchToCueTargeting();
+		}
 	}
 }
 void GameScene::OnBallsStopMoving()
@@ -592,12 +670,16 @@ void GameScene::RequestCueHit()
 		SetStatus(L"unable to do a hit");
 	}
 	else
+	{
 		cue_animation_timer_->Start();
+		cue_animation_controller_->Play();
+	}
 }
 void GameScene::RequestRackRemove()
 {
 	phase_ = GamePhase::kRackRemoving;
 	rack_animation_timer_->Start();
+	rack_animation_controller_->Play();
 }
 void GameScene::HitCueBall()
 {
