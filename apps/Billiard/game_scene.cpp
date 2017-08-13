@@ -10,7 +10,7 @@
 #include <cstdio>
 
 namespace {
-	const float kRackAnimationTime = 7.0f;
+	const float kRackAnimationTime = 10.0f;
 	const float kCueAnimationTime = 3.0f;
 }
 
@@ -147,36 +147,52 @@ void GameScene::BuildAnimationClips()
 {
 	// Rack animation clip
 	rack_animation_clip_ = new AnimationClip();
-	rack_animation_clip_->keys.resize(2);
+	rack_animation_clip_->keys.resize(3);
 	rack_animation_clip_->keys[0].time = 0.0f;
+	rack_animation_clip_->keys[0].pose.rotation.Set(UNIT_Y, sht::math::kPi);
 	rack_animation_clip_->keys[0].pose.position.Set(0.0f, 0.0f, 0.0f);
-	rack_animation_clip_->keys[1].time = kRackAnimationTime;
-	rack_animation_clip_->keys[1].pose.position.Set(0.0f, 1000.0f, 0.0f);
+	rack_animation_clip_->keys[1].time = 0.5f * kRackAnimationTime;
+	rack_animation_clip_->keys[1].pose.rotation.Set(UNIT_Y, sht::math::kPi);
+	rack_animation_clip_->keys[1].pose.position.Set(0.0f, 0.0f, 0.0f);
+	rack_animation_clip_->keys[2].time = kRackAnimationTime;
+	rack_animation_clip_->keys[2].pose.rotation.Set(UNIT_Y, sht::math::kPi);
+	rack_animation_clip_->keys[2].pose.position.Set(0.0f, 1000.0f, 0.0f);
 	rack_animation_clip_->duration = kRackAnimationTime;
 	rack_animation_clip_->playback_rate = 1.0f;
-	rack_animation_clip_->flags = (unsigned short)AnimationClip::Flags::kTranslateFlag;
+	rack_animation_clip_->flags =
+		(unsigned short)AnimationClip::Flags::kRotateFlag |
+		(unsigned short)AnimationClip::Flags::kTranslateFlag;
 	rack_animation_clip_->is_looping = false;
 
 	// Cue animation clip
+	/*
+	We need to calculate duration of hit animation.
+	Ball after hit has velocity 2.5 m/s. Ball mass is 150 g. Cue mass is 540 g.
+	So cue should have velocity of 150 * 2.5 / 540 = 0.694 m/s = 694 mm/s.
+	Distance of hit is about 200 mm.
+	So hit time should be 200 / 694 = 0.288 s.
+	*/
 	cue_animation_clip_ = new AnimationClip();
-	cue_animation_clip_->keys.resize(3);
+	cue_animation_clip_->keys.resize(4);
 	cue_animation_clip_->keys[0].time = 0.0f;
 	cue_animation_clip_->keys[0].pose.position.Set(0.0f, 0.0f, 0.0f);
-	cue_animation_clip_->keys[1].time = 0.66f * kCueAnimationTime;
-	cue_animation_clip_->keys[1].pose.position.Set(-500.0f, 0.0f, 0.0f);
-	cue_animation_clip_->keys[2].time = kCueAnimationTime;
-	cue_animation_clip_->keys[2].pose.position.Set(0.0f, 0.0f, 0.0f);
+	cue_animation_clip_->keys[1].time = 1.0f;
+	cue_animation_clip_->keys[1].pose.position.Set(-200.0f, 0.0f, 0.0f);
+	cue_animation_clip_->keys[2].time = kCueAnimationTime - 0.288f;
+	cue_animation_clip_->keys[2].pose.position.Set(-200.0f, 0.0f, 0.0f);
+	cue_animation_clip_->keys[3].time = kCueAnimationTime;
+	cue_animation_clip_->keys[3].pose.position.Set(0.0f, 0.0f, 0.0f);
 	cue_animation_clip_->duration = kCueAnimationTime;
 	cue_animation_clip_->playback_rate = 1.0f;
 	cue_animation_clip_->flags = (unsigned short)AnimationClip::Flags::kTranslateFlag;
 	cue_animation_clip_->is_looping = false;
 
 	// Rack animation controller
-	rack_animation_controller_ = new AnimationController(nullptr);
+	rack_animation_controller_ = new AnimationController(&rack_pose_listener_);
 	rack_animation_controller_->SetClip(rack_animation_clip_);
 
 	// Cue animation controller
-	cue_animation_controller_ = new AnimationController(nullptr);
+	cue_animation_controller_ = new AnimationController(&cue_pose_listener_);
 	cue_animation_controller_->SetClip(cue_animation_clip_);
 }
 void GameScene::RenderTable()
@@ -223,7 +239,7 @@ void GameScene::RenderCue()
 		else
 			shader = object_shader_;
 		renderer_->PushMatrix();
-		renderer_->MultMatrix(cue_matrix_);
+		renderer_->MultMatrix(cue_pose_listener_.world_matrix());
 		shader->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		cue_mesh_->Render();
 		renderer_->PopMatrix();
@@ -493,7 +509,7 @@ void GameScene::SetStatus(const wchar_t* text)
 void GameScene::PrepareBeginning()
 {
 	need_render_rack_ = true;
-	vec3 position(0.5f * table_bed_mesh_->bounding_box().extent.x, 0.0f, 0.0f);
+	vec3 position(0.5f * table_bed_mesh_->bounding_box().extent.x, 0.5f * rack_mesh_->bounding_box().extent.y, 0.0f);
 	rack_pose_listener_.SetLocalToWorldMatrix(sht::math::Translate(position));
 }
 void GameScene::UpdateCueMatrix()
@@ -504,8 +520,8 @@ void GameScene::UpdateCueMatrix()
 		sinf(cue_theta_),
 		sinf(cue_alpha_) * cosf(cue_theta_));
 	sht::math::Vector3 position = cue_ball->position() - direction * (ball_size_ * 1.1f);
-	cue_matrix_ = OrientationMatrix(RotationMatrix(direction), position);
-	cue_->SetTransform(cue_matrix_);
+	cue_pose_listener_.SetLocalToWorldMatrix(OrientationMatrix(RotationMatrix(direction), position));
+	cue_->SetTransform(cue_pose_listener_.world_matrix());
 	UpdateCueCollision();	
 }
 void GameScene::UpdateCueCollision()
@@ -684,7 +700,7 @@ void GameScene::RequestRackRemove()
 void GameScene::HitCueBall()
 {
 	// Impulse simply has the same direction like cue does
-	const float kPushPower = 375.0f;
+	const float kPushPower = 375.0f; // for velocity 2.5 m/s
 	sht::math::Vector3 impulse(
 		kPushPower * cosf(cue_alpha_) * cosf(cue_theta_),
 		kPushPower * sinf(cue_theta_),

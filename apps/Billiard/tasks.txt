@@ -27,8 +27,8 @@
 			+ Space key to hit the cue ball.
 		[-] Mobile
 	- Gameplay
-		- Add cue hit animation.
-		- Add rack removing animation.
+		+ Add cue hit animation.
+		+ Add rack removing animation.
 		- Show cue intersections with other objects (don't let hit in this case).
 			+ with balls
 			- with table

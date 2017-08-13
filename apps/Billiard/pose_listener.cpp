@@ -1,5 +1,7 @@
 #include "pose_listener.h"
 
+#include "math/sht_math.h"
+
 PoseListener::PoseListener()
 {
 	local_to_world_matrix_.Identity();
@@ -16,11 +18,12 @@ const sht::math::Matrix4& PoseListener::world_matrix() const
 }
 void PoseListener::OnChange(const JointPose * pose)
 {
+	sht::math::Matrix3 rotation_matrix;
 	sht::math::Matrix4 pose_matrix;
-	pose_matrix.Identity();
-	pose_matrix.sa[12] = pose->position.x;
-	pose_matrix.sa[13] = pose->position.y;
-	pose_matrix.sa[14] = pose->position.z;
+
+	sht::math::QuaternionToMatrix(rotation_matrix, pose->rotation);
+
+	pose_matrix = sht::math::OrientationMatrix(rotation_matrix, pose->position);
 
 	world_matrix_ = local_to_world_matrix_ * pose_matrix;
 }

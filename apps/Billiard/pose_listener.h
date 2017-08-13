@@ -6,11 +6,11 @@
 
 #include "math/matrix.h"
 
-class PoseListener : protected JointPoseListenerInterface {
+class PoseListener : public JointPoseListenerInterface {
 public:
 	PoseListener();
 
-	void SetLocalToWorldMatrix(const sht::math::Matrix4& world_to_local_matrix);
+	void SetLocalToWorldMatrix(const sht::math::Matrix4& local_to_world_matrix);
 
 	const sht::math::Matrix4& world_matrix() const;
 

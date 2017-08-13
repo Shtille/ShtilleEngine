@@ -70,6 +70,7 @@ private:
 	GamePhase phase_;
 
 	PoseListener rack_pose_listener_;
+	PoseListener cue_pose_listener_;
 
 	AnimationClip * rack_animation_clip_;
 	AnimationClip * cue_animation_clip_;
@@ -118,7 +119,6 @@ private:
 	unsigned int balls_count_;
 	float ball_size_;
 
-	sht::math::Matrix4 cue_matrix_;
 	float cue_alpha_;
 	float cue_theta_;
 

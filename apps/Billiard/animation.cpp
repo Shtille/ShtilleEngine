@@ -27,15 +27,20 @@ void AnimationController::Update(float local_time)
 		size_t next_index = current_index_ + 1;
 		assert(next_index < clip_->keys.size());
 		float next_key_time = clip_->keys[next_index].time;
-		while (sample_time >= next_key_time)
+		if (sample_time < clip_->duration)
 		{
-			++current_index_;
-			++next_index;
-			assert(next_index < clip_->keys.size());
-			next_key_time = clip_->keys[next_index].time;
+			while (sample_time >= next_key_time)
+			{
+				++current_index_;
+				++next_index;
+				assert(next_index < clip_->keys.size());
+				next_key_time = clip_->keys[next_index].time;
+			}
 		}
-		if (current_index_ == clip_->keys.size())
-			current_index_ = 0U;
+		else
+		{
+			sample_time = clip_->keys[next_index].time;
+		}
 
 		// Interpolate poses
 		const AnimationKey& key0 = clip_->keys[current_index_];
@@ -63,7 +68,10 @@ void AnimationController::SetClip(const AnimationClip * clip)
 void AnimationController::Play()
 {
 	if (clip_)
+	{
+		current_index_ = 0U;
 		is_playing_ = true;
+	}
 }
 void AnimationController::Stop()
 {
