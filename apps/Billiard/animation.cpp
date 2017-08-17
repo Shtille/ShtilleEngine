@@ -8,7 +8,9 @@ AnimationController::AnimationController(JointPoseListenerInterface * listener)
 , current_index_(0U)
 , is_playing_(false)
 {
-
+	current_pose_.rotation.Identity();
+	current_pose_.position.Set(0.0f, 0.0f, 0.0f);
+	current_pose_.scale = 1.0f;
 }
 AnimationController::~AnimationController()
 {

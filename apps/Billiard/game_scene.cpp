@@ -552,6 +552,7 @@ void GameScene::CheckTimerEvents()
 		{
 			// Ball has been deactivated
 			spawn_timer_->Stop();
+			SwitchToCueTargeting();
 		}
 		spawn_timer_->Reset();
 	}
@@ -646,9 +647,12 @@ void GameScene::OnBallsStopMoving()
 			else if (!any_ball_has_fallen) // player hasn't scored any ball
 			{
 				SwitchToTheNextPlayer();
-				
+				SwitchToCueTargeting();
 			}
-			SwitchToCueTargeting();
+			else // any colored ball has fallen
+			{
+				SwitchToCueTargeting();
+			}
 		}
 	}
 	else
