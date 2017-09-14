@@ -68,7 +68,7 @@ namespace sht {
 		{
 
 		}
-		void Scene::OnMouseMove()
+		void Scene::OnMouseMove(float x, float y)
 		{
 			
 		}

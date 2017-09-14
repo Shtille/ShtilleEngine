@@ -36,7 +36,7 @@ namespace sht {
 			virtual void OnKeyDown(sht::PublicKey key, int mods);
 			virtual void OnMouseDown(sht::MouseButton button, int modifiers);
 			virtual void OnMouseUp(sht::MouseButton button, int modifiers);
-			virtual void OnMouseMove();
+			virtual void OnMouseMove(float x, float y);
 
 		protected:
 			ResourceID AddResourceIdByName(sht::utility::StringId string_id);

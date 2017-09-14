@@ -225,6 +225,10 @@ namespace sht {
                 
                 float glyph_x = offset_x + left;
                 float glyph_y = offset_y + top - glyph_size_y;
+
+                // Advance the cursor to the start of the next character
+                offset_x += kB2S * info->advance_x;
+                offset_y += kB2S * info->advance_y;
                 
                 if (glyph_x < *min_x)
                     *min_x = glyph_x;
@@ -241,8 +245,7 @@ namespace sht {
         }
         void Text::SetPosition(const vec2& position)
         {
-            reference_x_ = position.x;
-            reference_y_ = position.y;
+            SetTextInternal(font_, position.x, position.y, scale_);
         }
         StaticText::StaticText(Renderer * renderer)
         : Text(renderer, 256)

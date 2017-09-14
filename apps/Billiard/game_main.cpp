@@ -82,7 +82,7 @@ public:
 	}
 	void OnMouseMove() final
 	{
-		scene_manager_->OnMouseMove();
+		scene_manager_->OnMouseMove(mouse_.x() / height_, mouse_.y() / height_);
 	}
 	void OnSize(int w, int h) final
 	{

@@ -28,11 +28,18 @@ namespace sht {
 			{
 				height_ = height;
 			}
-			bool Rect::IsInside(f32 x, f32 y)
+			bool Rect::IsInsideLocal(f32 x, f32 y)
 			{
 				return (position_.x < x) && (position_.y < y) &&
 					(x < position_.x + width_) && (y < position_.y + height_);
 			}
+            bool Rect::IsInsideGlobal(f32 x, f32 y)
+            {
+                vec2 position;
+                ObtainGlobalPosition(&position);
+                return (position.x < x) && (position.y < y) &&
+                    (x < position.x + width_) && (y < position.y + height_);
+            }
             RectColored::RectColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
                                      const vec4& color, f32 x, f32 y, f32 width, f32 height, u32 flags)
             : Rect(renderer, shader, nullptr, x, y, width, height, flags)

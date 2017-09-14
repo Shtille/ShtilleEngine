@@ -84,6 +84,10 @@ void MenuScene::OnKeyDown(sht::PublicKey key, int mods)
 		event_listener_->OnEvent(&event);
 	}
 }
+void MenuScene::OnMouseMove(float x, float y)
+{
+	board_->SelectAll(x, y);
+}
 void MenuScene::CreateMenu()
 {
 	board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
@@ -105,12 +109,12 @@ void MenuScene::CreateMenu()
 			0.4f, // y
 			0.4f, // width
 			0.1f, // height
-			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
 		board_->AttachWidget(rect);
 		const wchar_t * kText = L"New Game";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
-			vec4(1.0f), // color
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height
 			wcslen(kText)+1, // buffer size
 			0.0f, // x
@@ -127,12 +131,12 @@ void MenuScene::CreateMenu()
 			0.0f, // y
 			0.4f, // width
 			0.1f, // height
-			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
 		board_->AttachWidget(rect);
 		const wchar_t * kText = L"Exit";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
-			vec4(1.0f), // color
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height
 			wcslen(kText)+1, // buffer size
 			0.0f, // x
@@ -141,5 +145,6 @@ void MenuScene::CreateMenu()
 			);
 		rect->AttachWidget(label);
 		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
 	}
 }

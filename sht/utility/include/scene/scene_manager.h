@@ -33,7 +33,7 @@ namespace sht {
 			void OnKeyDown(sht::PublicKey key, int mods);
 			void OnMouseDown(sht::MouseButton button, int modifiers);
 			void OnMouseUp(sht::MouseButton button, int modifiers);
-			void OnMouseMove();
+			void OnMouseMove(float x, float y);
 
 		protected:
 			void RequestImmediateTransition(Scene * scene);

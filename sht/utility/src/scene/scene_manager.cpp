@@ -63,10 +63,10 @@ namespace sht {
 			if (current_scene_)
 				current_scene_->OnMouseUp(button, modifiers);
 		}
-		void SceneManager::OnMouseMove()
+		void SceneManager::OnMouseMove(float x, float y)
 		{
 			if (current_scene_)
-				current_scene_->OnMouseMove();
+				current_scene_->OnMouseMove(x, y);
 		}
 		void SceneManager::RequestImmediateTransition(Scene * scene)
 		{

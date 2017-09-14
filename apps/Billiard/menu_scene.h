@@ -20,6 +20,7 @@ public:
 	void Unload();
 
 	void OnKeyDown(sht::PublicKey key, int mods) final;
+	void OnMouseMove(float x, float y) final;
 
 private:
 	void CreateMenu();

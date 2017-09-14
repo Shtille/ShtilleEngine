@@ -1,5 +1,7 @@
 #include "../../include/ui/widget.h"
 
+#include "../../include/ui/rect.h"
+
 namespace sht {
 	namespace utility {
 		namespace ui {
@@ -88,6 +90,24 @@ namespace sht {
                 for (auto &w : nodes_)
                 {
                     w->DeactivateAll();
+                }
+            }
+            void Widget::Select(float x, float y)
+            {
+                if (HasFlag(Flags::kSelectable))
+                {
+                    Rect * rect = dynamic_cast<Rect*>(this);
+                    if (rect)
+                        active_ = rect->IsInsideGlobal(x, y);
+                }
+            }
+            void Widget::SelectAll(float x, float y)
+            {
+                Select(x, y);
+                
+                for (auto &w : nodes_)
+                {
+                    w->SelectAll(x, y);
                 }
             }
             bool Widget::HasFlag(Flags flag)

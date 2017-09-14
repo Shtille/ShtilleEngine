@@ -41,6 +41,9 @@ namespace sht {
                 
                 void ActivateAll();
                 void DeactivateAll();
+
+                void Select(float x, float y); //!< activates only this if has selectable flag
+                void SelectAll(float x, float y); //!< activates all selectable widgets
                 
                 bool HasFlag(Flags flag);
                 

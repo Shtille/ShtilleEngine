@@ -21,7 +21,8 @@ namespace sht {
 				void set_width(f32 width);
 				void set_height(f32 height);
 
-				bool IsInside(f32 x, f32 y);
+				bool IsInsideLocal(f32 x, f32 y);
+                bool IsInsideGlobal(f32 x, f32 y);
 
 			protected:
 				f32 width_;
