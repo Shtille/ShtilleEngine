@@ -239,6 +239,11 @@ namespace sht {
                     *max_y = glyph_y + glyph_size_y;
             }
         }
+        void Text::SetPosition(const vec2& position)
+        {
+            reference_x_ = position.x;
+            reference_y_ = position.y;
+        }
         StaticText::StaticText(Renderer * renderer)
         : Text(renderer, 256)
         {

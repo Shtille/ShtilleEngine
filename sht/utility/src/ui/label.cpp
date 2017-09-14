@@ -25,6 +25,7 @@ namespace sht {
             void Label::Render()
             {
                 shader_->Bind();
+                shader_->Uniform4fv("u_color", color_);
                 text_->Render();
                 shader_->Unbind();
             }
@@ -38,11 +39,24 @@ namespace sht {
                 ObtainGlobalPosition(&position);
                 text_->SetTextSimple(font_, position.x, position.y, text_height_, text);
             }
+            void Label::AlignCenter(f32 rect_width, f32 rect_height)
+            {
+                if (parent_ == nullptr) return;
+
+                vec2 parent_position;
+                parent_->ObtainGlobalPosition(&parent_position);
+
+                float min_x, min_y, max_x, max_y;
+                text_->GetTextBoundingBox(&min_x, &min_y, &max_x, &max_y);
+                vec2 position;
+                position.x = parent_position.x + 0.5f * rect_width - 0.5f * (max_x - min_x);
+                position.y = parent_position.y + 0.5f * rect_height - 0.5f * (max_y - min_y);
+                text_->SetPosition(position);
+            }
             void Label::BindConstUniforms()
             {
                 shader_->Bind();
                 shader_->Uniform1i("u_texture", 0);
-                shader_->Uniform4fv("u_color", color_);
                 shader_->Unbind();
             }
 

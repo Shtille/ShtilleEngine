@@ -3,6 +3,9 @@
 		+ Editor
 			We don't need a editor at all.
 		- Need an additional menu to select point of hit by cue.
+		- Main menu.
+		- Victory menu.
+		- Defeat menu.
 	- Physics
 		+ Add ghost object to test intersections.
 		- Add texture for balls and test rotation.
@@ -16,7 +19,7 @@
 		+ Use simplified physics objects (boxes) for cushions.
 		+ Add surface database class.
 	- Graphics
-		+ Add another shader for cue in disabed state.
+		+ Add another shader for cue in disabled state.
 		- Add textures.
 		- Add realistic lighting model.
 		- Add logotype rendering (need skybox and logotype model).

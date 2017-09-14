@@ -23,6 +23,8 @@ namespace sht {
                 void AppendSymbol(wchar_t symbol);
                 void SetText(const wchar_t* text);
 
+                void AlignCenter(f32 rect_width, f32 rect_height);
+
 			protected:
                 sht::graphics::Shader * shader_;
                 sht::graphics::Font * font_;

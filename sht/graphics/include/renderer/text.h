@@ -18,6 +18,8 @@ namespace sht {
             
             //! Returns text bounding box in screen coordinates ([0..a, 0..1])
             void GetTextBoundingBox(float* min_x, float* min_y, float* max_x, float* max_y);
+
+            void SetPosition(const vec2& position);
             
         protected:
             bool SetTextInternal(Font * font, float x, float y, float scale);
@@ -59,6 +61,7 @@ namespace sht {
             
             using Text::Render;
             using Text::GetTextBoundingBox;
+            using Text::SetPosition;
             
         private:
             StaticText(Renderer * renderer);
@@ -81,6 +84,7 @@ namespace sht {
             
             using Text::Render;
             using Text::GetTextBoundingBox;
+            using Text::SetPosition;
             
         private:
             DynamicText(Renderer * renderer, u32 buffer_size);

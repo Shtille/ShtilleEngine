@@ -49,13 +49,13 @@ namespace sht {
                 ObtainGlobalPosition(&position);
                 shader_->Bind();
                 shader_->Uniform2fv("u_position", position);
+                shader_->Uniform4fv("u_color", color_);
                 DrawableWidget::Render();
                 shader_->Unbind();
             }
             void RectColored::BindConstUniforms()
             {
                 shader_->Bind();
-                shader_->Uniform4fv("u_color", color_);
                 shader_->Uniform1f("u_aspect_ratio", renderer_->aspect_ratio());
                 shader_->Unbind();
             }
