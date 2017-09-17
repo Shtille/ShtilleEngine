@@ -27,17 +27,16 @@ namespace sht {
             {
                 constant_position_ = use;
             }
-            void Label::Update(f32 sec)
+            void Label::Render()
             {
                 if (!constant_position_)
                 {
+                    // Doing this at Render() because we sometimes omit rendering labels
                     vec2 position;
                     ObtainGlobalPosition(&position);
                     text_->SetPosition(position);
                 }
-            }
-            void Label::Render()
-            {
+
                 shader_->Bind();
                 shader_->Uniform4fv("u_color", color_);
                 text_->Render();
@@ -60,11 +59,15 @@ namespace sht {
                 vec2 parent_position;
                 parent_->ObtainGlobalPosition(&parent_position);
 
+                // We also have to modify local position
                 float min_x, min_y, max_x, max_y;
                 text_->GetTextBoundingBox(&min_x, &min_y, &max_x, &max_y);
+                position_.x = 0.5f * rect_width - 0.5f * (max_x - min_x);
+                position_.y = 0.5f * rect_height - 0.5f * (max_y - min_y);
+
                 vec2 position;
-                position.x = parent_position.x + 0.5f * rect_width - 0.5f * (max_x - min_x);
-                position.y = parent_position.y + 0.5f * rect_height - 0.5f * (max_y - min_y);
+                position.x = parent_position.x + position_.x;
+                position.y = parent_position.y + position_.y;
                 text_->SetPosition(position);
             }
             void Label::BindConstUniforms()

@@ -19,8 +19,7 @@ namespace sht {
 				virtual ~Label();
 
                 void set_constant_position(bool use);
-                
-                void Update(f32 sec) override;
+
                 void Render() override;
                 
                 void AppendSymbol(wchar_t symbol);
