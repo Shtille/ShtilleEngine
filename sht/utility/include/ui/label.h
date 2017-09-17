@@ -17,7 +17,10 @@ namespace sht {
                       sht::graphics::Font * font, const vec4& color, f32 text_height, u32 buffer_size,
                       f32 x, f32 y, u32 flags);
 				virtual ~Label();
+
+                void set_constant_position(bool use);
                 
+                void Update(f32 sec) override;
                 void Render() override;
                 
                 void AppendSymbol(wchar_t symbol);
@@ -31,6 +34,7 @@ namespace sht {
                 vec4 color_;
                 sht::graphics::DynamicText * text_;
                 f32 text_height_;
+                bool constant_position_; //!< used for optimization
                 
             private:
                 void BindConstUniforms() override;

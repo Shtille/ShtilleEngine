@@ -31,6 +31,9 @@ namespace sht {
 				void set_active(bool active);
 				void set_enabled(bool enabled);
 
+				bool active() const;
+				bool enabled() const;
+
 				void AttachWidget(Widget * widget);
 				void DetachWidget(Widget * widget);
 

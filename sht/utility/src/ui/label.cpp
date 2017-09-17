@@ -12,6 +12,7 @@ namespace sht {
             , font_(font)
             , color_(color)
             , text_height_(text_height)
+            , constant_position_(false)
             {
                 BindConstUniforms();
                 text_ = sht::graphics::DynamicText::Create(renderer, buffer_size);
@@ -22,6 +23,19 @@ namespace sht {
 			{
 				delete text_;
 			}
+            void Label::set_constant_position(bool use)
+            {
+                constant_position_ = use;
+            }
+            void Label::Update(f32 sec)
+            {
+                if (!constant_position_)
+                {
+                    vec2 position;
+                    ObtainGlobalPosition(&position);
+                    text_->SetPosition(position);
+                }
+            }
             void Label::Render()
             {
                 shader_->Bind();

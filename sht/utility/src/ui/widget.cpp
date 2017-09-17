@@ -34,6 +34,14 @@ namespace sht {
 			{
 				enabled_ = enabled;
 			}
+            bool Widget::active() const
+            {
+                return active_;
+            }
+            bool Widget::enabled() const
+            {
+                return enabled_;
+            }
 			void Widget::AttachWidget(Widget * widget)
 			{
 				nodes_.push_back(widget);
