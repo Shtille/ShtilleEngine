@@ -36,6 +36,18 @@ public:
 	}
 	void Update() final
 	{
+		// Handle some application-specific requests
+		if (scene_manager_->exit_requested())
+		{
+			scene_manager_->set_exit_requested(false);
+			Application::Terminate();
+		}
+		else if (scene_manager_->fullscreen_toggle_requested())
+		{
+			scene_manager_->set_fullscreen_toggle_requested(false);
+			Application::ToggleFullscreen();
+		}
+
 		// Update scene manager
 		scene_manager_->Update();
 
@@ -59,18 +71,10 @@ public:
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
 	{
-		if (key == sht::PublicKey::kF)
-		{
-			ToggleFullscreen();
-		}
-		else if (key == sht::PublicKey::kEscape)
-		{
+		if (sht::PublicKey::kEscape == key)
 			Application::Terminate();
-		}
 		else
-		{
 			scene_manager_->OnKeyDown(key, mods);
-		}
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{

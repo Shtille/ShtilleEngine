@@ -21,6 +21,12 @@ public:
 	sht::graphics::Renderer * renderer();
 	MaterialBinder * material_binder();
 
+	bool exit_requested() const;
+	bool fullscreen_toggle_requested() const;
+
+	void set_exit_requested(bool requested);
+	void set_fullscreen_toggle_requested(bool requested);
+
 	const char* GetResourcePath(sht::utility::ResourceID id);
 
 private:
@@ -37,6 +43,9 @@ private:
 
 	typedef std::unordered_map<sht::utility::ResourceID, std::string> ResourceIdToPathTable;
 	ResourceIdToPathTable resources_paths_;
+
+	bool exit_requested_;
+	bool fullscreen_toggle_requested_;
 };
 
 #endif

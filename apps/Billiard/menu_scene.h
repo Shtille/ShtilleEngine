@@ -5,6 +5,7 @@
 #include "utility/include/scene/scene.h"
 #include "utility/include/event_listener.h"
 #include "utility/include/ui/board.h"
+#include "utility/include/ui/rect.h"
 
 #include "graphics/include/renderer/text.h"
 
@@ -19,7 +20,7 @@ public:
 	void Load();
 	void Unload();
 
-	void OnKeyDown(sht::PublicKey key, int mods) final;
+	void OnMouseDown(sht::MouseButton button, int modifiers) final;
 	void OnMouseMove(float x, float y) final;
 
 private:
@@ -37,6 +38,8 @@ private:
 	sht::graphics::StaticText * text_;
 
 	sht::utility::ui::VerticalBoard * board_;
+	sht::utility::ui::Rect * new_game_rect_;
+	sht::utility::ui::Rect * exit_rect_;
 };
 
 #endif

@@ -154,6 +154,8 @@ private:
 
 GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 : renderer_(renderer)
+, exit_requested_(false)
+, fullscreen_toggle_requested_(false)
 {
 	RegisterAllResources(); // should be done before scenes creation
 
@@ -185,6 +187,22 @@ sht::graphics::Renderer * GameSceneManager::renderer()
 MaterialBinder * GameSceneManager::material_binder()
 {
 	return material_binder_;
+}
+bool GameSceneManager::exit_requested() const
+{
+	return exit_requested_;
+}
+bool GameSceneManager::fullscreen_toggle_requested() const
+{
+	return fullscreen_toggle_requested_;
+}
+void GameSceneManager::set_exit_requested(bool requested)
+{
+	exit_requested_ = requested;
+}
+void GameSceneManager::set_fullscreen_toggle_requested(bool requested)
+{
+	fullscreen_toggle_requested_ = requested;
 }
 void GameSceneManager::RegisterAllResources()
 {
@@ -218,6 +236,12 @@ void GameSceneManager::OnEvent(const sht::utility::Event * event)
 	case ConstexprStringId("loading_scene_loaded"):
 		// Detach loading scene upon loading
 		menu_scene_->SetNextScene(nullptr);
+		break;
+	case ConstexprStringId("application_exit_requested"):
+		exit_requested_ = true;
+		break;
+	case ConstexprStringId("application_fullscreen_toggle_requested"):
+		fullscreen_toggle_requested_ = true;
 		break;
 	}
 }

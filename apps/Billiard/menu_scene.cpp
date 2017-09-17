@@ -3,7 +3,6 @@
 #include "system/include/time/time_manager.h"
 #include "utility/include/event.h"
 #include "utility/include/ui/label.h"
-#include "utility/include/ui/rect.h"
 
 #include <cstring>
 
@@ -28,6 +27,9 @@ void MenuScene::Update()
 {
 	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
 	float frame_time = time_manager->GetFixedFrameTime();
+
+	if (board_->IsPosUp())
+		board_->Move();
 
 	board_->UpdateAll(frame_time);
 }
@@ -76,12 +78,20 @@ void MenuScene::Unload()
 		text_ = nullptr;
 	}
 }
-void MenuScene::OnKeyDown(sht::PublicKey key, int mods)
+void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
 {
-	if (key == sht::PublicKey::kSpace)
+	if (button == sht::MouseButton::kLeft)
 	{
-		sht::utility::Event event(ConstexprStringId("menu_scene_finished"));
-		event_listener_->OnEvent(&event);
+		if (new_game_rect_->active())
+		{
+			sht::utility::Event event(ConstexprStringId("menu_scene_finished"));
+			event_listener_->OnEvent(&event);
+		}
+		else if (exit_rect_->active())
+		{
+			sht::utility::Event event(ConstexprStringId("application_exit_requested"));
+			event_listener_->OnEvent(&event);
+		}
 	}
 }
 void MenuScene::OnMouseMove(float x, float y)
@@ -98,7 +108,7 @@ void MenuScene::CreateMenu()
 		0.1f, // f32 hmin
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
-		true, // bool is_down
+		false, // bool is_down
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	sht::utility::ui::Rect * rect;
@@ -112,6 +122,7 @@ void MenuScene::CreateMenu()
 			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
 		board_->AttachWidget(rect);
+		new_game_rect_ = rect;
 		const wchar_t * kText = L"New Game";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
@@ -134,6 +145,7 @@ void MenuScene::CreateMenu()
 			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
 		board_->AttachWidget(rect);
+		exit_rect_ = rect;
 		const wchar_t * kText = L"Exit";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
