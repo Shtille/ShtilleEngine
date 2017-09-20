@@ -164,7 +164,7 @@ GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 	logo_scene_ = new LogoScene(renderer, this);
 	menu_scene_ = new MenuScene(renderer, this);
 	loading_scene_ = new LoadingScene(renderer, this);
-	game_scene_ = new GameScene(renderer, material_binder_, GameMode::kSimplePool);
+	game_scene_ = new GameScene(renderer, this, material_binder_, GameMode::kSimplePool);
 
 	// Make loading scene to load with menu scene
 	menu_scene_->SetNextScene(loading_scene_);
@@ -236,6 +236,9 @@ void GameSceneManager::OnEvent(const sht::utility::Event * event)
 	case ConstexprStringId("loading_scene_loaded"):
 		// Detach loading scene upon loading
 		menu_scene_->SetNextScene(nullptr);
+		break;
+	case ConstexprStringId("game_scene_exit_requested"):
+		RequestImmediateTransition(menu_scene_);
 		break;
 	case ConstexprStringId("application_exit_requested"):
 		exit_requested_ = true;

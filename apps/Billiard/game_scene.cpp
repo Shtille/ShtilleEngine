@@ -3,6 +3,7 @@
 #include "material_binder.h"
 
 #include "utility/include/event.h"
+#include "utility/include/ui/label.h"
 #include "physics/include/physics_object.h"
 #include "physics/include/physics_ghost_object.h"
 
@@ -14,8 +15,10 @@ namespace {
 	const float kCueAnimationTime = 3.0f;
 }
 
-GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder, GameMode game_mode)
+GameScene::GameScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
+	MaterialBinder * material_binder, GameMode game_mode)
 : Scene(renderer)
+, event_listener_(event_listener)
 , material_binder_(material_binder)
 , game_mode_(game_mode)
 , phase_(GamePhase::kRackRemoving)
@@ -23,6 +26,8 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 , cue_animation_clip_(nullptr)
 , rack_animation_controller_(nullptr)
 , cue_animation_controller_(nullptr)
+, victory_board_(nullptr)
+, defeat_board_(nullptr)
 , text_shader_(nullptr)
 , object_shader_(nullptr)
 , ball_shader_(nullptr)
@@ -56,6 +61,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, MaterialBinder * materi
 
 	// Register resources to load automatically on scene change
 	text_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_text"));
+	gui_shader_id_   					= AddResourceIdByName(ConstexprStringId("shader_gui"));
 	object_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_object"));
 	ball_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_ball"));
 	ghost_shader_id_ 					= AddResourceIdByName(ConstexprStringId("shader_ghost"));
@@ -93,6 +99,10 @@ void GameScene::Update()
 
 	// Camera should be updated after physics
 	camera_manager_->Update(frame_time);
+
+	// Update UI
+	victory_board_->UpdateAll(frame_time);
+	defeat_board_->UpdateAll(frame_time);
 
 	// Check timers' events
 	CheckTimerEvents();
@@ -271,6 +281,23 @@ void GameScene::RenderInterface()
 	// Draw status text
 	status_text_->Render();
 
+	// Render UI
+	gui_shader_->Bind();
+	if (!victory_board_->IsPosUp())
+	{
+		if (victory_board_->IsPosDown())
+			victory_board_->RenderAll(); // render entire tree
+		else
+			victory_board_->Render(); // render only board rect (smart hack for labels :D)
+	}
+	if (!defeat_board_->IsPosUp())
+	{
+		if (defeat_board_->IsPosDown())
+			defeat_board_->RenderAll(); // render entire tree
+		else
+			defeat_board_->Render(); // render only board rect (smart hack for labels :D)
+	}
+
 	renderer_->EnableDepthTest();
 }
 void GameScene::Render()
@@ -284,6 +311,7 @@ void GameScene::Load()
 	sht::utility::ResourceManager * resource_manager = sht::utility::ResourceManager::GetInstance();
 
 	text_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(text_shader_id_));
+	gui_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(gui_shader_id_));
 	object_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(object_shader_id_));
 	ball_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(ball_shader_id_));
 	ghost_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(ghost_shader_id_));
@@ -433,6 +461,8 @@ void GameScene::Load()
 
 	BuildAnimationClips();
 
+	CreateMenu();
+
 	PrepareBeginning();
 	RequestRackRemove(); // later can be moved after table look overview
 
@@ -440,6 +470,16 @@ void GameScene::Load()
 }
 void GameScene::Unload()
 {
+	if (defeat_board_)
+	{
+		delete defeat_board_;
+		defeat_board_ = nullptr;
+	}
+	if (victory_board_)
+	{
+		delete victory_board_;
+		victory_board_ = nullptr;
+	}
 	if (ball_active_)
 	{
 		delete[] ball_active_;
@@ -662,11 +702,11 @@ void GameScene::OnBallsStopMoving()
 }
 void GameScene::OnPlayerWon()
 {
-
+	victory_board_->Move();
 }
 void GameScene::OnPlayerLost()
 {
-
+	defeat_board_->Move();
 }
 void GameScene::IncreaseScore()
 {
@@ -756,4 +796,148 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 		camera_manager_->RotateAroundTargetInZ(0.1f);
 	else if (key == sht::PublicKey::kS)
 		camera_manager_->RotateAroundTargetInZ(-0.1f);
+}
+void GameScene::OnMouseDown(sht::MouseButton button, int modifiers)
+{
+	if (sht::MouseButton::kLeft == button)
+	{
+		if (victory_exit_rect_->active())
+		{
+			sht::utility::Event event(ConstexprStringId("game_scene_exit_requested"));
+			event_listener_->OnEvent(&event);
+		}
+		else if (defeat_exit_rect_->active())
+		{
+			sht::utility::Event event(ConstexprStringId("game_scene_exit_requested"));
+			event_listener_->OnEvent(&event);
+		}
+	}
+}
+void GameScene::OnMouseMove(float x, float y)
+{
+	if (victory_board_->IsPosDown())
+		victory_board_->SelectAll(x, y);
+	if (defeat_board_->IsPosDown())
+		defeat_board_->SelectAll(x, y);
+}
+void GameScene::CreateMenu()
+{
+	sht::utility::ui::Rect * rect;
+	sht::utility::ui::Label * label;
+
+	// Victory menu
+	victory_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+		0.5f, // f32 width
+		0.5f, // f32 height
+		0.25f, // f32 left
+		0.1f, // f32 hmin
+		1.0f, // f32 hmax
+		0.6f, // f32 velocity
+		false, // bool is_down
+		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+		);
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.4f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
+			);
+		victory_board_->AttachWidget(rect);
+		const wchar_t * kText = L"You have won";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.0f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		victory_board_->AttachWidget(rect);
+		victory_exit_rect_ = rect;
+		const wchar_t * kText = L"Exit";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+
+	// Defeat menu
+	defeat_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+		0.5f, // f32 width
+		0.5f, // f32 height
+		0.25f, // f32 left
+		0.1f, // f32 hmin
+		1.0f, // f32 hmax
+		0.6f, // f32 velocity
+		false, // bool is_down
+		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+		);
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.4f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
+			);
+		defeat_board_->AttachWidget(rect);
+		const wchar_t * kText = L"You have lost";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.0f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		defeat_board_->AttachWidget(rect);
+		defeat_exit_rect_ = rect;
+		const wchar_t * kText = L"Exit";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
 }

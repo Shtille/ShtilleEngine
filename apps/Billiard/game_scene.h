@@ -9,6 +9,7 @@
 #include "pose_listener.h"
 
 #include "utility/include/scene/scene.h"
+#include "utility/include/event_listener.h"
 
 #include "utility/include/event_listener.h"
 #include "graphics/include/renderer/text.h"
@@ -16,12 +17,15 @@
 #include "system/include/time/time_manager.h"
 #include "utility/include/camera.h"
 #include "physics/include/physics_engine.h"
+#include "utility/include/ui/board.h"
+#include "utility/include/ui/rect.h"
 
 class MaterialBinder;
 
 class GameScene : public sht::utility::Scene {
 public:
-	GameScene(sht::graphics::Renderer * renderer, MaterialBinder * material_binder, GameMode game_mode);
+	GameScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
+		MaterialBinder * material_binder, GameMode game_mode);
 	virtual ~GameScene();
 
 	void SetGameMode(GameMode game_mode);
@@ -37,6 +41,7 @@ private:
 	void BindShaderConstants();
 	void BindShaderVariables();
 	void BuildAnimationClips();
+	void CreateMenu();
 
 	void RenderTable();
 	void RenderBalls();
@@ -63,7 +68,10 @@ private:
 	void HitCueBall();
 
 	void OnKeyDown(sht::PublicKey key, int mods) override;
+	void OnMouseDown(sht::MouseButton button, int modifiers) final;
+	void OnMouseMove(float x, float y) final;
 
+	sht::utility::EventListenerInterface * event_listener_;
 	MaterialBinder * material_binder_;
 	AlbedoMaterialBinder albedo_material_binder_;
 	GameMode game_mode_;
@@ -82,7 +90,13 @@ private:
 	sht::system::Timer * cue_animation_timer_;
 	sht::system::Timer * rack_animation_timer_;
 
+	sht::utility::ui::VerticalBoard * victory_board_;
+	sht::utility::ui::Rect * victory_exit_rect_;
+	sht::utility::ui::VerticalBoard * defeat_board_;
+	sht::utility::ui::Rect * defeat_exit_rect_;
+
 	sht::utility::ResourceID text_shader_id_;
+	sht::utility::ResourceID gui_shader_id_;
 	sht::utility::ResourceID object_shader_id_;
 	sht::utility::ResourceID ball_shader_id_;
 	sht::utility::ResourceID ghost_shader_id_;
@@ -96,6 +110,7 @@ private:
 	sht::utility::ResourceID table_cushions_physics_mesh_id_;
 
 	sht::graphics::Shader * text_shader_;
+	sht::graphics::Shader * gui_shader_;
 	sht::graphics::Shader * object_shader_;
 	sht::graphics::Shader * ball_shader_;
 	sht::graphics::Shader * ghost_shader_;

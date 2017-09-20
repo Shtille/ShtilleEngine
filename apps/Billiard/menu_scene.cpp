@@ -38,19 +38,19 @@ void MenuScene::Render()
 	renderer_->DisableDepthTest();
 
 	// Draw text for debug purposes
-    text_shader_->Bind();
-    text_shader_->Uniform1i("u_texture", 0);
-    text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-    text_->Render();
+	text_shader_->Bind();
+	text_shader_->Uniform1i("u_texture", 0);
+	text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
+	text_->Render();
 
-    // Render UI
-    gui_shader_->Bind();
+	// Render UI
+	gui_shader_->Bind();
 	if (board_->IsPosDown())
 		board_->RenderAll(); // render entire tree
 	else
 		board_->Render(); // render only board rect (smart hack for labels :D)
 
-    renderer_->EnableDepthTest();
+	renderer_->EnableDepthTest();
 }
 void MenuScene::Load()
 {
@@ -80,7 +80,7 @@ void MenuScene::Unload()
 }
 void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
 {
-	if (button == sht::MouseButton::kLeft)
+	if (sht::MouseButton::kLeft == button)
 	{
 		if (new_game_rect_->active())
 		{
