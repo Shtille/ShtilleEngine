@@ -159,12 +159,14 @@ GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 {
 	RegisterAllResources(); // should be done before scenes creation
 
+	SetupDefaultSettings();
+
 	material_binder_ = new MaterialBinder();
 
 	logo_scene_ = new LogoScene(renderer, this);
-	menu_scene_ = new MenuScene(renderer, this);
+	menu_scene_ = new MenuScene(renderer, this, &game_settings_);
 	loading_scene_ = new LoadingScene(renderer, this);
-	game_scene_ = new GameScene(renderer, this, material_binder_, GameMode::kSimplePool);
+	game_scene_ = new GameScene(renderer, this, material_binder_, &game_settings_);
 
 	// Make loading scene to load with menu scene
 	menu_scene_->SetNextScene(loading_scene_);
@@ -247,4 +249,10 @@ void GameSceneManager::OnEvent(const sht::utility::Event * event)
 		fullscreen_toggle_requested_ = true;
 		break;
 	}
+}
+void GameSceneManager::SetupDefaultSettings()
+{
+	// Setup default game settings
+	game_settings_.game_mode = GameMode::kSimplePool;
+	game_settings_.num_players = 1;
 }

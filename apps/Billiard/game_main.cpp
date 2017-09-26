@@ -71,10 +71,7 @@ public:
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
 	{
-		if (sht::PublicKey::kEscape == key)
-			Application::Terminate();
-		else
-			scene_manager_->OnKeyDown(key, mods);
+		scene_manager_->OnKeyDown(key, mods);
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{

@@ -6,13 +6,16 @@
 
 #include <cstring>
 
-MenuScene::MenuScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener)
+MenuScene::MenuScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
+	const GameSettings * game_settings)
 : Scene(renderer)
 , event_listener_(event_listener)
+, game_settings_(game_settings)
 , text_shader_(nullptr)
 , font_(nullptr)
 , text_(nullptr)
-, board_(nullptr)
+, main_board_(nullptr)
+, options_board_(nullptr)
 {
 	// Register resources to load automatically on scene change
 	text_shader_id_ = AddResourceIdByName(ConstexprStringId("shader_text"));
@@ -28,10 +31,8 @@ void MenuScene::Update()
 	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
 	float frame_time = time_manager->GetFixedFrameTime();
 
-	if (board_->IsPosUp())
-		board_->Move();
-
-	board_->UpdateAll(frame_time);
+	main_board_->UpdateAll(frame_time);
+	options_board_->UpdateAll(frame_time);
 }
 void MenuScene::Render()
 {
@@ -45,10 +46,14 @@ void MenuScene::Render()
 
 	// Render UI
 	gui_shader_->Bind();
-	if (board_->IsPosDown())
-		board_->RenderAll(); // render entire tree
+	if (main_board_->IsPosDown())
+		main_board_->RenderAll(); // render entire tree
 	else
-		board_->Render(); // render only board rect (smart hack for labels :D)
+		main_board_->Render(); // render only board rect (smart hack for labels :D)
+	if (options_board_->IsPosDown())
+		options_board_->RenderAll(); // render entire tree
+	else
+		options_board_->Render();
 
 	renderer_->EnableDepthTest();
 }
@@ -64,13 +69,22 @@ void MenuScene::Load()
 
 	// Create menu
 	CreateMenu();
+
+	// Make main board to move down
+	if (main_board_->IsPosUp())
+		main_board_->Move();
 }
 void MenuScene::Unload()
 {
-	if (board_)
+	if (main_board_)
 	{
-		delete board_;
-		board_ = nullptr;
+		delete main_board_;
+		main_board_ = nullptr;
+	}
+	if (options_board_)
+	{
+		delete options_board_;
+		options_board_ = nullptr;
 	}
 	if (text_)
 	{
@@ -87,20 +101,39 @@ void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
 			sht::utility::Event event(ConstexprStringId("menu_scene_finished"));
 			event_listener_->OnEvent(&event);
 		}
+		else if (options_rect_->active())
+		{
+			options_rect_->set_active(false);
+			main_board_->Move();
+			options_board_->Move();
+		}
 		else if (exit_rect_->active())
 		{
 			sht::utility::Event event(ConstexprStringId("application_exit_requested"));
 			event_listener_->OnEvent(&event);
 		}
+		else if (options_exit_rect_->active())
+		{
+			options_exit_rect_->set_active(false);
+			options_board_->Move();
+			main_board_->Move();
+		}
 	}
 }
 void MenuScene::OnMouseMove(float x, float y)
 {
-	board_->SelectAll(x, y);
+	if (main_board_->IsPosDown())
+		main_board_->SelectAll(x, y);
+	if (options_board_->IsPosDown())
+		options_board_->SelectAll(x, y);
 }
 void MenuScene::CreateMenu()
 {
-	board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	sht::utility::ui::Rect * rect;
+	sht::utility::ui::Label * label;
+
+	// Main menu
+	main_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.5f, // f32 width
 		0.5f, // f32 height
@@ -111,8 +144,6 @@ void MenuScene::CreateMenu()
 		false, // bool is_down
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
-	sht::utility::ui::Rect * rect;
-	sht::utility::ui::Label * label;
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
 			0.05f, // x
@@ -121,9 +152,32 @@ void MenuScene::CreateMenu()
 			0.1f, // height
 			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
-		board_->AttachWidget(rect);
+		main_board_->AttachWidget(rect);
 		new_game_rect_ = rect;
 		const wchar_t * kText = L"New Game";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.2f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		main_board_->AttachWidget(rect);
+		options_rect_ = rect;
+		const wchar_t * kText = L"Options";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height
@@ -144,9 +198,68 @@ void MenuScene::CreateMenu()
 			0.1f, // height
 			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
-		board_->AttachWidget(rect);
+		main_board_->AttachWidget(rect);
 		exit_rect_ = rect;
 		const wchar_t * kText = L"Exit";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+
+	// Options menu
+	options_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+		0.5f, // f32 width
+		0.5f, // f32 height
+		0.2f, // f32 left
+		0.1f, // f32 hmin
+		1.0f, // f32 hmax
+		0.6f, // f32 velocity
+		false, // bool is_down
+		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+		);
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.3f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		options_board_->AttachWidget(rect);
+		options_exit_rect_ = rect;
+		const wchar_t * kText = L"Number of players";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.0f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		options_board_->AttachWidget(rect);
+		options_exit_rect_ = rect;
+		const wchar_t * kText = L"Back";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height

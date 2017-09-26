@@ -16,16 +16,17 @@ namespace {
 }
 
 GameScene::GameScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
-	MaterialBinder * material_binder, GameMode game_mode)
+	MaterialBinder * material_binder, const GameSettings * game_settings)
 : Scene(renderer)
 , event_listener_(event_listener)
 , material_binder_(material_binder)
-, game_mode_(game_mode)
+, game_settings_(game_settings)
 , phase_(GamePhase::kRackRemoving)
 , rack_animation_clip_(nullptr)
 , cue_animation_clip_(nullptr)
 , rack_animation_controller_(nullptr)
 , cue_animation_controller_(nullptr)
+, menu_board_(nullptr)
 , victory_board_(nullptr)
 , defeat_board_(nullptr)
 , text_shader_(nullptr)
@@ -48,6 +49,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 , cue_theta_(0.0f)
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
+, current_player_index_(0)
 , need_render_cue_(false)
 , need_render_rack_(false)
 , cue_collides_(false)
@@ -84,10 +86,6 @@ GameScene::~GameScene()
 	sht::system::TimeManager::GetInstance()->RemoveTimer(pocket_entrance_timer_);
 	sht::system::TimeManager::GetInstance()->RemoveTimer(spawn_timer_);
 }
-void GameScene::SetGameMode(GameMode game_mode)
-{
-	game_mode_ = game_mode;
-}
 void GameScene::Update()
 {
 	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
@@ -101,6 +99,7 @@ void GameScene::Update()
 	camera_manager_->Update(frame_time);
 
 	// Update UI
+	menu_board_->UpdateAll(frame_time);
 	victory_board_->UpdateAll(frame_time);
 	defeat_board_->UpdateAll(frame_time);
 
@@ -283,6 +282,13 @@ void GameScene::RenderInterface()
 
 	// Render UI
 	gui_shader_->Bind();
+	if (!menu_board_->IsPosUp())
+	{
+		if (menu_board_->IsPosDown())
+			menu_board_->RenderAll(); // render entire tree
+		else
+			menu_board_->Render(); // render only board rect (smart hack for labels :D)
+	}
 	if (!victory_board_->IsPosUp())
 	{
 		if (victory_board_->IsPosDown())
@@ -410,7 +416,7 @@ void GameScene::Load()
 
 	// Create ball textures
 	ball_textures_ = new sht::graphics::Texture *[balls_count_];
-	if (game_mode_ == GameMode::kSimplePool)
+	if (game_settings_->game_mode == GameMode::kSimplePool)
 	{
 		const vec3 ball_colors[16] = {
 			vec3(1.0f, 1.0f, 1.0f),
@@ -480,6 +486,11 @@ void GameScene::Unload()
 		delete victory_board_;
 		victory_board_ = nullptr;
 	}
+	if (menu_board_)
+	{
+		delete menu_board_;
+		menu_board_ = nullptr;
+	}
 	if (ball_active_)
 	{
 		delete[] ball_active_;
@@ -487,7 +498,7 @@ void GameScene::Unload()
 	}
 	if (ball_textures_)
 	{
-		if (game_mode_ == GameMode::kSimplePool)
+		if (game_settings_->game_mode == GameMode::kSimplePool)
 		{
 			for (unsigned int i = 0; i < balls_count_; ++i)
 				if (ball_textures_[i])
@@ -551,6 +562,8 @@ void GameScene::PrepareBeginning()
 	need_render_rack_ = true;
 	vec3 position(0.5f * table_bed_mesh_->bounding_box().extent.x, 0.5f * rack_mesh_->bounding_box().extent.y, 0.0f);
 	rack_pose_listener_.SetLocalToWorldMatrix(sht::math::Translate(position));
+
+	current_player_index_ = 0;
 }
 void GameScene::UpdateCueMatrix()
 {
@@ -643,7 +656,7 @@ void GameScene::CheckTimerEvents()
 void GameScene::OnBallsStopMoving()
 {
 	// Game mode based logics goes here
-	if (game_mode_ == GameMode::kSimplePool)
+	if (game_settings_->game_mode == GameMode::kSimplePool)
 	{
 		const unsigned int kBlackBallIndex = 15;
 		bool cue_ball_has_fallen = (ball_active_[0] && balls_[0]->position().y < 0.0f);
@@ -710,11 +723,15 @@ void GameScene::OnPlayerLost()
 }
 void GameScene::IncreaseScore()
 {
-
+	// Skip scores currently
 }
 void GameScene::SwitchToTheNextPlayer()
 {
-
+	// Increase player index
+	if (current_player_index_ + 1 == game_settings_->num_players)
+		current_player_index_ = 0;
+	else
+		++current_player_index_;
 }
 void GameScene::SwitchToCueTargeting()
 {
@@ -757,6 +774,11 @@ void GameScene::HitCueBall()
 }
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
+	if (sht::PublicKey::kEscape == key)
+	{
+		menu_board_->Move();
+	}
+
 	// Cue targeting
 	if (phase_ == GamePhase::kCueTargeting)
 	{
@@ -801,20 +823,24 @@ void GameScene::OnMouseDown(sht::MouseButton button, int modifiers)
 {
 	if (sht::MouseButton::kLeft == button)
 	{
-		if (victory_exit_rect_->active())
+		if (menu_exit_rect_->active() ||
+			victory_exit_rect_->active() ||
+			defeat_exit_rect_->active())
 		{
 			sht::utility::Event event(ConstexprStringId("game_scene_exit_requested"));
 			event_listener_->OnEvent(&event);
 		}
-		else if (defeat_exit_rect_->active())
+		else if (menu_continue_rect_->active())
 		{
-			sht::utility::Event event(ConstexprStringId("game_scene_exit_requested"));
-			event_listener_->OnEvent(&event);
+			menu_continue_rect_->set_active(false);
+			menu_board_->Move();
 		}
 	}
 }
 void GameScene::OnMouseMove(float x, float y)
 {
+	if (menu_board_->IsPosDown())
+		menu_board_->SelectAll(x, y);
 	if (victory_board_->IsPosDown())
 		victory_board_->SelectAll(x, y);
 	if (defeat_board_->IsPosDown())
@@ -824,6 +850,65 @@ void GameScene::CreateMenu()
 {
 	sht::utility::ui::Rect * rect;
 	sht::utility::ui::Label * label;
+
+	// Main menu
+	menu_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+		0.5f, // f32 width
+		0.5f, // f32 height
+		0.25f, // f32 left
+		0.1f, // f32 hmin
+		1.0f, // f32 hmax
+		0.6f, // f32 velocity
+		false, // bool is_down
+		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+		);
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.4f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		menu_board_->AttachWidget(rect);
+		menu_continue_rect_ = rect;
+		const wchar_t * kText = L"Continue";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.0f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		menu_board_->AttachWidget(rect);
+		menu_exit_rect_ = rect;
+		const wchar_t * kText = L"Exit";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
 
 	// Victory menu
 	victory_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,

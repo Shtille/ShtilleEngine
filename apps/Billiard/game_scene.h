@@ -2,7 +2,7 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
-#include "game_mode.h"
+#include "game_settings.h"
 #include "game_phase.h"
 #include "albedo_material_binder.h"
 #include "animation.h"
@@ -25,10 +25,8 @@ class MaterialBinder;
 class GameScene : public sht::utility::Scene {
 public:
 	GameScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
-		MaterialBinder * material_binder, GameMode game_mode);
+		MaterialBinder * material_binder, const GameSettings * game_settings);
 	virtual ~GameScene();
-
-	void SetGameMode(GameMode game_mode);
 
 	void Update() override;
 	void UpdatePhysics(float sec) override;
@@ -74,7 +72,7 @@ private:
 	sht::utility::EventListenerInterface * event_listener_;
 	MaterialBinder * material_binder_;
 	AlbedoMaterialBinder albedo_material_binder_;
-	GameMode game_mode_;
+	const GameSettings * game_settings_;
 	GamePhase phase_;
 
 	PoseListener rack_pose_listener_;
@@ -90,6 +88,9 @@ private:
 	sht::system::Timer * cue_animation_timer_;
 	sht::system::Timer * rack_animation_timer_;
 
+	sht::utility::ui::VerticalBoard * menu_board_;
+	sht::utility::ui::Rect * menu_continue_rect_;
+	sht::utility::ui::Rect * menu_exit_rect_;
 	sht::utility::ui::VerticalBoard * victory_board_;
 	sht::utility::ui::Rect * victory_exit_rect_;
 	sht::utility::ui::VerticalBoard * defeat_board_;
@@ -143,6 +144,8 @@ private:
 	sht::math::Vector3 light_position_;
 
 	sht::math::Matrix4 projection_view_matrix_;
+
+	unsigned int current_player_index_;
 
 	bool need_render_cue_;
 	bool need_render_rack_;
