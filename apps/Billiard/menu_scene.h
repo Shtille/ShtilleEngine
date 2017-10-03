@@ -8,13 +8,14 @@
 #include "utility/include/event_listener.h"
 #include "utility/include/ui/board.h"
 #include "utility/include/ui/rect.h"
+#include "utility/include/ui/label.h"
 
 #include "graphics/include/renderer/text.h"
 
 class MenuScene : public sht::utility::Scene {
 public:
 	MenuScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
-		const GameSettings * game_settings);
+		GameSettings * game_settings);
 	virtual ~MenuScene();
 
 	void Update();
@@ -28,9 +29,10 @@ public:
 
 private:
 	void CreateMenu();
+	void UpdatePlayersLabel();
 
 	sht::utility::EventListenerInterface * event_listener_;
-	const GameSettings * game_settings_;
+	GameSettings * game_settings_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID gui_shader_id_;
@@ -46,6 +48,10 @@ private:
 	sht::utility::ui::Rect * options_rect_;
 	sht::utility::ui::Rect * exit_rect_;
 	sht::utility::ui::VerticalBoard * options_board_;
+	sht::utility::ui::Rect * options_players_increase_rect_;
+	sht::utility::ui::Rect * options_players_rect_;
+	sht::utility::ui::Label * options_players_label_;
+	sht::utility::ui::Rect * options_players_decrease_rect_;
 	sht::utility::ui::Rect * options_exit_rect_;
 };
 

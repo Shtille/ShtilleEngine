@@ -255,4 +255,5 @@ void GameSceneManager::SetupDefaultSettings()
 	// Setup default game settings
 	game_settings_.game_mode = GameMode::kSimplePool;
 	game_settings_.num_players = 1;
+	game_settings_.max_players = 2;
 }

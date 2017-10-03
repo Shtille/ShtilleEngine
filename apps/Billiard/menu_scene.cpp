@@ -2,12 +2,11 @@
 
 #include "system/include/time/time_manager.h"
 #include "utility/include/event.h"
-#include "utility/include/ui/label.h"
 
 #include <cstring>
 
 MenuScene::MenuScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener,
-	const GameSettings * game_settings)
+	GameSettings * game_settings)
 : Scene(renderer)
 , event_listener_(event_listener)
 , game_settings_(game_settings)
@@ -118,6 +117,22 @@ void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
 			options_board_->Move();
 			main_board_->Move();
 		}
+		else if (options_players_decrease_rect_->active())
+		{
+			if (game_settings_->num_players > 1)
+			{
+				--game_settings_->num_players;
+				UpdatePlayersLabel();
+			}
+		}
+		else if (options_players_increase_rect_->active())
+		{
+			if (game_settings_->num_players < game_settings_->max_players)
+			{
+				++game_settings_->num_players;
+				UpdatePlayersLabel();
+			}
+		}
 	}
 }
 void MenuScene::OnMouseMove(float x, float y)
@@ -217,9 +232,9 @@ void MenuScene::CreateMenu()
 	// Options menu
 	options_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
-		0.5f, // f32 width
+		0.8f, // f32 width
 		0.5f, // f32 height
-		0.2f, // f32 left
+		0.1f, // f32 left
 		0.1f, // f32 hmin
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
@@ -227,31 +242,68 @@ void MenuScene::CreateMenu()
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{
-		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+		const wchar_t * kText = L"Players";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.07f, // text height
+			wcslen(kText)+1, // buffer size
 			0.05f, // x
-			0.3f, // y
-			0.4f, // width
-			0.1f, // height
+			0.4f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		options_board_->AttachWidget(label);
+		label->SetText(kText);
+	}
+	{
+		// Players decrease button
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.45f, // x
+			0.4f, // y
+			0.05f, // width
+			0.05f, // height
 			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
 			);
 		options_board_->AttachWidget(rect);
-		options_exit_rect_ = rect;
-		const wchar_t * kText = L"Number of players";
+		options_players_decrease_rect_ = rect;
+	}
+	{
+		// Number of players value
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.5f, // x
+			0.4f, // y
+			0.05f, // width
+			0.05f, // height
+			(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
+			);
+		options_board_->AttachWidget(rect);
+		options_players_rect_ = rect;
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
-			0.1f, // text height
-			wcslen(kText)+1, // buffer size
+			0.07f, // text height
+			2, // buffer size
 			0.0f, // x
 			0.0f, // y
 			(u32)sht::utility::ui::Flags::kRenderAlways // flags
 			);
 		rect->AttachWidget(label);
-		label->SetText(kText);
-		label->AlignCenter(rect->width(), rect->height());
+		options_players_label_ = label;
+		UpdatePlayersLabel();
+	}
+	{
+		// Players increase button
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.55f, // x
+			0.4f, // y
+			0.05f, // width
+			0.05f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		options_board_->AttachWidget(rect);
+		options_players_increase_rect_ = rect;
 	}
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
-			0.05f, // x
+			0.4f, // x
 			0.0f, // y
 			0.4f, // width
 			0.1f, // height
@@ -272,4 +324,12 @@ void MenuScene::CreateMenu()
 		label->SetText(kText);
 		label->AlignCenter(rect->width(), rect->height());
 	}
+}
+void MenuScene::UpdatePlayersLabel()
+{
+	// Easy way to convert value to simple (0-9) number
+	wchar_t text[2] = L"0";
+	text[0] += game_settings_->num_players;
+	options_players_label_->SetText(text);
+	options_players_label_->AlignCenter(options_players_rect_->width(), options_players_rect_->height());
 }

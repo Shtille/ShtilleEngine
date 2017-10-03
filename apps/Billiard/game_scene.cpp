@@ -3,12 +3,12 @@
 #include "material_binder.h"
 
 #include "utility/include/event.h"
-#include "utility/include/ui/label.h"
 #include "physics/include/physics_object.h"
 #include "physics/include/physics_ghost_object.h"
 
 #include <cmath> // for sinf and cosf
 #include <cstdio>
+#include <cstring>
 
 namespace {
 	const float kRackAnimationTime = 10.0f;
@@ -50,6 +50,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 , light_angle_(0.0f)
 , light_distance_(10000.0f)
 , current_player_index_(0)
+, scores_(nullptr)
 , need_render_cue_(false)
 , need_render_rack_(false)
 , cue_collides_(false)
@@ -469,6 +470,8 @@ void GameScene::Load()
 
 	CreateMenu();
 
+	scores_ = new unsigned int[game_settings_->num_players];
+
 	PrepareBeginning();
 	RequestRackRemove(); // later can be moved after table look overview
 
@@ -476,6 +479,11 @@ void GameScene::Load()
 }
 void GameScene::Unload()
 {
+	if (scores_)
+	{
+		delete[] scores_;
+		scores_ = nullptr;
+	}
 	if (defeat_board_)
 	{
 		delete defeat_board_;
@@ -559,7 +567,18 @@ void GameScene::SetStatus(const wchar_t* text)
 }
 void GameScene::PrepareBeginning()
 {
+	cue_alpha_ = 0.0f;
+	cue_theta_ = 0.0f;
+	light_angle_ = 0.0f;
+	light_distance_ = 10000.0f;
+
+	current_player_index_ = 0;
+	for (unsigned int i = 0; i < game_settings_->num_players; ++i)
+		scores_[i] = 0;
+	need_render_cue_ = false;
 	need_render_rack_ = true;
+	cue_collides_ = false;
+
 	vec3 position(0.5f * table_bed_mesh_->bounding_box().extent.x, 0.5f * rack_mesh_->bounding_box().extent.y, 0.0f);
 	rack_pose_listener_.SetLocalToWorldMatrix(sht::math::Translate(position));
 
@@ -580,10 +599,6 @@ void GameScene::UpdateCueMatrix()
 void GameScene::UpdateCueCollision()
 {
 	cue_collides_ = physics_->ContactTest(cue_);
-	if (cue_collides_)
-		SetStatus(L"some collisions");
-	else
-		SetStatus(L"no collisions");
 }
 void GameScene::RespawnCueBall(const vec3& position)
 {
@@ -614,7 +629,7 @@ void GameScene::CheckTimerEvents()
 		bool any_active_ball_is_rolling = false;
 		for (unsigned int i = 0; i < balls_count_; ++i)
 		{
-			if (ball_active_[i] && balls_[i]->IsActive())
+			if (ball_active_[i] && balls_[i]->IsActive() && balls_[i]->position().y > 0.0f)
 			{
 				any_active_ball_is_rolling = true;
 				break;
@@ -720,10 +735,14 @@ void GameScene::OnPlayerWon()
 void GameScene::OnPlayerLost()
 {
 	defeat_board_->Move();
+	// Update score label text
+	wchar_t text[3] = {L'\0'};
+	swprintf(text, _countof(text), L"%u", scores_[current_player_index_]);
+	defeat_score_label_->SetText(text);
 }
 void GameScene::IncreaseScore()
 {
-	// Skip scores currently
+	++scores_[current_player_index_];
 }
 void GameScene::SwitchToTheNextPlayer()
 {
@@ -732,6 +751,9 @@ void GameScene::SwitchToTheNextPlayer()
 		current_player_index_ = 0;
 	else
 		++current_player_index_;
+	wchar_t text[15] = L"Player 1 turn";
+	text[7] += current_player_index_;
+	SetStatus(text);
 }
 void GameScene::SwitchToCueTargeting()
 {
@@ -835,6 +857,12 @@ void GameScene::OnMouseDown(sht::MouseButton button, int modifiers)
 			menu_continue_rect_->set_active(false);
 			menu_board_->Move();
 		}
+		else if (menu_give_up_rect_->active())
+		{
+			menu_give_up_rect_->set_active(false);
+			menu_board_->Move();
+			OnPlayerLost();
+		}
 	}
 }
 void GameScene::OnMouseMove(float x, float y)
@@ -874,6 +902,29 @@ void GameScene::CreateMenu()
 		menu_board_->AttachWidget(rect);
 		menu_continue_rect_ = rect;
 		const wchar_t * kText = L"Continue";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.1f, // text height
+			wcslen(kText)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(kText);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.3f, // y
+			0.4f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		menu_board_->AttachWidget(rect);
+		menu_give_up_rect_ = rect;
+		const wchar_t * kText = L"Give up";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height
@@ -931,17 +982,24 @@ void GameScene::CreateMenu()
 			(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
 			);
 		victory_board_->AttachWidget(rect);
-		const wchar_t * kText = L"You have won";
+		wchar_t text[20] = {L'\0'};
+		if (game_settings_->num_players == 1)
+			wcscpy(text, L"You have won");
+		else
+		{
+			wcscpy(text, L"Player 1 has won");
+			text[7] += current_player_index_;
+		}
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
-			0.1f, // text height
-			wcslen(kText)+1, // buffer size
+			0.10f, // text height
+			wcslen(text)+1, // buffer size
 			0.0f, // x
 			0.0f, // y
 			(u32)sht::utility::ui::Flags::kRenderAlways // flags
 			);
 		rect->AttachWidget(label);
-		label->SetText(kText);
+		label->SetText(text);
 		label->AlignCenter(rect->width(), rect->height());
 	}
 	{
@@ -989,10 +1047,39 @@ void GameScene::CreateMenu()
 			(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
 			);
 		defeat_board_->AttachWidget(rect);
-		const wchar_t * kText = L"You have lost";
+		wchar_t text[20] = {L'\0'};
+		if (game_settings_->num_players == 1)
+			wcscpy(text, L"You have lost");
+		else
+		{
+			wcscpy(text, L"Player 1 has lost");
+			text[7] += current_player_index_;
+		}
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
 			0.1f, // text height
+			wcslen(text)+1, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		rect->AttachWidget(label);
+		label->SetText(text);
+		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.05f, // x
+			0.3f, // y
+			0.2f, // width
+			0.1f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		defeat_board_->AttachWidget(rect);
+		const wchar_t * kText = L"with score:";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.07f, // text height
 			wcslen(kText)+1, // buffer size
 			0.0f, // x
 			0.0f, // y
@@ -1000,7 +1087,26 @@ void GameScene::CreateMenu()
 			);
 		rect->AttachWidget(label);
 		label->SetText(kText);
-		label->AlignCenter(rect->width(), rect->height());
+	}
+	{
+		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+			0.35f, // x
+			0.3f, // y
+			0.05f, // width
+			0.05f, // height
+			(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+			);
+		defeat_board_->AttachWidget(rect);
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.07f, // text height
+			4, // buffer size
+			0.0f, // x
+			0.0f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		defeat_score_label_ = label;
+		rect->AttachWidget(label);
 	}
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),

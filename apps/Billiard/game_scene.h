@@ -19,6 +19,7 @@
 #include "physics/include/physics_engine.h"
 #include "utility/include/ui/board.h"
 #include "utility/include/ui/rect.h"
+#include "utility/include/ui/label.h"
 
 class MaterialBinder;
 
@@ -90,10 +91,12 @@ private:
 
 	sht::utility::ui::VerticalBoard * menu_board_;
 	sht::utility::ui::Rect * menu_continue_rect_;
+	sht::utility::ui::Rect * menu_give_up_rect_;
 	sht::utility::ui::Rect * menu_exit_rect_;
 	sht::utility::ui::VerticalBoard * victory_board_;
 	sht::utility::ui::Rect * victory_exit_rect_;
 	sht::utility::ui::VerticalBoard * defeat_board_;
+	sht::utility::ui::Label * defeat_score_label_;
 	sht::utility::ui::Rect * defeat_exit_rect_;
 
 	sht::utility::ResourceID text_shader_id_;
@@ -146,6 +149,7 @@ private:
 	sht::math::Matrix4 projection_view_matrix_;
 
 	unsigned int current_player_index_;
+	unsigned int * scores_;
 
 	bool need_render_cue_;
 	bool need_render_rack_;

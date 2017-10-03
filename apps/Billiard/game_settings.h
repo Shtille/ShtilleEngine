@@ -7,6 +7,7 @@
 struct GameSettings {
 	GameMode game_mode;
 	unsigned int num_players;
+	unsigned int max_players;
 };
 
 #endif

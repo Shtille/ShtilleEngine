@@ -5,7 +5,9 @@
 		- Need an additional menu to select point of hit by cue.
 		- Main menu.
 		- Victory menu.
+			- Show players' scores.
 		- Defeat menu.
+			- Show players' scores.
 	- Physics
 		+ Add ghost object to test intersections.
 		- Add texture for balls and test rotation.
@@ -30,6 +32,8 @@
 			+ Space key to hit the cue ball.
 		[-] Mobile
 	- Gameplay
+		- Add different camera modes.
+		+ Enhance game logics.
 		+ Add cue hit animation.
 		+ Add rack removing animation.
 		- Show cue intersections with other objects (don't let hit in this case).
@@ -42,6 +46,7 @@
 	- Audio
 		By now we are skipping this phase.
 	- Misc
+		+ Count players' scores.
 		- Add skybox loading with a custom descriptor.
 		+ Add a new (internal) format that we gonna save models in.
 		+ Add application that will convert models from one format to another.
