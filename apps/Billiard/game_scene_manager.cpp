@@ -256,4 +256,5 @@ void GameSceneManager::SetupDefaultSettings()
 	game_settings_.game_mode = GameMode::kSimplePool;
 	game_settings_.num_players = 1;
 	game_settings_.max_players = 2;
+	game_settings_.camera_mode = GameCameraMode::kAttached; // kOverview
 }

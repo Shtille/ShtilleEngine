@@ -41,6 +41,7 @@ private:
 	void BindShaderVariables();
 	void BuildAnimationClips();
 	void CreateMenu();
+	void SetupCamera();
 
 	void RenderTable();
 	void RenderBalls();
@@ -53,6 +54,7 @@ private:
 	void PrepareBeginning();
 	void UpdateCueMatrix();
 	void UpdateCueCollision();
+	void UpdateCamera();
 	void RespawnCueBall(const vec3& position);
 	void CheckTimerEvents();
 	void OnBallsStopMoving();

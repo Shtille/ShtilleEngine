@@ -4,6 +4,9 @@
 			We don't need a editor at all.
 		- Need an additional menu to select point of hit by cue.
 		- Main menu.
+			+ Number of players option.
+			- Game mode option.
+			- Camera mode option.
 		- Victory menu.
 			- Show players' scores.
 		- Defeat menu.
@@ -26,11 +29,9 @@
 		- Add realistic lighting model.
 		- Add logotype rendering (need skybox and logotype model).
 	- Controls
-		- Desktop
-			+ Left and right keys to rotate cue left and right respectively.
-			+ Up and down keys to increase and decrease cue angle respectively.
-			+ Space key to hit the cue ball.
-		[-] Mobile
+		- Make universal controls for mobile and desktop applications.
+			- Slider to control cue rotation angle.
+			- Button to hit the cue ball.
 	- Gameplay
 		- Add different camera modes.
 		+ Enhance game logics.
@@ -53,7 +54,11 @@
 		+ Add loading of HDR textures.
 - Engine
 	- Graphics
+		- Fix void Quaternion::Set(const Vector3& from, const Vector3& at)
 		- Add animation controller.
 		- Add debug renderer.
 		- Add height map mesh object.
 		- Add height map decal mesh object.
+	- UI
+		- Add slider class.
+		- Add button class.

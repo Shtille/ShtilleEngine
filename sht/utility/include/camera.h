@@ -98,6 +98,7 @@ namespace sht {
             void MakeFree(CameraID camera_id);
             void MakeFreeTargeted(const vec3& pos, const quat& orient, const vec3& target_pos);
 			void MakeAttached(const vec3 * pos, const quat * orient);
+			void MakeAttached(const quat& orient, const vec3 * target_pos, float distance);
 
 			void Clear();
 			CameraID Add(const vec3& pos, const vec3& target_pos);

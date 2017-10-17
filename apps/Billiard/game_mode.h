@@ -2,7 +2,7 @@
 #ifndef __GAME_MODE_H__
 #define __GAME_MODE_H__
 
-enum class GameMode : int {
+enum class GameMode : unsigned short {
 	kSimplePool,	// 14 red balls and 1 black ball
 	kPool,			// 7 filled balls, 7 stripped balls and 1 black ball
 	kSnooker		//

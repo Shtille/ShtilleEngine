@@ -9,6 +9,7 @@
 #include <cmath> // for sinf and cosf
 #include <cstdio>
 #include <cstring>
+#include <cassert>
 
 namespace {
 	const float kRackAnimationTime = 10.0f;
@@ -343,10 +344,6 @@ void GameScene::Load()
 	status_text_ = sht::graphics::DynamicText::Create(renderer_, 64);
 	SetStatus(L"start");
 
-	// Create camera attached to the controlled ball
-	camera_manager_ = new sht::utility::CameraManager();
-	camera_manager_->MakeFree(vec3(2000.0f), vec3(0.0f));
-
 	// Create physics
 	physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
 	physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
@@ -467,6 +464,8 @@ void GameScene::Load()
 	table_cushions_graphics_mesh_->MakeRenderable();
 
 	BuildAnimationClips();
+
+	SetupCamera();
 
 	CreateMenu();
 
@@ -594,7 +593,8 @@ void GameScene::UpdateCueMatrix()
 	sht::math::Vector3 position = cue_ball->position() - direction * (ball_size_ * 1.1f);
 	cue_pose_listener_.SetLocalToWorldMatrix(OrientationMatrix(RotationMatrix(direction), position));
 	cue_->SetTransform(cue_pose_listener_.world_matrix());
-	UpdateCueCollision();	
+	UpdateCueCollision();
+	UpdateCamera();
 }
 void GameScene::UpdateCueCollision()
 {
@@ -1130,5 +1130,35 @@ void GameScene::CreateMenu()
 		rect->AttachWidget(label);
 		label->SetText(kText);
 		label->AlignCenter(rect->width(), rect->height());
+	}
+}
+void GameScene::SetupCamera()
+{
+	// Should be set up after physics objects creation
+	camera_manager_ = new sht::utility::CameraManager();
+	switch (game_settings_->camera_mode)
+	{
+	case GameCameraMode::kOverview:
+		camera_manager_->MakeFree(vec3(0.0f, 3000.0f, 0.0f), quat(vec3(0.0f, 0.0f, -1.0f), sht::math::kPi * 0.5f));
+		break;
+	case GameCameraMode::kAttached:
+		UpdateCamera();
+		break;
+	default:
+		assert(!"Camera mode hasn't been set");
+		break;
+	}
+}
+void GameScene::UpdateCamera()
+{
+	if (GameCameraMode::kAttached == game_settings_->camera_mode)
+	{
+		const float kCameraAngle = 0.5f; // radians
+		const float kCameraDistance = 1000.0f;
+		quat horizontal(vec3(0.0f, -1.0f, 0.0f), cue_alpha_);
+		quat vertical(vec3(0.0f, 0.0f, -1.0f), kCameraAngle);
+		quat orient(horizontal * vertical);
+		sht::physics::Object * cue_ball = balls_[0];
+		camera_manager_->MakeAttached(orient, cue_ball->GetPositionPtr(), kCameraDistance);
 	}
 }

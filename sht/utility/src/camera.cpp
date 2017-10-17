@@ -388,6 +388,13 @@ namespace sht {
             current_camera_ptr_ = &current_camera_;
             manual_rotation_ = true;
 		}
+        void CameraManager::MakeAttached(const quat& orient, const vec3 * target_pos, float distance)
+        {
+            is_current_ = true;
+            current_camera_.Set(orient, target_pos, distance);
+            current_camera_ptr_ = &current_camera_;
+            manual_rotation_ = true;
+        }
 		void CameraManager::Clear()
 		{
 			cameras_.clear();
