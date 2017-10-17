@@ -841,7 +841,7 @@ void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 	else if (key == sht::PublicKey::kS)
 		camera_manager_->RotateAroundTargetInZ(-0.1f);
 }
-void GameScene::OnMouseDown(sht::MouseButton button, int modifiers)
+void GameScene::OnMouseDown(sht::MouseButton button, int modifiers, float x, float y)
 {
 	if (sht::MouseButton::kLeft == button)
 	{

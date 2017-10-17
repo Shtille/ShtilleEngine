@@ -24,7 +24,8 @@ public:
 	void Load();
 	void Unload();
 
-	void OnMouseDown(sht::MouseButton button, int modifiers) final;
+	void OnMouseDown(sht::MouseButton button, int modifiers, float x, float y) final;
+	void OnMouseUp(sht::MouseButton button, int modifiers, float x, float y) final;
 	void OnMouseMove(float x, float y) final;
 
 private:

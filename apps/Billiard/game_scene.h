@@ -69,7 +69,7 @@ private:
 	void HitCueBall();
 
 	void OnKeyDown(sht::PublicKey key, int mods) override;
-	void OnMouseDown(sht::MouseButton button, int modifiers) final;
+	void OnMouseDown(sht::MouseButton button, int modifiers, float x, float y) final;
 	void OnMouseMove(float x, float y) final;
 
 	sht::utility::EventListenerInterface * event_listener_;

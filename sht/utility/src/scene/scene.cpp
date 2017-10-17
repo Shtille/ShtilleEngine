@@ -60,11 +60,11 @@ namespace sht {
 		{
 
 		}
-		void Scene::OnMouseDown(sht::MouseButton button, int modifiers)
+		void Scene::OnMouseDown(sht::MouseButton button, int modifiers, float x, float y)
 		{
 
 		}
-		void Scene::OnMouseUp(sht::MouseButton button, int modifiers)
+		void Scene::OnMouseUp(sht::MouseButton button, int modifiers, float x, float y)
 		{
 
 		}

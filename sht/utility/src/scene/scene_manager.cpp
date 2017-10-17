@@ -53,15 +53,15 @@ namespace sht {
 			if (current_scene_)
 				current_scene_->OnKeyDown(key, mods);
 		}
-		void SceneManager::OnMouseDown(sht::MouseButton button, int modifiers)
+		void SceneManager::OnMouseDown(sht::MouseButton button, int modifiers, float x, float y)
 		{
 			if (current_scene_)
-				current_scene_->OnMouseDown(button, modifiers);
+				current_scene_->OnMouseDown(button, modifiers, x, y);
 		}
-		void SceneManager::OnMouseUp(sht::MouseButton button, int modifiers)
+		void SceneManager::OnMouseUp(sht::MouseButton button, int modifiers, float x, float y)
 		{
 			if (current_scene_)
-				current_scene_->OnMouseUp(button, modifiers);
+				current_scene_->OnMouseUp(button, modifiers, x, y);
 		}
 		void SceneManager::OnMouseMove(float x, float y)
 		{

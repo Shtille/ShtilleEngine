@@ -75,11 +75,11 @@ public:
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{
-		scene_manager_->OnMouseDown(button, modifiers);
+		scene_manager_->OnMouseDown(button, modifiers, mouse_.x() / height_, mouse_.y() / height_);
 	}
 	void OnMouseUp(sht::MouseButton button, int modifiers) final
 	{
-		scene_manager_->OnMouseUp(button, modifiers);
+		scene_manager_->OnMouseUp(button, modifiers, mouse_.x() / height_, mouse_.y() / height_);
 	}
 	void OnMouseMove() final
 	{

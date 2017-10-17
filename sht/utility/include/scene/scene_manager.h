@@ -31,8 +31,8 @@ namespace sht {
 			// Desktop-based user input message processing
 			void OnChar(unsigned short code);
 			void OnKeyDown(sht::PublicKey key, int mods);
-			void OnMouseDown(sht::MouseButton button, int modifiers);
-			void OnMouseUp(sht::MouseButton button, int modifiers);
+			void OnMouseDown(sht::MouseButton button, int modifiers, float x, float y);
+			void OnMouseUp(sht::MouseButton button, int modifiers, float x, float y);
 			void OnMouseMove(float x, float y);
 
 		protected:

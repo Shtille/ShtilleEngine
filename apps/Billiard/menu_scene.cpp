@@ -91,7 +91,7 @@ void MenuScene::Unload()
 		text_ = nullptr;
 	}
 }
-void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
+void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers, float x, float y)
 {
 	if (sht::MouseButton::kLeft == button)
 	{
@@ -134,6 +134,9 @@ void MenuScene::OnMouseDown(sht::MouseButton button, int modifiers)
 			}
 		}
 	}
+}
+void MenuScene::OnMouseUp(sht::MouseButton button, int modifiers, float x, float y)
+{
 }
 void MenuScene::OnMouseMove(float x, float y)
 {
@@ -242,6 +245,7 @@ void MenuScene::CreateMenu()
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{
+		// Players label
 		const wchar_t * kText = L"Players";
 		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
 			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
@@ -300,6 +304,34 @@ void MenuScene::CreateMenu()
 			);
 		options_board_->AttachWidget(rect);
 		options_players_increase_rect_ = rect;
+	}
+	{
+		// Game mode label
+		const wchar_t * kText = L"Game mode (todo)";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.07f, // text height
+			wcslen(kText)+1, // buffer size
+			0.05f, // x
+			0.3f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		options_board_->AttachWidget(label);
+		label->SetText(kText);
+	}
+	{
+		// Camera mode label
+		const wchar_t * kText = L"Camera mode (todo)";
+		label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+			vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+			0.07f, // text height
+			wcslen(kText)+1, // buffer size
+			0.05f, // x
+			0.2f, // y
+			(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+		options_board_->AttachWidget(label);
+		label->SetText(kText);
 	}
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
