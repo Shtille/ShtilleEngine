@@ -106,6 +106,7 @@ namespace sht {
 			bool HandleMerge(PlanetTreeNode* node);
 
 			void PruneTree();
+			void PreprocessTree();
 			void RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile);
 
 		private:
@@ -130,6 +131,7 @@ namespace sht {
 			int frame_counter_;
 			bool lod_freeze_;
 			bool tree_freeze_;
+			bool preprocess_;
 		};
 
 	} // namespace geo

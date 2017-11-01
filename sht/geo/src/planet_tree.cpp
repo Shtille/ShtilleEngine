@@ -293,6 +293,9 @@ namespace sht {
 		}
 		void PlanetTreeNode::RenderSelf()
 		{
+			if (owner_->cube_->preprocess_)
+				return;
+
 			graphics::Shader * shader = owner_->cube_->shader_;
 
 			math::Matrix3 face_transform = PlanetCube::GetFaceTransform(owner_->face_);

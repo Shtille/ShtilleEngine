@@ -25,6 +25,7 @@ namespace sht {
 			, frame_counter_(0)
 			, lod_freeze_(false)
 			, tree_freeze_(false)
+			, preprocess_(true)
 		{
 			for (int i = 0; i < kNumFaces; ++i)
 				faces_[i] = new PlanetTree(this, i);
@@ -60,6 +61,19 @@ namespace sht {
 		}
 		void PlanetCube::Update()
 		{
+			// Update LOD state.
+			if (!lod_freeze_)
+			{
+				lod_params_.camera_position = *camera_->position() /*- planet_position;*/;
+				lod_params_.camera_front = camera_->GetForward();
+				lod_params_.camera_distance = lod_params_.camera_position.Length();
+			}
+
+			if (preprocess_)
+			{
+				PreprocessTree();
+				preprocess_ = false;
+			}
 			// Handle delayed requests (for rendering new tiles).
 			HandleRenderRequests();
 
@@ -74,14 +88,6 @@ namespace sht {
 		}
 		void PlanetCube::Render()
 		{
-			// Update LOD state.
-			if (!lod_freeze_)
-			{
-				lod_params_.camera_position = *camera_->position() /*- planet_position;*/;
-				lod_params_.camera_front = camera_->GetForward();
-				lod_params_.camera_distance = lod_params_.camera_position.Length();
-			}
-
 			for (int i = 0; i < kNumFaces; ++i)
 				faces_[i]->Render();
 
@@ -333,6 +339,16 @@ namespace sht {
 					}
 				}
 			}
+		}
+		void PlanetCube::PreprocessTree()
+		{
+			do
+			{
+				HandleRenderRequests();
+				HandleInlineRequests();
+				Render();
+			}
+			while (!render_requests_.empty() || !inline_requests_.empty());
 		}
 		void PlanetCube::RefreshMapTile(PlanetTreeNode* node, PlanetMapTile* tile)
 		{
