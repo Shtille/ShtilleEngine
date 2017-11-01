@@ -296,8 +296,10 @@ static sht::MouseButton TranslateMouseButton(int button)
     app->mouse().delta_x() = [theEvent deltaX];
     app->mouse().delta_y() = [theEvent deltaY];
     NSPoint pos = [theEvent locationInWindow];
-    app->mouse().x() = pos.x;
-    app->mouse().y() = pos.y;
+    NSRect pointRect = NSMakeRect(pos.x, pos.y, 1, 1);
+    NSRect pixelRect = [g_window.view convertRectToBacking:pointRect];
+    app->mouse().x() = pixelRect.origin.x;
+    app->mouse().y() = pixelRect.origin.y;
     app->OnMouseMove();
 }
 
