@@ -19,7 +19,7 @@ ifeq ($(OS),Windows_NT)
 else
 	MAKE := make
 	THIRDPARTY_LIBRARIES = zlib png jpeg freetype bullet script
-    INSTALL_PATH := /usr/local/lib
+    INSTALL_PATH := lib
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         #CCFLAGS += -D LINUX
