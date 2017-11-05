@@ -1,5 +1,7 @@
 #import "fullscreen_window.h"
 
+#import <Availability.h>
+
 @implementation ShtilleEngineFullscreenWindow
 
 -(id) init
@@ -9,7 +11,11 @@
 
 	// Initialize the window making it size of the screen and borderless
 	self = [super initWithContentRect:screenRect
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
 							styleMask:NSBorderlessWindowMask
+#else
+							styleMask:NSWindowStyleMaskBorderless
+#endif
 							  backing:NSBackingStoreBuffered
 								defer:YES];
 

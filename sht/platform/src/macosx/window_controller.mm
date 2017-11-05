@@ -10,6 +10,7 @@
 #include <vector> // for attributes
 #include <stdio.h> // for error logging
 #include <crt_externs.h> // for _NSGetProgname
+#include <Availability.h>
 
 static PlatformWindow g_window;
 
@@ -103,7 +104,12 @@ static void LogError(const char* message)
 
     // Post empty event
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    NSEvent* event = [NSEvent otherEventWithType:NSApplicationDefined
+    NSEvent* event = [NSEvent 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+                              otherEventWithType:NSApplicationDefined
+#else
+                              otherEventWithType:NSEventTypeApplicationDefined
+#endif
                                         location:NSMakePoint(0, 0)
                                    modifierFlags:0
                                        timestamp:0
@@ -122,6 +128,7 @@ static void LogError(const char* message)
 static int TranslateModifiers(NSUInteger mods)
 {
     int modifier = 0;
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
     if (mods & NSShiftKeyMask)
         modifier |= sht::ModifierKey::kShift;
     if (mods & NSControlKeyMask)
@@ -130,6 +137,16 @@ static int TranslateModifiers(NSUInteger mods)
         modifier |= sht::ModifierKey::kAlt;
     if (mods & NSCommandKeyMask)
         modifier |= sht::ModifierKey::kSuper;
+#else
+    if (mods & NSEventModifierFlagShift)
+        modifier |= sht::ModifierKey::kShift;
+    if (mods & NSEventModifierFlagControl)
+        modifier |= sht::ModifierKey::kControl;
+    if (mods & NSEventModifierFlagOption)
+        modifier |= sht::ModifierKey::kAlt;
+    if (mods & NSEventModifierFlagCommand)
+        modifier |= sht::ModifierKey::kSuper;
+#endif
     return modifier;
 }
 
@@ -252,7 +269,12 @@ static sht::MouseButton TranslateMouseButton(int button)
 - (void) flagsChanged:(NSEvent *)theEvent
 {
     const unsigned short key_code = [theEvent keyCode];
-    const int modifiers = TranslateModifiers([theEvent modifierFlags] & NSDeviceIndependentModifierFlagsMask);
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+    const int kFlagsMask = NSDeviceIndependentModifierFlagsMask;
+#else
+    const int kFlagsMask = NSEventModifierFlagDeviceIndependentFlagsMask;
+#endif
+    const int modifiers = TranslateModifiers([theEvent modifierFlags] & kFlagsMask);
     
     sht::Application * app = sht::Application::GetInstance();
     sht::PublicKey translated_key = app->keys().table(key_code);
@@ -482,7 +504,14 @@ static sht::MouseButton TranslateMouseButton(int button)
 // down the command key don't get sent to the key window.
 - (void)sendEvent:(NSEvent *)event
 {
-    if ([event type] == NSKeyUp && ([event modifierFlags] & NSCommandKeyMask))
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+    const NSEventType kEventTypeKeyUp = NSKeyUp;
+    const NSEventModifierFlags kCommandKeyMask = NSCommandKeyMask;
+#else
+    const NSEventType kEventTypeKeyUp = NSEventTypeKeyUp;
+    const NSEventModifierFlags kCommandKeyMask = NSEventModifierFlagCommand;
+#endif
+    if ([event type] == kEventTypeKeyUp && ([event modifierFlags] & kCommandKeyMask))
         [[self keyWindow] sendEvent:event];
     else
         [super sendEvent:event];
@@ -532,6 +561,16 @@ static NSString* FindAppName(void)
 //
 static void CreateMenuBar()
 {
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+    const NSEventModifierFlags kAlternateKeyMask = NSAlternateKeyMask;
+    const NSEventModifierFlags kCommandKeyMask = NSCommandKeyMask;
+    const NSEventModifierFlags kControlKeyMask = NSControlKeyMask;
+#else
+    const NSEventModifierFlags kAlternateKeyMask = NSEventModifierFlagOption;
+    const NSEventModifierFlags kCommandKeyMask = NSEventModifierFlagCommand;
+    const NSEventModifierFlags kControlKeyMask = NSEventModifierFlagControl;
+#endif
+
 	NSString* appName = FindAppName();
 
     NSMenu* bar = [[NSMenu alloc] init];
@@ -558,7 +597,7 @@ static void CreateMenuBar()
     [[appMenu addItemWithTitle:@"Hide Others"
                        action:@selector(hideOtherApplications:)
                 keyEquivalent:@"h"]
-        setKeyEquivalentModifierMask:NSAlternateKeyMask | NSCommandKeyMask];
+        setKeyEquivalentModifierMask:kAlternateKeyMask | kCommandKeyMask];
     [appMenu addItemWithTitle:@"Show All"
                        action:@selector(unhideAllApplications:)
                 keyEquivalent:@""];
@@ -588,7 +627,7 @@ static void CreateMenuBar()
     [[windowMenu addItemWithTitle:@"Enter Full Screen"
                            action:@selector(toggleFullScreen:)
                     keyEquivalent:@"f"]
-        setKeyEquivalentModifierMask:NSControlKeyMask | NSCommandKeyMask];
+        setKeyEquivalentModifierMask:kControlKeyMask | kCommandKeyMask];
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
@@ -642,14 +681,25 @@ static bool CreateWindow()
 
     if (app->IsDecorated())
     {
-        styleMask = NSTitledWindowMask | NSClosableWindowMask |
-                    NSMiniaturizableWindowMask;
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+        styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask;
+#else
+        styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
+#endif
 
         if (app->IsResizable())
-             styleMask |= NSResizableWindowMask;
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+            styleMask |= NSResizableWindowMask;
+#else
+            styleMask |= NSWindowStyleMaskResizable;
+#endif
     }
     else
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
         styleMask = NSBorderlessWindowMask;
+#else
+        styleMask = NSWindowStyleMaskBorderless;
+#endif
 
     // We will create fullscreen window separately
     NSRect contentRect = NSMakeRect(0, 0, app->width(), app->height());
@@ -759,9 +809,14 @@ bool PlatformNeedQuit()
 }
 void PlatformPollEvents()
 {
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < 101200
+    const NSEventMask kEventMaskAny = NSAnyEventMask;
+#else
+    const NSEventMask kEventMaskAny = NSEventMaskAny;
+#endif
     while (true)
     {
-        NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+        NSEvent* event = [NSApp nextEventMatchingMask:kEventMaskAny
                                             untilDate:[NSDate distantPast]
                                                inMode:NSDefaultRunLoopMode
                                               dequeue:YES];
