@@ -41,9 +41,9 @@ namespace sht {
                 vec4 color_;
                 
             private:
-                void BindConstUniforms() override;
-                void FillVertexAttribs() override;
-                void FillVertices() override;
+                virtual void BindConstUniforms() override;
+                virtual void FillVertexAttribs() override;
+                virtual void FillVertices() override;
             };
             
             //! Textured rectangle class
@@ -55,9 +55,9 @@ namespace sht {
                 virtual void Render() override;
                 
             private:
-                void BindConstUniforms() override;
-                void FillVertexAttribs() override;
-                void FillVertices() override;
+                virtual void BindConstUniforms() override;
+                virtual void FillVertexAttribs() override;
+                virtual void FillVertices() override;
             };
 
 		} // namespace ui

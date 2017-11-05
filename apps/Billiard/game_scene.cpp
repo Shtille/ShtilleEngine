@@ -27,6 +27,7 @@ GameScene::GameScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 , cue_animation_clip_(nullptr)
 , rack_animation_controller_(nullptr)
 , cue_animation_controller_(nullptr)
+, ui_root_(nullptr)
 , menu_board_(nullptr)
 , victory_board_(nullptr)
 , defeat_board_(nullptr)
@@ -104,6 +105,8 @@ void GameScene::Update()
 	menu_board_->UpdateAll(frame_time);
 	victory_board_->UpdateAll(frame_time);
 	defeat_board_->UpdateAll(frame_time);
+	cue_aim_horizontal_board_->UpdateAll(frame_time);
+	cue_aim_vertical_board_->UpdateAll(frame_time);
 
 	// Check timers' events
 	CheckTimerEvents();
@@ -305,6 +308,8 @@ void GameScene::RenderInterface()
 		else
 			defeat_board_->Render(); // render only board rect (smart hack for labels :D)
 	}
+	cue_aim_horizontal_board_->RenderAll();
+	cue_aim_vertical_board_->RenderAll();
 
 	renderer_->EnableDepthTest();
 }
@@ -483,20 +488,10 @@ void GameScene::Unload()
 		delete[] scores_;
 		scores_ = nullptr;
 	}
-	if (defeat_board_)
+	if (ui_root_)
 	{
-		delete defeat_board_;
-		defeat_board_ = nullptr;
-	}
-	if (victory_board_)
-	{
-		delete victory_board_;
-		victory_board_ = nullptr;
-	}
-	if (menu_board_)
-	{
-		delete menu_board_;
-		menu_board_ = nullptr;
+		delete ui_root_;
+		ui_root_ = nullptr;
 	}
 	if (ball_active_)
 	{
@@ -760,18 +755,27 @@ void GameScene::SwitchToCueTargeting()
 	phase_ = GamePhase::kCueTargeting;
 	need_render_cue_ = true;
 	UpdateCueMatrix();
+	// Show UI
+	cue_aim_horizontal_board_->set_enabled(true);
+	cue_aim_vertical_board_->set_enabled(true);
 }
 void GameScene::RequestCueHit()
 {
-	if (cue_collides_)
+	if (GamePhase::kCueTargeting == phase_) // the only phase in that hit is allowed
 	{
-		// Play some sound, etc.
-		SetStatus(L"unable to do a hit");
-	}
-	else
-	{
-		cue_animation_timer_->Start();
-		cue_animation_controller_->Play();
+		if (cue_collides_)
+		{
+			// Play some sound, etc.
+			SetStatus(L"unable to do a hit");
+		}
+		else
+		{
+			cue_animation_timer_->Start();
+			cue_animation_controller_->Play();
+			// Hide UI
+			cue_aim_horizontal_board_->set_enabled(false);
+			cue_aim_vertical_board_->set_enabled(false);
+		}
 	}
 }
 void GameScene::RequestRackRemove()
@@ -794,41 +798,30 @@ void GameScene::HitCueBall()
 	phase_ = GamePhase::kBallsRolling;
 	pocket_entrance_timer_->Start();
 }
+void GameScene::OnCueAimButtonTouched()
+{
+	cue_aim_horizontal_board_->Move();
+	cue_aim_vertical_board_->Move();
+}
+void GameScene::OnCueHitButtonTouched()
+{
+	RequestCueHit();
+}
+void GameScene::OnHorizontalSliderMoved()
+{
+	cue_alpha_ = cue_aim_horizontal_slider_->pin_position() * sht::math::kTwoPi;
+	UpdateCueMatrix();
+}
+void GameScene::OnVerticalSliderMoved()
+{
+	cue_theta_ = cue_aim_vertical_slider_->pin_position() * sht::math::kPi * -0.5f;
+	UpdateCueMatrix();
+}
 void GameScene::OnKeyDown(sht::PublicKey key, int mods)
 {
 	if (sht::PublicKey::kEscape == key)
 	{
 		menu_board_->Move();
-	}
-
-	// Cue targeting
-	if (phase_ == GamePhase::kCueTargeting)
-	{
-		bool rotation_has_changed = false;
-		if (key == sht::PublicKey::kSpace)
-			RequestCueHit();
-		else if (key == sht::PublicKey::kLeft)
-		{
-			rotation_has_changed = true;
-			cue_alpha_ += 0.1f;
-		}
-		else if (key == sht::PublicKey::kRight)
-		{
-			rotation_has_changed = true;
-			cue_alpha_ -= 0.1f;
-		}
-		else if (key == sht::PublicKey::kUp)
-		{
-			rotation_has_changed = true;
-			cue_theta_ -= 0.1f;
-		}
-		else if (key == sht::PublicKey::kDown)
-		{
-			rotation_has_changed = true;
-			cue_theta_ += 0.1f;
-		}
-		if (rotation_has_changed)
-			UpdateCueMatrix();
 	}
 
 	// Camera rotation
@@ -863,6 +856,39 @@ void GameScene::OnMouseDown(sht::MouseButton button, int modifiers, float x, flo
 			menu_board_->Move();
 			OnPlayerLost();
 		}
+		else
+		{
+			vec2 position(x, y);
+			if (cue_aim_horizontal_board_->enabled())
+			{
+				if (cue_aim_horizontal_board_->IsPosMax())
+					cue_aim_horizontal_slider_->OnTouchDown(position);
+				cue_hit_button_->OnTouchDown(position);
+				if (cue_hit_button_->is_touched())
+					OnCueHitButtonTouched();
+			}
+			if (cue_aim_vertical_board_->enabled())
+			{
+				if (cue_aim_vertical_board_->IsPosMax())
+					cue_aim_vertical_slider_->OnTouchDown(position);
+				cue_aim_button_->OnTouchDown(position);
+				if (cue_aim_button_->is_touched())
+					OnCueAimButtonTouched();
+			}			
+		}
+	}
+}
+void GameScene::OnMouseUp(sht::MouseButton button, int modifiers, float x, float y)
+{
+	if (sht::MouseButton::kLeft == button)
+	{
+		vec2 position(x, y);
+		if (cue_aim_horizontal_board_->IsPosMax())
+			cue_aim_horizontal_slider_->OnTouchUp(position);
+		cue_hit_button_->OnTouchUp(position);
+		if (cue_aim_vertical_board_->IsPosMax())
+			cue_aim_vertical_slider_->OnTouchUp(position);
+		cue_aim_button_->OnTouchUp(position);
 	}
 }
 void GameScene::OnMouseMove(float x, float y)
@@ -873,11 +899,34 @@ void GameScene::OnMouseMove(float x, float y)
 		victory_board_->SelectAll(x, y);
 	if (defeat_board_->IsPosMin())
 		defeat_board_->SelectAll(x, y);
+	vec2 position(x, y);
+	if (cue_aim_horizontal_board_->enabled())
+	{
+		if (cue_aim_horizontal_board_->IsPosMax())
+		{
+			cue_aim_horizontal_slider_->OnTouchMove(position);
+			if (cue_aim_horizontal_slider_->is_touched())
+				OnHorizontalSliderMoved();
+		}
+		cue_hit_button_->OnTouchMove(position);
+	}
+	if (cue_aim_vertical_board_->enabled())
+	{
+		if (cue_aim_vertical_board_->IsPosMax())
+		{
+			cue_aim_vertical_slider_->OnTouchMove(position);
+			if (cue_aim_vertical_slider_->is_touched())
+				OnVerticalSliderMoved();
+		}
+		cue_aim_button_->OnTouchMove(position);
+	}
 }
 void GameScene::CreateMenu()
 {
 	sht::utility::ui::Rect * rect;
 	sht::utility::ui::Label * label;
+
+	ui_root_ = new sht::utility::ui::Widget();
 
 	// Main menu
 	menu_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
@@ -892,6 +941,7 @@ void GameScene::CreateMenu()
 		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
+	ui_root_->AttachWidget(menu_board_);
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
 			0.05f, // x
@@ -975,6 +1025,7 @@ void GameScene::CreateMenu()
 		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
+	ui_root_->AttachWidget(victory_board_);
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
 			0.05f, // x
@@ -1041,6 +1092,7 @@ void GameScene::CreateMenu()
 		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
+	ui_root_->AttachWidget(defeat_board_);
 	{
 		rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
 			0.05f, // x
@@ -1134,6 +1186,83 @@ void GameScene::CreateMenu()
 		label->SetText(kText);
 		label->AlignCenter(rect->width(), rect->height());
 	}
+
+	// ----- User interaction UI -----
+	const vec4 kBarColor(0.5f, 0.5f, 0.5f, 0.5f);
+	const vec4 kPinColorNormal(1.0f, 1.0f, 1.0f, 1.0f);
+	const vec4 kPinColorTouch(1.0f, 1.0f, 0.0f, 1.0f);
+
+	cue_aim_horizontal_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
+		vec4(1.0f), // vec4 color
+		renderer_->aspect_ratio(), // f32 width
+		0.2f, // f32 height
+		0.0f, // f32 left
+		-0.2f, // f32 hmin
+		0.0f, // f32 hmax
+		0.6f, // f32 velocity
+		true, // bool is_down
+		true, // bool is vertical
+		(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
+		);
+	cue_aim_horizontal_board_->set_enabled(false);
+	ui_root_->AttachWidget(cue_aim_horizontal_board_);
+	cue_hit_button_ = new sht::utility::ui::ButtonColored(renderer_, gui_shader_,
+		kPinColorNormal, // vec4 normal color
+		kPinColorTouch, // vec4 touch color
+		renderer_->aspect_ratio()-0.2f, // f32 x
+		0.2f, // f32 y
+		0.2f, // f32 width
+		0.2f, // f32 height
+		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+		);
+	cue_aim_horizontal_board_->AttachWidget(cue_hit_button_);
+	cue_aim_horizontal_slider_ = new sht::utility::ui::Slider(renderer_, gui_shader_,
+		kBarColor, // vec4 bar_color
+		kPinColorNormal, // vec4 pin_color_normal
+		kPinColorTouch, // vec4 pin_color_touch
+		0.0f, // f32 x
+		0.0f, // f32 y
+		renderer_->aspect_ratio(), // f32 width
+		0.2f, // f32 height
+		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+		);
+	cue_aim_horizontal_board_->AttachWidget(cue_aim_horizontal_slider_);
+
+	cue_aim_vertical_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
+		vec4(1.0f), // vec4 color
+		0.2f, // f32 width
+		0.8f, // f32 height
+		0.2f, // f32 bottom
+		-0.2f, // f32 xmin
+		0.0f, // f32 xmax
+		0.6f, // f32 velocity
+		true, // bool is_down
+		false, // bool is vertical
+		(u32)sht::utility::ui::Flags::kRenderNever // u32 flags
+		);
+	cue_aim_vertical_board_->set_enabled(false);
+	ui_root_->AttachWidget(cue_aim_vertical_board_);
+	cue_aim_button_ = new sht::utility::ui::ButtonColored(renderer_, gui_shader_,
+		kPinColorNormal, // vec4 normal color
+		kPinColorTouch, // vec4 touch color
+		0.2f, // f32 x
+		0.6f, // f32 y
+		0.2f, // f32 width
+		0.2f, // f32 height
+		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+		);
+	cue_aim_vertical_board_->AttachWidget(cue_aim_button_);
+	cue_aim_vertical_slider_ = new sht::utility::ui::Slider(renderer_, gui_shader_,
+		kBarColor, // vec4 bar_color
+		kPinColorNormal, // vec4 pin_color_normal
+		kPinColorTouch, // vec4 pin_color_touch
+		0.0f, // f32 x
+		0.0f, // f32 y
+		0.2f, // f32 width
+		0.8f, // f32 height
+		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+		);
+	cue_aim_vertical_board_->AttachWidget(cue_aim_vertical_slider_);
 }
 void GameScene::SetupCamera()
 {

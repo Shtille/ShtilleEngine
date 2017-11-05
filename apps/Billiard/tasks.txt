@@ -33,7 +33,7 @@
 			- Slider to control cue rotation angle.
 			- Button to hit the cue ball.
 	- Gameplay
-		- Add different camera modes.
+		+ Add different camera modes.
 		+ Enhance game logics.
 		+ Add cue hit animation.
 		+ Add rack removing animation.
@@ -62,3 +62,4 @@
 	- UI
 		- Add slider class.
 		- Add button class.
+		+ Make universal board class.

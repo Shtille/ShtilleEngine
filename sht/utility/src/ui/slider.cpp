@@ -120,6 +120,10 @@ namespace sht {
 			{
 				return width_ < height_;
 			}
+			bool Slider::is_touched() const
+			{
+				return is_touched_;
+			}
 			bool Slider::IsInsidePin(const vec2& global_position)
 			{
 				vec2 position, pin_global_position;

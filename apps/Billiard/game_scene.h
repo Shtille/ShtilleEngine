@@ -20,6 +20,8 @@
 #include "utility/include/ui/board.h"
 #include "utility/include/ui/rect.h"
 #include "utility/include/ui/label.h"
+#include "utility/include/ui/slider.h"
+#include "utility/include/ui/button.h"
 
 class MaterialBinder;
 
@@ -67,9 +69,14 @@ private:
 	void RequestCueHit();
 	void RequestRackRemove();
 	void HitCueBall();
+	void OnCueAimButtonTouched();
+	void OnCueHitButtonTouched();
+	void OnHorizontalSliderMoved();
+	void OnVerticalSliderMoved();
 
 	void OnKeyDown(sht::PublicKey key, int mods) override;
 	void OnMouseDown(sht::MouseButton button, int modifiers, float x, float y) final;
+	void OnMouseUp(sht::MouseButton button, int modifiers, float x, float y) final;
 	void OnMouseMove(float x, float y) final;
 
 	sht::utility::EventListenerInterface * event_listener_;
@@ -91,6 +98,7 @@ private:
 	sht::system::Timer * cue_animation_timer_;
 	sht::system::Timer * rack_animation_timer_;
 
+	sht::utility::ui::Widget * ui_root_;
 	sht::utility::ui::ColoredBoard * menu_board_;
 	sht::utility::ui::Rect * menu_continue_rect_;
 	sht::utility::ui::Rect * menu_give_up_rect_;
@@ -100,6 +108,12 @@ private:
 	sht::utility::ui::ColoredBoard * defeat_board_;
 	sht::utility::ui::Label * defeat_score_label_;
 	sht::utility::ui::Rect * defeat_exit_rect_;
+	sht::utility::ui::ColoredBoard * cue_aim_horizontal_board_;
+	sht::utility::ui::Slider * cue_aim_horizontal_slider_;
+	sht::utility::ui::ColoredBoard * cue_aim_vertical_board_;
+	sht::utility::ui::Slider * cue_aim_vertical_slider_;
+	sht::utility::ui::ButtonColored * cue_aim_button_;
+	sht::utility::ui::ButtonColored * cue_hit_button_;
 
 	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID gui_shader_id_;

@@ -21,12 +21,16 @@ namespace sht {
 			};
 
 			//! Base class for any widget
-            /*!
-             We won't use any rotation, so we dont need to store transformation matrix.
-             But anyway i gonna think about that.
-            */
+			/*!
+			 We won't use any rotation, so we dont need to store transformation matrix.
+			 But anyway i gonna think about that.
+			*/
 			class Widget {
 			public:
+				Widget();
+				Widget(f32 x, f32 y, u32 flags);
+				virtual ~Widget();
+
 				void set_position(const vec2& position);
 				void set_active(bool active);
 				void set_enabled(bool enabled);
@@ -38,27 +42,25 @@ namespace sht {
 				void DetachWidget(Widget * widget);
 
 				virtual void Update(f32 sec); //!< update this widget only
-                void UpdateAll(f32 sec); //!< update entire tree starting from this widget
-                virtual void Render();
-                void RenderAll();
-                
-                void ActivateAll();
-                void DeactivateAll();
+				void UpdateAll(f32 sec); //!< update entire tree starting from this widget
+				virtual void Render();
+				void RenderAll();
+				
+				void ActivateAll();
+				void DeactivateAll();
 
-                void Select(float x, float y); //!< activates only this if has selectable flag
-                void SelectAll(float x, float y); //!< activates all selectable widgets
-                
-                bool HasFlag(Flags flag);
-                
-                void ObtainGlobalPosition(vec2 * position);
+				void Select(float x, float y); //!< activates only this if has selectable flag
+				void SelectAll(float x, float y); //!< activates all selectable widgets
+				
+				bool HasFlag(Flags flag);
+				
+				void ObtainGlobalPosition(vec2 * position);
 
 			protected:
-				Widget(f32 x, f32 y, u32 flags);
-				virtual ~Widget();
-                
-                virtual void BindConstUniforms();
+				
+				virtual void BindConstUniforms();
 
-                Widget * parent_;
+				Widget * parent_;
 				std::list<Widget*> nodes_; //!< child nodes
 				vec2 position_;
 				u32 flags_;

@@ -12,3 +12,8 @@ Today,  July 9 2017 I decided to start tracking a work in a log file.
 
 [08.07.2017]
 - Added a new loop for more precise physics simulation.
+
+[05.11.2017]
+- Made some fixes in geo.
+- Added universal colored board class.
+- Added button class.

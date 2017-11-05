@@ -30,6 +30,7 @@ namespace sht {
 				float pin_position() const;
 				float pin_radius() const;
 				bool is_vertical() const;
+				bool is_touched() const;
 
 			protected:
 				bool IsInsidePin(const vec2& global_position);
