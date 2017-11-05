@@ -11,6 +11,7 @@ Total improvements:
 [+] 8. Add tree preprocess.
 [-] 9. Remove allocations on MapTile class.
 [-] 10. Remove allocations on Renderable class.
+[-] 11. Get rid of Map class.
 
 General line of tasks:
 [+] 1. Finish satellite imagery part implementation.

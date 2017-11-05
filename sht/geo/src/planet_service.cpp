@@ -1,7 +1,5 @@
 #include "../include/planet_service.h"
 
-#include "../../thirdparty/libsaim/include/saim.h"
-
 #include <functional>
 
 namespace sht {

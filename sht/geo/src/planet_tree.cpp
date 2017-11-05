@@ -54,8 +54,7 @@ namespace sht {
 		}
 		bool PlanetTreeNode::IsSplit()
 		{
-			// TODO: exchange on has_chilren ?
-			return children_[0] || children_[1] || children_[2] || children_[3];
+			return has_children_;
 		}
 		void PlanetTreeNode::AttachChild(PlanetTreeNode * child, int position)
 		{
