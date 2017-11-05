@@ -45,11 +45,11 @@ void MenuScene::Render()
 
 	// Render UI
 	gui_shader_->Bind();
-	if (main_board_->IsPosDown())
+	if (main_board_->IsPosMin())
 		main_board_->RenderAll(); // render entire tree
 	else
 		main_board_->Render(); // render only board rect (smart hack for labels :D)
-	if (options_board_->IsPosDown())
+	if (options_board_->IsPosMin())
 		options_board_->RenderAll(); // render entire tree
 	else
 		options_board_->Render();
@@ -70,7 +70,7 @@ void MenuScene::Load()
 	CreateMenu();
 
 	// Make main board to move down
-	if (main_board_->IsPosUp())
+	if (main_board_->IsPosMax())
 		main_board_->Move();
 }
 void MenuScene::Unload()
@@ -140,9 +140,9 @@ void MenuScene::OnMouseUp(sht::MouseButton button, int modifiers, float x, float
 }
 void MenuScene::OnMouseMove(float x, float y)
 {
-	if (main_board_->IsPosDown())
+	if (main_board_->IsPosMin())
 		main_board_->SelectAll(x, y);
-	if (options_board_->IsPosDown())
+	if (options_board_->IsPosMin())
 		options_board_->SelectAll(x, y);
 }
 void MenuScene::CreateMenu()
@@ -151,7 +151,7 @@ void MenuScene::CreateMenu()
 	sht::utility::ui::Label * label;
 
 	// Main menu
-	main_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	main_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.5f, // f32 width
 		0.5f, // f32 height
@@ -160,6 +160,7 @@ void MenuScene::CreateMenu()
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
 		false, // bool is_down
+		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{
@@ -233,7 +234,7 @@ void MenuScene::CreateMenu()
 	}
 
 	// Options menu
-	options_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	options_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.8f, // f32 width
 		0.5f, // f32 height
@@ -242,6 +243,7 @@ void MenuScene::CreateMenu()
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
 		false, // bool is_down
+		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{

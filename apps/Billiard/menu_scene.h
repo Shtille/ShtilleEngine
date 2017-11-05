@@ -44,11 +44,11 @@ private:
 	sht::graphics::Font * font_;
 	sht::graphics::StaticText * text_;
 
-	sht::utility::ui::VerticalBoard * main_board_;
+	sht::utility::ui::ColoredBoard * main_board_;
 	sht::utility::ui::Rect * new_game_rect_;
 	sht::utility::ui::Rect * options_rect_;
 	sht::utility::ui::Rect * exit_rect_;
-	sht::utility::ui::VerticalBoard * options_board_;
+	sht::utility::ui::ColoredBoard * options_board_;
 	sht::utility::ui::Rect * options_players_increase_rect_;
 	sht::utility::ui::Rect * options_players_rect_;
 	sht::utility::ui::Label * options_players_label_;

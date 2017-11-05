@@ -8,27 +8,27 @@ namespace sht {
 	namespace utility {
 		namespace ui {
 
-			//! Standart board class
-			class VerticalBoard : public RectColored {
+			//! Colored board class
+			class ColoredBoard : public RectColored {
 			public:
-				explicit VerticalBoard(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
-                    const vec4& color,
-                    f32 width, f32 height, f32 left, f32 hmin, f32 hmax, f32 velocity, bool is_down,
-					u32 flags);
+				explicit ColoredBoard(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
+					const vec4& color, f32 width, f32 height, f32 other_coord, f32 value_min, f32 value_max,
+					f32 velocity, bool min_position, bool is_vertical, u32 flags);
 
 				bool IsMoving() const;
-				bool IsPosDown() const;
-				bool IsPosUp() const;
+				bool IsPosMin() const;
+				bool IsPosMax() const;
 
 				void Move();
 
 				virtual void Update(f32 sec) override;
 
 			protected:
-				f32 min_height_;
-				f32 max_height_;
+				f32 min_value_;
+				f32 max_value_;
 				f32 velocity_;
-				bool move_up_;
+				bool is_vertical_;
+				bool move_positive_;
 				bool move_active_;
 			};
 

@@ -284,23 +284,23 @@ void GameScene::RenderInterface()
 
 	// Render UI
 	gui_shader_->Bind();
-	if (!menu_board_->IsPosUp())
+	if (!menu_board_->IsPosMax())
 	{
-		if (menu_board_->IsPosDown())
+		if (menu_board_->IsPosMin())
 			menu_board_->RenderAll(); // render entire tree
 		else
 			menu_board_->Render(); // render only board rect (smart hack for labels :D)
 	}
-	if (!victory_board_->IsPosUp())
+	if (!victory_board_->IsPosMax())
 	{
-		if (victory_board_->IsPosDown())
+		if (victory_board_->IsPosMin())
 			victory_board_->RenderAll(); // render entire tree
 		else
 			victory_board_->Render(); // render only board rect (smart hack for labels :D)
 	}
-	if (!defeat_board_->IsPosUp())
+	if (!defeat_board_->IsPosMax())
 	{
-		if (defeat_board_->IsPosDown())
+		if (defeat_board_->IsPosMin())
 			defeat_board_->RenderAll(); // render entire tree
 		else
 			defeat_board_->Render(); // render only board rect (smart hack for labels :D)
@@ -867,11 +867,11 @@ void GameScene::OnMouseDown(sht::MouseButton button, int modifiers, float x, flo
 }
 void GameScene::OnMouseMove(float x, float y)
 {
-	if (menu_board_->IsPosDown())
+	if (menu_board_->IsPosMin())
 		menu_board_->SelectAll(x, y);
-	if (victory_board_->IsPosDown())
+	if (victory_board_->IsPosMin())
 		victory_board_->SelectAll(x, y);
-	if (defeat_board_->IsPosDown())
+	if (defeat_board_->IsPosMin())
 		defeat_board_->SelectAll(x, y);
 }
 void GameScene::CreateMenu()
@@ -880,7 +880,7 @@ void GameScene::CreateMenu()
 	sht::utility::ui::Label * label;
 
 	// Main menu
-	menu_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	menu_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.5f, // f32 width
 		0.5f, // f32 height
@@ -889,6 +889,7 @@ void GameScene::CreateMenu()
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
 		false, // bool is_down
+		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{
@@ -962,7 +963,7 @@ void GameScene::CreateMenu()
 	}
 
 	// Victory menu
-	victory_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	victory_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.5f, // f32 width
 		0.5f, // f32 height
@@ -971,6 +972,7 @@ void GameScene::CreateMenu()
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
 		false, // bool is_down
+		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{
@@ -1027,7 +1029,7 @@ void GameScene::CreateMenu()
 	}
 
 	// Defeat menu
-	defeat_board_ = new sht::utility::ui::VerticalBoard(renderer_, gui_shader_,
+	defeat_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
 		vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
 		0.5f, // f32 width
 		0.5f, // f32 height
@@ -1036,6 +1038,7 @@ void GameScene::CreateMenu()
 		1.0f, // f32 hmax
 		0.6f, // f32 velocity
 		false, // bool is_down
+		true, // bool is vertical
 		(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
 		);
 	{

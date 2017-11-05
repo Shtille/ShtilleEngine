@@ -46,7 +46,7 @@ namespace sht {
             void PushString();
             void InsertString();
             
-            ui::VerticalBoard vertical_board_;
+            ui::ColoredBoard vertical_board_;
             u32 max_lines_; //!< maximum number of lines
             ui::Label * * labels_; // pointers to labels
             std::vector<std::wstring> lines_;

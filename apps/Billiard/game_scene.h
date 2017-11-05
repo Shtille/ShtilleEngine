@@ -91,13 +91,13 @@ private:
 	sht::system::Timer * cue_animation_timer_;
 	sht::system::Timer * rack_animation_timer_;
 
-	sht::utility::ui::VerticalBoard * menu_board_;
+	sht::utility::ui::ColoredBoard * menu_board_;
 	sht::utility::ui::Rect * menu_continue_rect_;
 	sht::utility::ui::Rect * menu_give_up_rect_;
 	sht::utility::ui::Rect * menu_exit_rect_;
-	sht::utility::ui::VerticalBoard * victory_board_;
+	sht::utility::ui::ColoredBoard * victory_board_;
 	sht::utility::ui::Rect * victory_exit_rect_;
-	sht::utility::ui::VerticalBoard * defeat_board_;
+	sht::utility::ui::ColoredBoard * defeat_board_;
 	sht::utility::ui::Label * defeat_score_label_;
 	sht::utility::ui::Rect * defeat_exit_rect_;
 

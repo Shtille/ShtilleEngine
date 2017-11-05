@@ -6,7 +6,16 @@ namespace sht {
         Console::Console(sht::graphics::Renderer * renderer, sht::graphics::Font * font,
                          sht::graphics::Shader * gui_shader, sht::graphics::Shader * text_shader,
                          f32 bottom, f32 text_height, f32 velocity, f32 aspect_ratio)
-        : vertical_board_(renderer, gui_shader, vec4(0.2f, 0.2f, 0.2f, 0.8f), aspect_ratio, 1.0f-bottom, 0.0f, bottom, 1.0f, velocity, false, (u32)ui::Flags::kRenderAlways)
+        : vertical_board_(renderer, gui_shader, vec4(0.2f, 0.2f, 0.2f, 0.8f),
+            aspect_ratio, // width
+            1.0f-bottom, // height
+            0.0f, // left
+            bottom, // hmin
+            1.0f, // hmax
+            velocity,
+            false, // is pos down
+            true, // is vertical
+            (u32)ui::Flags::kRenderAlways)
         , labels_(nullptr)
         , need_to_update_input_(false)
         , need_to_update_all_(false)
@@ -29,7 +38,7 @@ namespace sht {
 		}
         bool Console::IsActive()
         {
-            return vertical_board_.IsPosDown();
+            return vertical_board_.IsPosMin();
         }
 		void Console::Move()
 		{
@@ -65,7 +74,7 @@ namespace sht {
         }
 		void Console::Render()
 		{
-            if (vertical_board_.IsPosDown())
+            if (vertical_board_.IsPosMin())
                 vertical_board_.RenderAll(); // render entire tree
             else
                 vertical_board_.Render(); // render only console rect (smart hack for labels :D)
