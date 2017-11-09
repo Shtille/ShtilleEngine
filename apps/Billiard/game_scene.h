@@ -109,9 +109,9 @@ private:
 	sht::utility::ui::Label * defeat_score_label_;
 	sht::utility::ui::Rect * defeat_exit_rect_;
 	sht::utility::ui::ColoredBoard * cue_aim_horizontal_board_;
-	sht::utility::ui::Slider * cue_aim_horizontal_slider_;
+	sht::utility::ui::SliderColored * cue_aim_horizontal_slider_;
 	sht::utility::ui::ColoredBoard * cue_aim_vertical_board_;
-	sht::utility::ui::Slider * cue_aim_vertical_slider_;
+	sht::utility::ui::SliderColored * cue_aim_vertical_slider_;
 	sht::utility::ui::ButtonColored * cue_aim_button_;
 	sht::utility::ui::ButtonColored * cue_hit_button_;
 

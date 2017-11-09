@@ -1216,7 +1216,7 @@ void GameScene::CreateMenu()
 		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 		);
 	cue_aim_horizontal_board_->AttachWidget(cue_hit_button_);
-	cue_aim_horizontal_slider_ = new sht::utility::ui::Slider(renderer_, gui_shader_,
+	cue_aim_horizontal_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
 		kBarColor, // vec4 bar_color
 		kPinColorNormal, // vec4 pin_color_normal
 		kPinColorTouch, // vec4 pin_color_touch
@@ -1252,7 +1252,7 @@ void GameScene::CreateMenu()
 		(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 		);
 	cue_aim_vertical_board_->AttachWidget(cue_aim_button_);
-	cue_aim_vertical_slider_ = new sht::utility::ui::Slider(renderer_, gui_shader_,
+	cue_aim_vertical_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
 		kBarColor, // vec4 bar_color
 		kPinColorNormal, // vec4 pin_color_normal
 		kPinColorTouch, // vec4 pin_color_touch

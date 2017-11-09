@@ -60,6 +60,6 @@
 		- Add height map mesh object.
 		- Add height map decal mesh object.
 	- UI
-		- Add slider class.
-		- Add button class.
+		+ Add slider class.
+		+ Add button class.
 		+ Make universal board class.

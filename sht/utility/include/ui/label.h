@@ -36,7 +36,7 @@ namespace sht {
                 bool constant_position_; //!< used for optimization
                 
             private:
-                void BindConstUniforms() override;
+                void BindConstUniforms();
 			};
 
 		} // namespace ui

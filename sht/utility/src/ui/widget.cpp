@@ -75,20 +75,19 @@ namespace sht {
 			}
 			void Widget::Render()
 			{
-				
 			}
 			void Widget::RenderAll()
 			{
 				if (!enabled_)
 					return;
 				
-				if (HasFlag(Flags::kRenderAlways) ||
+				if ((HasFlag(Flags::kRenderAlways)) ||
 					(HasFlag(Flags::kRenderIfActive) && active_))
 					Render();
 				
-				for (auto &w : nodes_)
+				for (auto &child : nodes_)
 				{
-					w->RenderAll();
+					child->RenderAll();
 				}
 			}
 			void Widget::ActivateAll()
@@ -131,6 +130,33 @@ namespace sht {
 			{
 				return (flags_ & (u32)flag) != 0;
 			}
+			bool Widget::BeginChildSearch()
+			{
+				if (!nodes_.empty())
+				{
+					child_iterator_ = nodes_.begin();
+					return true;
+				}
+				else
+					return false;
+			}
+			void Widget::EndChildSearch()
+			{
+			}
+			bool Widget::GetNextChild(Widget *& child)
+			{
+				if (child_iterator_ != nodes_.end())
+				{
+					child = *child_iterator_;
+					++child_iterator_;
+					return true;
+				}
+				else
+				{
+					child = nullptr;
+					return false;
+				}
+			}
 			void Widget::ObtainGlobalPosition(vec2 * position)
 			{
 				position->x = 0.0f;
@@ -142,10 +168,6 @@ namespace sht {
 					*position += widget->position_;
 					widget = widget->parent_;
 				}
-			}
-			void Widget::BindConstUniforms()
-			{
-				
 			}
 
 		} // namespace ui

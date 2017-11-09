@@ -4,61 +4,16 @@ namespace sht {
 	namespace utility {
 		namespace ui {
 
-			Slider::Slider(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
-				 const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
-				 f32 x, f32 y, f32 width, f32 height, u32 flags)
-			: DrawableWidget(renderer, shader, nullptr, x, y, flags)
-			, bar_color_(bar_color)
-			, pin_color_normal_(pin_color_normal)
-			, pin_color_touch_(pin_color_touch)
-			, old_position_(0.0f)
+			Slider::Slider(f32 x, f32 y, f32 width, f32 height, u32 flags)
+			: Widget(x, y, flags)
 			, width_(width)
 			, height_(height)
-			, num_bar_vertices_(4)
-			, num_pin_vertices_(4)
+			, old_position_(0.0f)
 			, radius_((width < height) ? (0.5f * width) : (0.5f * height))
 			, pin_position_(0.0f)
 			, pin_radius_((width < height) ? (0.5f * width) : (0.5f * height))
 			, is_touched_(false)
 			{
-				FillVertexAttribs();
-				FillVertices();
-				MakeRenderable();
-				BindConstUniforms();
-			}
-			void Slider::Render()
-			{
-				vec2 position, pin_global_position;
-
-				ObtainGlobalPosition(&position);
-				if (is_vertical())
-				{
-					pin_global_position.x = position.x + width_ * 0.5f;
-					pin_global_position.y = position.y + radius_ + pin_position_ * (height_ - 2.0f * radius_);
-				}
-				else
-				{
-					pin_global_position.x = position.x + radius_ + pin_position_ * (width_ - 2.0f * radius_);
-					pin_global_position.y = position.y + height_ * 0.5f;
-				}
-
-				renderer_->ChangeTexture(texture_);
-
-				shader_->Bind();
-
-				renderer_->context()->BindVertexArrayObject(vertex_array_object_);
-
-				shader_->Uniform2fv("u_position", position);
-				shader_->Uniform4fv("u_color", bar_color_);
-				renderer_->context()->DrawArrays(sht::graphics::PrimitiveType::kTriangleStrip, 0, num_bar_vertices_);
-
-				shader_->Uniform2fv("u_position", pin_global_position);
-				shader_->Uniform4fv("u_color", (is_touched_) ? pin_color_touch_ : pin_color_normal_);
-				renderer_->context()->DrawArrays(sht::graphics::PrimitiveType::kTriangleStrip, num_bar_vertices_, num_pin_vertices_);
-
-				renderer_->context()->BindVertexArrayObject(0);
-
-				shader_->Unbind();
 			}
 			void Slider::SetPinPosition(f32 pos)
 			{
@@ -144,18 +99,69 @@ namespace sht {
 					(global_position.x < pin_global_position.x + pin_radius_) &&
 					(global_position.y < pin_global_position.y + pin_radius_);
 			}
-			void Slider::BindConstUniforms()
+
+			SliderColored::SliderColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
+				 const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
+				 f32 x, f32 y, f32 width, f32 height, u32 flags)
+			: Slider(x, y, width, height, flags)
+			, Drawable(renderer, shader, nullptr)
+			, bar_color_(bar_color)
+			, pin_color_normal_(pin_color_normal)
+			, pin_color_touch_(pin_color_touch)
+			, num_bar_vertices_(4)
+			, num_pin_vertices_(4)
+			{
+				FillVertexAttribs();
+				FillVertices();
+				MakeRenderable();
+				BindConstUniforms();
+			}
+			void SliderColored::Render()
+			{
+				vec2 position, pin_global_position;
+
+				ObtainGlobalPosition(&position);
+				if (is_vertical())
+				{
+					pin_global_position.x = position.x + width_ * 0.5f;
+					pin_global_position.y = position.y + radius_ + pin_position_ * (height_ - 2.0f * radius_);
+				}
+				else
+				{
+					pin_global_position.x = position.x + radius_ + pin_position_ * (width_ - 2.0f * radius_);
+					pin_global_position.y = position.y + height_ * 0.5f;
+				}
+
+				renderer_->ChangeTexture(texture_);
+
+				shader_->Bind();
+
+				renderer_->context()->BindVertexArrayObject(vertex_array_object_);
+
+				shader_->Uniform2fv("u_position", position);
+				shader_->Uniform4fv("u_color", bar_color_);
+				renderer_->context()->DrawArrays(sht::graphics::PrimitiveType::kTriangleStrip, 0, num_bar_vertices_);
+
+				shader_->Uniform2fv("u_position", pin_global_position);
+				shader_->Uniform4fv("u_color", (is_touched_) ? pin_color_touch_ : pin_color_normal_);
+				renderer_->context()->DrawArrays(sht::graphics::PrimitiveType::kTriangleStrip, num_bar_vertices_, num_pin_vertices_);
+
+				renderer_->context()->BindVertexArrayObject(0);
+
+				shader_->Unbind();
+			}
+			void SliderColored::BindConstUniforms()
 			{
 				shader_->Bind();
 				shader_->Uniform1f("u_aspect_ratio", renderer_->aspect_ratio());
 				shader_->Unbind();
 			}
-			void Slider::FillVertexAttribs()
+			void SliderColored::FillVertexAttribs()
 			{
 				sht::graphics::VertexAttribute attrib(sht::graphics::VertexAttribute::kVertex, 2);
 				attribs_.push_back(attrib);
 			}
-			void Slider::FillVertices()
+			void SliderColored::FillVertices()
 			{
 				// const unsigned int kNumPinVertices = 40;
 				// const unsigned int kNumVerticesPerSemicircle = 20;

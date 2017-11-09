@@ -2,6 +2,8 @@
 #ifndef __SHT_UI_WIDGET_H__
 #define __SHT_UI_WIDGET_H__
 
+#include "renderable.h"
+
 #include "../../../common/types.h"
 #include "../../../math/vector.h"
 
@@ -25,7 +27,7 @@ namespace sht {
 			 We won't use any rotation, so we dont need to store transformation matrix.
 			 But anyway i gonna think about that.
 			*/
-			class Widget {
+			class Widget : public virtual IRenderable {
 			public:
 				Widget();
 				Widget(f32 x, f32 y, u32 flags);
@@ -43,7 +45,7 @@ namespace sht {
 
 				virtual void Update(f32 sec); //!< update this widget only
 				void UpdateAll(f32 sec); //!< update entire tree starting from this widget
-				virtual void Render();
+				virtual void Render() override;
 				void RenderAll();
 				
 				void ActivateAll();
@@ -53,15 +55,18 @@ namespace sht {
 				void SelectAll(float x, float y); //!< activates all selectable widgets
 				
 				bool HasFlag(Flags flag);
+
+				bool BeginChildSearch();
+				void EndChildSearch();
+				bool GetNextChild(Widget *& child);
 				
 				void ObtainGlobalPosition(vec2 * position);
 
 			protected:
-				
-				virtual void BindConstUniforms();
 
 				Widget * parent_;
 				std::list<Widget*> nodes_; //!< child nodes
+				typename std::list<Widget*>::iterator child_iterator_; //!< for node enumeration
 				vec2 position_;
 				u32 flags_;
 				bool active_;

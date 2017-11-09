@@ -2,7 +2,8 @@
 #ifndef __SHT_UI_SLIDER_H__
 #define __SHT_UI_SLIDER_H__
 
-#include "drawable_widget.h"
+#include "widget.h"
+#include "drawable.h"
 
 namespace sht {
 	namespace utility {
@@ -11,13 +12,9 @@ namespace sht {
 			/*! Standart slider class
 			Radius of slider sides is equal to the half of height/width.
 			*/
-			class Slider : public DrawableWidget {
+			class Slider : public Widget {
 			public:
-				Slider(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
-					 const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
-					 f32 x, f32 y, f32 width, f32 height, u32 flags);
-
-				virtual void Render() override;
+				Slider(f32 x, f32 y, f32 width, f32 height, u32 flags);
 
 				void SetPinPosition(f32 pos);
 
@@ -35,18 +32,30 @@ namespace sht {
 			protected:
 				bool IsInsidePin(const vec2& global_position);
 
-				vec4 bar_color_;
-				vec4 pin_color_normal_;
-				vec4 pin_color_touch_;
-				vec2 old_position_;
 				f32 width_;
 				f32 height_;
-				const u32 num_bar_vertices_;
-				const u32 num_pin_vertices_;
+				vec2 old_position_;
 				float radius_;
 				float pin_position_;
 				float pin_radius_;
 				bool is_touched_;
+			};
+
+			//! Colored slider class
+			class SliderColored : public Slider, public Drawable {
+			public:
+				SliderColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
+					const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
+					f32 x, f32 y, f32 width, f32 height, u32 flags);
+
+				virtual void Render() override;
+
+			protected:
+				vec4 bar_color_;
+				vec4 pin_color_normal_;
+				vec4 pin_color_touch_;
+				const u32 num_bar_vertices_;
+				const u32 num_pin_vertices_;
 
 			private:
 				void BindConstUniforms() override;
