@@ -29,9 +29,10 @@
 		- Add realistic lighting model.
 		- Add logotype rendering (need skybox and logotype model).
 	- Controls
-		- Make universal controls for mobile and desktop applications.
-			- Slider to control cue rotation angle.
-			- Button to hit the cue ball.
+		+ Make universal controls for mobile and desktop applications.
+			+ Slider to control cue rotation angle.
+			+ Button to hit the cue ball.
+		- Make better look for controls.
 	- Gameplay
 		+ Add different camera modes.
 		+ Enhance game logics.
@@ -42,8 +43,7 @@
 			- with table
 		+ Write current game status (some message, a.e.).
 		+ Make cue ball hittable by cue.
-		- Add balls respawn.
-		- Add cue ball respawn.
+		- Add cue ball respawn (user should choose respawn position).
 	- Audio
 		By now we are skipping this phase.
 	- Misc
