@@ -17,3 +17,6 @@ Today,  July 9 2017 I decided to start tracking a work in a log file.
 - Made some fixes in geo.
 - Added universal colored board class.
 - Added button class.
+
+[03.12.2017]
+- Added image rescale functions.

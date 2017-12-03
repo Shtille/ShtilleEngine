@@ -146,6 +146,7 @@ namespace sht {
 				renderer_->context()->DrawArrays(primitive_mode_, 0, num_vertices_);
 			else
 				renderer_->context()->DrawElements(primitive_mode_, num_indices_, index_data_type_);
+			renderer_->context()->BindVertexArrayObject(0);
 		}
 		void Mesh::ScaleVertices(const math::Vector3& scale)
 		{

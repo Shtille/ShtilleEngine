@@ -63,3 +63,5 @@
 		+ Add slider class.
 		+ Add button class.
 		+ Make universal board class.
+	- Misc
+		- Vertex format should be removed because of having vertex array object.
