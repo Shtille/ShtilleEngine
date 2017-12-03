@@ -51,7 +51,6 @@ namespace sht {
 
 			bool LoadFromFile(const char* filename);					//!< loads image from file
 			bool LoadFromBuffer(const u8* buffer, size_t length);		//!< loads image from buffer
-			bool LoadCubemapFromFile(const char* filename, int ind);	//!< loads cubemap part with specified index from file
 			bool LoadNMapFromHMap(const char* filename);				//!< loads normalmap from heightmap file
 			bool LoadNHMapFromHMap(const char* filename);				//!< loads normalheightmap from heightmap file
 			

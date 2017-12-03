@@ -1,5 +1,6 @@
 #include "../../include/renderer/renderer.h"
 
+#include "../../include/renderer/cubemap_face_filler.h"
 #include "../../../system/include/filesystem/directory.h"
 
 #include <ctime>
@@ -181,17 +182,55 @@ namespace sht {
 		{
 			ApiAddTexture(texture, image, wrap, filt);
 		}
-		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filename)
+		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type)
 		{
 			texture = nullptr;
+			Image base_image;
+			if (!base_image.LoadFromFile(filename))
+				return false;
+
+			CubemapFaceFiller * face_filler = nullptr;
+			switch (fill_type)
+			{
+			case CubemapFillType::kCross:
+				face_filler = new CrossCubemapFaceFiller(&base_image);
+				break;
+			case CubemapFillType::kSphere:
+				face_filler = new SphereCubemapFaceFiller(&base_image);
+				break;
+			}
+			if (!face_filler)
+				return false;
+
 			bool succeed = true;
 			Image *images = new Image[6];
-			for (int i = 0; i<6; i++)
-				if (!images[i].LoadCubemapFromFile(filename, i))
+			for (int face = 0; face < 6; ++face)
+			{
+				if (!face_filler->Fill(face, images + face))
 				{
 					succeed = false;
 					break;
 				}
+			}
+			if (succeed)
+				ApiAddTextureCubemap(texture, images);
+			delete[] images;
+			delete face_filler;
+			return succeed;
+		}
+		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filenames[6])
+		{
+			texture = nullptr;
+			bool succeed = true;
+			Image *images = new Image[6];
+			for (int face = 0; face < 6; ++face)
+			{
+				if (!images[face].LoadFromFile(filenames[face]))
+				{
+					succeed = false;
+					break;
+				}
+			}
 			if (succeed)
 				ApiAddTextureCubemap(texture, images);
 			delete[] images;

@@ -252,61 +252,6 @@ namespace sht {
 				return false;
 			}
 		}
-		bool Image::LoadCubemapFromFile(const char* filename, int ind)
-		{
-			if (!LoadFromFile(filename))
-				return false;
-
-			int w = width_ / 4;
-			int h = height_ / 3;
-
-			// texture offset by width and height in pixels
-			int dw = 0, dh = 0;
-
-			// pixels are stored from left bottom corner to right top
-			switch (ind)
-			{
-			case 0: // +x front
-				dw = w;
-				dh = h;
-				break;
-			case 1: // -x back
-				dw = 3 * w;
-				dh = h;
-				break;
-			case 2: // +y up
-				dw = 0;
-				dh = 0;
-				break;
-			case 3: // -y down
-				dw = 0;
-				dh = 2 * h;
-				break;
-			case 4: // +z right
-				dw = 0;
-				dh = h;
-				break;
-			case 5: // -z left
-				dw = 2 * w;
-				dh = h;
-				break;
-			}
-
-			u8 * new_pixels = new u8[w * h * bpp_];
-
-			// copy pixel data
-			for (int j = 0; j < h; j++)
-				memcpy(&new_pixels[bpp_*(w*j)], &pixels_[bpp_*(width_*(dh + j) + dw)], bpp_*w); // copy line
-
-			delete[] pixels_;
-
-			// exchange loaded data for a part of it
-			width_ = w;
-			height_ = h;
-			pixels_ = new_pixels;
-
-			return true;
-		}
 		bool Image::LoadNMapFromHMap(const char* filename)
 		{
 			if (!LoadFromFile(filename))
