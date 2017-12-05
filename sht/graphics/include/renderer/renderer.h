@@ -58,7 +58,7 @@ namespace sht {
 			void AddTextureFromImage(Texture* &texture, const Image& image,
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
 				Texture::Filter filt = Texture::Filter::kTrilinear);
-			bool AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type);
+			bool AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type, int desired_width);
 			bool AddTextureCubemap(Texture* &texture, const char* filenames[6]);
 			bool CreateTextureNormalMapFromHeightMap(Texture* &texture, const char* filename,
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,

@@ -182,7 +182,7 @@ namespace sht {
 		{
 			ApiAddTexture(texture, image, wrap, filt);
 		}
-		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type)
+		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type, int desired_width)
 		{
 			texture = nullptr;
 			Image base_image;
@@ -196,7 +196,7 @@ namespace sht {
 				face_filler = new CrossCubemapFaceFiller(&base_image);
 				break;
 			case CubemapFillType::kSphere:
-				face_filler = new SphereCubemapFaceFiller(&base_image);
+				face_filler = new SphereCubemapFaceFiller(&base_image, desired_width);
 				break;
 			}
 			if (!face_filler)

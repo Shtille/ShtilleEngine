@@ -21,3 +21,6 @@ Today,  July 9 2017 I decided to start tracking a work in a log file.
 [03.12.2017]
 - Added image rescale functions.
 - Added cubemap face filler class.
+
+[04.12.2017]
+- Added sphere cubemap filler class.

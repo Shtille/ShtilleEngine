@@ -31,9 +31,12 @@ namespace sht {
 		//! Sphere cubemap face filler
 		class SphereCubemapFaceFiller : public CubemapFaceFiller {
 		public:
-			SphereCubemapFaceFiller(Image * source_image);
+			SphereCubemapFaceFiller(Image * source_image, int face_width);
 
 			bool Fill(int face, Image * image);
+
+		private:
+			int face_width_;
 		};
 
 	} // namespace graphics

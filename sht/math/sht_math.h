@@ -18,6 +18,18 @@ namespace sht {
         // Sign function (returns -1 if negative, 1 otherwise)
         float Sign(float x);
 
+        // Clamp function
+        template <typename T>
+        inline T Clamp(T x, T a, T b)
+        {
+        	if (x < a)
+        		return a;
+        	else if (b < x)
+        		return b;
+        	else
+        		return x;
+        }
+
 		//! Vector orthogonalization via Gram-Shmidt method
 		Vector3 Orthogonalize(const Vector3& v1, const Vector3& v2);
 
