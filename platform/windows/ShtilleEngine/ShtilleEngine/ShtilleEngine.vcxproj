@@ -34,6 +34,7 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_hdr.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_jpeg.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_png.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_rescale.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_tga.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_tif.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\box_model.cpp" />
@@ -45,10 +46,12 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh_vertices_enumerator.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\skybox_quad_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\sphere_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\tetrahedron_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\renderable.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\context.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\cubemap_face_filler.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\font.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\index_buffer.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\opengl\opengl_context.cpp" />
@@ -109,10 +112,12 @@
     <ClCompile Include="..\..\..\..\sht\utility\src\scene_renderable.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\string_id.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\board.cpp" />
-    <ClCompile Include="..\..\..\..\sht\utility\src\ui\drawable_widget.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\button.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\drawable.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\label.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\progress_bar.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\rect.cpp" />
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\slider.cpp" />
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\widget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,11 +153,14 @@
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh_vertices_enumerator.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\skybox_quad_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\sphere_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\tetrahedron_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\vertex.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderable.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\context.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\cubemap_face_filler.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\cubemap_fill_type.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\font.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\index_buffer.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\opengl\opengl_context.h" />
@@ -228,10 +236,13 @@
     <ClInclude Include="..\..\..\..\sht\utility\include\scene_renderable.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\string_id.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\board.h" />
-    <ClInclude Include="..\..\..\..\sht\utility\include\ui\drawable_widget.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\button.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\drawable.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\label.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\progress_bar.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\rect.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\renderable.h" />
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\slider.h" />
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\widget.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

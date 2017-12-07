@@ -297,9 +297,6 @@
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\board.cpp">
       <Filter>sht\utility\src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\sht\utility\src\ui\drawable_widget.cpp">
-      <Filter>sht\utility\src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\sht\utility\src\ui\label.cpp">
       <Filter>sht\utility\src\ui</Filter>
     </ClCompile>
@@ -431,6 +428,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\sht\physics\src\physics_surface_database.cpp">
       <Filter>sht\physics\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\button.cpp">
+      <Filter>sht\utility\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\slider.cpp">
+      <Filter>sht\utility\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\utility\src\ui\drawable.cpp">
+      <Filter>sht\utility\src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\renderer\cubemap_face_filler.cpp">
+      <Filter>sht\graphics\src\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_rescale.cpp">
+      <Filter>sht\graphics\src\image</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\skybox_quad_model.cpp">
+      <Filter>sht\graphics\src\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -623,9 +638,6 @@
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\board.h">
       <Filter>sht\utility\include\ui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\utility\include\ui\drawable_widget.h">
-      <Filter>sht\utility\include\ui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\sht\utility\include\ui\label.h">
       <Filter>sht\utility\include\ui</Filter>
     </ClInclude>
@@ -784,6 +796,27 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\physics\include\physics_surface_database.h">
       <Filter>sht\physics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\button.h">
+      <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\slider.h">
+      <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\drawable.h">
+      <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\utility\include\ui\renderable.h">
+      <Filter>sht\utility\include\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\cubemap_face_filler.h">
+      <Filter>sht\graphics\include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\cubemap_fill_type.h">
+      <Filter>sht\graphics\include\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\skybox_quad_model.h">
+      <Filter>sht\graphics\include\model</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
