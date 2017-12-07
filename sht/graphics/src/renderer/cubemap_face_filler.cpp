@@ -84,37 +84,37 @@ namespace sht {
 			switch (face)
 			{
 			default:
-			case 0:
-				return math::Matrix3(	0, 0, 1,
-										0, 1, 0,
-										1, 0, 0
-									);
-			case 1:
-				return math::Matrix3(	0, 0,-1,
-										0, 1, 0,
-										-1, 0, 0
-									);
-			case 2:
-				return math::Matrix3(	1, 0, 0,
-										0, 0, 1,
-										0, 1, 0
-									);
-			case 3:
-				return math::Matrix3(	1, 0, 0,
-										0, 0,-1,
-										0,-1, 0
-									);
-			case 4:
-				return math::Matrix3(	-1, 0, 0,
-										0, 1, 0,
-										0, 0, 1
-										);
-			case 5:
-				return math::Matrix3(	1, 0, 0,
-										0, 1, 0,
-										0, 0,-1
-									);
-    		}
+			case 0: // +X
+				return math::Matrix3(
+					0.0f, 0.0f, 1.0f,
+					0.0f, -1.0f, 0.0f,
+					1.0f, 0.0f, 0.0f);
+			case 1: // -X
+				return math::Matrix3(
+					0.0f, 0.0f, -1.0f,
+					0.0f, -1.0f, 0.0f,
+					-1.0f, 0.0f, 0.0f);
+			case 2: // +Y
+				return math::Matrix3(
+					1.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, -1.0f,
+					0.0f, 1.0f, 0.0f);
+			case 3: // -Y
+				return math::Matrix3(
+					1.0f, 0.0f, 0.0f,
+					0.0f, 0.0f, 1.0f,
+					0.0f, -1.0f, 0.0f);
+			case 4: // +Z
+				return math::Matrix3(
+					1.0f, 0.0f, 0.0f,
+					0.0f, -1.0f, 0.0f,
+					0.0f, 0.0f, -1.0f);
+			case 5: // -Z
+				return math::Matrix3(
+					-1.0f, 0.0f, 0.0f,
+					0.0f, -1.0f, 0.0f,
+					0.0f, 0.0f, 1.0f);
+			}
 		}
 		SphereCubemapFaceFiller::SphereCubemapFaceFiller(Image * source_image, int face_width)
 		: CubemapFaceFiller(source_image)
@@ -133,28 +133,25 @@ namespace sht {
 
 			int bpp = source_image_->bpp();
 
-			for (int face = 0; face < 6; ++face)
+			math::Matrix3 face_matrix = GetFaceTransform(face);
+			for (int j = 0; j < h; ++j)
 			{
-				math::Matrix3 face_matrix = GetFaceTransform(face);
-				for (int j = 0; j < h; ++j)
+				float y = (float)j / (float)(h-1);
+				for (int i = 0; i < w; ++i)
 				{
-					float y = (float)j / (float)(h-1);
-					for (int i = 0; i < w; ++i)
-					{
-						float x = (float)i / (float)(w-1);
-						vec3 face_point = face_matrix * vec3(x, y, 1.0f);
-						face_point.Normalize();
-						float angle_x = (asin(face_point.x) / math::kPi) + 0.5f; // [-Pi/2; Pi/2] -> [0; 1]
-						float angle_y = (asin(face_point.y) / math::kPi) + 0.5f; // [-Pi/2; Pi/2] -> [0; 1]
-						int src_i = static_cast<int>(angle_x * (float)source_image_->width());
-						int src_j = static_cast<int>(angle_y * (float)source_image_->height());
-						src_i = math::Clamp(src_i, 0, source_image_->width() - 1);
-						src_j = math::Clamp(src_j, 0, source_image_->height() - 1);
-						memcpy(
-							dst_pixels + bpp * (w * j + i),
-							src_pixels + bpp * (source_image_->width() * src_j + src_i),
-							bpp); // copy sample
-					}
+					float x = (float)i / (float)(w-1);
+					vec3 face_point = face_matrix * vec3(2.0f * x - 1.0f, 2.0f * y - 1.0f, 1.0f);
+					face_point.Normalize();
+					float angle_x = (atan2(face_point.z, face_point.x) * 0.5f / math::kPi) + 0.5f; // [-Pi; Pi] -> [0; 1]
+					float angle_y = (asin(-face_point.y) / math::kPi) + 0.5f; // [-Pi/2; Pi/2] -> [0; 1]
+					int src_i = static_cast<int>(angle_x * (float)source_image_->width());
+					int src_j = static_cast<int>(angle_y * (float)source_image_->height());
+					src_i = math::Clamp(src_i, 0, source_image_->width() - 1);
+					src_j = math::Clamp(src_j, 0, source_image_->height() - 1);
+					memcpy(
+						dst_pixels + bpp * (w * j + i),
+						src_pixels + bpp * (source_image_->width() * src_j + src_i),
+						bpp); // copy sample
 				}
 			}
 

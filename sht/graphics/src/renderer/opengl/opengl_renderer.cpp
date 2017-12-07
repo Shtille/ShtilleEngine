@@ -129,8 +129,8 @@ namespace sht {
 			glGenTextures(1, &tex->texture_id_);
 			glBindTexture(tex->target_, tex->texture_id_);
 
-			glTexParameterf(tex->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameterf(tex->target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(tex->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 			glTexParameteri(tex->target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(tex->target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
