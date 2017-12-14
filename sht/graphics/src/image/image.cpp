@@ -114,6 +114,20 @@ namespace sht {
         , inverted_row_order_(true)
 		{
 		}
+		Image::Image(const Image& other)
+		: pixels_(nullptr)
+		, format_(other.format_)
+		, data_type_(other.data_type_)
+		, width_(other.width_)
+		, height_(other.height_)
+		, channels_(other.channels_)
+		, bpp_(other.bpp_)
+		, inverted_row_order_(other.inverted_row_order_)
+		{
+			size_t size = static_cast<size_t>(width_ * height_ * bpp_);
+			pixels_ = new u8[size];
+			memcpy(pixels_, other.pixels_, size);
+		}
 		Image::~Image()
 		{
 			if (pixels_) delete[] pixels_;
@@ -162,6 +176,7 @@ namespace sht {
 			int bpp = GetBpp(fmt);
 			bpp_ = bpp >> 3; // bits to bytes
             channels_ = GetChannels(fmt);
+			if (pixels_) delete[] pixels_;
 			pixels_ = new u8[width_ * height_ * bpp_];
 			return pixels_;
 		}
@@ -169,6 +184,20 @@ namespace sht {
         {
             memset(pixels_, 0, width_ * height_ * bpp_);
         }
+		void Image::Copy(const Image& other)
+		{
+			if (pixels_) delete[] pixels_;
+			size_t size = static_cast<size_t>(width_ * height_ * bpp_);
+			pixels_ = new u8[size];
+			memcpy(pixels_, other.pixels_, size);
+			format_ = other.format_;
+			data_type_ = other.data_type_;
+			width_ = other.width_;
+			height_ = other.height_;
+			channels_ = other.channels_;
+			bpp_ = other.bpp_;
+			inverted_row_order_ = other.inverted_row_order_;
+		}
         void Image::SubData(int offset_x, int offset_y, int w, int h, const u8* data)
         {
             int max_x = offset_x + w;

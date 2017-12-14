@@ -35,6 +35,7 @@ namespace sht {
 			};
 
 			Image();
+			Image(const Image& other);
 			~Image();
 
 			u8* pixels();
@@ -46,6 +47,7 @@ namespace sht {
 
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
             void FillWithZeroes();
+			void Copy(const Image& other);
             void SubData(int offset_x, int offset_y, int w, int h, const u8* data);
 			bool Save(const char* filename);							//!< saves image to file with specified format
 
