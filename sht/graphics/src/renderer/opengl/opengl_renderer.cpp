@@ -148,6 +148,7 @@ namespace sht {
 					tex->GetSrcType(), // the data type of the pixel data
 					imgs[t].pixels());
 			}
+			glGenerateMipmap(tex->target_);
 
 			context_->CheckForErrors();
 

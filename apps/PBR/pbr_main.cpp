@@ -31,7 +31,11 @@ public:
 		env_shader_->Uniform1i("u_texture", 0);
 
 		object_shader_->Bind();
-		object_shader_->Uniform1i("u_texture", 0);
+		object_shader_->Uniform3f("u_light_direction", 1.0f, 1.0f, -1.0f);
+		object_shader_->Uniform1i("u_env_sampler", 0);
+		object_shader_->Uniform1i("u_albedo_sampler", 1);
+		object_shader_->Uniform1i("u_roughness_sampler", 2);
+		object_shader_->Uniform1i("u_metal_sampler", 3);
 		object_shader_->Unbind();
 	}
 	void BindShaderVariables()
@@ -59,7 +63,7 @@ public:
 		if (!renderer_->AddShader(text_shader_, "data/shaders/text")) return false;
 		if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored")) return false;
 		if (!renderer_->AddShader(env_shader_, "data/shaders/apps/PBR/skybox")) return false;
-		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object")) return false;
+		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr")) return false;
 		
 		// Load textures
 		const char * cubemap_filenames[6] = {
@@ -70,9 +74,18 @@ public:
 			"data/textures/skybox/ashcanyon_rt.jpg",
 			"data/textures/skybox/ashcanyon_lf.jpg"
 		};
-		//if (!renderer_->AddTextureCubemap(env_texture_, cubemap_filenames)) return false;
-		if (!renderer_->AddTextureCubemap(env_texture_, "data/textures/skybox/GravelPlaza_8k.jpg", sht::graphics::CubemapFillType::kSphere, 512)) return false;
-		if (!renderer_->AddTexture(object_texture_, "data/textures/chess.jpg",
+		if (!renderer_->AddTextureCubemap(env_texture_, cubemap_filenames)) return false;
+		//if (!renderer_->AddTextureCubemap(env_texture_, "data/textures/skybox/GravelPlaza_8k.jpg", sht::graphics::CubemapFillType::kSphere, 512)) return false;
+		if (!renderer_->AddTexture(albedo_texture_, "data/textures/pbr/metal/greasy_pan2/albedo.png",
+								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+		// if (!renderer_->AddTexture(normal_texture_, "data/textures/chess.jpg",
+		// 						   sht::graphics::Texture::Wrap::kClampToEdge,
+		// 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+		if (!renderer_->AddTexture(roughness_texture_, "data/textures/pbr/metal/greasy_pan2/roughness.png",
+								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+		if (!renderer_->AddTexture(metal_texture_, "data/textures/pbr/metal/greasy_pan2/metal.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
@@ -145,17 +158,24 @@ public:
 		renderer_->PushMatrix();
 		renderer_->Translate(vec3(0.0f));
 
-		renderer_->ChangeTexture(object_texture_);
+		renderer_->ChangeTexture(env_texture_, 0);
+		renderer_->ChangeTexture(albedo_texture_, 1);
+		renderer_->ChangeTexture(roughness_texture_, 2);
+		renderer_->ChangeTexture(metal_texture_, 3);
 		
 		object_shader_->Bind();
 		object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
 		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		object_shader_->Uniform3fv("u_camera_position", *camera_manager_->position());
 		
 		sphere_->Render();
 		
 		object_shader_->Unbind();
 
-		renderer_->ChangeTexture(nullptr);
+		renderer_->ChangeTexture(nullptr, 3);
+		renderer_->ChangeTexture(nullptr, 2);
+		renderer_->ChangeTexture(nullptr, 1);
+		renderer_->ChangeTexture(nullptr, 0);
 		
 		renderer_->PopMatrix();
 	}
@@ -242,7 +262,10 @@ private:
 	sht::graphics::Shader * gui_shader_;
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Texture * env_texture_;
-	sht::graphics::Texture * object_texture_;
+	sht::graphics::Texture * albedo_texture_;
+	sht::graphics::Texture * normal_texture_;
+	sht::graphics::Texture * roughness_texture_;
+	sht::graphics::Texture * metal_texture_;
 	sht::graphics::Font * font_;
 	sht::graphics::DynamicText * fps_text_;
 	sht::utility::CameraManager * camera_manager_;
