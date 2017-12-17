@@ -286,6 +286,12 @@ namespace sht {
 			y /= v.y;
 			z /= v.z;
 		}
+		void Vector3::Set(const Vector3& other)
+		{
+			x = other.x;
+			y = other.y;
+			z = other.z;
+		}
         void Vector3::Set(const float ix, const float iy, const float iz)
         {
             x = ix;

@@ -26,6 +26,8 @@ namespace sht {
 
             void ScaleVertices(const math::Vector3& scale);
             void ScaleTexcoord(const math::Vector2& scale);
+
+            void ComputeTangentBasis();
             
         protected:            
             std::vector<Vertex> vertices_;

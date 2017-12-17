@@ -34,8 +34,9 @@ public:
 		object_shader_->Uniform3f("u_light_direction", 1.0f, 1.0f, -1.0f);
 		object_shader_->Uniform1i("u_env_sampler", 0);
 		object_shader_->Uniform1i("u_albedo_sampler", 1);
-		object_shader_->Uniform1i("u_roughness_sampler", 2);
-		object_shader_->Uniform1i("u_metal_sampler", 3);
+		object_shader_->Uniform1i("u_normal_sampler", 2);
+		object_shader_->Uniform1i("u_roughness_sampler", 3);
+		object_shader_->Uniform1i("u_metal_sampler", 4);
 		object_shader_->Unbind();
 	}
 	void BindShaderVariables()
@@ -48,6 +49,8 @@ public:
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
 		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
+		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTangent, 3));
+		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
 		sphere_->Create();
 		if (!sphere_->MakeRenderable())
 			return false;
@@ -79,9 +82,9 @@ public:
 		if (!renderer_->AddTexture(albedo_texture_, "data/textures/pbr/metal/greasy_pan2/albedo.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		// if (!renderer_->AddTexture(normal_texture_, "data/textures/chess.jpg",
-		// 						   sht::graphics::Texture::Wrap::kClampToEdge,
-		// 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+		 if (!renderer_->AddTexture(normal_texture_, "data/textures/pbr/metal/greasy_pan2/normal.png",
+		 						   sht::graphics::Texture::Wrap::kClampToEdge,
+		 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(roughness_texture_, "data/textures/pbr/metal/greasy_pan2/roughness.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
@@ -160,8 +163,9 @@ public:
 
 		renderer_->ChangeTexture(env_texture_, 0);
 		renderer_->ChangeTexture(albedo_texture_, 1);
-		renderer_->ChangeTexture(roughness_texture_, 2);
-		renderer_->ChangeTexture(metal_texture_, 3);
+		renderer_->ChangeTexture(normal_texture_, 2);
+		renderer_->ChangeTexture(roughness_texture_, 3);
+		renderer_->ChangeTexture(metal_texture_, 4);
 		
 		object_shader_->Bind();
 		object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
@@ -172,6 +176,7 @@ public:
 		
 		object_shader_->Unbind();
 
+		renderer_->ChangeTexture(nullptr, 4);
 		renderer_->ChangeTexture(nullptr, 3);
 		renderer_->ChangeTexture(nullptr, 2);
 		renderer_->ChangeTexture(nullptr, 1);

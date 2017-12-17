@@ -161,6 +161,10 @@ namespace sht {
             for (auto& v : vertices_)
                 v.texcoord *= scale;
         }
+        void Model::ComputeTangentBasis()
+        {
+            // TODO
+        }
 
     } // namespace graphics
 } // namespace sht

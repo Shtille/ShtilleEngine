@@ -6,7 +6,7 @@ uniform vec3 u_light_direction; // world space light direction
 
 uniform samplerCube u_env_sampler;
 uniform sampler2D u_albedo_sampler;
-//uniform sampler2D u_normal_sampler;
+uniform sampler2D u_normal_sampler;
 uniform sampler2D u_roughness_sampler;
 uniform sampler2D u_metal_sampler;
 
@@ -14,6 +14,8 @@ out vec4 out_color;
 
 in vec3 v_position;
 in vec3 v_normal;
+in vec3 v_tangent;
+in vec3 v_binormal;
 in vec2 v_texcoord;
 
 const float PI = 3.141592653589793;
@@ -52,9 +54,17 @@ float ComputeGGXPartialGeometryTerm(vec3 V, vec3 N, vec3 H, float fRoughness)
 	return (fChi * 2.0) / (1.0 + sqrt(1.0 + fRoughness * fRoughness * fTan2)) ;
 }
 
+vec3 GetNormal()
+{
+	vec3 n = texture(u_normal_sampler, v_texcoord).xyz * 2.0 - 1.0;
+	n = normalize(n);
+	mat3 tbn = mat3(v_tangent, v_binormal, v_normal);
+	return tbn * n;
+}
+
 void main()
 {
-	vec3 N = normalize(v_normal);
+	vec3 N = normalize(GetNormal());
 	vec3 V = normalize(u_camera_position - v_position);	// Vector from surface point to camera
 	vec3 L = normalize(u_light_direction);				// Vector from surface point to light
 	vec3 H = normalize(L + V);							// Half vector between both l and v

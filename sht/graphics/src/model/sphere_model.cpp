@@ -34,10 +34,14 @@ namespace sht {
                     {
                         float part_i = (float)i / (float)slices_;
                         float ai = (math::kTwoPi / (float)slices_) * (float)i;
+						float sin_ai = sinf(ai);
+						float cos_ai = cosf(ai);
                         
-                        vertices_[ind].normal.Set(sin_aj*cosf(ai), -cos_aj, -sin_aj*sinf(ai));
+                        vertices_[ind].normal.Set(sin_aj*cos_ai, -cos_aj, -sin_aj*sin_ai);
                         vertices_[ind].position = vertices_[ind].normal * radius_;
                         vertices_[ind].texcoord.Set(part_i, part_j);
+                        vertices_[ind].tangent.Set(-sin_ai, 0.0f, -cos_ai);
+                        vertices_[ind].binormal = vertices_[ind].normal ^ vertices_[ind].tangent;
                         ++ind;
                     }
                 }
