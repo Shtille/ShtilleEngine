@@ -799,7 +799,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::ReadPixels(int w, int h, u8 *data)
 		{
-			glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, data);
+			glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, data);
 		}
         void OpenGlRenderer::ClearColor(f32 r, f32 g, f32 b, f32 a)
         {

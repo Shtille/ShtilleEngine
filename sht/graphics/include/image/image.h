@@ -58,9 +58,9 @@ namespace sht {
 			
 			void Rescale(int w, int h);									//!< rescales stored image
 			void MakePowerOfTwo();										//!< rescales image to be power of two in each size
+			void SwapRedBlueChannels();									//!< swaps red and blue channels
 
 		protected:
-			void SwapRedBlueChannels();
 
 			// Save routines
 			bool SaveJpeg(const char *filename, int quality = 75);
