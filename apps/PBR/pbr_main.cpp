@@ -8,7 +8,7 @@
 /*
 PBR shader to use in application
 */
-#define USE_PBR 2
+#define USE_PBR 3
 
 class PbrApp : public sht::OpenGlApplication
 {
@@ -64,6 +64,17 @@ public:
 		object_shader_->Uniform1i("u_using_normal_map", 1);
 		object_shader_->Uniform1f("u_using_roughness_map", 1.0f);
 		//object_shader_->Uniform1f("u_using_metal_map", 1.0f);
+#elif USE_PBR == 3
+		object_shader_->Uniform3f("u_light.color", 1.0f, 1.0f, 1.0f);
+		object_shader_->Uniform3f("u_light.direction", 1.0f, 1.0f, -1.0f);
+
+		object_shader_->Uniform1i("u_diffuse_env_sampler", 0);
+		object_shader_->Uniform1i("u_specular_env_sampler", 1);
+		object_shader_->Uniform1i("u_preintegrated_fg_sampler", 2);
+		object_shader_->Uniform1i("u_albedo_sampler", 3);
+		object_shader_->Uniform1i("u_normal_sampler", 4);
+		object_shader_->Uniform1i("u_roughness_sampler", 5);
+		object_shader_->Uniform1i("u_metal_sampler", 6);
 #else
 #error PBR version hasn't been defined
 #endif
@@ -100,6 +111,8 @@ public:
 		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr")) return false;
 #elif USE_PBR == 2
 		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr2")) return false;
+#elif USE_PBR == 3
+		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr3")) return false;
 #else
 #error PBR version hasn't been defined
 #endif
@@ -212,6 +225,14 @@ public:
 		renderer_->ChangeTexture(normal_texture_, 3);
 		renderer_->ChangeTexture(roughness_texture_, 4);
 		//renderer_->ChangeTexture(metal_texture_, 5);
+#elif USE_PBR == 3
+		renderer_->ChangeTexture(env_texture_, 0);
+		renderer_->ChangeTexture(env_texture_, 1);
+		renderer_->ChangeTexture(fg_texture_, 2);
+		renderer_->ChangeTexture(albedo_texture_, 3);
+		renderer_->ChangeTexture(normal_texture_, 4);
+		renderer_->ChangeTexture(roughness_texture_, 5);
+		renderer_->ChangeTexture(metal_texture_, 6);
 #endif
 		
 		object_shader_->Bind();
@@ -221,6 +242,8 @@ public:
 		object_shader_->Uniform3fv("u_camera_position", *camera_manager_->position());
 #elif USE_PBR == 2
 		object_shader_->Uniform3fv("u_camera.position", *camera_manager_->position());
+#elif USE_PBR == 3
+		object_shader_->Uniform3fv("u_camera.position", *camera_manager_->position());
 #endif
 		
 		sphere_->Render();
@@ -229,6 +252,9 @@ public:
 
 #if USE_PBR == 2
 		//renderer_->ChangeTexture(nullptr, 5);
+#elif USE_PBR == 3
+		renderer_->ChangeTexture(nullptr, 6);
+		renderer_->ChangeTexture(nullptr, 5);
 #endif
 		renderer_->ChangeTexture(nullptr, 4);
 		renderer_->ChangeTexture(nullptr, 3);
