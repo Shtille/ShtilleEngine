@@ -132,6 +132,10 @@ namespace sht {
 		{
 			if (pixels_) delete[] pixels_;
 		}
+		void Image::SetRowOrder(bool inverted)
+		{
+			inverted_row_order_ = inverted;
+		}
 		u8* Image::pixels()
 		{
 			return pixels_;

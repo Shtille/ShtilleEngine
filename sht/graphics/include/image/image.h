@@ -38,6 +38,8 @@ namespace sht {
 			Image(const Image& other);
 			~Image();
 
+			void SetRowOrder(bool inverted);
+
 			u8* pixels();
 			const u8* pixels() const;
 			Format format() const;

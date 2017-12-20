@@ -225,6 +225,7 @@ namespace sht {
 			Image *images = new Image[6];
 			for (int face = 0; face < 6; ++face)
 			{
+				images[face].SetRowOrder(false);
 				if (!images[face].LoadFromFile(filenames[face]))
 				{
 					succeed = false;
