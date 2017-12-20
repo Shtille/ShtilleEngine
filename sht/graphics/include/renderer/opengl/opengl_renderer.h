@@ -22,7 +22,7 @@ namespace sht {
 			void DeleteTexture(Texture* texture);
 			void ChangeTexture(Texture* texture, u32 layer = 0);
 			void ChangeRenderTargets(u8 nTargets, Texture* *colorRTs, Texture* depthRT);
-			void ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face);
+			void ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face, int level);
 			void GenerateMipmap(Texture* texture);
 			void CopyToTexture(Texture* texture, u32 layer = 0);
 
