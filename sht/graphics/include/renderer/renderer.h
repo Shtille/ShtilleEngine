@@ -76,7 +76,7 @@ namespace sht {
 			virtual void DeleteTexture(Texture* texture) = 0;
 			virtual void ChangeTexture(Texture* texture, u32 layer = 0) = 0;
 			virtual void ChangeRenderTargets(u8 nTargets, Texture* *colorRTs, Texture* depthRT) = 0;
-			virtual void ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face) = 0;
+			virtual void ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face, int level) = 0;
 			void ChangeRenderTarget(Texture* colorRT, Texture* depthRT);
 			virtual void GenerateMipmap(Texture* texture) = 0;
 			virtual void CopyToTexture(Texture* texture, u32 layer = 0) = 0;

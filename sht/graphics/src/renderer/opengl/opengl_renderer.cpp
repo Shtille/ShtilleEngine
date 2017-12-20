@@ -561,7 +561,7 @@ namespace sht {
 
 			//CheckFrameBufferStatus();
 		}
-		void OpenGlRenderer::ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face)
+		void OpenGlRenderer::ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face, int level)
 		{
 			if (nTargets == 1 && colorRTs[0] == nullptr && depthRT == nullptr)
 			{
@@ -583,7 +583,7 @@ namespace sht {
 					else
 					{
 						if (depthRT->texture_id_) // is depth renderbuffer attached
-							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthRT->target_, depthRT->texture_id_, 0);
+							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthRT->target_, depthRT->texture_id_, level);
 						else // attach depth renderbuffer
 							glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRT->depth_id_);
 					}
@@ -603,7 +603,7 @@ namespace sht {
 					for (u8 i = 0; i < nTargets; i++)
 					{
 						glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-							GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, colorRTs[i]->texture_id_, 0);
+							GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, colorRTs[i]->texture_id_, level);
 
 						current_color_rt_[i] = colorRTs[i];
 
