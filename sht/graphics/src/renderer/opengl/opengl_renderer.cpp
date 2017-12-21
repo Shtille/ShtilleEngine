@@ -215,7 +215,7 @@ namespace sht {
 
 			textures_.push_back(texture);
 		}
-		void OpenGlRenderer::CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt)
+		void OpenGlRenderer::CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt, Texture::Filter filt)
 		{
 			texture = new OpenGlTexture();
 			texture->width_ = w;
@@ -226,8 +226,23 @@ namespace sht {
 			glGenTextures(1, &texture->texture_id_);
 			glBindTexture(texture->target_, texture->texture_id_);
 
-			glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameterf(texture->target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			switch (filt)
+			{
+			case Texture::Filter::kPoint:
+				glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				break;
+			default:
+			case Texture::Filter::kLinear:
+				glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				break;
+			case Texture::Filter::kBilinear:
+				glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+				break;
+			case Texture::Filter::kTrilinear:
+				glTexParameterf(texture->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+				break;
+			}
 
 			glTexParameteri(texture->target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(texture->target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -618,7 +633,7 @@ namespace sht {
 				}
 
 				Texture * tex = (colorRTs[0] != nullptr) ? colorRTs[0] : depthRT;
-				glViewport(0, 0, tex->width_, tex->height_);
+				glViewport(0, 0, tex->width_ >> level, tex->height_ >> level);
 			}
 
 			//CheckFrameBufferStatus();

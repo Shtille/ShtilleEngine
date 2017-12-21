@@ -67,7 +67,7 @@ namespace sht {
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
 				Texture::Filter filt = Texture::Filter::kTrilinear);
 			virtual void CreateTextureColor(Texture* &texture, float r, float g, float b, float a) = 0;
-			virtual void CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt = Image::Format::kRGB8) = 0;
+			virtual void CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt = Image::Format::kRGB8, Texture::Filter filt = Texture::Filter::kLinear) = 0;
 			virtual void CreateTextureDepth(Texture* &texture, int w, int h, u32 depthSize) = 0;
 			virtual void CreateTexture(Texture* &texture, int w, int h, Image::Format fmt) = 0;
 			virtual void CreateTextureFromData(Texture* &texture, int w, int h, Image::Format fmt, unsigned char *data) = 0;

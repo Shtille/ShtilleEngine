@@ -70,7 +70,7 @@ public:
 		if (!renderer_->AddShader(quad_shader_, "data/shaders/apps/IBLBaker/quad")) return false;
 		if (!renderer_->AddShader(env_convert_shader_, "data/shaders/apps/IBLBaker/env_convert")) return false;
 		if (!renderer_->AddShader(irradiance_shader_, "data/shaders/apps/IBLBaker/irradiance")) return false;
-		// if (!renderer_->AddShader(prefilter_shader_, "data/shaders/apps/IBLBaker/prefilter")) return false;
+		if (!renderer_->AddShader(prefilter_shader_, "data/shaders/apps/IBLBaker/prefilter")) return false;
 		// if (!renderer_->AddShader(integrate_shader_, "data/shaders/apps/IBLBaker/integrate")) return false;
 		
 		// Load textures
@@ -89,9 +89,10 @@ public:
 		const int kFramebufferSize = 1024;
 		renderer_->AddRenderTarget(test_texture_, kFramebufferSize, kFramebufferSize, sht::graphics::Image::Format::kRGB8);
 		renderer_->CreateTextureCubemap(cubemap_rt_, 512, 512, sht::graphics::Image::Format::kRGB8);
-		renderer_->CreateTextureCubemap(irradiance_rt_, 32, 32, sht::graphics::Image::Format::kRGB8); // TODO: LINEAR
-		renderer_->CreateTextureCubemap(prefilter_rt_, 128, 128, sht::graphics::Image::Format::kRGB8); // TODO: TRILINEAR
-		renderer_->CreateTextureCubemap(integrate_rt_, 512, 512, sht::graphics::Image::Format::kRGB8); // TODO: LINEAR
+		renderer_->CreateTextureCubemap(irradiance_rt_, 32, 32, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
+		renderer_->CreateTextureCubemap(prefilter_rt_, 128, 128, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kTrilinear);
+		renderer_->GenerateMipmap(prefilter_rt_);
+		renderer_->CreateTextureCubemap(integrate_rt_, 512, 512, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
 
 		renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
@@ -108,7 +109,7 @@ public:
 		BindShaderConstants();
 
 		// Bake cubemaps
-		BakeCubemap(irradiance_rt_, irradiance_shader_);
+		BakeCubemaps();
 		
 		return true;
 	}
@@ -136,25 +137,50 @@ public:
 
 		BindShaderVariables();
 	}
-	void BakeCubemap(sht::graphics::Texture * render_target, sht::graphics::Shader * shader)
+	void BakeCubemaps()
 	{
 		renderer_->DisableDepthTest();
 
-		// Render to cubemap
+		// Irradiance cubemap
 		renderer_->ChangeTexture(env_texture_);
-		shader->Bind();
+		irradiance_shader_->Bind();
 		sht::math::Matrix4 projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
-		shader->Uniform1i("u_texture", 0);
-		shader->UniformMatrix4fv("u_projection", projection_matrix);
+		irradiance_shader_->Uniform1i("u_texture", 0);
+		irradiance_shader_->UniformMatrix4fv("u_projection", projection_matrix);
 		for (int face = 0; face < 6; ++face)
 		{
 			sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
-			shader->UniformMatrix4fv("u_view", view_matrix);
-			renderer_->ChangeRenderTargetsToCube(1, &render_target, nullptr, face, 0);
+			irradiance_shader_->UniformMatrix4fv("u_view", view_matrix);
+			renderer_->ChangeRenderTargetsToCube(1, &irradiance_rt_, nullptr, face, 0);
 			quad_->Render();
 		}
 		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
-		shader->Unbind();
+		irradiance_shader_->Unbind();
+		renderer_->ChangeTexture(nullptr);
+
+		// Prefilter cubemap
+		renderer_->ChangeTexture(env_texture_);
+		prefilter_shader_->Bind();
+		projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
+		prefilter_shader_->Uniform1i("u_texture", 0);
+		prefilter_shader_->Uniform1f("u_cube_resolution_width", prefilter_rt_->width());
+		prefilter_shader_->Uniform1f("u_cube_resolution_height", prefilter_rt_->height());
+		prefilter_shader_->UniformMatrix4fv("u_projection", projection_matrix);
+		const int maxMipLevels = 5;
+		for (int mip = 0; mip < maxMipLevels; ++mip)
+		{
+			float roughness = (float)mip / (float)(maxMipLevels - 1);
+			prefilter_shader_->Uniform1f("u_roughness", roughness);
+			for (int face = 0; face < 6; ++face)
+			{
+				sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
+				prefilter_shader_->UniformMatrix4fv("u_view", view_matrix);
+				renderer_->ChangeRenderTargetsToCube(1, &prefilter_rt_, nullptr, face, mip);
+				quad_->Render();
+			}
+		}
+		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
+		prefilter_shader_->Unbind();
 		renderer_->ChangeTexture(nullptr);
 
 		renderer_->EnableDepthTest();
@@ -255,7 +281,7 @@ public:
 		if (render_original_)
 			RenderEnvironment(env_texture_);
 		else
-			RenderEnvironment(irradiance_rt_);
+			RenderEnvironment(prefilter_rt_);
 			//RenderToTextureTest();
 		RenderInterface();
 	}

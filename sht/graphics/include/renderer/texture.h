@@ -38,6 +38,9 @@ namespace sht {
 			virtual u32 GetSrcType() = 0;
 			virtual s32 GetInternalFormat() = 0;
 
+			int width() const;
+			int height() const;
+
 			u32 GetSize();			//!< size of image in memory (w*h*bpp)
 
 		protected:

@@ -13,7 +13,7 @@ namespace sht {
 			virtual ~OpenGlRenderer();
 
 			void CreateTextureColor(Texture* &texture, float r, float g, float b, float a);
-			void CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt = Image::Format::kRGB8);
+			void CreateTextureCubemap(Texture* &texture, int w, int h, Image::Format fmt = Image::Format::kRGB8, Texture::Filter filt = Texture::Filter::kLinear);
 			void CreateTextureDepth(Texture* &texture, int w, int h, u32 depthSize);
 			void CreateTexture(Texture* &texture, int w, int h, Image::Format fmt);
 			void CreateTextureFromData(Texture* &texture, int w, int h, Image::Format fmt, unsigned char *data);

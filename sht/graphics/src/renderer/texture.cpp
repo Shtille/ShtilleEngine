@@ -11,6 +11,14 @@ namespace sht {
 		{
 
 		}
+		int Texture::width() const
+		{
+			return width_;
+		}
+		int Texture::height() const
+		{
+			return height_;
+		}
 		u32 Texture::GetSize()
 		{
 			u32 s;
