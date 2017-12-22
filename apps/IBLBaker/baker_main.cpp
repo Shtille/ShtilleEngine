@@ -1,5 +1,4 @@
 #include "../../sht/include/sht.h"
-#include "../../sht/graphics/include/model/sphere_model.h"
 #include "../../sht/graphics/include/model/skybox_quad_model.h"
 #include "../../sht/graphics/include/renderer/text.h"
 #include "../../sht/utility/include/camera.h"
@@ -11,8 +10,7 @@ class IBLBakerApp : public sht::OpenGlApplication
 {
 public:
 	IBLBakerApp()
-	: sphere_(nullptr)
-	, quad_(nullptr)
+	: quad_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, camera_manager_(nullptr)
@@ -35,28 +33,14 @@ public:
 
 		quad_shader_->Bind();
 		quad_shader_->Uniform1i("u_texture", 0);
-
-		env_convert_shader_->Bind();
-		env_convert_shader_->Uniform1i("u_texture", 0);
-		env_convert_shader_->Unbind();
+		quad_shader_->Unbind();
 	}
 	void BindShaderVariables()
 	{
 	}
 	bool Load() final
 	{
-		// Sphere model
-		sphere_ = new sht::graphics::SphereModel(renderer_, 128, 64);
-		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
-		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTangent, 3));
-		sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
-		sphere_->Create();
-		if (!sphere_->MakeRenderable())
-			return false;
-
-		// Cube model
+		// Quad model
 		quad_ = new sht::graphics::SkyboxQuadModel(renderer_);
 		quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 		quad_->Create();
@@ -68,10 +52,9 @@ public:
 		if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored")) return false;
 		if (!renderer_->AddShader(env_shader_, "data/shaders/apps/IBLBaker/skybox")) return false;
 		if (!renderer_->AddShader(quad_shader_, "data/shaders/apps/IBLBaker/quad")) return false;
-		if (!renderer_->AddShader(env_convert_shader_, "data/shaders/apps/IBLBaker/env_convert")) return false;
 		if (!renderer_->AddShader(irradiance_shader_, "data/shaders/apps/IBLBaker/irradiance")) return false;
 		if (!renderer_->AddShader(prefilter_shader_, "data/shaders/apps/IBLBaker/prefilter")) return false;
-		// if (!renderer_->AddShader(integrate_shader_, "data/shaders/apps/IBLBaker/integrate")) return false;
+		if (!renderer_->AddShader(integrate_shader_, "data/shaders/apps/IBLBaker/integrate")) return false;
 		
 		// Load textures
 		const char * cubemap_filenames[6] = {
@@ -86,13 +69,10 @@ public:
 
 		// Render targets
 		printf("width = %i, height = %i\n", width_, height_);
-		const int kFramebufferSize = 1024;
-		renderer_->AddRenderTarget(test_texture_, kFramebufferSize, kFramebufferSize, sht::graphics::Image::Format::kRGB8);
-		renderer_->CreateTextureCubemap(cubemap_rt_, 512, 512, sht::graphics::Image::Format::kRGB8);
 		renderer_->CreateTextureCubemap(irradiance_rt_, 32, 32, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
-		renderer_->CreateTextureCubemap(prefilter_rt_, 128, 128, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kTrilinear);
+		renderer_->CreateTextureCubemap(prefilter_rt_, 512, 512, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kTrilinear);
 		renderer_->GenerateMipmap(prefilter_rt_);
-		renderer_->CreateTextureCubemap(integrate_rt_, 512, 512, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
+		renderer_->AddRenderTarget(integrate_rt_, 512, 512, sht::graphics::Image::Format::kRGB8); // RG16
 
 		renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
@@ -121,8 +101,6 @@ public:
 			delete fps_text_;
 		if (quad_)
 			delete quad_;
-		if (sphere_)
-			delete sphere_;
 	}
 	void Update() final
 	{
@@ -152,6 +130,7 @@ public:
 			sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
 			irradiance_shader_->UniformMatrix4fv("u_view", view_matrix);
 			renderer_->ChangeRenderTargetsToCube(1, &irradiance_rt_, nullptr, face, 0);
+			renderer_->ClearColorBuffer();
 			quad_->Render();
 		}
 		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
@@ -163,10 +142,9 @@ public:
 		prefilter_shader_->Bind();
 		projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
 		prefilter_shader_->Uniform1i("u_texture", 0);
-		prefilter_shader_->Uniform1f("u_cube_resolution_width", prefilter_rt_->width());
-		prefilter_shader_->Uniform1f("u_cube_resolution_height", prefilter_rt_->height());
+		prefilter_shader_->Uniform1f("u_cube_resolution", prefilter_rt_->width());
 		prefilter_shader_->UniformMatrix4fv("u_projection", projection_matrix);
-		const int maxMipLevels = 5;
+		const int maxMipLevels = 1;
 		for (int mip = 0; mip < maxMipLevels; ++mip)
 		{
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -176,12 +154,21 @@ public:
 				sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
 				prefilter_shader_->UniformMatrix4fv("u_view", view_matrix);
 				renderer_->ChangeRenderTargetsToCube(1, &prefilter_rt_, nullptr, face, mip);
+				renderer_->ClearColorBuffer();
 				quad_->Render();
 			}
 		}
 		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
 		prefilter_shader_->Unbind();
 		renderer_->ChangeTexture(nullptr);
+
+		// Integrate LUT
+		integrate_shader_->Bind();
+		renderer_->ChangeRenderTarget(integrate_rt_, nullptr);
+		renderer_->ClearColorBuffer();
+		quad_->Render();
+		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
+		integrate_shader_->Unbind();
 
 		renderer_->EnableDepthTest();
 	}
@@ -199,59 +186,14 @@ public:
 
 		renderer_->EnableDepthTest();
 	}
-	void RenderToTextureTest()
+	void RenderQuad(sht::graphics::Texture * texture)
 	{
 		renderer_->DisableDepthTest();
 
-		// Test single render target
-		renderer_->ChangeRenderTarget(test_texture_, nullptr);
-
-		renderer_->ChangeTexture(env_texture_);
-		env_shader_->Bind();
-		env_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-		env_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-		quad_->Render();
-		env_shader_->Unbind();
-		renderer_->ChangeTexture(nullptr);
-
-		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
-
-		// Render quad with texture
-		renderer_->ChangeTexture(test_texture_);
+		renderer_->ChangeTexture(texture);
 		quad_shader_->Bind();
 		quad_->Render();
 		quad_shader_->Unbind();
-		renderer_->ChangeTexture(nullptr);
-
-		renderer_->EnableDepthTest();
-	}
-	void BuildCubemap(sht::graphics::Texture * render_target)
-	{
-		renderer_->DisableDepthTest();
-
-		// Render to cubemap
-		renderer_->ChangeTexture(env_texture_);
-		env_convert_shader_->Bind();
-		sht::math::Matrix4 projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
-		for (int face = 0; face < 6; ++face)
-		{
-			sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
-			renderer_->ChangeRenderTargetsToCube(1, &render_target, nullptr, face, 0);
-			env_convert_shader_->UniformMatrix4fv("u_projection", projection_matrix);
-			env_convert_shader_->UniformMatrix4fv("u_view", view_matrix);
-			quad_->Render();
-		}
-		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
-		env_convert_shader_->Unbind();
-		renderer_->ChangeTexture(nullptr);
-
-		// Render quad with texture
-		renderer_->ChangeTexture(render_target);
-		env_shader_->Bind();
-		env_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-		env_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-		quad_->Render();
-		env_shader_->Unbind();
 		renderer_->ChangeTexture(nullptr);
 
 		renderer_->EnableDepthTest();
@@ -281,8 +223,8 @@ public:
 		if (render_original_)
 			RenderEnvironment(env_texture_);
 		else
+			//RenderQuad(integrate_rt_);
 			RenderEnvironment(prefilter_rt_);
-			//RenderToTextureTest();
 		RenderInterface();
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
@@ -345,21 +287,17 @@ public:
 	}
 	
 private:
-	sht::graphics::Model * sphere_;
 	sht::graphics::Model * quad_;
 
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * gui_shader_;
 	sht::graphics::Shader * env_shader_;
 	sht::graphics::Shader * quad_shader_;
-	sht::graphics::Shader * env_convert_shader_;
 	sht::graphics::Shader * irradiance_shader_;
 	sht::graphics::Shader * prefilter_shader_;
 	sht::graphics::Shader * integrate_shader_;
 
 	sht::graphics::Texture * env_texture_;
-	sht::graphics::Texture * test_texture_;
-	sht::graphics::Texture * cubemap_rt_;
 	sht::graphics::Texture * irradiance_rt_;
 	sht::graphics::Texture * prefilter_rt_;
 	sht::graphics::Texture * integrate_rt_;

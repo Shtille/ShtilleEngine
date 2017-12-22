@@ -2,75 +2,20 @@
 
 uniform samplerCube u_texture;
 uniform float u_roughness;
-uniform float u_cube_resolution_width;
-uniform float u_cube_resolution_height;
+uniform float u_cube_resolution;
 
 out vec4 out_color;
 
-smooth in vec3 v_eye_direction;
+smooth in vec3 v_position;
 
 const float PI = 3.14159265359f;
-const uint numSamples = 1024u;
-
-float saturate(float f);
-float radicalInverse_VdC(uint bits);
-vec3 computeImportanceSampleGGX(vec2 Xi, float roughness, vec3 N);
-vec2 computeHammersley(uint i, uint N);
-float computeDistributionGGX(vec3 N, vec3 H, float roughness);
-
-
-void main()
-{
-	vec3 N = normalize(v_eye_direction);
-
-	// Unreal Engine 4 "Real Shading" approximation
-	vec3 R = N;
-	vec3 V = R;
-
-	vec3 prefilteredAccumulation = vec3(0.0f);
-	float totalSampleWeight = 0.0f;
-
-	for(uint i = 0u; i < numSamples; ++i)
-	{
-		// Hammersley + Importance Sampling so that we biased the sample vector direction
-		vec2 Xi = computeHammersley(i, numSamples);
-		vec3 H = computeImportanceSampleGGX(Xi, u_roughness, N);
-		vec3 L = normalize(2.0f * dot(V, H) * H - V);
-
-		float NdotL = max(dot(N, L), 0.0f);
-
-		if(NdotL > 0.0f)
-		{
-			float D = computeDistributionGGX(N, H, u_roughness);
-			float NdotH = max(dot(N, H), 0.0f);
-			float HdotV = max(dot(H, V), 0.0f);
-			float probaDistribFunction = D * NdotH / (4.0f * HdotV) + 0.0001f;
-
-			// Trick by Chetan Jags in order to avoid dots artifacting  by sampling a mip level of the envMap
-			// instead of directly sampling the envMap
-			float saTexel  = 4.0f * PI / (6.0f * u_cube_resolution_width * u_cube_resolution_height);
-			float saSample = 1.0f / (float(numSamples) * probaDistribFunction + 0.0001f);
-			float mipLevel = u_roughness == 0.0f ? 0.0f : 0.5f * log2(saSample / saTexel);
-
-			prefilteredAccumulation += textureLod(u_texture, L, mipLevel).rgb * NdotL;
-			totalSampleWeight += NdotL;
-		}
-	}
-
-	prefilteredAccumulation = prefilteredAccumulation / totalSampleWeight;
-
-	out_color = vec4(prefilteredAccumulation, 1.0f);
-}
-
-
+const uint NUM_SAMPLES = 1024u;
 
 float saturate(float f)
 {
 	return clamp(f, 0.0f, 1.0f);
 }
-
-
-float radicalInverse_VdC(uint bits) // In place of bitfieldreverse()
+float RadicalInverse_VdC(uint bits) // In place of bitfieldreverse()
 {
 	bits = (bits << 16u) | (bits >> 16u);
 	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
@@ -80,36 +25,30 @@ float radicalInverse_VdC(uint bits) // In place of bitfieldreverse()
 
 	return float(bits) * 2.3283064365386963e-10;
 }
-
-
-vec2 computeHammersley(uint i, uint N)
+vec2 ComputeHammersley(uint i, uint N)
 {
-	return vec2(float(i)/float(N), radicalInverse_VdC(i));
+	return vec2(float(i)/float(N), RadicalInverse_VdC(i));
 }
-
-
-vec3 computeImportanceSampleGGX(vec2 Xi, float roughness, vec3 N)
+vec3 ComputeImportanceSampleGGX(vec2 Xi, float roughness, vec3 N)
 {
 	float alpha = roughness * roughness;
 
-	float anglePhi = 2 * PI * Xi.x;
-	float cosTheta = sqrt((1.0f - Xi.y) / (1.0f + (alpha * alpha - 1.0f) * Xi.y));
-	float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+	float phi = 2 * PI * Xi.x;
+	float cos_theta = sqrt((1.0f - Xi.y) / (1.0f + (alpha * alpha - 1.0f) * Xi.y));
+	float sin_theta = sqrt(1.0f - cos_theta * cos_theta);
 
 	vec3 H;
-	H.x = sinTheta * cos(anglePhi);
-	H.y = sinTheta * sin(anglePhi);
-	H.z = cosTheta;
+	H.x = sin_theta * cos(phi);
+	H.y = sin_theta * sin(phi);
+	H.z = cos_theta;
 
-	vec3 upDir = abs(N.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
-	vec3 tanX = normalize(cross(upDir, N));
-	vec3 tanY = cross(N, tanX);
+	vec3 up = abs(N.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
+	vec3 tan_x = normalize(cross(up, N));
+	vec3 tan_y = cross(N, tan_x);
 
-	return normalize(tanX * H.x + tanY * H.y + N * H.z);
+	return normalize(tan_x * H.x + tan_y * H.y + N * H.z);
 }
-
-
-float computeDistributionGGX(vec3 N, vec3 H, float roughness)
+float ComputeDistributionGGX(vec3 N, vec3 H, float roughness)
 {
 	float alpha = roughness * roughness;
 	float alpha2 = alpha * alpha;
@@ -118,4 +57,57 @@ float computeDistributionGGX(vec3 N, vec3 H, float roughness)
 	float NdotH2 = NdotH * NdotH;
 
 	return (alpha2) / (PI * (NdotH2 * (alpha2 - 1.0f) + 1.0f) * (NdotH2 * (alpha2 - 1.0f) + 1.0f));
+}
+vec3 FixCubeLookup(vec3 v, float lod)
+{
+	float M = max(max(abs(v.x), abs(v.y)), abs(v.z));
+	//float scale = (u_cube_resolution - 1) / u_cube_resolution;
+	float scale = 1.0f - exp2(lod) / u_cube_resolution;
+	if (abs(v.x) != M) v.x *= scale;
+	if (abs(v.y) != M) v.y *= scale;
+	if (abs(v.z) != M) v.z *= scale;
+	return v;
+}
+
+void main()
+{
+	vec3 N = normalize(v_position);
+
+	// Unreal Engine 4 "Real Shading" approximation
+	vec3 R = N;
+	vec3 V = R;
+
+	vec3 prefiltered_accumulation = vec3(0.0f);
+	float total_sample_weight = 0.0f;
+
+	for (uint i = 0u; i < NUM_SAMPLES; ++i)
+	{
+		// Hammersley + Importance Sampling so that we biased the sample vector direction
+		vec2 Xi = ComputeHammersley(i, NUM_SAMPLES);
+		vec3 H = ComputeImportanceSampleGGX(Xi, u_roughness, N);
+		vec3 L = normalize(2.0f * dot(V, H) * H - V);
+
+		float NdotL = max(dot(N, L), 0.0f);
+
+		if (NdotL > 0.0f)
+		{
+			// Compute Lod using inverse solid angle and pdf.
+			// From Chapter 20.4 Mipmap filtered samples in GPU Gems 3.
+			// http://http.developer.nvidia.com/GPUGems3/gpugems3_ch20.html
+			float proba_distrib_function = max(0.0, dot(N, L) / PI);
+
+			float solidAngleTexel  = 4.0f * PI / (6.0f * u_cube_resolution * u_cube_resolution);
+			float solidAngleSample = 1.0f / (float(NUM_SAMPLES) * proba_distrib_function + 0.0001f);
+			float lod = /*u_roughness == 0.0f ? 0.0f : */0.5f * log2(solidAngleSample / solidAngleTexel);
+			//float lod = 2.0f;
+
+			vec3 cube_lookup = FixCubeLookup(L, lod);
+			prefiltered_accumulation += textureLod(u_texture, cube_lookup, lod).rgb;
+			total_sample_weight++;
+		}
+	}
+
+	prefiltered_accumulation = prefiltered_accumulation / total_sample_weight;
+
+	out_color = vec4(prefiltered_accumulation, 1.0f);
 }

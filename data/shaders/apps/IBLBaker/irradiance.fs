@@ -4,35 +4,35 @@ uniform samplerCube u_texture;
 
 out vec4 out_color;
 
-smooth in vec3 v_eye_direction;
+smooth in vec3 v_position;
 
 const float PI = 3.14159265359;
 
 void main()
-{		
-	vec3 N = normalize(v_eye_direction);
-	vec3 irradianceAccumulation = vec3(0.0f);
-	
-	vec3 upDir = vec3(0.0f, 1.0f, 0.0f);
-	vec3 rightDir = cross(upDir, N);
-	upDir = cross(N, rightDir);
+{
+	vec3 N = normalize(v_position);
+	vec3 up = abs(N.z) < 0.999f ? vec3(0.0f, 1.0f, 0.0f) : vec3(1.0f, 0.0f, 0.0f);
+	vec3 right = cross(up, N);
+	up = cross(N, right);
 
-	float sampleOffset = 0.025f;
-	float sampleCount = 0.0f;
+	vec3 irradiance_accumulation = vec3(0.0f);
 
-	for(float anglePhi = 0.0f; anglePhi < 2.0f * PI; anglePhi += sampleOffset)
+	const float sample_offset = 0.025f;
+	float sample_count = 0.0f;
+
+	for (float phi = 0.0f; phi < 2.0f * PI; phi += sample_offset)
 	{
-		for(float angleTheta = 0.0f; angleTheta < 0.5f * PI; angleTheta += sampleOffset)
+		for (float theta = 0.0f; theta < 0.5f * PI; theta += sample_offset)
 		{
-			vec3 sampleTangent = vec3(sin(angleTheta) * cos(anglePhi),  sin(angleTheta) * sin(anglePhi), cos(angleTheta));
-			vec3 sampleVector = sampleTangent.x * rightDir + sampleTangent.y * upDir + sampleTangent.z * N;
+			vec3 sample_tangent = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));
+			vec3 sample_vector = sample_tangent.x * right + sample_tangent.y * up + sample_tangent.z * N;
 
-			irradianceAccumulation += texture(u_texture, sampleVector).rgb * cos(angleTheta) * sin(angleTheta);
-			sampleCount++;
+			irradiance_accumulation += texture(u_texture, sample_vector).rgb * cos(theta) * sin(theta);
+			sample_count++;
 		}
 	}
 
-	irradianceAccumulation = irradianceAccumulation * (1.0f / float(sampleCount)) * PI;
-	
-	out_color = vec4(irradianceAccumulation, 1.0f);
+	irradiance_accumulation = irradiance_accumulation * (1.0f / float(sample_count)) * PI;
+
+	out_color = vec4(irradiance_accumulation, 1.0f);
 }
