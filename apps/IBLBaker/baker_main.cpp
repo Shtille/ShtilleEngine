@@ -14,8 +14,8 @@ public:
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, camera_manager_(nullptr)
+	, render_type_(0)
 	, need_update_projection_matrix_(true)
-	, render_original_(true)
 	{
 	}
 	const char* GetTitle() final
@@ -37,6 +37,26 @@ public:
 	}
 	void BindShaderVariables()
 	{
+	}
+	void ChooseRenderType()
+	{
+		const int kNumTypes = 4;
+		render_type_ = render_type_ % kNumTypes;
+		switch (render_type_)
+		{
+		case 0:
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"base image");
+			break;
+		case 1:
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"irradiance");
+			break;
+		case 2:
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"prefilter");
+			break;
+		case 3:
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"BRDF LUT");
+			break;
+		}
 	}
 	bool Load() final
 	{
@@ -90,6 +110,8 @@ public:
 
 		// Bake cubemaps
 		BakeCubemaps();
+
+		ChooseRenderType();
 		
 		return true;
 	}
@@ -161,6 +183,7 @@ public:
 		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
 		prefilter_shader_->Unbind();
 		renderer_->ChangeTexture(nullptr);
+		renderer_->GenerateMipmap(prefilter_rt_);
 
 		// Integrate LUT
 		integrate_shader_->Bind();
@@ -206,7 +229,6 @@ public:
 		text_shader_->Bind();
 		text_shader_->Uniform1i("u_texture", 0);
 		text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
-		fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
 		fps_text_->Render();
 
 		renderer_->ChangeTexture(nullptr);
@@ -220,11 +242,21 @@ public:
 		renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		renderer_->ClearColorAndDepthBuffers();
 		
-		if (render_original_)
+		switch (render_type_)
+		{
+		case 0:
 			RenderEnvironment(env_texture_);
-		else
-			//RenderQuad(integrate_rt_);
+			break;
+		case 1:
+			RenderEnvironment(irradiance_rt_);
+			break;
+		case 2:
 			RenderEnvironment(prefilter_rt_);
+			break;
+		case 3:
+			RenderQuad(integrate_rt_);
+			break;
+		}
 		RenderInterface();
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
@@ -259,7 +291,8 @@ public:
 		}
 		else if (key == sht::PublicKey::kSpace)
 		{
-			render_original_ = !render_original_;
+			++render_type_;
+			ChooseRenderType();
 		}
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
@@ -308,8 +341,8 @@ private:
 	
 	sht::math::Matrix4 projection_view_matrix_;
 	
+	int render_type_;
 	bool need_update_projection_matrix_;
-	bool render_original_;
 };
 
 DECLARE_MAIN(IBLBakerApp);
