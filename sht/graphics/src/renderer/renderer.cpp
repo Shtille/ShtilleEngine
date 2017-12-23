@@ -218,7 +218,7 @@ namespace sht {
 			delete face_filler;
 			return succeed;
 		}
-		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filenames[6])
+		bool Renderer::AddTextureCubemap(Texture* &texture, const char* filenames[6], bool use_mipmaps)
 		{
 			texture = nullptr;
 			bool succeed = true;
@@ -233,7 +233,7 @@ namespace sht {
 				}
 			}
 			if (succeed)
-				ApiAddTextureCubemap(texture, images);
+				ApiAddTextureCubemap(texture, images, use_mipmaps);
 			delete[] images;
 			return succeed;
 		}

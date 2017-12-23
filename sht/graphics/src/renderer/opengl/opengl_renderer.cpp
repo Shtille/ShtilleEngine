@@ -118,7 +118,7 @@ namespace sht {
 
 			textures_.push_back(tex);
 		}
-		void OpenGlRenderer::ApiAddTextureCubemap(Texture* &tex, Image *imgs)
+		void OpenGlRenderer::ApiAddTextureCubemap(Texture* &tex, Image *imgs, bool use_mipmaps)
 		{
 			tex = new OpenGlTexture();
 			tex->width_ = imgs[0].width();
@@ -130,25 +130,55 @@ namespace sht {
 			glBindTexture(tex->target_, tex->texture_id_);
 
 			glTexParameterf(tex->target_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameterf(tex->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			if (use_mipmaps)
+				glTexParameterf(tex->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			else
+				glTexParameterf(tex->target_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 			glTexParameteri(tex->target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(tex->target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(tex->target_, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-			for (u32 t = 0; t < 6; t++)
+			if (use_mipmaps)
 			{
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + t, // target
-					0, // mipmap level
-					tex->GetInternalFormat(), // the number of color components
-					tex->width_, // texture width
-					tex->height_, // texture height
-					0, // border
-					tex->GetSrcFormat(), // the format of the pixel data
-					tex->GetSrcType(), // the data type of the pixel data
-					imgs[t].pixels());
+				int width = tex->width_;
+				int height = tex->height_;
+				u32 level = 0;
+				while (width != 0 && height != 0)
+				{
+					for (u32 face = 0; face < 6; ++face)
+					{
+						imgs[face].Rescale(width, height);
+						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, // target
+							level, // mipmap level
+							tex->GetInternalFormat(), // the number of color components
+							width, // texture width
+							height, // texture height
+							0, // border
+							tex->GetSrcFormat(), // the format of the pixel data
+							tex->GetSrcType(), // the data type of the pixel data
+							imgs[face].pixels());
+					}
+					width >>= 1;
+					height >>= 1;
+					++level;
+				}
 			}
-			glGenerateMipmap(tex->target_);
+			else
+			{
+				for (u32 face = 0; face < 6; ++face)
+				{
+					glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, // target
+						0, // mipmap level
+						tex->GetInternalFormat(), // the number of color components
+						tex->width_, // texture width
+						tex->height_, // texture height
+						0, // border
+						tex->GetSrcFormat(), // the format of the pixel data
+						tex->GetSrcType(), // the data type of the pixel data
+						imgs[face].pixels());
+				}
+			}
 
 			context_->CheckForErrors();
 

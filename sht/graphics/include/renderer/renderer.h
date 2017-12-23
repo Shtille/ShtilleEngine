@@ -59,7 +59,7 @@ namespace sht {
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
 				Texture::Filter filt = Texture::Filter::kTrilinear);
 			bool AddTextureCubemap(Texture* &texture, const char* filename, CubemapFillType fill_type, int desired_width);
-			bool AddTextureCubemap(Texture* &texture, const char* filenames[6]);
+			bool AddTextureCubemap(Texture* &texture, const char* filenames[6], bool use_mipmaps = false);
 			bool CreateTextureNormalMapFromHeightMap(Texture* &texture, const char* filename,
 				Texture::Wrap wrap = Texture::Wrap::kRepeat,
 				Texture::Filter filt = Texture::Filter::kTrilinear);
@@ -152,7 +152,7 @@ namespace sht {
 
 		protected:
 			virtual void ApiAddTexture(Texture* &tex, const Image &img, Texture::Wrap wrap, Texture::Filter filt) = 0;
-			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs) = 0;
+			virtual void ApiAddTextureCubemap(Texture* &tex, Image *imgs, bool use_mipmaps = false) = 0;
 			virtual void ApiDeleteTexture(Texture* tex) = 0;
             virtual void ApiViewport(int width, int height) = 0;
             

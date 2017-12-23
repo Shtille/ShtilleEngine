@@ -71,7 +71,7 @@ namespace sht {
 		private:
 			void SetDefaultStates();
 			void ApiAddTexture(Texture* &tex, const Image &img, Texture::Wrap wrap, Texture::Filter filt);
-			void ApiAddTextureCubemap(Texture* &tex, Image *imgs);
+			void ApiAddTextureCubemap(Texture* &tex, Image *imgs, bool use_mipmaps = false);
 			void ApiDeleteTexture(Texture* tex);
             void ApiViewport(int width, int height);
 			void ChangeImageUnit(u32 unit);

@@ -85,7 +85,7 @@ public:
 			"data/textures/skybox/ashcanyon_rt.jpg",
 			"data/textures/skybox/ashcanyon_lf.jpg"
 		};
-		if (!renderer_->AddTextureCubemap(env_texture_, cubemap_filenames)) return false;
+		if (!renderer_->AddTextureCubemap(env_texture_, cubemap_filenames, true)) return false;
 
 		// Render targets
 		printf("width = %i, height = %i\n", width_, height_);
