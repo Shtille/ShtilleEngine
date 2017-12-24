@@ -98,12 +98,11 @@ void main()
 
 			float solidAngleTexel  = 4.0f * PI / (6.0f * u_cube_resolution * u_cube_resolution);
 			float solidAngleSample = 1.0f / (float(NUM_SAMPLES) * proba_distrib_function + 0.0001f);
-			float lod = /*u_roughness == 0.0f ? 0.0f : */0.5f * log2(solidAngleSample / solidAngleTexel);
-			//float lod = 2.0f;
+			float lod = u_roughness == 0.0f ? 0.0f : 0.5f * log2(solidAngleSample / solidAngleTexel);
 
-			vec3 cube_lookup = FixCubeLookup(L, lod);
-			prefiltered_accumulation += textureLod(u_texture, cube_lookup, lod).rgb;
-			total_sample_weight++;
+			//vec3 cube_lookup = FixCubeLookup(L, lod);
+			prefiltered_accumulation += textureLod(u_texture, L, lod).rgb * NdotL;
+			total_sample_weight += NdotL;
 		}
 	}
 

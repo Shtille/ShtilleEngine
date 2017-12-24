@@ -200,6 +200,113 @@ namespace {
 namespace sht {
 	namespace graphics {
 
+		void Image::CreateCube(const Image * images, Image * out)
+		{
+			int width = images->width();
+			int height = images->height();
+
+			const int kPositiveX = 0;
+			const int kNegativeX = 1;
+			const int kPositiveY = 2;
+			const int kNegativeY = 3;
+			const int kPositiveZ = 4;
+			const int kNegativeZ = 5;
+
+			/*
+			00 00 00 00
+			+Y 00 00 00
+			+Z +X -Z -X
+			-Y 00 00 00
+			*/
+			out->SetRowOrder(false);
+			out->Allocate(4 * images->width(), 4 * images->height(), images->format());
+			out->FillWithZeroes();
+			out->SubData(    width, 2 * height, width, height, images[kPositiveX].pixels()); // +X
+			out->SubData(        0, 2 * height, width, height, images[kPositiveZ].pixels()); // +Z
+			out->SubData(2 * width, 2 * height, width, height, images[kNegativeZ].pixels()); // -Z
+			out->SubData(        0,     height, width, height, images[kPositiveY].pixels()); // +Y
+			out->SubData(        0, 3 * height, width, height, images[kNegativeY].pixels()); // -Y
+			out->SubData(3 * width, 2 * height, width, height, images[kNegativeX].pixels()); // -X
+		}
+		void Image::DownscaleCube(Image * images)
+		{
+			int width = images->width();
+			int height = images->height();
+			Format format = images->format();
+
+			const int kPositiveX = 0;
+			const int kNegativeX = 1;
+			const int kPositiveY = 2;
+			const int kNegativeY = 3;
+			const int kPositiveZ = 4;
+			const int kNegativeZ = 5;
+
+			// At first copy all the original images
+			//Image copies[6];
+			//for (int i = 0; i < 6; ++i)
+			//	copies[i].Copy(images[i]);
+
+			/*
+			Work image scheme has the following view:
+			0 0 0 0
+			0 2 0 0
+			2 1 2 0
+			0 2 0 0
+			1 - is the processed face image
+			2 - is neughbour faces
+			*/
+			Image work_image;
+			work_image.Allocate(4 * images->width(), 4 * images->height(), images->format());
+			work_image.FillWithZeroes();
+			work_image.SubData(width, 2 * height, width, height, images[kPositiveX].pixels()); // +X
+			work_image.SubData(0, 2 * height, width, height, images[kPositiveZ].pixels()); // +Z
+			work_image.SubData(2 * width, 2 * height, width, height, images[kNegativeZ].pixels()); // -Z
+			work_image.SubData(0, height, width, height, images[kPositiveY].pixels()); // +Y
+			work_image.SubData(0, 3 * height, width, height, images[kNegativeY].pixels()); // -Y
+			work_image.SubData(3 * width, 2 * height, width, height, images[kNegativeX].pixels()); // -X
+			// Downscale
+			int new_width = width / 2;
+			int new_height = height / 2;
+			work_image.Rescale(2 * width, 2 * height);
+			// Copy back
+			images[kPositiveX].Allocate(new_width, new_height, format);
+			images[kPositiveX].CopyData(new_width, 2 * new_height, new_width * 4, work_image.pixels());
+			images[kNegativeX].Allocate(new_width, new_height, format);
+			images[kNegativeX].CopyData(3 * new_width, 2 * new_height, new_width * 4, work_image.pixels());
+			images[kPositiveY].Allocate(new_width, new_height, format);
+			images[kPositiveY].CopyData(0, new_height, new_width * 4, work_image.pixels());
+			images[kNegativeY].Allocate(new_width, new_height, format);
+			images[kNegativeY].CopyData(0, 3 * new_height, new_width * 4, work_image.pixels());
+			images[kPositiveZ].Allocate(new_width, new_height, format);
+			images[kPositiveZ].CopyData(0, 2 * new_height, new_width * 4, work_image.pixels());
+			images[kNegativeZ].Allocate(new_width, new_height, format);
+			images[kNegativeZ].CopyData(2 * new_width, 2 * new_height, new_width * 4, work_image.pixels());
+
+			// Then process each image in big image
+			for (int i = 0; i < 6; ++i)
+			{
+				//work_image.Allocate(4 * images->width(), 4 * images->height(), images->format());
+				//work_image.FillWithZeroes();
+
+				//switch (i)
+				//{
+				//case 0:
+					/*
+					00 00 00 00
+					+Y 00 00 00
+					+Z +X -Z -X
+					-Y 00 00 00
+					*/
+					//work_image.SubData(    width, 2 * height, width, height, images[kPositiveX].pixels()); // +X
+					//work_image.SubData(        0, 2 * height, width, height, images[kPositiveZ].pixels()); // +Z
+					//work_image.SubData(2 * width, 2 * height, width, height, images[kNegativeZ].pixels()); // -Z
+					//work_image.SubData(        0,     height, width, height, images[kPositiveY].pixels()); // +Y
+					//work_image.SubData(        0, 3 * height, width, height, images[kNegativeY].pixels()); // -Y
+					//work_image.SubData(3 * width, 2 * height, width, height, images[kNegativeX].pixels()); // -X
+				//	break;
+				//}
+			}
+		}
 		void Image::Rescale(int w, int h)
 		{
 			if (width_ == w && height_ == h)

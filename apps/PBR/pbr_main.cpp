@@ -10,12 +10,14 @@ PBR shader to use in application
 */
 #define USE_PBR 3
 
-class PbrApp : public sht::OpenGlApplication
+#define APP_NAME PbrApp
+
+class APP_NAME : public sht::OpenGlApplication
 {
 public:
-	PbrApp()
+	APP_NAME()
 	: sphere_(nullptr)
-	, cube_(nullptr)
+	, quad_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, camera_manager_(nullptr)
@@ -97,22 +99,25 @@ public:
 			return false;
 
 		// Cube model
-		cube_ = new sht::graphics::SkyboxQuadModel(renderer_);
-		cube_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-		cube_->Create();
-		if (!cube_->MakeRenderable())
+		quad_ = new sht::graphics::SkyboxQuadModel(renderer_);
+		quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+		quad_->Create();
+		if (!quad_->MakeRenderable())
 			return false;
 		
 		// Load shaders
 		if (!renderer_->AddShader(text_shader_, "data/shaders/text")) return false;
 		if (!renderer_->AddShader(gui_shader_, "data/shaders/gui_colored")) return false;
-		if (!renderer_->AddShader(env_shader_, "data/shaders/apps/PBR/skybox")) return false;
+		if (!renderer_->AddShader(env_shader_, "data/shaders/skybox")) return false;
+		if (!renderer_->AddShader(irradiance_shader_, "data/shaders/pbr/irradiance")) return false;
+		if (!renderer_->AddShader(prefilter_shader_, "data/shaders/pbr/prefilter")) return false;
+		if (!renderer_->AddShader(integrate_shader_, "data/shaders/pbr/integrate")) return false;
 #if USE_PBR == 1
 		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr")) return false;
 #elif USE_PBR == 2
 		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr2")) return false;
 #elif USE_PBR == 3
-		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr3")) return false;
+		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr4")) return false;
 #else
 #error PBR version hasn't been defined
 #endif
@@ -121,8 +126,8 @@ public:
 		const char * cubemap_filenames[6] = {
 			"data/textures/skybox/ashcanyon_ft.jpg",
 			"data/textures/skybox/ashcanyon_bk.jpg",
-			"data/textures/skybox/ashcanyon_dn.jpg",
 			"data/textures/skybox/ashcanyon_up.jpg",
+			"data/textures/skybox/ashcanyon_dn.jpg",
 			"data/textures/skybox/ashcanyon_rt.jpg",
 			"data/textures/skybox/ashcanyon_lf.jpg"
 		};
@@ -130,7 +135,7 @@ public:
 		if (!renderer_->AddTexture(albedo_texture_, "data/textures/pbr/metal/greasy_pan2/albedo.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		 if (!renderer_->AddTexture(normal_texture_, "data/textures/pbr/metal/greasy_pan2/normal.png",
+		if (!renderer_->AddTexture(normal_texture_, "data/textures/pbr/metal/greasy_pan2/normal.png",
 		 						   sht::graphics::Texture::Wrap::kClampToEdge,
 		 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(roughness_texture_, "data/textures/pbr/metal/greasy_pan2/roughness.png",
@@ -142,6 +147,12 @@ public:
 		if (!renderer_->AddTexture(fg_texture_, "data/textures/pbr/brdfLUT.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+
+		// Render targets
+		renderer_->CreateTextureCubemap(irradiance_rt_, 32, 32, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
+		renderer_->CreateTextureCubemap(prefilter_rt_, 512, 512, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kTrilinear);
+		renderer_->GenerateMipmap(prefilter_rt_);
+		renderer_->AddRenderTarget(integrate_rt_, 512, 512, sht::graphics::Image::Format::kRGB8); // RG16
 
 		renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
@@ -156,6 +167,8 @@ public:
 
 		// Finally bind constants
 		BindShaderConstants();
+
+		BakeCubemaps();
 		
 		return true;
 	}
@@ -165,8 +178,8 @@ public:
 			delete camera_manager_;
 		if (fps_text_)
 			delete fps_text_;
-		if (cube_)
-			delete cube_;
+		if (quad_)
+			delete quad_;
 		if (sphere_)
 			delete sphere_;
 	}
@@ -183,28 +196,75 @@ public:
 
 		BindShaderVariables();
 	}
+	void BakeCubemaps()
+	{
+		renderer_->DisableDepthTest();
+
+		// Irradiance cubemap
+		renderer_->ChangeTexture(env_texture_);
+		irradiance_shader_->Bind();
+		sht::math::Matrix4 projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
+		irradiance_shader_->Uniform1i("u_texture", 0);
+		irradiance_shader_->UniformMatrix4fv("u_projection", projection_matrix);
+		for (int face = 0; face < 6; ++face)
+		{
+			sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
+			irradiance_shader_->UniformMatrix4fv("u_view", view_matrix);
+			renderer_->ChangeRenderTargetsToCube(1, &irradiance_rt_, nullptr, face, 0);
+			renderer_->ClearColorBuffer();
+			quad_->Render();
+		}
+		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
+		irradiance_shader_->Unbind();
+		renderer_->ChangeTexture(nullptr);
+
+		// Prefilter cubemap
+		renderer_->ChangeTexture(env_texture_);
+		prefilter_shader_->Bind();
+		projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
+		prefilter_shader_->Uniform1i("u_texture", 0);
+		//prefilter_shader_->Uniform1f("u_cube_resolution", (float)prefilter_rt_->width());
+		prefilter_shader_->UniformMatrix4fv("u_projection", projection_matrix);
+		const int kMaxMipLevels = 5; // for 512x512 target
+		for (int mip = 0; mip < kMaxMipLevels; ++mip)
+		{
+			float roughness = (float)mip / (float)(kMaxMipLevels - 1);
+			prefilter_shader_->Uniform1f("u_roughness", roughness);
+			for (int face = 0; face < 6; ++face)
+			{
+				sht::math::Matrix4 view_matrix = sht::math::LookAtCube(vec3(0.0f), face);
+				prefilter_shader_->UniformMatrix4fv("u_view", view_matrix);
+				renderer_->ChangeRenderTargetsToCube(1, &prefilter_rt_, nullptr, face, mip);
+				renderer_->ClearColorBuffer();
+				quad_->Render();
+			}
+		}
+		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
+		prefilter_shader_->Unbind();
+		renderer_->ChangeTexture(nullptr);
+
+		// Integrate LUT
+		integrate_shader_->Bind();
+		renderer_->ChangeRenderTarget(integrate_rt_, nullptr);
+		renderer_->ClearColorBuffer();
+		quad_->Render();
+		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
+		integrate_shader_->Unbind();
+
+		renderer_->EnableDepthTest();
+	}
 	void RenderEnvironment()
 	{
 		renderer_->DisableDepthTest();
-		//renderer_->CullFace(sht::graphics::CullFaceType::kFront);
-
-		renderer_->PushMatrix();
 
 		renderer_->ChangeTexture(env_texture_);
-
 		env_shader_->Bind();
 		env_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
 		env_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-		
-		cube_->Render();
-		
+		quad_->Render();
 		env_shader_->Unbind();
-
 		renderer_->ChangeTexture(nullptr);
 
-		renderer_->PopMatrix();
-
-		//renderer_->CullFace(sht::graphics::CullFaceType::kBack);
 		renderer_->EnableDepthTest();
 	}
 	void RenderObjects()
@@ -226,8 +286,8 @@ public:
 		renderer_->ChangeTexture(roughness_texture_, 4);
 		//renderer_->ChangeTexture(metal_texture_, 5);
 #elif USE_PBR == 3
-		renderer_->ChangeTexture(env_texture_, 0);
-		renderer_->ChangeTexture(env_texture_, 1);
+		renderer_->ChangeTexture(irradiance_rt_, 0);
+		renderer_->ChangeTexture(prefilter_rt_, 1);
 		renderer_->ChangeTexture(fg_texture_, 2);
 		renderer_->ChangeTexture(albedo_texture_, 3);
 		renderer_->ChangeTexture(normal_texture_, 4);
@@ -345,17 +405,26 @@ public:
 	
 private:
 	sht::graphics::Model * sphere_;
-	sht::graphics::Model * cube_;
+	sht::graphics::Model * quad_;
+
+	sht::graphics::Shader * text_shader_;
+	sht::graphics::Shader * gui_shader_;
 	sht::graphics::Shader * env_shader_;
 	sht::graphics::Shader * object_shader_;
-	sht::graphics::Shader * gui_shader_;
-	sht::graphics::Shader * text_shader_;
+	sht::graphics::Shader * irradiance_shader_;
+	sht::graphics::Shader * prefilter_shader_;
+	sht::graphics::Shader * integrate_shader_;
+
 	sht::graphics::Texture * env_texture_;
 	sht::graphics::Texture * albedo_texture_;
 	sht::graphics::Texture * normal_texture_;
 	sht::graphics::Texture * roughness_texture_;
 	sht::graphics::Texture * metal_texture_;
 	sht::graphics::Texture * fg_texture_;
+	sht::graphics::Texture * irradiance_rt_;
+	sht::graphics::Texture * prefilter_rt_;
+	sht::graphics::Texture * integrate_rt_;
+
 	sht::graphics::Font * font_;
 	sht::graphics::DynamicText * fps_text_;
 	sht::utility::CameraManager * camera_manager_;
@@ -365,4 +434,4 @@ private:
 	bool need_update_projection_matrix_;
 };
 
-DECLARE_MAIN(PbrApp);
+DECLARE_MAIN(APP_NAME);

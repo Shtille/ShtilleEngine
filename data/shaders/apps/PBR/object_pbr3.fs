@@ -169,7 +169,7 @@ void main()
     vec3 v = normalize(u_camera.position - fs_in.position);        // Vector from surface point to camera
     vec3 l = normalize(u_light.direction);             // Vector from surface point to light
     vec3 h = normalize(l+v);                          // Half vector between both l and v
-    vec3 reflection = normalize(reflect(v, n));
+    vec3 reflection = -normalize(reflect(v, n));
 
     float NdotL = clamp(dot(n, l), 0.001, 1.0);
     float NdotV = abs(dot(n, v)) + 0.001;

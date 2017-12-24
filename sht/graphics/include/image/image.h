@@ -50,6 +50,7 @@ namespace sht {
 			u8* Allocate(int w, int h, Format fmt);						//!< allocates a place for image data and returns its data pointer
             void FillWithZeroes();
 			void Copy(const Image& other);
+			void CopyData(int offset_x, int offset_y, int source_width, const u8* data); //!< copies data from part of other image
             void SubData(int offset_x, int offset_y, int w, int h, const u8* data);
 			bool Save(const char* filename);							//!< saves image to file with specified format
 
@@ -61,6 +62,9 @@ namespace sht {
 			void Rescale(int w, int h);									//!< rescales stored image
 			void MakePowerOfTwo();										//!< rescales image to be power of two in each size
 			void SwapRedBlueChannels();									//!< swaps red and blue channels
+
+			static void CreateCube(const Image * images, Image * out);	//!< creates cross cubemap
+			static void DownscaleCube(Image * images);
 
 		protected:
 

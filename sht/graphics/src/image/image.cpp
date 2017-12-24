@@ -202,6 +202,16 @@ namespace sht {
 			bpp_ = other.bpp_;
 			inverted_row_order_ = other.inverted_row_order_;
 		}
+		void Image::CopyData(int offset_x, int offset_y, int source_width, const u8* data)
+		{
+			// Data should have the same bpp as source
+			for (int y = 0; y < height_; ++y)
+			{
+				const u8* src = &data[((y + offset_y)*source_width + offset_x)*bpp_];
+				u8* dst = &pixels_[(y*width_)*bpp_];
+				memcpy(dst, src, width_ * bpp_);
+			}
+		}
         void Image::SubData(int offset_x, int offset_y, int w, int h, const u8* data)
         {
             int max_x = offset_x + w;

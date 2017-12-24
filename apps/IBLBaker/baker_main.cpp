@@ -48,10 +48,10 @@ public:
 			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"base image");
 			break;
 		case 1:
-			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"irradiance");
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"prefilter");
 			break;
 		case 2:
-			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"prefilter");
+			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"irradiance");
 			break;
 		case 3:
 			fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"BRDF LUT");
@@ -164,9 +164,9 @@ public:
 		prefilter_shader_->Bind();
 		projection_matrix = sht::math::PerspectiveMatrix(90.0f, 512, 512, 0.1f, 100.0f);
 		prefilter_shader_->Uniform1i("u_texture", 0);
-		prefilter_shader_->Uniform1f("u_cube_resolution", prefilter_rt_->width());
+		prefilter_shader_->Uniform1f("u_cube_resolution", (float)prefilter_rt_->width());
 		prefilter_shader_->UniformMatrix4fv("u_projection", projection_matrix);
-		const int maxMipLevels = 1;
+		const int maxMipLevels = 10;
 		for (int mip = 0; mip < maxMipLevels; ++mip)
 		{
 			float roughness = (float)mip / (float)(maxMipLevels - 1);
@@ -183,7 +183,6 @@ public:
 		renderer_->ChangeRenderTarget(nullptr, nullptr); // back to main framebuffer
 		prefilter_shader_->Unbind();
 		renderer_->ChangeTexture(nullptr);
-		renderer_->GenerateMipmap(prefilter_rt_);
 
 		// Integrate LUT
 		integrate_shader_->Bind();
@@ -248,10 +247,10 @@ public:
 			RenderEnvironment(env_texture_);
 			break;
 		case 1:
-			RenderEnvironment(irradiance_rt_);
+			RenderEnvironment(prefilter_rt_);
 			break;
 		case 2:
-			RenderEnvironment(prefilter_rt_);
+			RenderEnvironment(irradiance_rt_);
 			break;
 		case 3:
 			RenderQuad(integrate_rt_);

@@ -8,5 +8,5 @@ smooth in vec3 v_eye_direction;
 
 void main()
 {
-	out_color = texture(u_texture, v_eye_direction);
+	out_color = textureLod(u_texture, v_eye_direction, 0.0);
 }

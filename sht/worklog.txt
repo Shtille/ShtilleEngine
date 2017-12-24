@@ -27,3 +27,6 @@ Today,  July 9 2017 I decided to start tracking a work in a log file.
 
 [20.12.2017]
 - Fixed cubemap image loading (inverted row order).
+
+[23.12.2017]
+- Added a new function to image class that allows to copy data into it from bigger image.
