@@ -46,6 +46,10 @@ namespace sht {
 			, normal_color_(normal_color)
 			, touch_color_(touch_color)
 			{
+				FillVertexAttribs();
+				FillVertices();
+				MakeRenderable();
+				BindConstUniforms();
 			}
 			void ButtonColored::Render()
 			{
