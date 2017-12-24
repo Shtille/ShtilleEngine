@@ -98,7 +98,7 @@ public:
 		if (!sphere_->MakeRenderable())
 			return false;
 
-		// Cube model
+		// Screen quad model
 		quad_ = new sht::graphics::SkyboxQuadModel(renderer_);
 		quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 		quad_->Create();
@@ -117,7 +117,7 @@ public:
 #elif USE_PBR == 2
 		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr2")) return false;
 #elif USE_PBR == 3
-		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/object_pbr4")) return false;
+		if (!renderer_->AddShader(object_shader_, "data/shaders/apps/PBR/pbr")) return false;
 #else
 #error PBR version hasn't been defined
 #endif
@@ -132,16 +132,16 @@ public:
 			"data/textures/skybox/ashcanyon_lf.jpg"
 		};
 		if (!renderer_->AddTextureCubemap(env_texture_, cubemap_filenames)) return false;
-		if (!renderer_->AddTexture(albedo_texture_, "data/textures/pbr/metal/greasy_pan2/albedo.png",
+		if (!renderer_->AddTexture(albedo_texture_, "data/textures/pbr/metal/rusted_iron/albedo.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(normal_texture_, "data/textures/pbr/metal/greasy_pan2/normal.png",
+		if (!renderer_->AddTexture(normal_texture_, "data/textures/pbr/metal/rusted_iron/normal.png",
 		 						   sht::graphics::Texture::Wrap::kClampToEdge,
 		 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(roughness_texture_, "data/textures/pbr/metal/greasy_pan2/roughness.png",
+		if (!renderer_->AddTexture(roughness_texture_, "data/textures/pbr/metal/rusted_iron/roughness.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(metal_texture_, "data/textures/pbr/metal/greasy_pan2/metal.png",
+		if (!renderer_->AddTexture(metal_texture_, "data/textures/pbr/metal/rusted_iron/metallic.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(fg_texture_, "data/textures/pbr/brdfLUT.png",
@@ -225,7 +225,7 @@ public:
 		prefilter_shader_->Uniform1i("u_texture", 0);
 		//prefilter_shader_->Uniform1f("u_cube_resolution", (float)prefilter_rt_->width());
 		prefilter_shader_->UniformMatrix4fv("u_projection", projection_matrix);
-		const int kMaxMipLevels = 5; // for 512x512 target
+		const int kMaxMipLevels = 5;
 		for (int mip = 0; mip < kMaxMipLevels; ++mip)
 		{
 			float roughness = (float)mip / (float)(kMaxMipLevels - 1);
