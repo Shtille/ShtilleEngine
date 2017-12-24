@@ -38,6 +38,7 @@
 	#include <TargetConditionals.h>
 	#if TARGET_IPHONE_SIMULATOR == 1
 	/* iOS in Xcode simulator */
+	#define TARGET_IOS
 	#elif TARGET_OS_IPHONE == 1
 	/* iOS on iPhone, iPad, etc. */
 	#define TARGET_IOS
