@@ -1,5 +1,5 @@
 #include "../../include/renderer/context.h"
-#include "common\platform.h"
+#include "../../../common/platform.h"
 
 #include <cstdio>
 

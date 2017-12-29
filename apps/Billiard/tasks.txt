@@ -48,7 +48,7 @@
 		By now we are skipping this phase.
 	- Misc
 		+ Count players' scores.
-		- Add skybox loading with a custom descriptor.
+		+ Add skybox loading with a custom descriptor.
 		+ Add a new (internal) format that we gonna save models in.
 		+ Add application that will convert models from one format to another.
 		+ Add loading of HDR textures.

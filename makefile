@@ -67,10 +67,11 @@ export INSTALL_PATH
 	#$(MAKE) -f apps/ProjectX/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/MeshConverter/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/Billiard/$(PLATFORM_SUFFIX).mk
+	#$(MAKE) -f apps/IBLBaker/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/PBR/$(PLATFORM_SUFFIX).mk
-all:
-	$(MAKE) -f apps/IBLBaker/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/ShtilleEarth/$(PLATFORM_SUFFIX).mk
+all:
+	$(MAKE) -f apps/Billiard/$(PLATFORM_SUFFIX).mk
 
 engine:
 	$(MAKE) -f $(ENGINE_MAKEFILE) IS_STATIC=YES

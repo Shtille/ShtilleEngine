@@ -46,7 +46,8 @@ install:
 	@$(RM) $(TARGET_FILE)
 
 $(TARGET_FILE): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $(TARGET_FILE) $^ $(LIBRARIES) $(LIBRARY_PATH)
+	@echo linking $(TARGET)
+	@$(CC) $(LDFLAGS) -o $(TARGET_FILE) $^ $(LIBRARIES) $(LIBRARY_PATH)
 
 %.o : %.cpp
 	@echo compiling file $<

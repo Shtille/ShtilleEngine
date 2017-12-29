@@ -91,6 +91,46 @@ static void FontUnloadingFunc(void * user_data, sht::graphics::Resource * resour
 	printf("unloading font\n");
 	renderer->DeleteFont(font);
 }
+static sht::graphics::Resource * CubemapLoadingFunc(void * user_data, sht::utility::ResourceID id)
+{
+	GameSceneManager * scene_manager = reinterpret_cast<GameSceneManager *>(user_data);
+	sht::graphics::Renderer * renderer = scene_manager->renderer();
+	sht::graphics::Texture * texture;
+	const char* filename = scene_manager->GetResourcePath(id);
+	printf("loading cubemap (id = %i): %s\n", id, filename);
+	const char * cubemap_formats[6] = {
+		"%s_ft.jpg",
+		"%s_bk.jpg",
+		"%s_up.jpg",
+		"%s_dn.jpg",
+		"%s_rt.jpg",
+		"%s_lf.jpg"
+	};
+	char ** cubemap_filenames;
+	cubemap_filenames = new char*[6];
+	for (int i = 0; i < 6; ++i)
+	{
+		size_t length = strlen(filename) + 7;
+		cubemap_filenames[i] = new char[length + 1];
+		sprintf(cubemap_filenames[i], cubemap_formats[i], filename);
+		cubemap_filenames[i][length] = '\0';
+	}
+	renderer->AddTextureCubemap(texture, const_cast<const char**>(cubemap_filenames));
+	if (!texture)
+		printf("cubemap load failed\n");
+	for (int i = 0; i < 6; ++i)
+		delete[] cubemap_filenames[i];
+	delete[] cubemap_filenames;
+	return texture;
+}
+static void CubemapUnloadingFunc(void * user_data, sht::graphics::Resource * resource)
+{
+	GameSceneManager * scene_manager = reinterpret_cast<GameSceneManager *>(user_data);
+	sht::graphics::Renderer * renderer = scene_manager->renderer();
+	sht::graphics::Texture * texture = dynamic_cast<sht::graphics::Texture *>(resource);
+	printf("unloading cubemap\n");
+	renderer->DeleteTexture(texture);
+}
 
 class IniFileReader final : public sht::utility::IniFileReaderInterface {
 public:
@@ -99,6 +139,7 @@ public:
 		kShaders,
 		kModels,
 		kFonts,
+		kCubemaps,
 		kUnknown
 	};
 
@@ -117,6 +158,8 @@ public:
 			section_type_ = kModels;
 		else if (strcmp(section_name, "fonts") == 0)
 			section_type_ = kFonts;
+		else if (strcmp(section_name, "cubemaps") == 0)
+			section_type_ = kCubemaps;
 		else
 			section_type_ = kUnknown;
 	}
@@ -139,6 +182,9 @@ public:
 			break;
 		case kFonts:
 			id = resource_manager->RegisterResource(string_id, user_data, FontLoadingFunc, FontUnloadingFunc);
+			break;
+		case kCubemaps:
+			id = resource_manager->RegisterResource(string_id, user_data, CubemapLoadingFunc, CubemapUnloadingFunc);
 			break;
 		default:
 			// Unrecognized section
@@ -171,7 +217,7 @@ GameSceneManager::GameSceneManager(sht::graphics::Renderer * renderer)
 	// Make loading scene to load with menu scene
 	menu_scene_->SetNextScene(loading_scene_);
 
-	RequestImmediateTransition(menu_scene_); // logo_scene_
+	RequestImmediateTransition(logo_scene_); // logo_scene_
 }
 GameSceneManager::~GameSceneManager()
 {
