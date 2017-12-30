@@ -48,11 +48,11 @@ public:
 			Application::ToggleFullscreen();
 		}
 
-		// Update scene manager
-		scene_manager_->Update();
-
 		// Update matrices
 		UpdateProjectionMatrix();
+
+		// Update scene manager
+		scene_manager_->Update();
 	}
 	void UpdatePhysics(float sec)
 	{

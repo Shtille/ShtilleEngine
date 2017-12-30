@@ -1,7 +1,6 @@
 #include "logo_scene.h"
 
 #include "graphics/include/model/skybox_quad_model.h"
-#include "graphics/include/model/sphere_model.h" // temp
 #include "utility/include/event.h"
 
 namespace {
@@ -12,25 +11,20 @@ LogoScene::LogoScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 : Scene(renderer)
 , event_listener_(event_listener)
 , opacity_(0.0f)
-, text_shader_(nullptr)
 , irradiance_rt_(nullptr)
 , prefilter_rt_(nullptr)
 , quad_(nullptr)
-, font_(nullptr)
-, fps_text_(nullptr)
 {
 	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
 	timer_ = time_manager->AddTimer(kTimerInterval);
 
 	// Register resources to load automatically on scene change
-	text_shader_id_			= AddResourceIdByName(ConstexprStringId("shader_text"));
 	logotype_shader_id_		= AddResourceIdByName(ConstexprStringId("shader_logotype"));
 	irradiance_shader_id_	= AddResourceIdByName(ConstexprStringId("shader_irradiance"));
 	prefilter_shader_id_	= AddResourceIdByName(ConstexprStringId("shader_prefilter"));
 	fg_texture_id_			= AddResourceIdByName(ConstexprStringId("texture_fg"));
 	env_texture_id_			= AddResourceIdByName(ConstexprStringId("texture_env"));
-	font_id_				= AddResourceIdByName(ConstexprStringId("font_good_dog"));
-	logotype_mesh_id_		= AddResourceIdByName(ConstexprStringId("mesh_ball"));
+	logotype_mesh_id_		= AddResourceIdByName(ConstexprStringId("mesh_logotype"));
 }
 LogoScene::~LogoScene()
 {
@@ -89,50 +83,30 @@ void LogoScene::RenderLogotype()
 	renderer_->ChangeTexture(prefilter_rt_, 1);
 	renderer_->ChangeTexture(fg_texture_, 2);
 
-	renderer_->PushMatrix();
-	//renderer_->MultMatrix(balls_[i]->matrix());
 	logotype_shader_->Bind();
 	logotype_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
 	logotype_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 	logotype_shader_->Uniform1f("u_opacity", opacity_);
-	//logotype_mesh_->Render();
-	sphere_->Render();
+	logotype_mesh_->Render();
 	logotype_shader_->Unbind();
-	renderer_->PopMatrix();
 
 	renderer_->ChangeTexture(nullptr, 2);
 	renderer_->ChangeTexture(nullptr, 1);
 	renderer_->ChangeTexture(nullptr, 0);
 }
-void LogoScene::RenderInterface()
-{
-	renderer_->DisableDepthTest();
-
-	// Draw FPS
-    text_shader_->Bind();
-    text_shader_->Uniform1i("u_texture", 0);
-    text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, opacity_);
-    fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"logotype");
-    fps_text_->Render();
-
-    renderer_->EnableDepthTest();
-}
 void LogoScene::Render()
 {
 	RenderLogotype();
-	RenderInterface();
 }
 void LogoScene::Load()
 {
 	// Link resources IDs with its resource pointers
 	sht::utility::ResourceManager * resource_manager = sht::utility::ResourceManager::GetInstance();
-	text_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(text_shader_id_));
 	logotype_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(logotype_shader_id_));
 	irradiance_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(irradiance_shader_id_));
 	prefilter_shader_ = dynamic_cast<sht::graphics::Shader *>(resource_manager->GetResource(prefilter_shader_id_));
 	fg_texture_ = dynamic_cast<sht::graphics::Texture *>(resource_manager->GetResource(fg_texture_id_));
 	env_texture_ = dynamic_cast<sht::graphics::Texture *>(resource_manager->GetResource(env_texture_id_));
-	font_ = dynamic_cast<sht::graphics::Font *>(resource_manager->GetResource(font_id_));
 	logotype_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(logotype_mesh_id_));
 
 	// Screen quad model
@@ -141,26 +115,17 @@ void LogoScene::Load()
 	quad_->Create();
 	quad_->MakeRenderable();
 
-	// Sphere model
-	sphere_ = new sht::graphics::SphereModel(renderer_, 128, 64);
-	sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-	sphere_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-	sphere_->Create();
-	sphere_->MakeRenderable();
-
 	// Render targets
 	renderer_->CreateTextureCubemap(irradiance_rt_, 32, 32, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kLinear);
 	renderer_->CreateTextureCubemap(prefilter_rt_, 512, 512, sht::graphics::Image::Format::kRGB8, sht::graphics::Texture::Filter::kTrilinear);
 	renderer_->GenerateMipmap(prefilter_rt_);
 
-	fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
-
 	// Create mesh
-	// logotype_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-	// logotype_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-	// logotype_mesh_->MakeRenderable();
+	logotype_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+	logotype_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+	logotype_mesh_->MakeRenderable();
 
-	camera_position_.Set(5.0f, 5.0f, 5.0f);
+	camera_position_.Set(0.0f, 0.0f, 100.0f);
 	logotype_position_.Set(0.0f, 0.0f, 0.0f);
 	renderer_->SetViewMatrix(sht::math::LookAt(camera_position_, logotype_position_));
 
@@ -170,20 +135,10 @@ void LogoScene::Load()
 }
 void LogoScene::Unload()
 {
-	if (fps_text_)
-	{
-		delete fps_text_;
-		fps_text_ = nullptr;
-	}
 	if (quad_)
 	{
 		delete quad_;
 		quad_ = nullptr;
-	}
-	if (sphere_)
-	{
-		delete sphere_;
-		sphere_ = nullptr;
 	}
 	if (irradiance_rt_)
 	{

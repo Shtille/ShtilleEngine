@@ -2,6 +2,9 @@
 #ifndef __LOGO_SCENE_H__
 #define __LOGO_SCENE_H__
 
+#include "animation.h"
+#include "pose_listener.h"
+
 #include "utility/include/scene/scene.h"
 #include "utility/include/event_listener.h"
 #include "graphics/include/renderer/text.h"
@@ -24,7 +27,6 @@ private:
 	void BindShaderConstants();
 	void BindShaderVariables();
 	void RenderLogotype();
-	void RenderInterface();
 	void BakeCubemaps();
 
 	sht::utility::EventListenerInterface * event_listener_;
@@ -34,16 +36,13 @@ private:
 	vec3 camera_position_;
 	vec3 logotype_position_;
 
-	sht::utility::ResourceID text_shader_id_;
 	sht::utility::ResourceID logotype_shader_id_;
 	sht::utility::ResourceID irradiance_shader_id_;
 	sht::utility::ResourceID prefilter_shader_id_;
 	sht::utility::ResourceID fg_texture_id_;
 	sht::utility::ResourceID env_texture_id_;
-	sht::utility::ResourceID font_id_;
 	sht::utility::ResourceID logotype_mesh_id_;
 
-	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * logotype_shader_;
 	sht::graphics::Shader * irradiance_shader_;
 	sht::graphics::Shader * prefilter_shader_;
@@ -54,11 +53,6 @@ private:
 	sht::graphics::Texture * prefilter_rt_;
 
 	sht::graphics::Model * quad_;
-	sht::graphics::Model * sphere_;
-
-	sht::graphics::Font * font_;
-
-	sht::graphics::DynamicText * fps_text_;
 
 	sht::graphics::ComplexMesh * logotype_mesh_;
 };

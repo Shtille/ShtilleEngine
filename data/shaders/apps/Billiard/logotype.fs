@@ -197,5 +197,4 @@ void main()
 	color += GetIBLContribution(pbr_inputs, n, reflection);
 
 	out_color = vec4(pow(color, vec3(1.0/GAMMA)) * u_opacity, base_color.a);
-	out_color = vec4(1.0);
 }
