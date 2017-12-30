@@ -10,7 +10,6 @@
 #include "graphics/include/renderer/text.h"
 #include "graphics/include/model/model.h"
 #include "graphics/include/model/complex_mesh.h"
-#include "system/include/time/time_manager.h"
 
 class LogoScene : public sht::utility::Scene {
 public:
@@ -25,12 +24,11 @@ public:
 
 private:
 	void BindShaderConstants();
-	void BindShaderVariables();
 	void RenderLogotype();
 	void BakeCubemaps();
 
 	sht::utility::EventListenerInterface * event_listener_;
-	sht::system::Timer * timer_;
+	float time_;
 	float opacity_; //!< opacity for rendering
 	sht::math::Matrix4 projection_view_matrix_;
 	vec3 camera_position_;

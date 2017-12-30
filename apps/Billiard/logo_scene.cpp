@@ -2,22 +2,17 @@
 
 #include "graphics/include/model/skybox_quad_model.h"
 #include "utility/include/event.h"
-
-namespace {
-	const float kTimerInterval = 7.0f;
-}
+#include "system/include/time/time_manager.h"
 
 LogoScene::LogoScene(sht::graphics::Renderer * renderer, sht::utility::EventListenerInterface * event_listener)
 : Scene(renderer)
 , event_listener_(event_listener)
+, time_(0.0f)
 , opacity_(0.0f)
 , irradiance_rt_(nullptr)
 , prefilter_rt_(nullptr)
 , quad_(nullptr)
 {
-	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
-	timer_ = time_manager->AddTimer(kTimerInterval);
-
 	// Register resources to load automatically on scene change
 	logotype_shader_id_		= AddResourceIdByName(ConstexprStringId("shader_logotype"));
 	irradiance_shader_id_	= AddResourceIdByName(ConstexprStringId("shader_irradiance"));
@@ -29,8 +24,6 @@ LogoScene::LogoScene(sht::graphics::Renderer * renderer, sht::utility::EventList
 LogoScene::~LogoScene()
 {
 	Unload();
-	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
-	time_manager->RemoveTimer(timer_);
 }
 void LogoScene::BindShaderConstants()
 {
@@ -47,35 +40,33 @@ void LogoScene::BindShaderConstants()
 	logotype_shader_->Uniform1f("u_metallic", 0.9f);
 	logotype_shader_->Unbind();
 }
-void LogoScene::BindShaderVariables()
-{
-}
 void LogoScene::Update()
 {
 	// Set opacity value
+	const float kTimerInterval = 7.0f;
 	const float kFadeInInterval = 2.0f;
 	const float kFadeOutInterval = 2.0f;
-	if (timer_->time() < kFadeInInterval)
-		opacity_ = timer_->time() / kFadeInInterval;
-	else if (timer_->time() >= kFadeInInterval && timer_->time() < kTimerInterval - kFadeOutInterval)
+	if (time_ < kFadeInInterval)
+		opacity_ = time_ / kFadeInInterval;
+	else if (time_ >= kFadeInInterval && time_ < kTimerInterval - kFadeOutInterval)
 		opacity_ = 1.0f;
-	else if (timer_->time() >= kTimerInterval - kFadeOutInterval && timer_->time() < kTimerInterval)
-		opacity_ = (kTimerInterval - timer_->time()) / kFadeOutInterval;
+	else if (time_ >= kTimerInterval - kFadeOutInterval && time_ < kTimerInterval)
+		opacity_ = (kTimerInterval - time_) / kFadeOutInterval;
 	else
 		opacity_ = 0.0f;
 
-	if (!timer_->enabled())
-		timer_->Start();
-	if (timer_->HasExpired())
+	if (time_ >= kTimerInterval)
 	{
-		timer_->Stop();
+		time_ = 0.0f;
 		sht::utility::Event event(ConstexprStringId("logotype_scene_finished"));
 		event_listener_->OnEvent(&event);
 	}
+	// Finally
+	sht::system::TimeManager * time_manager = sht::system::TimeManager::GetInstance();
+	float frame_time = time_manager->GetFixedFrameTime();
+	time_ += frame_time;
 
 	projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
-
-	BindShaderVariables();
 }
 void LogoScene::RenderLogotype()
 {

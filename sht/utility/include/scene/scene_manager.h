@@ -41,7 +41,7 @@ namespace sht {
 
 		private:
 			void UpdateTransition();
-			void ImmediateTransition();
+			bool ImmediateTransition();
 			bool DeferredTransition();
 
 			Scene * current_scene_;
@@ -49,7 +49,9 @@ namespace sht {
 			Scene * loading_scene_;
 			SceneTransitionListenerInterface * listener_;
 			int transition_phase_;
+			int render_count_;								//!< number of render calls after transition
 			Transition transition_type_;
+			bool transition_finalization_;					//!< whether we need to do some render calls after transition
 		};
 
 	} // namespace utility
