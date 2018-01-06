@@ -318,6 +318,9 @@ namespace sht {
 			glTexParameteri(texture->target_, GL_TEXTURE_WRAP_S, GL_CLAMP);
 			glTexParameteri(texture->target_, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
+			glTexParameteri(texture->target_, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+			glTexParameteri(texture->target_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+
 			// create texture
 			glTexImage2D(texture->target_, // target
 				0, // mipmap level
@@ -445,7 +448,7 @@ namespace sht {
 		}
 		void OpenGlRenderer::AddRenderDepthStencil(Texture* &texture, int w, int h, u32 depthSize, u32 stencilSize)
 		{
-			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE && h <= GL_MAX_RENDERBUFFER_SIZE && depthSize > 0 && stencilSize > 0);
+			assert(w > 0 && h > 0 && w <= GL_MAX_RENDERBUFFER_SIZE && h <= GL_MAX_RENDERBUFFER_SIZE && (depthSize > 0 || stencilSize > 0));
 
 			texture = new OpenGlTexture();
 			texture->width_ = w;
@@ -604,7 +607,7 @@ namespace sht {
 				glViewport(0, 0, tex->width_, tex->height_);
 			}
 
-			//CheckFrameBufferStatus();
+			context_->CheckFrameBufferStatus();
 		}
 		void OpenGlRenderer::ChangeRenderTargetsToCube(u8 nTargets, Texture* *colorRTs, Texture* depthRT, int face, int level)
 		{
@@ -666,7 +669,7 @@ namespace sht {
 				glViewport(0, 0, tex->width_ >> level, tex->height_ >> level);
 			}
 
-			//CheckFrameBufferStatus();
+			context_->CheckFrameBufferStatus();
 		}
 		void OpenGlRenderer::GenerateMipmap(Texture* texture)
 		{
