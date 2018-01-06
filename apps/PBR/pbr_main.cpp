@@ -1,6 +1,6 @@
 #include "../../sht/include/sht.h"
 #include "../../sht/graphics/include/model/sphere_model.h"
-#include "../../sht/graphics/include/model/skybox_quad_model.h"
+#include "../../sht/graphics/include/model/screen_quad_model.h"
 #include "../../sht/graphics/include/renderer/text.h"
 #include "../../sht/utility/include/camera.h"
 #include <cmath>
@@ -99,7 +99,7 @@ public:
 			return false;
 
 		// Screen quad model
-		quad_ = new sht::graphics::SkyboxQuadModel(renderer_);
+		quad_ = new sht::graphics::ScreenQuadModel(renderer_);
 		quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 		quad_->Create();
 		if (!quad_->MakeRenderable())

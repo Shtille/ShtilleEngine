@@ -444,7 +444,7 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\image\image_rescale.cpp">
       <Filter>sht\graphics\src\image</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\sht\graphics\src\model\skybox_quad_model.cpp">
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\screen_quad_model.cpp">
       <Filter>sht\graphics\src\model</Filter>
     </ClCompile>
   </ItemGroup>
@@ -815,7 +815,7 @@
     <ClInclude Include="..\..\..\..\sht\graphics\include\renderer\cubemap_fill_type.h">
       <Filter>sht\graphics\include\renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\sht\graphics\include\model\skybox_quad_model.h">
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\screen_quad_model.h">
       <Filter>sht\graphics\include\model</Filter>
     </ClInclude>
   </ItemGroup>

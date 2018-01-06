@@ -7,10 +7,10 @@
 namespace sht {
     namespace graphics {
         
-        class SkyboxQuadModel final : public Model {
+        class ScreenQuadModel final : public Model {
         public:
-            SkyboxQuadModel(Renderer * renderer);
-            ~SkyboxQuadModel();
+            ScreenQuadModel(Renderer * renderer);
+            ~ScreenQuadModel();
             
             void Create();
             

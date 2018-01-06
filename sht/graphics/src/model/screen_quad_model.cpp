@@ -1,17 +1,17 @@
-#include "../../include/model/skybox_quad_model.h"
+#include "../../include/model/screen_quad_model.h"
 
 namespace sht {
     namespace graphics {
         
-        SkyboxQuadModel::SkyboxQuadModel(Renderer * renderer)
+        ScreenQuadModel::ScreenQuadModel(Renderer * renderer)
         : Model(renderer)
         {
         }
-        SkyboxQuadModel::~SkyboxQuadModel()
+        ScreenQuadModel::~ScreenQuadModel()
         {
             
         }
-        void SkyboxQuadModel::Create()
+        void ScreenQuadModel::Create()
         {
             vertices_.resize(4);
             vertices_[0].position.Set(-1.0f,  -1.0f,  0.0f);

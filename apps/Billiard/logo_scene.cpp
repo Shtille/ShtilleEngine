@@ -1,6 +1,6 @@
 #include "logo_scene.h"
 
-#include "graphics/include/model/skybox_quad_model.h"
+#include "graphics/include/model/screen_quad_model.h"
 #include "utility/include/event.h"
 #include "system/include/time/time_manager.h"
 
@@ -101,7 +101,7 @@ void LogoScene::Load()
 	logotype_mesh_ = dynamic_cast<sht::graphics::ComplexMesh *>(resource_manager->GetResource(logotype_mesh_id_));
 
 	// Screen quad model
-	quad_ = new sht::graphics::SkyboxQuadModel(renderer_);
+	quad_ = new sht::graphics::ScreenQuadModel(renderer_);
 	quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
 	quad_->Create();
 	quad_->MakeRenderable();

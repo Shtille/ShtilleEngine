@@ -27,7 +27,7 @@
 		+ Add another shader for cue in disabled state.
 		- Add textures.
 		- Add realistic lighting model.
-		- Add logotype rendering (need skybox and logotype model).
+		+ Add logotype rendering (need skybox and logotype model).
 	- Controls
 		+ Make universal controls for mobile and desktop applications.
 			+ Slider to control cue rotation angle.
