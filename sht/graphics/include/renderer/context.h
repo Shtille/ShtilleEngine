@@ -58,6 +58,7 @@ namespace sht {
             void ErrorHandler(const char *message);
             
             virtual bool CheckForErrors() = 0;
+			virtual bool CheckFrameBufferStatus() = 0;
             
             virtual void ClearColor(f32 r, f32 g, f32 b, f32 a) = 0;
             virtual void ClearColorBuffer() = 0;

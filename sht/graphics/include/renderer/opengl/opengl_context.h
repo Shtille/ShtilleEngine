@@ -13,6 +13,7 @@ namespace sht {
             ~OpenGlContext();
             
             bool CheckForErrors();
+			bool CheckFrameBufferStatus();
             
             void ClearColor(f32 r, f32 g, f32 b, f32 a);
             void ClearColorBuffer();
@@ -92,7 +93,6 @@ namespace sht {
             
         protected:
             void FillTables();
-            bool CheckFrameBufferStatus();
         };
         
     }
