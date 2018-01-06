@@ -31,15 +31,19 @@ namespace sht {
 			case Image::Format::kI8:
 			case Image::Format::kI16:
 			case Image::Format::kI32:
-				return GL_RED; // ?
+				return GL_INTENSITY;
 			case Image::Format::kL8:
 			case Image::Format::kL16:
 			case Image::Format::kL32:
-				return GL_RED; // ?
+				return GL_LUMINANCE;
 			case Image::Format::kLA8:
 			case Image::Format::kLA16:
 			case Image::Format::kLA32:
-				return GL_RG; // ?
+				return GL_LUMINANCE_ALPHA;
+			case Image::Format::kDepth16:
+			case Image::Format::kDepth24:
+			case Image::Format::kDepth32:
+				return GL_DEPTH_COMPONENT;
 			default:
 				return GL_RGB;
 			}
@@ -74,6 +78,9 @@ namespace sht {
 			case Image::Format::kI32:
 			case Image::Format::kL32:
 			case Image::Format::kLA32:
+			case Image::Format::kDepth16:
+			case Image::Format::kDepth24:
+			case Image::Format::kDepth32:
 				return GL_FLOAT;
 			default:
 				return GL_UNSIGNED_BYTE;
