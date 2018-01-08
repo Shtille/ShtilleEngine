@@ -178,7 +178,7 @@ public:
 	{
 		// Generate matrix for shadows
 		// Ortho matrix is used for directional light sources and perspective for spot ones.
-		float znear = 1.0f;
+		float znear = light_distance_ - 2.0f;
 		float zfar = light_distance_ + 2.0f;
 		sht::math::Matrix4 depth_projection = sht::math::PerspectiveMatrix(45.0f, 1, 1, znear, zfar);//sht::math::OrthoMatrix()
 		sht::math::Matrix4 depth_view = sht::math::LookAt(light_position_, vec3(0.0f));
