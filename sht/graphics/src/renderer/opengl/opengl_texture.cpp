@@ -31,15 +31,15 @@ namespace sht {
 			case Image::Format::kI8:
 			case Image::Format::kI16:
 			case Image::Format::kI32:
-				return GL_INTENSITY;
+				return GL_RED;
 			case Image::Format::kL8:
 			case Image::Format::kL16:
 			case Image::Format::kL32:
-				return GL_LUMINANCE;
+				return GL_RED;
 			case Image::Format::kLA8:
 			case Image::Format::kLA16:
 			case Image::Format::kLA32:
-				return GL_LUMINANCE_ALPHA;
+				return GL_RG;
 			case Image::Format::kDepth16:
 			case Image::Format::kDepth24:
 			case Image::Format::kDepth32:

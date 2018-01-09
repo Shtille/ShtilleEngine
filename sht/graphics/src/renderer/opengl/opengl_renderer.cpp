@@ -319,7 +319,7 @@ namespace sht {
 			glTexParameteri(texture->target_, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 			glTexParameteri(texture->target_, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-			glTexParameteri(texture->target_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+			glTexParameteri(texture->target_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
 
 			// create texture
 			glTexImage2D(texture->target_, // target
