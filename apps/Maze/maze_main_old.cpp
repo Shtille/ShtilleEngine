@@ -9,10 +9,15 @@
 #include "../../sht/utility/include/camera.h"
 #include "../../sht/physics/include/physics_engine.h"
 #include "../../sht/physics/include/physics_object.h"
+#include "../../sht/utility/include/ui/slider.h"
 
 #include <cmath>
 
 #define APP_NAME MazeApp
+
+namespace {
+	const float kMaxAngle = 0.5f;
+}
 
 class APP_NAME : public sht::OpenGlApplication
 {
@@ -27,9 +32,7 @@ public:
 	, ball_(nullptr)
 	, maze_(nullptr)
 	, maze_angle_x_(0.0f)
-	, maze_rotation_velocity_(0.1f)
-	, maze_rotation_acceleration_(0.0f)
-	, maze_rotation_started_(false)
+	, maze_angle_y_(0.0f)
 	, need_update_projection_matrix_(true)
 	{
 	}
@@ -190,6 +193,8 @@ public:
 		if (!maze_mesh_->MakeRenderable())
 			return false;
 
+		CreateUI();
+
 		// Finally bind constants
 		BindShaderConstants();
 
@@ -199,6 +204,8 @@ public:
 	}
 	void Unload() final
 	{
+		if (ui_root_)
+			delete ui_root_;
 		if (physics_)
 			delete physics_;
 		if (camera_manager_)
@@ -223,42 +230,8 @@ public:
 
 		camera_manager_->Update(kFrameTime);
 
-		{
-			bool& key_active = keys_.key_active(sht::PublicKey::kSpace);
-			if (keys_.key_down(sht::PublicKey::kSpace) && !key_active)
-			{
-				key_active = true;
-				maze_rotation_started_ = false;
-				maze_rotation_acceleration_ = 0.0f;
-				maze_rotation_velocity_ = 0.0f;
-			}
-		}
-		{
-			bool& key_active = keys_.key_active(sht::PublicKey::kA);
-			if (keys_.key_down(sht::PublicKey::kA) && !key_active)
-			{
-				key_active = true;
-				maze_rotation_started_ = true;
-				maze_rotation_acceleration_ += 0.1f;
-			}
-		}
-		{
-			bool& key_active = keys_.key_active(sht::PublicKey::kD);
-			if (keys_.key_down(sht::PublicKey::kD) && !key_active)
-			{
-				key_active = true;
-				maze_rotation_started_ = true;
-				maze_rotation_acceleration_ -= 0.1f;
-			}
-		}
-
-		// Update rotation
-		if (maze_rotation_started_)
-		{
-			maze_rotation_velocity_ += maze_rotation_acceleration_ * kFrameTime;
-			maze_angle_x_ += maze_rotation_velocity_ * kFrameTime;
-			UpdateMazeRotation();
-		}
+		// Update UI
+		ui_root_->UpdateAll(kFrameTime);
 
 		// Update matrices
 		renderer_->SetViewMatrix(camera_manager_->view_matrix());
@@ -408,6 +381,10 @@ public:
 		text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
 		fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
 		fps_text_->Render();
+
+		// Render UI
+		gui_shader_->Bind();
+		ui_root_->RenderAll();
 		
 		renderer_->EnableDepthTest();
 	}
@@ -421,6 +398,16 @@ public:
 		RenderEnvironment();
 		RenderObjects();
 		RenderInterface();
+	}
+	void OnHorizontalSliderMoved()
+	{
+		maze_angle_x_ = (horizontal_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
+		UpdateMazeMatrix();
+	}
+	void OnVerticalSliderMoved()
+	{
+		maze_angle_y_ = (vertical_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
+		UpdateMazeMatrix();
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
 	{
@@ -455,12 +442,25 @@ public:
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{
+		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
+		horizontal_slider_->OnTouchDown(position);
+		vertical_slider_->OnTouchDown(position);
 	}
 	void OnMouseUp(sht::MouseButton button, int modifiers) final
 	{
+		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
+		horizontal_slider_->OnTouchUp(position);
+		vertical_slider_->OnTouchUp(position);
 	}
 	void OnMouseMove() final
 	{
+		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
+		horizontal_slider_->OnTouchMove(position);
+		if (horizontal_slider_->is_touched())
+			OnHorizontalSliderMoved();
+		vertical_slider_->OnTouchMove(position);
+		if (vertical_slider_->is_touched())
+			OnVerticalSliderMoved();
 	}
 	void OnSize(int w, int h) final
 	{
@@ -468,11 +468,47 @@ public:
 		// To have correct perspective when resizing
 		need_update_projection_matrix_ = true;
 	}
-	void UpdateMazeRotation()
+	void UpdateMazeMatrix()
 	{
-		float cx = cosf(maze_angle_x_);
-		float sx = sinf(maze_angle_x_);
-		maze_->SetTransform(maze_matrix_ * sht::math::Rotate4(cx, sx, 1.0f, 0.0f, 0.0f));
+		float cos_x = cosf(maze_angle_x_);
+		float sin_x = sinf(maze_angle_x_);
+		sht::math::Matrix4 rotation_x = sht::math::Rotate4(cos_x, sin_x, 1.0f, 0.0f, 0.0f);
+		float cos_y = cosf(maze_angle_y_);
+		float sin_y = sinf(maze_angle_y_);
+		sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 1.0f, 0.0f, 0.0f);
+		maze_->SetTransform(maze_matrix_ * rotation_x * rotation_y);
+	}
+	void CreateUI()
+	{
+		ui_root_ = new sht::utility::ui::Widget();
+
+		// ----- User interaction UI -----
+		const vec4 kBarColor(0.5f, 0.5f, 0.5f, 0.5f);
+		const vec4 kPinColorNormal(1.0f, 1.0f, 1.0f, 1.0f);
+		const vec4 kPinColorTouch(1.0f, 1.0f, 0.0f, 1.0f);
+
+		horizontal_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
+			kBarColor, // vec4 bar_color
+			kPinColorNormal, // vec4 pin_color_normal
+			kPinColorTouch, // vec4 pin_color_touch
+			0.0f, // f32 x
+			0.0f, // f32 y
+			renderer_->aspect_ratio(), // f32 width
+			0.2f, // f32 height
+			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+			);
+		ui_root_->AttachWidget(horizontal_slider_);
+		vertical_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
+			kBarColor, // vec4 bar_color
+			kPinColorNormal, // vec4 pin_color_normal
+			kPinColorTouch, // vec4 pin_color_touch
+			0.0f, // f32 x
+			0.2f, // f32 y
+			0.2f, // f32 width
+			0.8f, // f32 height
+			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+			);
+		ui_root_->AttachWidget(vertical_slider_);
 	}
 	void UpdateProjectionMatrix()
 	{
@@ -515,15 +551,17 @@ private:
 	sht::physics::Engine * physics_;
 	sht::physics::Object * ball_;
 	sht::physics::Object * maze_;
+
+	sht::utility::ui::Widget * ui_root_;
+	sht::utility::ui::SliderColored * horizontal_slider_;
+	sht::utility::ui::SliderColored * vertical_slider_;
 	
 	sht::math::Matrix4 projection_view_matrix_;
 	sht::math::Matrix4 maze_matrix_;
 
 	float maze_angle_x_;
-	float maze_rotation_velocity_;
-	float maze_rotation_acceleration_;
-	
-	bool maze_rotation_started_;
+	float maze_angle_y_;
+
 	bool need_update_projection_matrix_;
 };
 

@@ -71,7 +71,7 @@ export INSTALL_PATH
 	#$(MAKE) -f apps/PBR/$(PLATFORM_SUFFIX).mk
 	#$(MAKE) -f apps/ShtilleEarth/$(PLATFORM_SUFFIX).mk
 all:
-	$(MAKE) -f apps/Billiard/$(PLATFORM_SUFFIX).mk
+	$(MAKE) -f apps/Maze/$(PLATFORM_SUFFIX).mk
 
 engine:
 	$(MAKE) -f $(ENGINE_MAKEFILE) IS_STATIC=YES
