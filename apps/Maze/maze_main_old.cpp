@@ -33,6 +33,9 @@ public:
 	, maze_(nullptr)
 	, maze_angle_x_(0.0f)
 	, maze_angle_y_(0.0f)
+	, camera_distance_(10.0f)
+	, camera_alpha_(0.0f)
+	, camera_theta_(0.5f)
 	, need_update_projection_matrix_(true)
 	{
 	}
@@ -51,7 +54,7 @@ public:
 
 		object_shader_->Bind();
 		object_shader_->Uniform3f("u_light.color", 1.0f, 1.0f, 1.0f);
-		object_shader_->Uniform3f("u_light.direction", 1.0f, 1.0f, -1.0f);
+		object_shader_->Uniform3f("u_light.direction", 0.825f, 0.564f, 0.0f);
 
 		object_shader_->Uniform1i("u_diffuse_env_sampler", 0);
 		object_shader_->Uniform1i("u_specular_env_sampler", 1);
@@ -159,9 +162,6 @@ public:
 		if (!fps_text_)
 			return false;
 
-		camera_manager_ = new sht::utility::CameraManager();
-		camera_manager_->MakeFree(vec3(10.0f), vec3(0.0f));
-
 		// Create physics
 		physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
 		//physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
@@ -172,7 +172,7 @@ public:
 			ball_->SetFriction(0.28f);
 			ball_->SetRollingFriction(0.2f);
 			ball_->SetSpinningFriction(0.5f);
-			ball_->SetRestitution(0.3f);
+			ball_->SetRestitution(0.0f);
 		}
 		{
 			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
@@ -192,6 +192,11 @@ public:
 		//maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
 		if (!maze_mesh_->MakeRenderable())
 			return false;
+
+		// Create camera
+		camera_manager_ = new sht::utility::CameraManager();
+		//camera_manager_->MakeFree(vec3(10.0f), vec3(0.0f));
+		UpdateCamera();
 
 		CreateUI();
 
@@ -411,6 +416,7 @@ public:
 	}
 	void OnKeyDown(sht::PublicKey key, int mods) final
 	{
+		const float kDeltaAngle = 0.1f;
 		if (key == sht::PublicKey::kF)
 		{
 			ToggleFullscreen();
@@ -425,19 +431,23 @@ public:
 		}
 		else if (key == sht::PublicKey::kLeft)
 		{
-			camera_manager_->RotateAroundTargetInY(0.1f);
+			camera_alpha_ += kDeltaAngle;
+			UpdateCamera();
 		}
 		else if (key == sht::PublicKey::kRight)
 		{
-			camera_manager_->RotateAroundTargetInY(-0.1f);
+			camera_alpha_ -= kDeltaAngle;
+			UpdateCamera();
 		}
 		else if (key == sht::PublicKey::kUp)
 		{
-			camera_manager_->RotateAroundTargetInZ(0.1f);
+			camera_theta_ += kDeltaAngle;
+			UpdateCamera();
 		}
 		else if (key == sht::PublicKey::kDown)
 		{
-			camera_manager_->RotateAroundTargetInZ(-0.1f);
+			camera_theta_ -= kDeltaAngle;
+			UpdateCamera();
 		}
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
@@ -475,7 +485,7 @@ public:
 		sht::math::Matrix4 rotation_x = sht::math::Rotate4(cos_x, sin_x, 1.0f, 0.0f, 0.0f);
 		float cos_y = cosf(maze_angle_y_);
 		float sin_y = sinf(maze_angle_y_);
-		sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 1.0f, 0.0f, 0.0f);
+		sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 0.0f, 0.0f, 1.0f);
 		maze_->SetTransform(maze_matrix_ * rotation_x * rotation_y);
 	}
 	void CreateUI()
@@ -497,6 +507,7 @@ public:
 			0.2f, // f32 height
 			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 			);
+		horizontal_slider_->SetPinPosition(0.5f);
 		ui_root_->AttachWidget(horizontal_slider_);
 		vertical_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
 			kBarColor, // vec4 bar_color
@@ -508,7 +519,15 @@ public:
 			0.8f, // f32 height
 			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 			);
+		vertical_slider_->SetPinPosition(0.5f);
 		ui_root_->AttachWidget(vertical_slider_);
+	}
+	void UpdateCamera()
+	{
+		quat horizontal(vec3(0.0f, -1.0f, 0.0f), camera_alpha_);
+		quat vertical(vec3(0.0f, 0.0f, -1.0f), camera_theta_);
+		quat orient(horizontal * vertical);
+		camera_manager_->MakeAttached(orient, ball_->GetPositionPtr(), camera_distance_);
 	}
 	void UpdateProjectionMatrix()
 	{
@@ -561,6 +580,9 @@ private:
 
 	float maze_angle_x_;
 	float maze_angle_y_;
+	float camera_distance_;
+	float camera_alpha_;
+	float camera_theta_;
 
 	bool need_update_projection_matrix_;
 };
