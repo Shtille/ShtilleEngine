@@ -13,10 +13,15 @@
 
 #include <cmath>
 
+// #define ROTATING_PLATFORM
+
 #define APP_NAME MazeApp
 
 namespace {
+#ifdef ROTATING_PLATFORM
 	const float kMaxAngle = 0.5f;
+#endif
+	const float kBallRadius = 1.0f;
 }
 
 class APP_NAME : public sht::OpenGlApplication
@@ -31,11 +36,23 @@ public:
 	, physics_(nullptr)
 	, ball_(nullptr)
 	, maze_(nullptr)
+#ifdef ROTATING_PLATFORM
+	, target_angle_x_(0.0f)
+	, target_angle_y_(0.0f)
+	, velocity_x_(0.0f)
+	, velocity_y_(0.0f)
+	, acceleration_x_(0.0f)
+	, acceleration_y_(0.0f)
 	, maze_angle_x_(0.0f)
 	, maze_angle_y_(0.0f)
+#endif
 	, camera_distance_(10.0f)
 	, camera_alpha_(0.0f)
 	, camera_theta_(0.5f)
+#ifdef ROTATING_PLATFORM
+	, update_rotation_x_(false)
+	, update_rotation_y_(false)
+#endif
 	, need_update_projection_matrix_(true)
 	{
 	}
@@ -127,8 +144,8 @@ public:
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(ball_normal_texture_, "data/textures/pbr/metal/rusted_iron/normal.png",
-		 						   sht::graphics::Texture::Wrap::kClampToEdge,
-		 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(ball_roughness_texture_, "data/textures/pbr/metal/rusted_iron/roughness.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
@@ -140,8 +157,8 @@ public:
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(maze_normal_texture_, "data/textures/pbr/concrete/painted_cement/normal.png",
-		 						   sht::graphics::Texture::Wrap::kClampToEdge,
-		 						   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
+								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(maze_roughness_texture_, "data/textures/pbr/concrete/painted_cement/roughness.png",
 								   sht::graphics::Texture::Wrap::kClampToEdge,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
@@ -168,18 +185,21 @@ public:
 
 		// Setup physics objects
 		{
-			ball_ = physics_->AddSphere(vec3(0.0f, 5.0f, 0.0f), 0.150f, 1.0f);
-			ball_->SetFriction(0.28f);
+			ball_ = physics_->AddSphere(vec3(0.0f, 5.0f, 0.0f), 0.150f, kBallRadius);
+			ball_->SetFriction(1.28f);
 			ball_->SetRollingFriction(0.2f);
 			ball_->SetSpinningFriction(0.5f);
 			ball_->SetRestitution(0.0f);
+			ball_->DisableDeactivation();
 		}
 		{
 			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
 			maze_ = physics_->AddMesh(vec3(0.0f, -6.0f, 0.0f), 0.0f, &enumerator);
-			maze_->SetFriction(0.71f);
+			maze_->SetFriction(1.71f);
 			maze_->SetRestitution(0.0f);
+#ifdef ROTATING_PLATFORM
 			maze_->MakeKinematic();
+#endif
 		}
 
 		maze_matrix_ = maze_->matrix();
@@ -224,8 +244,42 @@ public:
 		if (sphere_)
 			delete sphere_;
 	}
+	void ApplyForces(float sec)
+	{
+		const float kPushPower = 10.0f;
+		sht::math::Vector3 force(0.0f);
+		bool any_key_pressed = false;
+		if (keys_.key_down(sht::PublicKey::kA))
+		{
+			any_key_pressed = true;
+			force.z += kPushPower;
+		}
+		if (keys_.key_down(sht::PublicKey::kD))
+		{
+			any_key_pressed = true;
+			force.z -= kPushPower;
+		}
+		if (keys_.key_down(sht::PublicKey::kS))
+		{
+			any_key_pressed = true;
+			force.x += kPushPower;
+		}
+		if (keys_.key_down(sht::PublicKey::kW))
+		{
+			any_key_pressed = true;
+			force.x -= kPushPower;
+		}
+		if (any_key_pressed)
+		{
+			sht::math::Vector3 radius(0.0f, kBallRadius, 0.0f);
+			sht::math::Vector3 torque(radius ^ force); // TODO: optimize this
+			ball_->ApplyTorque(torque);
+		}
+		// ball_->ApplyCentralForce(force);
+	}
 	void UpdatePhysics(float sec) final
 	{
+		ApplyForces(sec);
 		// Update physics engine
 		physics_->Update(sec);
 	}
@@ -237,6 +291,11 @@ public:
 
 		// Update UI
 		ui_root_->UpdateAll(kFrameTime);
+
+#ifdef ROTATING_PLATFORM
+		// Update maze rotation
+		UpdateRotation(kFrameTime);
+#endif
 
 		// Update matrices
 		renderer_->SetViewMatrix(camera_manager_->view_matrix());
@@ -404,16 +463,52 @@ public:
 		RenderObjects();
 		RenderInterface();
 	}
+#ifdef ROTATING_PLATFORM
+	void UpdateRotation(float frame_time)
+	{
+		const float kDesiredTime = 3.0f;
+		const float kAccuracy = 0.01f;
+		if (update_rotation_x_)
+		{
+			// Calculate desired acceleration to reach the target angle within desired time
+			acceleration_x_ = (target_angle_x_ - maze_angle_x_ - velocity_x_ * kDesiredTime) * 2.0f / (kDesiredTime * kDesiredTime);
+			// Then do Euler integration
+			velocity_x_ += acceleration_x_ * frame_time;
+			maze_angle_x_ += velocity_x_ * frame_time;
+		}
+		if (update_rotation_y_)
+		{
+			// Calculate desired acceleration to reach the target angle within desired time
+			acceleration_y_ = (target_angle_y_ - maze_angle_y_ - velocity_y_ * kDesiredTime) * 2.0f / (kDesiredTime * kDesiredTime);
+			// Then do Euler integration
+			velocity_y_ += acceleration_y_ * frame_time;
+			maze_angle_y_ += velocity_y_ * frame_time;
+		}
+		if (update_rotation_x_ || update_rotation_y_)
+		{
+			UpdateMazeMatrix();
+			// Check if we've reached target angle within accuracy
+			if (update_rotation_x_ && fabs(target_angle_x_ - maze_angle_x_) < kAccuracy)
+			{
+				update_rotation_x_ = false;
+			}
+			if (update_rotation_y_ && fabs(target_angle_y_ - maze_angle_y_) < kAccuracy)
+			{
+				update_rotation_y_ = false;
+			}
+		}
+	}
 	void OnHorizontalSliderMoved()
 	{
-		maze_angle_x_ = (horizontal_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
-		UpdateMazeMatrix();
+		target_angle_x_ = (horizontal_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
+		update_rotation_x_ = true;
 	}
 	void OnVerticalSliderMoved()
 	{
-		maze_angle_y_ = (vertical_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
-		UpdateMazeMatrix();
+		target_angle_y_ = (vertical_slider_->pin_position() * 2.0f - 1.0f) * kMaxAngle;
+		update_rotation_y_ = true;
 	}
+#endif
 	void OnKeyDown(sht::PublicKey key, int mods) final
 	{
 		const float kDeltaAngle = 0.1f;
@@ -452,18 +547,23 @@ public:
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{
+#ifdef ROTATING_PLATFORM
 		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
 		horizontal_slider_->OnTouchDown(position);
 		vertical_slider_->OnTouchDown(position);
+#endif
 	}
 	void OnMouseUp(sht::MouseButton button, int modifiers) final
 	{
+#ifdef ROTATING_PLATFORM
 		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
 		horizontal_slider_->OnTouchUp(position);
 		vertical_slider_->OnTouchUp(position);
+#endif
 	}
 	void OnMouseMove() final
 	{
+#ifdef ROTATING_PLATFORM
 		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
 		horizontal_slider_->OnTouchMove(position);
 		if (horizontal_slider_->is_touched())
@@ -471,6 +571,7 @@ public:
 		vertical_slider_->OnTouchMove(position);
 		if (vertical_slider_->is_touched())
 			OnVerticalSliderMoved();
+#endif
 	}
 	void OnSize(int w, int h) final
 	{
@@ -478,6 +579,7 @@ public:
 		// To have correct perspective when resizing
 		need_update_projection_matrix_ = true;
 	}
+#ifdef ROTATING_PLATFORM
 	void UpdateMazeMatrix()
 	{
 		float cos_x = cosf(maze_angle_x_);
@@ -488,6 +590,7 @@ public:
 		sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 0.0f, 0.0f, 1.0f);
 		maze_->SetTransform(maze_matrix_ * rotation_x * rotation_y);
 	}
+#endif
 	void CreateUI()
 	{
 		ui_root_ = new sht::utility::ui::Widget();
@@ -497,6 +600,7 @@ public:
 		const vec4 kPinColorNormal(1.0f, 1.0f, 1.0f, 1.0f);
 		const vec4 kPinColorTouch(1.0f, 1.0f, 0.0f, 1.0f);
 
+#ifdef ROTATING_PLATFORM
 		horizontal_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
 			kBarColor, // vec4 bar_color
 			kPinColorNormal, // vec4 pin_color_normal
@@ -521,6 +625,7 @@ public:
 			);
 		vertical_slider_->SetPinPosition(0.5f);
 		ui_root_->AttachWidget(vertical_slider_);
+#endif
 	}
 	void UpdateCamera()
 	{
@@ -572,18 +677,34 @@ private:
 	sht::physics::Object * maze_;
 
 	sht::utility::ui::Widget * ui_root_;
+#ifdef ROTATING_PLATFORM
 	sht::utility::ui::SliderColored * horizontal_slider_;
 	sht::utility::ui::SliderColored * vertical_slider_;
+#endif
 	
 	sht::math::Matrix4 projection_view_matrix_;
 	sht::math::Matrix4 maze_matrix_;
 
+#ifdef ROTATING_PLATFORM
+	// Since slider shouldn't control angle directly we will use target angle
+	float target_angle_x_;
+	float target_angle_y_;
+	float velocity_x_;
+	float velocity_y_;
+	float acceleration_x_;
+	float acceleration_y_;
 	float maze_angle_x_;
 	float maze_angle_y_;
+#endif
+
 	float camera_distance_;
 	float camera_alpha_;
 	float camera_theta_;
 
+#ifdef ROTATING_PLATFORM
+	bool update_rotation_x_;
+	bool update_rotation_y_;
+#endif
 	bool need_update_projection_matrix_;
 };
 
