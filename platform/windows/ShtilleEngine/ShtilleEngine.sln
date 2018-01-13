@@ -76,14 +76,30 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Billiard", "Billiard\Billia
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PBR", "PBR\PBR.vcxproj", "{5B2CD0B5-8D41-437B-B6E9-D3AD71C77FC4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{26DB0CAA-E90A-4DF3-BBFC-33311F50889A} = {26DB0CAA-E90A-4DF3-BBFC-33311F50889A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IBLBaker", "IBLBaker\IBLBaker.vcxproj", "{04A2C67B-14B7-4695-AAB6-DC83958728E4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{26DB0CAA-E90A-4DF3-BBFC-33311F50889A} = {26DB0CAA-E90A-4DF3-BBFC-33311F50889A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cubemap", "Cubemap\Cubemap.vcxproj", "{67FF256E-3B07-4CCD-AC24-03FA0DE6DEE1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{26DB0CAA-E90A-4DF3-BBFC-33311F50889A} = {26DB0CAA-E90A-4DF3-BBFC-33311F50889A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadows", "Shadows\Shadows.vcxproj", "{1A6F6075-C14B-4843-9D40-3CD236A5195E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{26DB0CAA-E90A-4DF3-BBFC-33311F50889A} = {26DB0CAA-E90A-4DF3-BBFC-33311F50889A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Maze", "Maze\Maze.vcxproj", "{004CD3EC-8F85-444A-866E-1510BEE04A6D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2353A23-CB47-4BCB-A333-4D52F093FD40} = {A2353A23-CB47-4BCB-A333-4D52F093FD40}
+		{26DB0CAA-E90A-4DF3-BBFC-33311F50889A} = {26DB0CAA-E90A-4DF3-BBFC-33311F50889A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

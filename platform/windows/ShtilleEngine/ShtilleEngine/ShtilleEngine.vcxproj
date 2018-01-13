@@ -46,6 +46,7 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\mesh_vertices_enumerator.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\model.cpp" />
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\physical_box_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\screen_quad_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\sphere_model.cpp" />
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\tetrahedron_model.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\mesh_vertices_enumerator.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\model.h" />
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\physical_box_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\screen_quad_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\sphere_model.h" />
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\tetrahedron_model.h" />

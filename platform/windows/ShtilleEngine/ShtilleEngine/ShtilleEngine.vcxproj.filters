@@ -447,6 +447,9 @@
     <ClCompile Include="..\..\..\..\sht\graphics\src\model\screen_quad_model.cpp">
       <Filter>sht\graphics\src\model</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\sht\graphics\src\model\physical_box_model.cpp">
+      <Filter>sht\graphics\src\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\sht\application\application.h">
@@ -816,6 +819,9 @@
       <Filter>sht\graphics\include\renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\sht\graphics\include\model\screen_quad_model.h">
+      <Filter>sht\graphics\include\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\sht\graphics\include\model\physical_box_model.h">
       <Filter>sht\graphics\include\model</Filter>
     </ClInclude>
   </ItemGroup>
