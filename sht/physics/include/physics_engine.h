@@ -10,6 +10,7 @@
 #include "math/matrix.h"
 
 #include <vector>
+#include <map>
 
 // Forward Bullet declarations
 class btDefaultCollisionConfiguration;
@@ -23,6 +24,15 @@ namespace sht {
 
 		class Object;
 		class GhostObject;
+
+		struct ClampSpeedInfo {
+			float max_linear_velocity_;
+			float max_angular_velocity_;
+			bool clamp_linear_velocity_;
+			bool clamp_angular_velocity_;
+		};
+
+		typedef std::map<Object*, ClampSpeedInfo> ClampSpeedMap;
 
 		class Engine
 		{
@@ -55,6 +65,8 @@ namespace sht {
 			void AttachGhostObject(GhostObject * ghost_object);
 			void DetachGhostObject(GhostObject * ghost_object);
 
+			void AddClampedSpeedObject(Object * object, const ClampSpeedInfo& info);
+
 			//! Tests contacts with other objects
 			bool ContactTest(GhostObject * ghost_object);
 			bool ContactPairTest(GhostObject * ghost_object, Object * object);
@@ -75,6 +87,7 @@ namespace sht {
 
 			std::vector<Object*> objects_;
 			std::vector<GhostObject*> ghost_objects_;
+			ClampSpeedMap clamped_speed_objects_;
 		};
 
 	} // namespace physics

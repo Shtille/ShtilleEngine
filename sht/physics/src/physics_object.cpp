@@ -226,6 +226,26 @@ namespace sht {
 		{
 			body_->setAngularVelocity(btVector3(velocity.x, velocity.y, velocity.z));
 		}
+		void Object::ClampLinearVelocity(float max_speed)
+		{
+			btVector3 velocity = body_->getLinearVelocity();
+			btScalar speed = velocity.length();
+			if (speed > max_speed)
+			{
+				velocity *= max_speed / speed;
+				body_->setLinearVelocity(velocity);
+			}
+		}
+		void Object::ClampAngularVelocity(float max_speed)
+		{
+			btVector3 velocity = body_->getAngularVelocity();
+			btScalar speed = velocity.length();
+			if (speed > max_speed)
+			{
+				velocity *= max_speed / speed;
+				body_->setAngularVelocity(velocity);
+			}
+		}
 		void Object::ApplyCentralForce(const math::Vector3& force)
 		{
 			body_->applyCentralForce(btVector3(force.x, force.y, force.z));
@@ -269,6 +289,11 @@ namespace sht {
 		const math::Vector3& Object::scale() const
 		{
 			return scale_;
+		}
+		const math::Vector3 Object::velocity() const
+		{
+			btVector3 linear_velocity = body_->getLinearVelocity();
+			return math::Vector3(linear_velocity.x(), linear_velocity.y(), linear_velocity.z());
 		}
 		void Object::set_scale(const math::Vector3& scale)
 		{

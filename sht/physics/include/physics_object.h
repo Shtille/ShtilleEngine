@@ -51,6 +51,9 @@ namespace sht {
 			void SetLinearVelocity(const math::Vector3& velocity);
 			void SetAngularVelocity(const math::Vector3& velocity);
 
+			void ClampLinearVelocity(float max_speed);
+			void ClampAngularVelocity(float max_speed);
+
 			void ApplyCentralForce(const math::Vector3& force);
 			void ApplyForce(const math::Vector3& force, const math::Vector3& relative_position);
 
@@ -64,6 +67,7 @@ namespace sht {
 			const math::Vector3& position() const;
 			const math::Vector3 * GetPositionPtr() const;
 			const math::Vector3& scale() const;
+			const math::Vector3 velocity() const;
 
 			void set_scale(const math::Vector3& scale);
 

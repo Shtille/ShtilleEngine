@@ -79,6 +79,20 @@ namespace {
 		btCollisionObject * object2_;
 		bool any_collision_;
 	};
+	void MyTickCallback(btDynamicsWorld * world, btScalar time_step)
+	{
+		void * user_info = world->getWorldUserInfo();
+		sht::physics::ClampSpeedMap * map = reinterpret_cast<sht::physics::ClampSpeedMap *>(user_info);
+		for (auto& pair : *map)
+		{
+			sht::physics::Object * object = pair.first;
+			sht::physics::ClampSpeedInfo& clamp_info = pair.second;
+			if (clamp_info.clamp_linear_velocity_)
+				object->ClampLinearVelocity(clamp_info.max_linear_velocity_);
+			if (clamp_info.clamp_angular_velocity_)
+				object->ClampAngularVelocity(clamp_info.max_angular_velocity_);
+		}
+	}
 }
 
 namespace sht {
@@ -95,6 +109,7 @@ namespace sht {
 			broadphase_ = new btDbvtBroadphase();
 			solver_ = new btSequentialImpulseConstraintSolver();
 			dynamics_world_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collision_configuration_);
+			dynamics_world_->setInternalTickCallback(MyTickCallback, &clamped_speed_objects_);
 		}
 		Engine::~Engine()
 		{
@@ -164,6 +179,10 @@ namespace sht {
 		void Engine::DetachGhostObject(GhostObject * ghost_object)
 		{
 			dynamics_world_->removeCollisionObject(ghost_object->object_);
+		}
+		void Engine::AddClampedSpeedObject(Object * object, const ClampSpeedInfo& info)
+		{
+			clamped_speed_objects_[object] = info;
 		}
 		bool Engine::ContactTest(GhostObject * ghost_object)
 		{
