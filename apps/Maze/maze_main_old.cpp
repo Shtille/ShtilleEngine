@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-// #define ROTATING_PLATFORM
+//#define ROTATING_PLATFORM
 
 #define APP_NAME MazeApp
 
@@ -180,17 +180,28 @@ public:
 			return false;
 
 		// Create physics
-		physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.002f /* fixed time step */);
+		const float kFrameTime = GetFrameTime();
+		physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.01f /* fixed time step */);
 		//physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
 
 		// Setup physics objects
 		{
-			ball_ = physics_->AddSphere(vec3(0.0f, 5.0f, 0.0f), 0.150f, kBallRadius);
+			ball_ = physics_->AddSphere(vec3(0.0f, 5.0f, 0.0f), 1.0f, kBallRadius);
 			ball_->SetFriction(1.28f);
 			ball_->SetRollingFriction(0.2f);
 			ball_->SetSpinningFriction(0.5f);
 			ball_->SetRestitution(0.0f);
 			ball_->DisableDeactivation();
+
+#ifndef ROTATING_PLATFORM
+			sht::physics::ClampSpeedInfo clamp_speed_info;
+			const float kMaxLinearVelocity = 3.0f;
+			clamp_speed_info.max_linear_velocity_ = kMaxLinearVelocity;
+			clamp_speed_info.max_angular_velocity_ = kMaxLinearVelocity / kBallRadius; // w = V / R
+			clamp_speed_info.clamp_linear_velocity_ = true;
+			clamp_speed_info.clamp_angular_velocity_ = true;
+			physics_->AddClampedSpeedObject(ball_, clamp_speed_info);
+#endif
 		}
 		{
 			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
@@ -244,6 +255,7 @@ public:
 		if (sphere_)
 			delete sphere_;
 	}
+#ifndef ROTATING_PLATFORM
 	void ApplyForces(float sec)
 	{
 		const float kPushPower = 10.0f;
@@ -271,15 +283,18 @@ public:
 		}
 		if (any_key_pressed)
 		{
-			sht::math::Vector3 radius(0.0f, kBallRadius, 0.0f);
-			sht::math::Vector3 torque(radius ^ force); // TODO: optimize this
-			ball_->ApplyTorque(torque);
+			//sht::math::Vector3 radius(0.0f, kBallRadius, 0.0f);
+			//sht::math::Vector3 torque(radius ^ force); // TODO: optimize this
+			//ball_->ApplyTorque(torque);
+			ball_->ApplyCentralForce(force);
 		}
-		// ball_->ApplyCentralForce(force);
 	}
+#endif
 	void UpdatePhysics(float sec) final
 	{
+#ifndef ROTATING_PLATFORM
 		ApplyForces(sec);
+#endif
 		// Update physics engine
 		physics_->Update(sec);
 	}
