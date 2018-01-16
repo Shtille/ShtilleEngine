@@ -19,8 +19,8 @@ namespace sht {
 			
 			{
 				// +X side
-				float kU = sizes_.z / texture_sizes_.x;
-				float kV = sizes_.y / texture_sizes_.y;
+				float kU = 2.0f * sizes_.z / texture_sizes_.x;
+				float kV = 2.0f * sizes_.y / texture_sizes_.y;
 				vertices_[0].position.Set(1.0f,  1.0f,  1.0f);
 				vertices_[0].normal.Set(1.0f,  0.0f,  0.0f);
 				vertices_[0].texcoord.Set(0.0f,  kV);
@@ -37,8 +37,8 @@ namespace sht {
 			
 			{
 				// -Z side
-				float kU = sizes_.x / texture_sizes_.x;
-				float kV = sizes_.y / texture_sizes_.y;
+				float kU = 2.0f * sizes_.x / texture_sizes_.x;
+				float kV = 2.0f * sizes_.y / texture_sizes_.y;
 				vertices_[4].position.Set( 1.0f,  1.0f, -1.0f);
 				vertices_[4].normal.Set(0.0f,  0.0f, -1.0f);
 				vertices_[4].texcoord.Set(0.0f,  kV);
@@ -55,8 +55,8 @@ namespace sht {
 			
 			{
 				// -X side
-				float kU = sizes_.z / texture_sizes_.x;
-				float kV = sizes_.y / texture_sizes_.y;
+				float kU = 2.0f * sizes_.z / texture_sizes_.x;
+				float kV = 2.0f * sizes_.y / texture_sizes_.y;
 				vertices_[8 ].position.Set(-1.0f,  1.0f, -1.0f);
 				vertices_[8 ].normal.Set(-1.0f,  0.0f,  0.0f);
 				vertices_[8 ].texcoord.Set(0.0f,  kV);
@@ -73,8 +73,8 @@ namespace sht {
 			
 			{
 				// +Z side
-				float kU = sizes_.x / texture_sizes_.x;
-				float kV = sizes_.y / texture_sizes_.y;
+				float kU = 2.0f * sizes_.x / texture_sizes_.x;
+				float kV = 2.0f * sizes_.y / texture_sizes_.y;
 				vertices_[12].position.Set(-1.0f,  1.0f,  1.0f);
 				vertices_[12].normal.Set(0.0f,  0.0f,  1.0f);
 				vertices_[12].texcoord.Set(0.0f,  kV);
@@ -91,8 +91,8 @@ namespace sht {
 			
 			{
 				// +Y side
-				float kU = sizes_.z / texture_sizes_.x;
-				float kV = sizes_.x / texture_sizes_.y;
+				float kU = 2.0f * sizes_.z / texture_sizes_.x;
+				float kV = 2.0f * sizes_.x / texture_sizes_.y;
 				vertices_[16].position.Set( 1.0f,  1.0f,  1.0f);
 				vertices_[16].normal.Set(0.0f,  1.0f,  0.0f);
 				vertices_[16].texcoord.Set(kU,  kV);
@@ -109,8 +109,8 @@ namespace sht {
 			
 			{
 				// -Y side
-				float kU = sizes_.z / texture_sizes_.x;
-				float kV = sizes_.x / texture_sizes_.y;
+				float kU = 2.0f * sizes_.z / texture_sizes_.x;
+				float kV = 2.0f * sizes_.x / texture_sizes_.y;
 				vertices_[20].position.Set( 1.0f, -1.0f, -1.0f);
 				vertices_[20].normal.Set(0.0f, -1.0f,  0.0f);
 				vertices_[20].texcoord.Set(kU,  kV);

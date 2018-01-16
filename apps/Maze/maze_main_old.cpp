@@ -4,14 +4,18 @@
 #include "../../sht/include/sht.h"
 #include "../../sht/graphics/include/model/sphere_model.h"
 #include "../../sht/graphics/include/model/screen_quad_model.h"
-#include "../../sht/graphics/include/model/complex_mesh.h"
+#include "../../sht/graphics/include/model/physical_box_model.h"
 #include "../../sht/graphics/include/renderer/text.h"
 #include "../../sht/utility/include/camera.h"
 #include "../../sht/physics/include/physics_engine.h"
 #include "../../sht/physics/include/physics_object.h"
 #include "../../sht/utility/include/ui/slider.h"
+#include "../../sht/utility/include/ui/board.h"
+#include "../../sht/utility/include/ui/label.h"
+#include "../../sht/utility/include/ui/rect.h"
 
 #include <cmath>
+#include <vector>
 
 //#define ROTATING_PLATFORM
 
@@ -24,18 +28,29 @@ namespace {
 	const float kBallRadius = 1.0f;
 }
 
+struct WallBaseData {
+	float start_x;
+	float start_y;
+	float end_x;
+	float end_y;
+};
+struct WallData {
+	vec3 center;
+	vec3 sizes;
+};
+
 class APP_NAME : public sht::OpenGlApplication
 {
 public:
 	APP_NAME()
 	: sphere_(nullptr)
 	, quad_(nullptr)
+	, floor_model_(nullptr)
 	, font_(nullptr)
 	, fps_text_(nullptr)
 	, camera_manager_(nullptr)
 	, physics_(nullptr)
 	, ball_(nullptr)
-	, maze_(nullptr)
 #ifdef ROTATING_PLATFORM
 	, target_angle_x_(0.0f)
 	, target_angle_y_(0.0f)
@@ -58,7 +73,7 @@ public:
 	}
 	const char* GetTitle() final
 	{
-		return "Maze";
+		return "Marble maze";
 	}
 	const bool IsMultisample() final
 	{
@@ -114,9 +129,242 @@ public:
 		if (!quad_->MakeRenderable())
 			return false;
 
-		// Maze mesh
-		maze_mesh_ = new sht::graphics::ComplexMesh(renderer_, nullptr);
-		if (!maze_mesh_->LoadFromFile("data/meshes/maze/maze.obj")) return false;
+		// Floor model
+		const float kCS = 10.0f; // cell size
+		const float kMaterialSize = 3.0f;
+		{
+			floor_model_ = new sht::graphics::PhysicalBoxModel(renderer_, 12.0f * kCS, 2.0f, 12.0f * kCS, kMaterialSize, kMaterialSize);
+			floor_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+			floor_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+			floor_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
+			//floor_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTangent, 3));
+			//floor_model_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
+			floor_model_->Create();
+			if (!floor_model_->MakeRenderable())
+				return false;
+		}
+		// Base wall data should be filled manually
+		const WallBaseData walls_base_data[] = {
+			{ -10.f * kCS,   0.f * kCS, -10.f * kCS, -10.f * kCS },
+			{ -10.f * kCS, -10.f * kCS,  10.f * kCS, -10.f * kCS },
+			{  10.f * kCS, -10.f * kCS,  10.f * kCS,  10.f * kCS },
+			{  10.f * kCS,  10.f * kCS, -10.f * kCS,  10.f * kCS },
+			{ -10.f * kCS,  10.f * kCS, -10.f * kCS,   1.f * kCS },
+			// Vertical lines
+			{  -9.f * kCS, -10.f * kCS,  -9.f * kCS,  -8.f * kCS },
+			{  -9.f * kCS,  -6.f * kCS,  -9.f * kCS,  -4.f * kCS },
+			{  -9.f * kCS,  -1.f * kCS,  -9.f * kCS,   5.f * kCS },
+			{  -9.f * kCS,   6.f * kCS,  -9.f * kCS,   7.f * kCS },
+			{  -9.f * kCS,   8.f * kCS,  -9.f * kCS,   9.f * kCS },
+			{  -8.f * kCS,  -8.f * kCS,  -8.f * kCS,  -5.f * kCS },
+			{  -8.f * kCS,  -4.f * kCS,  -8.f * kCS,   0.f * kCS },
+			{  -8.f * kCS,   5.f * kCS,  -8.f * kCS,   6.f * kCS },
+			{  -8.f * kCS,   7.f * kCS,  -8.f * kCS,   8.f * kCS },
+			{  -8.f * kCS,   9.f * kCS,  -8.f * kCS,  10.f * kCS },
+			{  -7.f * kCS,  -9.f * kCS,  -7.f * kCS,  -6.f * kCS },
+			{  -7.f * kCS,  -5.f * kCS,  -7.f * kCS,  -4.f * kCS },
+			{  -7.f * kCS,  -2.f * kCS,  -7.f * kCS,  -1.f * kCS },
+			{  -7.f * kCS,   1.f * kCS,  -7.f * kCS,   4.f * kCS },
+			{  -7.f * kCS,   8.f * kCS,  -7.f * kCS,   9.f * kCS },
+			{  -6.f * kCS,  -6.f * kCS,  -6.f * kCS,  -5.f * kCS },
+			{  -6.f * kCS,  -1.f * kCS,  -6.f * kCS,   1.f * kCS },
+			{  -6.f * kCS,   2.f * kCS,  -6.f * kCS,   3.f * kCS },
+			{  -6.f * kCS,   4.f * kCS,  -6.f * kCS,   6.f * kCS },
+			{  -6.f * kCS,   7.f * kCS,  -6.f * kCS,  10.f * kCS },
+			{  -5.f * kCS,  -9.f * kCS,  -5.f * kCS,  -7.f * kCS },
+			{  -5.f * kCS,  -5.f * kCS,  -5.f * kCS,  -3.f * kCS },
+			{  -5.f * kCS,   1.f * kCS,  -5.f * kCS,   4.f * kCS },
+			{  -5.f * kCS,   6.f * kCS,  -5.f * kCS,   9.f * kCS },
+			{  -4.f * kCS, -10.f * kCS,  -4.f * kCS,  -8.f * kCS },
+			{  -4.f * kCS,  -6.f * kCS,  -4.f * kCS,  -5.f * kCS },
+			{  -4.f * kCS,  -4.f * kCS,  -4.f * kCS,  -1.f * kCS },
+			{  -4.f * kCS,   8.f * kCS,  -4.f * kCS,  10.f * kCS },
+			{  -3.f * kCS,  -7.f * kCS,  -3.f * kCS,  -6.f * kCS },
+			{  -3.f * kCS,  -3.f * kCS,  -3.f * kCS,   5.f * kCS },
+			{  -3.f * kCS,   6.f * kCS,  -3.f * kCS,   8.f * kCS },
+			{  -2.f * kCS,  -8.f * kCS,  -2.f * kCS,  -5.f * kCS },
+			{  -2.f * kCS,  -4.f * kCS,  -2.f * kCS,  -3.f * kCS },
+			{  -2.f * kCS,   4.f * kCS,  -2.f * kCS,   6.f * kCS },
+			{  -1.f * kCS,  -9.f * kCS,  -1.f * kCS,  -4.f * kCS },
+			{  -1.f * kCS,   4.f * kCS,  -1.f * kCS,   5.f * kCS },
+			{   0.f * kCS, -10.f * kCS,   0.f * kCS,  -9.f * kCS },
+			{   0.f * kCS,  -7.f * kCS,   0.f * kCS,  -5.f * kCS },
+			{   0.f * kCS,   3.f * kCS,   0.f * kCS,   4.f * kCS },
+			{   0.f * kCS,   6.f * kCS,   0.f * kCS,   8.f * kCS },
+			{   1.f * kCS,  -9.f * kCS,   1.f * kCS,  -6.f * kCS },
+			{   1.f * kCS,  -5.f * kCS,   1.f * kCS,  -3.f * kCS },
+			{   1.f * kCS,   5.f * kCS,   1.f * kCS,   7.f * kCS },
+			{   2.f * kCS,  -7.f * kCS,   2.f * kCS,  -5.f * kCS },
+			{   2.f * kCS,  -4.f * kCS,   2.f * kCS,   0.f * kCS },
+			{   2.f * kCS,   1.f * kCS,   2.f * kCS,   3.f * kCS },
+			{   2.f * kCS,   5.f * kCS,   2.f * kCS,   6.f * kCS },
+			{   2.f * kCS,   7.f * kCS,   2.f * kCS,   9.f * kCS },
+			{   3.f * kCS,  -9.f * kCS,   3.f * kCS,  -6.f * kCS },
+			{   3.f * kCS,  -5.f * kCS,   3.f * kCS,   2.f * kCS },
+			{   3.f * kCS,   3.f * kCS,   3.f * kCS,   4.f * kCS },
+			{   3.f * kCS,   5.f * kCS,   3.f * kCS,   7.f * kCS },
+			{   3.f * kCS,   8.f * kCS,   3.f * kCS,   9.f * kCS },
+			{   4.f * kCS,  -8.f * kCS,   4.f * kCS,  -5.f * kCS },
+			{   4.f * kCS,  -4.f * kCS,   4.f * kCS,   1.f * kCS },
+			{   4.f * kCS,   4.f * kCS,   4.f * kCS,   5.f * kCS },
+			{   4.f * kCS,   6.f * kCS,   4.f * kCS,   9.f * kCS },
+			{   5.f * kCS,  -9.f * kCS,   5.f * kCS,  -8.f * kCS },
+			{   5.f * kCS,  -6.f * kCS,   5.f * kCS,   0.f * kCS },
+			{   5.f * kCS,   6.f * kCS,   5.f * kCS,   8.f * kCS },
+			{   6.f * kCS, -10.f * kCS,   6.f * kCS,  -9.f * kCS },
+			{   6.f * kCS,  -6.f * kCS,   6.f * kCS,  -2.f * kCS },
+			{   6.f * kCS,   1.f * kCS,   6.f * kCS,   2.f * kCS },
+			{   6.f * kCS,   5.f * kCS,   6.f * kCS,   9.f * kCS },
+			{   7.f * kCS,  -9.f * kCS,   7.f * kCS,  -6.f * kCS },
+			{   7.f * kCS,  -5.f * kCS,   7.f * kCS,  -4.f * kCS },
+			{   7.f * kCS,  -2.f * kCS,   7.f * kCS,   1.f * kCS },
+			{   7.f * kCS,   2.f * kCS,   7.f * kCS,   6.f * kCS },
+			{   8.f * kCS,  -8.f * kCS,   8.f * kCS,  -7.f * kCS },
+			{   8.f * kCS,  -3.f * kCS,   8.f * kCS,  -2.f * kCS },
+			{   8.f * kCS,   0.f * kCS,   8.f * kCS,   2.f * kCS },
+			{   8.f * kCS,   3.f * kCS,   8.f * kCS,   8.f * kCS },
+			{   9.f * kCS,  -9.f * kCS,   9.f * kCS,  -8.f * kCS },
+			{   9.f * kCS,  -7.f * kCS,   9.f * kCS,   4.f * kCS },
+			// Horizontal lines
+			{  -8.f * kCS,  -9.f * kCS,  -6.f * kCS,  -9.f * kCS },
+			{  -3.f * kCS,  -9.f * kCS,  -1.f * kCS,  -9.f * kCS },
+			{   2.f * kCS,  -9.f * kCS,   5.f * kCS,  -9.f * kCS },
+			{   6.f * kCS,  -9.f * kCS,   8.f * kCS,  -9.f * kCS },
+			{  -9.f * kCS,  -8.f * kCS,  -8.f * kCS,  -8.f * kCS },
+			{  -7.f * kCS,  -8.f * kCS,  -6.f * kCS,  -8.f * kCS },
+			{  -5.f * kCS,  -8.f * kCS,  -2.f * kCS,  -8.f * kCS },
+			{  -1.f * kCS,  -8.f * kCS,   1.f * kCS,  -8.f * kCS },
+			{   2.f * kCS,  -8.f * kCS,   3.f * kCS,  -8.f * kCS },
+			{   5.f * kCS,  -8.f * kCS,   6.f * kCS,  -8.f * kCS },
+			{   8.f * kCS,  -8.f * kCS,   9.f * kCS,  -8.f * kCS },
+			{ -10.f * kCS,  -7.f * kCS,  -9.f * kCS,  -7.f * kCS },
+			{  -6.f * kCS,  -7.f * kCS,  -5.f * kCS,  -7.f * kCS },
+			{  -4.f * kCS,  -7.f * kCS,  -3.f * kCS,  -7.f * kCS },
+			{   1.f * kCS,  -7.f * kCS,   2.f * kCS,  -7.f * kCS },
+			{   4.f * kCS,  -7.f * kCS,   6.f * kCS,  -7.f * kCS },
+			{   8.f * kCS,  -7.f * kCS,  10.f * kCS,  -7.f * kCS },
+			{  -7.f * kCS,  -6.f * kCS,  -3.f * kCS,  -6.f * kCS },
+			{   6.f * kCS,  -6.f * kCS,   8.f * kCS,  -6.f * kCS },
+			{  -9.f * kCS,  -5.f * kCS,  -7.f * kCS,  -5.f * kCS },
+			{  -6.f * kCS,  -5.f * kCS,  -5.f * kCS,  -5.f * kCS },
+			{  -3.f * kCS,  -5.f * kCS,  -2.f * kCS,  -5.f * kCS },
+			{   0.f * kCS,  -5.f * kCS,   1.f * kCS,  -5.f * kCS },
+			{   2.f * kCS,  -5.f * kCS,   4.f * kCS,  -5.f * kCS },
+			{   7.f * kCS,  -5.f * kCS,   8.f * kCS,  -5.f * kCS },
+			{  -7.f * kCS,  -4.f * kCS,  -6.f * kCS,  -4.f * kCS },
+			{  -2.f * kCS,  -4.f * kCS,   0.f * kCS,  -4.f * kCS },
+			{   1.f * kCS,  -4.f * kCS,   2.f * kCS,  -4.f * kCS },
+			{   4.f * kCS,  -4.f * kCS,   5.f * kCS,  -4.f * kCS },
+			{   7.f * kCS,  -4.f * kCS,   9.f * kCS,  -4.f * kCS },
+			{ -10.f * kCS,  -3.f * kCS,  -9.f * kCS,  -3.f * kCS },
+			{  -8.f * kCS,  -3.f * kCS,  -5.f * kCS,  -3.f * kCS },
+			{  -3.f * kCS,  -3.f * kCS,  -2.f * kCS,  -3.f * kCS },
+			{  -1.f * kCS,  -3.f * kCS,   1.f * kCS,  -3.f * kCS },
+			{   6.f * kCS,  -3.f * kCS,   8.f * kCS,  -3.f * kCS },
+			{ -10.f * kCS,  -2.f * kCS,  -8.f * kCS,  -2.f * kCS },
+			{  -6.f * kCS,  -2.f * kCS,  -4.f * kCS,  -2.f * kCS },
+			{  -3.f * kCS,  -2.f * kCS,   2.f * kCS,  -2.f * kCS },
+			{   7.f * kCS,  -2.f * kCS,   8.f * kCS,  -2.f * kCS },
+			{  -8.f * kCS,  -1.f * kCS,  -4.f * kCS,  -1.f * kCS },
+			{   5.f * kCS,  -1.f * kCS,   6.f * kCS,  -1.f * kCS },
+			{   8.f * kCS,  -1.f * kCS,   9.f * kCS,  -1.f * kCS },
+			{  -7.f * kCS,   0.f * kCS,  -6.f * kCS,   0.f * kCS },
+			{  -5.f * kCS,   0.f * kCS,  -3.f * kCS,   0.f * kCS },
+			{   6.f * kCS,   0.f * kCS,   7.f * kCS,   0.f * kCS },
+			{   7.f * kCS,   0.f * kCS,   8.f * kCS,   0.f * kCS },
+			{ -10.f * kCS,   1.f * kCS,  -9.f * kCS,   1.f * kCS },
+			{  -8.f * kCS,   1.f * kCS,  -7.f * kCS,   1.f * kCS },
+			{  -6.f * kCS,   1.f * kCS,  -4.f * kCS,   1.f * kCS },
+			{   4.f * kCS,   1.f * kCS,   6.f * kCS,   1.f * kCS },
+			{  -9.f * kCS,   2.f * kCS,  -8.f * kCS,   2.f * kCS },
+			{  -7.f * kCS,   2.f * kCS,  -6.f * kCS,   2.f * kCS },
+			{  -5.f * kCS,   2.f * kCS,  -4.f * kCS,   2.f * kCS },
+			{   3.f * kCS,   2.f * kCS,   6.f * kCS,   2.f * kCS },
+			{  -8.f * kCS,   3.f * kCS,  -7.f * kCS,   3.f * kCS },
+			{  -4.f * kCS,   3.f * kCS,  -3.f * kCS,   3.f * kCS },
+			{  -3.f * kCS,   3.f * kCS,   7.f * kCS,   3.f * kCS },
+			{   8.f * kCS,   3.f * kCS,   9.f * kCS,   3.f * kCS },
+			{  -9.f * kCS,   4.f * kCS,  -8.f * kCS,   4.f * kCS },
+			{  -7.f * kCS,   4.f * kCS,  -6.f * kCS,   4.f * kCS },
+			{  -5.f * kCS,   4.f * kCS,  -4.f * kCS,   4.f * kCS },
+			{  -2.f * kCS,   4.f * kCS,  -1.f * kCS,   4.f * kCS },
+			{   0.f * kCS,   4.f * kCS,   2.f * kCS,   4.f * kCS },
+			{   4.f * kCS,   4.f * kCS,   6.f * kCS,   4.f * kCS },
+			{  -8.f * kCS,   5.f * kCS,  -7.f * kCS,   5.f * kCS },
+			{  -6.f * kCS,   5.f * kCS,  -3.f * kCS,   5.f * kCS },
+			{  -1.f * kCS,   5.f * kCS,   1.f * kCS,   5.f * kCS },
+			{   2.f * kCS,   5.f * kCS,   6.f * kCS,   5.f * kCS },
+			{   9.f * kCS,   5.f * kCS,  10.f * kCS,   5.f * kCS },
+			{  -9.f * kCS,   6.f * kCS,  -8.f * kCS,   6.f * kCS },
+			{  -7.f * kCS,   6.f * kCS,  -6.f * kCS,   6.f * kCS },
+			{  -4.f * kCS,   6.f * kCS,  -3.f * kCS,   6.f * kCS },
+			{  -2.f * kCS,   6.f * kCS,   0.f * kCS,   6.f * kCS },
+			{   4.f * kCS,   6.f * kCS,   5.f * kCS,   6.f * kCS },
+			{   7.f * kCS,   6.f * kCS,   8.f * kCS,   6.f * kCS },
+			{   8.f * kCS,   6.f * kCS,   9.f * kCS,   6.f * kCS },
+			{ -10.f * kCS,   7.f * kCS,  -9.f * kCS,   7.f * kCS },
+			{  -8.f * kCS,   7.f * kCS,  -5.f * kCS,   7.f * kCS },
+			{  -5.f * kCS,   7.f * kCS,  -4.f * kCS,   7.f * kCS },
+			{  -3.f * kCS,   7.f * kCS,  -1.f * kCS,   7.f * kCS },
+			{   1.f * kCS,   7.f * kCS,   3.f * kCS,   7.f * kCS },
+			{   6.f * kCS,   7.f * kCS,   7.f * kCS,   7.f * kCS },
+			{   9.f * kCS,   7.f * kCS,  10.f * kCS,   7.f * kCS },
+			{  -9.f * kCS,   8.f * kCS,  -8.f * kCS,   8.f * kCS },
+			{  -4.f * kCS,   8.f * kCS,  -3.f * kCS,   8.f * kCS },
+			{  -2.f * kCS,   8.f * kCS,   1.f * kCS,   8.f * kCS },
+			{   7.f * kCS,   8.f * kCS,   9.f * kCS,   8.f * kCS },
+			{  -8.f * kCS,   9.f * kCS,  -7.f * kCS,   9.f * kCS },
+			{  -3.f * kCS,   9.f * kCS,   3.f * kCS,   9.f * kCS },
+			{   4.f * kCS,   9.f * kCS,  10.f * kCS,   9.f * kCS },
+		};
+		// Fill the wall data
+		std::vector<WallData> wall_data;
+		wall_data.resize(sizeof(walls_base_data) / sizeof(walls_base_data[0]));
+		for (size_t i = 0; i < wall_data.size(); ++i)
+		{
+			const float kBaseHeight = floor_model_->sizes().y;
+			const float kWallHeight = 2.0f;
+			const float kWallWidth = 1.0f;
+			WallData& data = wall_data[i];
+			const WallBaseData& base_data = walls_base_data[i];
+			data.center.x = 0.5f * (base_data.end_y + base_data.start_y);
+			data.center.y = 0.5f * kWallHeight + kBaseHeight;
+			data.center.z = 0.5f * (base_data.end_x + base_data.start_x);
+			// Different filling based on orientation
+			if (base_data.end_y - base_data.start_y < 0.1f) // horizontal
+			{
+				data.sizes.x = 0.5f * (base_data.end_y - base_data.start_y + kWallWidth);
+				data.sizes.y = 0.5f * kWallHeight;
+				data.sizes.z = 0.5f * (base_data.end_x - base_data.start_x - kWallWidth);
+			}
+			else // vertical
+			{
+				data.sizes.x = 0.5f * (base_data.end_y - base_data.start_y - kWallWidth);
+				data.sizes.y = 0.5f * kWallHeight;
+				data.sizes.z = 0.5f * (base_data.end_x - base_data.start_x + kWallWidth);
+			}
+		}
+		// Walls models
+		{
+			sht::graphics::Model * wall_model;
+			for (size_t i = 0; i < wall_data.size(); ++i)
+			{
+				const WallData& data = wall_data[i];
+				wall_model = new sht::graphics::PhysicalBoxModel(renderer_, data.sizes.x, data.sizes.y, data.sizes.z, kMaterialSize, kMaterialSize);
+				wall_model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+				wall_model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
+				wall_model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
+				//wall_model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTangent, 3));
+				//wall_model->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
+				wall_model->Create();
+				if (!wall_model->MakeRenderable())
+				{
+					delete wall_model;
+					return false;
+				}
+				walls_models_.push_back(wall_model);
+			}
+		}
 		
 		// Load shaders
 		if (!renderer_->AddShader(text_shader_, "data/shaders/text")) return false;
@@ -141,29 +389,29 @@ public:
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
 		if (!renderer_->AddTexture(ball_albedo_texture_, "data/textures/pbr/metal/rusted_iron/albedo.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(ball_normal_texture_, "data/textures/pbr/metal/rusted_iron/normal.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(ball_roughness_texture_, "data/textures/pbr/metal/rusted_iron/roughness.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 		if (!renderer_->AddTexture(ball_metal_texture_, "data/textures/pbr/metal/rusted_iron/metallic.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
-		if (!renderer_->AddTexture(maze_albedo_texture_, "data/textures/pbr/concrete/painted_cement/albedo.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+		if (!renderer_->AddTexture(maze_albedo_texture_, "data/textures/pbr/stone/marble/albedo.png",
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(maze_normal_texture_, "data/textures/pbr/concrete/painted_cement/normal.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+		if (!renderer_->AddTexture(maze_normal_texture_, "data/textures/pbr/stone/marble/normal.png",
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(maze_roughness_texture_, "data/textures/pbr/concrete/painted_cement/roughness.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+		if (!renderer_->AddTexture(maze_roughness_texture_, "data/textures/pbr/stone/marble/roughness.png",
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
-		if (!renderer_->AddTexture(maze_metal_texture_, "data/textures/pbr/concrete/painted_cement/metallic.png",
-								   sht::graphics::Texture::Wrap::kClampToEdge,
+		if (!renderer_->AddTexture(maze_metal_texture_, "data/textures/pbr/stone/marble/metallic.png",
+								   sht::graphics::Texture::Wrap::kRepeat,
 								   sht::graphics::Texture::Filter::kTrilinearAniso)) return false;
 
 		// Render targets
@@ -182,11 +430,12 @@ public:
 		// Create physics
 		const float kFrameTime = GetFrameTime();
 		physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.01f /* fixed time step */);
-		//physics_->SetGravity(vec3(0.0f, -9800.0f, 0.0f));
 
 		// Setup physics objects
 		{
-			ball_ = physics_->AddSphere(vec3(0.0f, 5.0f, 0.0f), 1.0f, kBallRadius);
+			// Ball
+			const float kBaseHeight = floor_model_->sizes().y + kBallRadius;
+			ball_ = physics_->AddSphere(vec3(0.0f, kBaseHeight, 0.0f), 1.0f, kBallRadius);
 			ball_->SetFriction(1.28f);
 			ball_->SetRollingFriction(0.2f);
 			ball_->SetSpinningFriction(0.5f);
@@ -204,25 +453,30 @@ public:
 #endif
 		}
 		{
-			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
-			maze_ = physics_->AddMesh(vec3(0.0f, -6.0f, 0.0f), 0.0f, &enumerator);
-			maze_->SetFriction(1.71f);
-			maze_->SetRestitution(0.0f);
-#ifdef ROTATING_PLATFORM
-			maze_->MakeKinematic();
-#endif
+			// Floor
+			sht::graphics::PhysicalBoxModel * floor_model = dynamic_cast<sht::graphics::PhysicalBoxModel *>(floor_model_);
+			vec3 sizes = floor_model->sizes();
+			floor_ = physics_->AddBox(vec3(0.0f, 0.0f, 0.0f), 0.0f, sizes.x, sizes.y, sizes.z);
 		}
-
-		maze_matrix_ = maze_->matrix();
-
-		// Mesh uploading to GPU should be done after physics initialization since it uses vertices data.
-		maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
-		maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kNormal, 3));
-		maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTexcoord, 2));
-		//maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kTangent, 3));
-		//maze_mesh_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kBinormal, 3));
-		if (!maze_mesh_->MakeRenderable())
-			return false;
+		{
+			// Walls
+			for (size_t i = 0; i < wall_data.size(); ++i)
+			{
+				const WallData& data = wall_data[i];
+				sht::physics::Object * box = physics_->AddBox(data.center, 0.0f, data.sizes.x, data.sizes.y, data.sizes.z);
+				walls_.push_back(box);
+			}
+		}
+//		{
+//			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
+//			maze_ = physics_->AddMesh(vec3(0.0f, -6.0f, 0.0f), 0.0f, &enumerator);
+//			maze_->SetFriction(1.71f);
+//			maze_->SetRestitution(0.0f);
+//#ifdef ROTATING_PLATFORM
+//			maze_->MakeKinematic();
+//			maze_matrix_ = maze_->matrix();
+//#endif
+//		}
 
 		// Create camera
 		camera_manager_ = new sht::utility::CameraManager();
@@ -248,8 +502,13 @@ public:
 			delete camera_manager_;
 		if (fps_text_)
 			delete fps_text_;
-		if (maze_mesh_)
-			delete maze_mesh_;
+		for (auto model : walls_models_)
+		{
+			if (model)
+				delete model;
+		}
+		if (floor_model_)
+			delete floor_model_;
 		if (quad_)
 			delete quad_;
 		if (sphere_)
@@ -264,22 +523,22 @@ public:
 		if (keys_.key_down(sht::PublicKey::kA))
 		{
 			any_key_pressed = true;
-			force.z += kPushPower;
+			force.z -= kPushPower;
 		}
 		if (keys_.key_down(sht::PublicKey::kD))
 		{
 			any_key_pressed = true;
-			force.z -= kPushPower;
+			force.z += kPushPower;
 		}
 		if (keys_.key_down(sht::PublicKey::kS))
 		{
 			any_key_pressed = true;
-			force.x += kPushPower;
+			force.x -= kPushPower;
 		}
 		if (keys_.key_down(sht::PublicKey::kW))
 		{
 			any_key_pressed = true;
-			force.x -= kPushPower;
+			force.x += kPushPower;
 		}
 		if (any_key_pressed)
 		{
@@ -306,6 +565,11 @@ public:
 
 		// Update UI
 		ui_root_->UpdateAll(kFrameTime);
+
+		if (ball_->position().y < 0.0f)
+		{
+			victory_board_->Move();
+		}
 
 #ifdef ROTATING_PLATFORM
 		// Update maze rotation
@@ -381,11 +645,8 @@ public:
 
 		renderer_->EnableDepthTest();
 	}
-	void RenderMaze()
+	void RenderFloorAndWalls()
 	{
-		renderer_->PushMatrix();
-		renderer_->MultMatrix(maze_->matrix());
-
 		renderer_->ChangeTexture(irradiance_rt_, 0);
 		renderer_->ChangeTexture(prefilter_rt_, 1);
 		renderer_->ChangeTexture(fg_texture_, 2);
@@ -393,14 +654,31 @@ public:
 		renderer_->ChangeTexture(maze_normal_texture_, 4);
 		renderer_->ChangeTexture(maze_roughness_texture_, 5);
 		renderer_->ChangeTexture(maze_metal_texture_, 6);
-		
+
 		object_shader_->Bind();
 		object_shader_->UniformMatrix4fv("u_projection_view", projection_view_matrix_);
-		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
 		object_shader_->Uniform3fv("u_camera.position", *camera_manager_->position());
-		
-		maze_mesh_->Render();
-		
+
+		// Floor
+		renderer_->PushMatrix();
+		renderer_->MultMatrix(floor_->matrix());
+		object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+		floor_model_->Render();
+		renderer_->PopMatrix();
+		// Walls
+		size_t num_walls = walls_models_.size();
+		for (size_t i = 0; i < num_walls; ++i)
+		{
+			sht::graphics::Model * model = walls_models_[i];
+			sht::physics::Object * object = walls_[i];
+
+			renderer_->PushMatrix();
+			renderer_->MultMatrix(object->matrix());
+			object_shader_->UniformMatrix4fv("u_model", renderer_->model_matrix());
+			model->Render();
+			renderer_->PopMatrix();
+		}
+
 		object_shader_->Unbind();
 
 		renderer_->ChangeTexture(nullptr, 6);
@@ -410,8 +688,6 @@ public:
 		renderer_->ChangeTexture(nullptr, 2);
 		renderer_->ChangeTexture(nullptr, 1);
 		renderer_->ChangeTexture(nullptr, 0);
-		
-		renderer_->PopMatrix();
 	}
 	void RenderBall()
 	{
@@ -447,7 +723,7 @@ public:
 	}
 	void RenderObjects()
 	{
-		RenderMaze();
+		RenderFloorAndWalls();
 		RenderBall();
 	}
 	void RenderInterface()
@@ -463,7 +739,20 @@ public:
 
 		// Render UI
 		gui_shader_->Bind();
-		ui_root_->RenderAll();
+		if (!info_board_->IsPosMax())
+		{
+			if (info_board_->IsPosMin())
+				info_board_->RenderAll(); // render entire tree
+			else
+				info_board_->Render(); // render only board rect (smart hack for labels :D)
+		}
+		if (!victory_board_->IsPosMax())
+		{
+			if (victory_board_->IsPosMin())
+				victory_board_->RenderAll(); // render entire tree
+			else
+				victory_board_->Render(); // render only board rect (smart hack for labels :D)
+		}
 		
 		renderer_->EnableDepthTest();
 	}
@@ -551,17 +840,35 @@ public:
 		}
 		else if (key == sht::PublicKey::kUp)
 		{
-			camera_theta_ += kDeltaAngle;
-			UpdateCamera();
+			if (camera_theta_ < 1.4f)
+			{
+				camera_theta_ += kDeltaAngle;
+				UpdateCamera();
+			}
 		}
 		else if (key == sht::PublicKey::kDown)
 		{
-			camera_theta_ -= kDeltaAngle;
-			UpdateCamera();
+			if (camera_theta_ > 0.1f)
+			{
+				camera_theta_ -= kDeltaAngle;
+				UpdateCamera();
+			}
 		}
 	}
 	void OnMouseDown(sht::MouseButton button, int modifiers) final
 	{
+		if (sht::MouseButton::kLeft == button)
+		{
+			if (victory_exit_rect_->active())
+			{
+				Application::Terminate();
+			}
+			else if (info_ok_rect_->active())
+			{
+				info_ok_rect_->set_active(false);
+				info_board_->Move();
+			}
+		}
 #ifdef ROTATING_PLATFORM
 		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
 		horizontal_slider_->OnTouchDown(position);
@@ -578,8 +885,12 @@ public:
 	}
 	void OnMouseMove() final
 	{
-#ifdef ROTATING_PLATFORM
 		vec2 position(mouse_.x() / height_, mouse_.y() / height_);
+		if (info_board_->IsPosMin())
+			info_board_->SelectAll(position.x, position.y);
+		if (victory_board_->IsPosMin())
+			victory_board_->SelectAll(position.x, position.y);
+#ifdef ROTATING_PLATFORM
 		horizontal_slider_->OnTouchMove(position);
 		if (horizontal_slider_->is_touched())
 			OnHorizontalSliderMoved();
@@ -608,14 +919,158 @@ public:
 #endif
 	void CreateUI()
 	{
+		sht::utility::ui::Rect * rect;
+		sht::utility::ui::Label * label;
+
 		ui_root_ = new sht::utility::ui::Widget();
 
+		// Info menu
+		info_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
+			vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+			0.8f, // f32 width
+			0.6f, // f32 height
+			aspect_ratio_*0.5f - 0.4f, // f32 left
+			0.2f, // f32 hmin
+			1.0f, // f32 hmax
+			1.0f, // f32 velocity
+			true, // bool is_down
+			true, // bool is vertical
+			(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+			);
+		ui_root_->AttachWidget(info_board_);
+		{
+			const wchar_t * kText = L"Controls:";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.10f, // text height
+				wcslen(kText)+1, // buffer size
+				0.25f, // x
+				0.50f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+				);
+			info_board_->AttachWidget(label);
+			label->SetText(kText);
+		}
+		{
+			const wchar_t * kText = L"WASD - movement";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.10f, // text height
+				wcslen(kText) + 1, // buffer size
+				0.05f, // x
+				0.30f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+			info_board_->AttachWidget(label);
+			label->SetText(kText);
+		}
+		{
+			const wchar_t * kText = L"Arrow keys - camera";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.10f, // text height
+				wcslen(kText) + 1, // buffer size
+				0.05f, // x
+				0.20f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+			info_board_->AttachWidget(label);
+			label->SetText(kText);
+		}
+		{
+			rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+				0.20f, // x
+				0.0f, // y
+				0.4f, // width
+				0.1f, // height
+				(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+				);
+			info_board_->AttachWidget(rect);
+			info_ok_rect_ = rect;
+			const wchar_t * kText = L"OK";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.1f, // text height
+				wcslen(kText)+1, // buffer size
+				0.0f, // x
+				0.0f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+				);
+			rect->AttachWidget(label);
+			label->SetText(kText);
+			label->AlignCenter(rect->width(), rect->height());
+		}
+
+		// Victory menu
+		victory_board_ = new sht::utility::ui::ColoredBoard(renderer_, gui_shader_,
+			vec4(0.5f, 0.5f, 0.3f, 0.3f), // vec4 color
+			0.8f, // f32 width
+			0.6f, // f32 height
+			aspect_ratio_*0.5f - 0.4f, // f32 left
+			0.2f, // f32 hmin
+			1.0f, // f32 hmax
+			1.0f, // f32 velocity
+			false, // bool is_down
+			true, // bool is vertical
+			(u32)sht::utility::ui::Flags::kRenderAlways // u32 flags
+			);
+		ui_root_->AttachWidget(victory_board_);
+		{
+			const wchar_t * kText = L"Congratulations!";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.10f, // text height
+				wcslen(kText)+1, // buffer size
+				0.15f, // x
+				0.50f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+				);
+			victory_board_->AttachWidget(label);
+			label->SetText(kText);
+		}
+		{
+			const wchar_t * kText = L"You have finished!";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.10f, // text height
+				wcslen(kText) + 1, // buffer size
+				0.15f, // x
+				0.30f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+			);
+			victory_board_->AttachWidget(label);
+			label->SetText(kText);
+		}
+		{
+			rect = new sht::utility::ui::RectColored(renderer_, gui_shader_, vec4(0.5f),
+				0.2f, // x
+				0.0f, // y
+				0.4f, // width
+				0.1f, // height
+				(u32)sht::utility::ui::Flags::kRenderIfActive | (u32)sht::utility::ui::Flags::kSelectable // u32 flags
+				);
+			victory_board_->AttachWidget(rect);
+			victory_exit_rect_ = rect;
+			const wchar_t * kText = L"Exit";
+			label = new sht::utility::ui::Label(renderer_, text_shader_, font_,
+				vec4(0.2f, 0.2f, 0.2f, 1.0f), // color
+				0.1f, // text height
+				wcslen(kText)+1, // buffer size
+				0.0f, // x
+				0.0f, // y
+				(u32)sht::utility::ui::Flags::kRenderAlways // flags
+				);
+			rect->AttachWidget(label);
+			label->SetText(kText);
+			label->AlignCenter(rect->width(), rect->height());
+		}
+
+#ifdef ROTATING_PLATFORM
 		// ----- User interaction UI -----
 		const vec4 kBarColor(0.5f, 0.5f, 0.5f, 0.5f);
 		const vec4 kPinColorNormal(1.0f, 1.0f, 1.0f, 1.0f);
 		const vec4 kPinColorTouch(1.0f, 1.0f, 0.0f, 1.0f);
 
-#ifdef ROTATING_PLATFORM
 		horizontal_slider_ = new sht::utility::ui::SliderColored(renderer_, gui_shader_,
 			kBarColor, // vec4 bar_color
 			kPinColorNormal, // vec4 pin_color_normal
@@ -654,14 +1109,15 @@ public:
 		if (need_update_projection_matrix_ || camera_manager_->animated())
 		{
 			need_update_projection_matrix_ = false;
-			renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+			renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.5f, 250.0f));
 		}
 	}
 	
 private:
 	sht::graphics::Model * sphere_;
 	sht::graphics::Model * quad_;
-	sht::graphics::ComplexMesh * maze_mesh_;
+	sht::graphics::PhysicalBoxModel * floor_model_;
+	std::vector<sht::graphics::Model *> walls_models_;
 
 	sht::graphics::Shader * text_shader_;
 	sht::graphics::Shader * gui_shader_;
@@ -689,16 +1145,21 @@ private:
 
 	sht::physics::Engine * physics_;
 	sht::physics::Object * ball_;
-	sht::physics::Object * maze_;
+	sht::physics::Object * floor_;
+	std::vector<sht::physics::Object *> walls_;
 
 	sht::utility::ui::Widget * ui_root_;
+	sht::utility::ui::ColoredBoard * info_board_;
+	sht::utility::ui::ColoredBoard * victory_board_;
+	sht::utility::ui::Rect * info_ok_rect_;
+	sht::utility::ui::Rect * victory_exit_rect_;
 #ifdef ROTATING_PLATFORM
 	sht::utility::ui::SliderColored * horizontal_slider_;
 	sht::utility::ui::SliderColored * vertical_slider_;
+	sht::math::Matrix4 maze_matrix_;
 #endif
 	
 	sht::math::Matrix4 projection_view_matrix_;
-	sht::math::Matrix4 maze_matrix_;
 
 #ifdef ROTATING_PLATFORM
 	// Since slider shouldn't control angle directly we will use target angle
