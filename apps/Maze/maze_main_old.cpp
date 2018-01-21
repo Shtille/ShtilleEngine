@@ -17,7 +17,7 @@
 #include <cmath>
 #include <vector>
 
-//#define ROTATING_PLATFORM
+#define ROTATING_PLATFORM
 
 #define APP_NAME MazeApp
 
@@ -428,7 +428,6 @@ public:
 			return false;
 
 		// Create physics
-		const float kFrameTime = GetFrameTime();
 		physics_ = new sht::physics::Engine(20 /* max sub steps */, 0.01f /* fixed time step */);
 
 		// Setup physics objects
@@ -467,16 +466,6 @@ public:
 				walls_.push_back(box);
 			}
 		}
-//		{
-//			sht::graphics::MeshVerticesEnumerator enumerator(maze_mesh_);
-//			maze_ = physics_->AddMesh(vec3(0.0f, -6.0f, 0.0f), 0.0f, &enumerator);
-//			maze_->SetFriction(1.71f);
-//			maze_->SetRestitution(0.0f);
-//#ifdef ROTATING_PLATFORM
-//			maze_->MakeKinematic();
-//			maze_matrix_ = maze_->matrix();
-//#endif
-//		}
 
 		// Create camera
 		camera_manager_ = new sht::utility::CameraManager();
@@ -542,9 +531,6 @@ public:
 		}
 		if (any_key_pressed)
 		{
-			//sht::math::Vector3 radius(0.0f, kBallRadius, 0.0f);
-			//sht::math::Vector3 torque(radius ^ force); // TODO: optimize this
-			//ball_->ApplyTorque(torque);
 			ball_->ApplyCentralForce(force);
 		}
 	}
@@ -753,6 +739,8 @@ public:
 			else
 				victory_board_->Render(); // render only board rect (smart hack for labels :D)
 		}
+		horizontal_slider_->RenderAll();
+		vertical_slider_->RenderAll();
 		
 		renderer_->EnableDepthTest();
 	}
@@ -908,13 +896,18 @@ public:
 #ifdef ROTATING_PLATFORM
 	void UpdateMazeMatrix()
 	{
-		float cos_x = cosf(maze_angle_x_);
-		float sin_x = sinf(maze_angle_x_);
-		sht::math::Matrix4 rotation_x = sht::math::Rotate4(cos_x, sin_x, 1.0f, 0.0f, 0.0f);
-		float cos_y = cosf(maze_angle_y_);
-		float sin_y = sinf(maze_angle_y_);
-		sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 0.0f, 0.0f, 1.0f);
-		maze_->SetTransform(maze_matrix_ * rotation_x * rotation_y);
+		// float cos_x = cosf(maze_angle_x_);
+		// float sin_x = sinf(maze_angle_x_);
+		// sht::math::Matrix4 rotation_x = sht::math::Rotate4(cos_x, sin_x, 1.0f, 0.0f, 0.0f);
+		// float cos_y = cosf(maze_angle_y_);
+		// float sin_y = sinf(maze_angle_y_);
+		// sht::math::Matrix4 rotation_y = sht::math::Rotate4(cos_y, sin_y, 0.0f, 0.0f, 1.0f);
+		// maze_->SetTransform(maze_matrix_ * rotation_x * rotation_y);
+		quat horizontal(vec3(1.0f, 0.0f, 0.0f), maze_angle_x_);
+		quat vertical(vec3(0.0f, 0.0f, 1.0f), maze_angle_y_);
+		quat orient(horizontal * vertical);
+		vec3 gravity = orient.RotateVector(vec3(0.0f, -9.81f, 0.0f));
+		physics_->SetGravity(gravity);
 	}
 #endif
 	void CreateUI()
