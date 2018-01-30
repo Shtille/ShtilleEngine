@@ -4,12 +4,13 @@ namespace sht {
 	namespace utility {
 		namespace ui {
 
-			Slider::Slider(f32 x, f32 y, f32 width, f32 height, u32 flags)
+			Slider::Slider(f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags)
 			: Widget(x, y, flags)
 			, width_(width)
 			, height_(height)
 			, old_position_(0.0f)
 			, radius_((width < height) ? (0.5f * width) : (0.5f * height))
+			, bar_radius_(bar_radius)
 			, pin_position_(0.0f)
 			, pin_radius_((width < height) ? (0.5f * width) : (0.5f * height))
 			, is_touched_(false)
@@ -102,9 +103,9 @@ namespace sht {
 
 			SliderColored::SliderColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
 				 const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
-				 f32 x, f32 y, f32 width, f32 height, u32 flags,
+				 f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags,
 				 Form bar_form, Form pin_form)
-			: Slider(x, y, width, height, flags)
+			: Slider(x, y, width, height, bar_radius, flags)
 			, Drawable(renderer, shader, nullptr)
 			, bar_color_(bar_color)
 			, pin_color_normal_(pin_color_normal)
@@ -222,32 +223,32 @@ namespace sht {
 					if (is_vertical())
 					{
 						// Lower left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Lower right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Upper left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
 						// Upper left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
 						// Lower right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Upper right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
@@ -258,11 +259,11 @@ namespace sht {
 							vertices[index].x = 0.5f * width_;
 							vertices[index].y = radius_;
 							++index;
-							vertices[index].x = 0.5f * width_ - pin_radius_ * cosf(current_angle);
-							vertices[index].y = radius_       - pin_radius_ * sinf(current_angle);
+							vertices[index].x = 0.5f * width_ - bar_radius_ * cosf(current_angle);
+							vertices[index].y = radius_       - bar_radius_ * sinf(current_angle);
 							++index;
-							vertices[index].x = 0.5f * width_ - pin_radius_ * cosf(current_angle + kAngle);
-							vertices[index].y = radius_       - pin_radius_ * sinf(current_angle + kAngle);
+							vertices[index].x = 0.5f * width_ - bar_radius_ * cosf(current_angle + kAngle);
+							vertices[index].y = radius_       - bar_radius_ * sinf(current_angle + kAngle);
 							++index;
 						}
 
@@ -273,11 +274,11 @@ namespace sht {
 							vertices[index].x = 0.5f * width_;
 							vertices[index].y = height_ - radius_;
 							++index;
-							vertices[index].x = 0.5f * width_     + pin_radius_ * cosf(current_angle);
-							vertices[index].y = height_ - radius_ + pin_radius_ * sinf(current_angle);
+							vertices[index].x = 0.5f * width_     + bar_radius_ * cosf(current_angle);
+							vertices[index].y = height_ - radius_ + bar_radius_ * sinf(current_angle);
 							++index;
-							vertices[index].x = 0.5f * width_     + pin_radius_ * cosf(current_angle + kAngle);
-							vertices[index].y = height_ - radius_ + pin_radius_ * sinf(current_angle + kAngle);
+							vertices[index].x = 0.5f * width_     + bar_radius_ * cosf(current_angle + kAngle);
+							vertices[index].y = height_ - radius_ + bar_radius_ * sinf(current_angle + kAngle);
 							++index;
 						}
 					}
@@ -285,32 +286,32 @@ namespace sht {
 					{
 						// Lower left
 						vertices[index].x = radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Lower right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Upper left
 						vertices[index].x = radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Upper left
 						vertices[index].x = radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Lower right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Upper right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Left semicircle
@@ -320,11 +321,11 @@ namespace sht {
 							vertices[index].x = radius_;
 							vertices[index].y = 0.5f * height_;
 							++index;
-							vertices[index].x = radius_        - pin_radius_ * sinf(current_angle);
-							vertices[index].y = 0.5f * height_ + pin_radius_ * cosf(current_angle);
+							vertices[index].x = radius_        - bar_radius_ * sinf(current_angle);
+							vertices[index].y = 0.5f * height_ + bar_radius_ * cosf(current_angle);
 							++index;
-							vertices[index].x = radius_        - pin_radius_ * sinf(current_angle + kAngle);
-							vertices[index].y = 0.5f * height_ + pin_radius_ * cosf(current_angle + kAngle);
+							vertices[index].x = radius_        - bar_radius_ * sinf(current_angle + kAngle);
+							vertices[index].y = 0.5f * height_ + bar_radius_ * cosf(current_angle + kAngle);
 							++index;
 						}
 
@@ -335,11 +336,11 @@ namespace sht {
 							vertices[index].x = width_ - radius_;
 							vertices[index].y = 0.5f * height_;
 							++index;
-							vertices[index].x = width_ - radius_ + pin_radius_ * sinf(current_angle);
-							vertices[index].y = 0.5f * height_   - pin_radius_ * cosf(current_angle);
+							vertices[index].x = width_ - radius_ + bar_radius_ * sinf(current_angle);
+							vertices[index].y = 0.5f * height_   - bar_radius_ * cosf(current_angle);
 							++index;
-							vertices[index].x = width_ - radius_ + pin_radius_ * sinf(current_angle + kAngle);
-							vertices[index].y = 0.5f * height_   - pin_radius_ * cosf(current_angle + kAngle);
+							vertices[index].x = width_ - radius_ + bar_radius_ * sinf(current_angle + kAngle);
+							vertices[index].y = 0.5f * height_   - bar_radius_ * cosf(current_angle + kAngle);
 							++index;
 						}
 					}
@@ -400,9 +401,9 @@ namespace sht {
 			SliderTextured::SliderTextured(sht::graphics::Renderer * renderer,
 				sht::graphics::Shader * color_shader, sht::graphics::Shader * texture_shader,
 				sht::graphics::Texture * texture_normal, sht::graphics::Texture * texture_touch,
-				const vec4& bar_color, f32 x, f32 y, f32 width, f32 height, u32 flags,
+				const vec4& bar_color, f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags,
 				Form bar_form)
-			: Slider(x, y, width, height, flags)
+			: Slider(x, y, width, height, bar_radius, flags)
 			, Drawable(renderer, color_shader, texture_normal)
 			, texture_shader_(texture_shader)
 			, texture_touch_(texture_touch)
@@ -522,32 +523,32 @@ namespace sht {
 					if (is_vertical())
 					{
 						// Lower left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Lower right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Upper left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
 						// Upper left
-						vertices[index].x = 0.0f;
+						vertices[index].x = 0.5f * width_ - bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
 						// Lower right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = radius_;
 						++index;
 						
 						// Upper right
-						vertices[index].x = width_;
+						vertices[index].x = 0.5f * width_ + bar_radius_;
 						vertices[index].y = height_ - radius_;
 						++index;
 
@@ -558,11 +559,11 @@ namespace sht {
 							vertices[index].x = 0.5f * width_;
 							vertices[index].y = radius_;
 							++index;
-							vertices[index].x = 0.5f * width_ - pin_radius_ * cosf(current_angle);
-							vertices[index].y = radius_       - pin_radius_ * sinf(current_angle);
+							vertices[index].x = 0.5f * width_ - bar_radius_ * cosf(current_angle);
+							vertices[index].y = radius_       - bar_radius_ * sinf(current_angle);
 							++index;
-							vertices[index].x = 0.5f * width_ - pin_radius_ * cosf(current_angle + kAngle);
-							vertices[index].y = radius_       - pin_radius_ * sinf(current_angle + kAngle);
+							vertices[index].x = 0.5f * width_ - bar_radius_ * cosf(current_angle + kAngle);
+							vertices[index].y = radius_       - bar_radius_ * sinf(current_angle + kAngle);
 							++index;
 						}
 
@@ -573,11 +574,11 @@ namespace sht {
 							vertices[index].x = 0.5f * width_;
 							vertices[index].y = height_ - radius_;
 							++index;
-							vertices[index].x = 0.5f * width_     + pin_radius_ * cosf(current_angle);
-							vertices[index].y = height_ - radius_ + pin_radius_ * sinf(current_angle);
+							vertices[index].x = 0.5f * width_     + bar_radius_ * cosf(current_angle);
+							vertices[index].y = height_ - radius_ + bar_radius_ * sinf(current_angle);
 							++index;
-							vertices[index].x = 0.5f * width_     + pin_radius_ * cosf(current_angle + kAngle);
-							vertices[index].y = height_ - radius_ + pin_radius_ * sinf(current_angle + kAngle);
+							vertices[index].x = 0.5f * width_     + bar_radius_ * cosf(current_angle + kAngle);
+							vertices[index].y = height_ - radius_ + bar_radius_ * sinf(current_angle + kAngle);
 							++index;
 						}
 					}
@@ -585,32 +586,32 @@ namespace sht {
 					{
 						// Lower left
 						vertices[index].x = radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Lower right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Upper left
 						vertices[index].x = radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Upper left
 						vertices[index].x = radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Lower right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = 0.0f;
+						vertices[index].y = 0.5f * height_ - bar_radius_;
 						++index;
 						
 						// Upper right
 						vertices[index].x = width_ - radius_;
-						vertices[index].y = height_;
+						vertices[index].y = 0.5f * height_ + bar_radius_;
 						++index;
 
 						// Left semicircle
@@ -620,11 +621,11 @@ namespace sht {
 							vertices[index].x = radius_;
 							vertices[index].y = 0.5f * height_;
 							++index;
-							vertices[index].x = radius_        - pin_radius_ * sinf(current_angle);
-							vertices[index].y = 0.5f * height_ + pin_radius_ * cosf(current_angle);
+							vertices[index].x = radius_        - bar_radius_ * sinf(current_angle);
+							vertices[index].y = 0.5f * height_ + bar_radius_ * cosf(current_angle);
 							++index;
-							vertices[index].x = radius_        - pin_radius_ * sinf(current_angle + kAngle);
-							vertices[index].y = 0.5f * height_ + pin_radius_ * cosf(current_angle + kAngle);
+							vertices[index].x = radius_        - bar_radius_ * sinf(current_angle + kAngle);
+							vertices[index].y = 0.5f * height_ + bar_radius_ * cosf(current_angle + kAngle);
 							++index;
 						}
 
@@ -635,11 +636,11 @@ namespace sht {
 							vertices[index].x = width_ - radius_;
 							vertices[index].y = 0.5f * height_;
 							++index;
-							vertices[index].x = width_ - radius_ + pin_radius_ * sinf(current_angle);
-							vertices[index].y = 0.5f * height_   - pin_radius_ * cosf(current_angle);
+							vertices[index].x = width_ - radius_ + bar_radius_ * sinf(current_angle);
+							vertices[index].y = 0.5f * height_   - bar_radius_ * cosf(current_angle);
 							++index;
-							vertices[index].x = width_ - radius_ + pin_radius_ * sinf(current_angle + kAngle);
-							vertices[index].y = 0.5f * height_   - pin_radius_ * cosf(current_angle + kAngle);
+							vertices[index].x = width_ - radius_ + bar_radius_ * sinf(current_angle + kAngle);
+							vertices[index].y = 0.5f * height_   - bar_radius_ * cosf(current_angle + kAngle);
 							++index;
 						}
 					}

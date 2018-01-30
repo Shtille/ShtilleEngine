@@ -14,7 +14,7 @@ namespace sht {
 			*/
 			class Slider : public Widget {
 			public:
-				Slider(f32 x, f32 y, f32 width, f32 height, u32 flags);
+				Slider(f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags);
 
 				void SetPinPosition(f32 pos);
 
@@ -36,6 +36,7 @@ namespace sht {
 				f32 height_;
 				vec2 old_position_;
 				float radius_;
+				float bar_radius_;
 				float pin_position_;
 				float pin_radius_;
 				bool is_touched_;
@@ -51,7 +52,7 @@ namespace sht {
 				};
 				SliderColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
 					const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
-					f32 x, f32 y, f32 width, f32 height, u32 flags,
+					f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags,
 					Form bar_form = kQuad, Form pin_form = kQuad);
 
 				virtual void Render() override;
@@ -82,7 +83,7 @@ namespace sht {
 				SliderTextured(sht::graphics::Renderer * renderer,
 					sht::graphics::Shader * color_shader, sht::graphics::Shader * texture_shader,
 					sht::graphics::Texture * texture_normal, sht::graphics::Texture * texture_touch,
-					const vec4& bar_color, f32 x, f32 y, f32 width, f32 height, u32 flags,
+					const vec4& bar_color, f32 x, f32 y, f32 width, f32 height, f32 bar_radius, u32 flags,
 					Form bar_form = kQuad);
 
 				virtual void Render() override;

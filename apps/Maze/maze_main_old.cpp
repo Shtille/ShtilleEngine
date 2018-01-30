@@ -1072,6 +1072,7 @@ public:
 			0.0f, // f32 y
 			renderer_->aspect_ratio(), // f32 width
 			0.2f, // f32 height
+			0.03f, // f32 bar_radius
 			(u32)sht::utility::ui::Flags::kRenderAlways, // u32 flags
 			sht::utility::ui::SliderColored::kCircle, // bar form
 			sht::utility::ui::SliderColored::kCircle // pin form
@@ -1086,6 +1087,7 @@ public:
 			0.2f, // f32 y
 			0.2f, // f32 width
 			0.8f, // f32 height
+			0.03f, // f32 bar_radius
 			(u32)sht::utility::ui::Flags::kRenderAlways, // u32 flags
 			sht::utility::ui::SliderColored::kCircle, // bar form
 			sht::utility::ui::SliderColored::kCircle // pin form
