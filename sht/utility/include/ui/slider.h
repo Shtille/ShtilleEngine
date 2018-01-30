@@ -44,9 +44,15 @@ namespace sht {
 			//! Colored slider class
 			class SliderColored : public Slider, public Drawable {
 			public:
+				enum Form
+				{
+					kQuad,
+					kCircle
+				};
 				SliderColored(sht::graphics::Renderer * renderer, sht::graphics::Shader * shader,
 					const vec4& bar_color, const vec4& pin_color_normal, const vec4& pin_color_touch,
-					f32 x, f32 y, f32 width, f32 height, u32 flags);
+					f32 x, f32 y, f32 width, f32 height, u32 flags,
+					Form bar_form = kQuad, Form pin_form = kQuad);
 
 				virtual void Render() override;
 
@@ -54,8 +60,40 @@ namespace sht {
 				vec4 bar_color_;
 				vec4 pin_color_normal_;
 				vec4 pin_color_touch_;
-				const u32 num_bar_vertices_;
-				const u32 num_pin_vertices_;
+				u32 num_bar_vertices_;
+				u32 num_pin_vertices_;
+				Form bar_form_;
+				Form pin_form_;
+
+			private:
+				void BindConstUniforms() override;
+				void FillVertexAttribs() override;
+				void FillVertices() override;
+			};
+
+			//! Textured slider class
+			class SliderTextured : public Slider, public Drawable {
+			public:
+				enum Form
+				{
+					kQuad,
+					kCircle
+				};
+				SliderTextured(sht::graphics::Renderer * renderer,
+					sht::graphics::Shader * color_shader, sht::graphics::Shader * texture_shader,
+					sht::graphics::Texture * texture_normal, sht::graphics::Texture * texture_touch,
+					const vec4& bar_color, f32 x, f32 y, f32 width, f32 height, u32 flags,
+					Form bar_form = kQuad);
+
+				virtual void Render() override;
+
+			protected:
+				sht::graphics::Shader * texture_shader_;
+				sht::graphics::Texture * texture_touch_;
+				vec4 bar_color_;
+				u32 num_bar_vertices_;
+				u32 num_pin_vertices_;
+				Form bar_form_;
 
 			private:
 				void BindConstUniforms() override;

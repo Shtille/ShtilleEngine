@@ -1072,7 +1072,9 @@ public:
 			0.0f, // f32 y
 			renderer_->aspect_ratio(), // f32 width
 			0.2f, // f32 height
-			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+			(u32)sht::utility::ui::Flags::kRenderAlways, // u32 flags
+			sht::utility::ui::SliderColored::kCircle, // bar form
+			sht::utility::ui::SliderColored::kCircle // pin form
 			);
 		horizontal_slider_->SetPinPosition(0.5f);
 		ui_root_->AttachWidget(horizontal_slider_);
@@ -1084,7 +1086,9 @@ public:
 			0.2f, // f32 y
 			0.2f, // f32 width
 			0.8f, // f32 height
-			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
+			(u32)sht::utility::ui::Flags::kRenderAlways, // u32 flags
+			sht::utility::ui::SliderColored::kCircle, // bar form
+			sht::utility::ui::SliderColored::kCircle // pin form
 			);
 		vertical_slider_->SetPinPosition(0.5f);
 		ui_root_->AttachWidget(vertical_slider_);
