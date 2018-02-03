@@ -1,0 +1,251 @@
+#include "../../sht/include/sht.h"
+#include "../../sht/graphics/include/model/screen_quad_model.h"
+#include "../../sht/graphics/include/renderer/text.h"
+#include "../../sht/utility/include/camera.h"
+
+#include <cmath>
+
+/*
+The main concept of creating this application is testing ray cast.
+*/
+
+#define APP_NAME RayCastApp
+
+class APP_NAME : public sht::OpenGlApplication
+{
+public:
+	APP_NAME()
+	: quad_(nullptr)
+	, font_(nullptr)
+	, fps_text_(nullptr)
+	, camera_manager_(nullptr)
+	, need_update_projection_matrix_(true)
+	{
+	}
+	const char* GetTitle() final
+	{
+		return "Ray cast test";
+	}
+	const bool IsMultisample() final
+	{
+		return false;
+	}
+	void BindShaderConstants()
+	{
+		//const vec3 kSpherePosition(0.0f);
+
+		text_shader_->Bind();
+		text_shader_->Uniform1i("u_texture", 0);
+
+		cast_shader_->Bind();
+		// cast_shader_->Uniform3fv("u_sphere.position", kSpherePosition);
+		// cast_shader_->Uniform1f("u_sphere.radius", 1.0f);
+		cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f));
+		cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f));
+		cast_shader_->Unbind();
+	}
+	void BindShaderVariables()
+	{
+	}
+	bool Load() final
+	{
+		// Quad model
+		quad_ = new sht::graphics::ScreenQuadModel(renderer_);
+		quad_->AddFormat(sht::graphics::VertexAttribute(sht::graphics::VertexAttribute::kVertex, 3));
+		quad_->Create();
+		if (!quad_->MakeRenderable())
+			return false;
+		
+		// Load shaders
+		if (!renderer_->AddShader(text_shader_, "data/shaders/text")) return false;
+		if (!renderer_->AddShader(cast_shader_, "data/shaders/apps/RayCast/cast")) return false;
+
+		renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
+		if (font_ == nullptr)
+			return false;
+
+		fps_text_ = sht::graphics::DynamicText::Create(renderer_, 30);
+		if (!fps_text_)
+			return false;
+
+		camera_manager_ = new sht::utility::CameraManager();
+		camera_manager_->MakeFree(vec3(5.0f), vec3(0.0f));
+
+		// Finally bind constants
+		BindShaderConstants();
+		
+		return true;
+	}
+	void Unload() final
+	{
+		if (camera_manager_)
+			delete camera_manager_;
+		if (fps_text_)
+			delete fps_text_;
+		if (quad_)
+			delete quad_;
+	}
+	void Update() final
+	{
+		const float kFrameTime = GetFrameTime();
+
+		camera_manager_->Update(kFrameTime);
+
+		// Update matrices
+		renderer_->SetViewMatrix(camera_manager_->view_matrix());
+		UpdateProjectionMatrix();
+		projection_view_matrix_ = renderer_->projection_matrix() * renderer_->view_matrix();
+		UpdateRays();
+
+		BindShaderVariables();
+	}
+	void RenderObjects()
+	{
+		renderer_->DisableDepthTest();
+
+		//renderer_->ChangeTexture(env_texture);
+		cast_shader_->Bind();
+		// cast_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
+		// cast_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
+		cast_shader_->Uniform3fv("u_eye", *camera_manager_->position());
+		quad_->Render();
+		cast_shader_->Unbind();
+		//renderer_->ChangeTexture(nullptr);
+
+		renderer_->EnableDepthTest();
+	}
+	void RenderInterface()
+	{
+		renderer_->DisableDepthTest();
+		
+		// Draw FPS
+		text_shader_->Bind();
+		text_shader_->Uniform4f("u_color", 1.0f, 0.5f, 1.0f, 1.0f);
+		fps_text_->SetText(font_, 0.0f, 0.8f, 0.05f, L"fps: %.2f", GetFrameRate());
+		fps_text_->Render();
+		text_shader_->Unbind();
+
+		renderer_->ChangeTexture(nullptr);
+		
+		renderer_->EnableDepthTest();
+	}
+	void Render() final
+	{
+		renderer_->SetViewport(width_, height_);
+		
+		renderer_->ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		renderer_->ClearColorAndDepthBuffers();
+		
+		RenderObjects();
+		RenderInterface();
+	}
+	void OnKeyDown(sht::PublicKey key, int mods) final
+	{
+		if (key == sht::PublicKey::kF)
+		{
+			ToggleFullscreen();
+		}
+		else if (key == sht::PublicKey::kEscape)
+		{
+			Application::Terminate();
+		}
+		else if (key == sht::PublicKey::kF5)
+		{
+			renderer_->TakeScreenshot("screenshots");
+		}
+		else if (key == sht::PublicKey::kLeft)
+		{
+			camera_manager_->RotateAroundTargetInY(0.1f);
+		}
+		else if (key == sht::PublicKey::kRight)
+		{
+			camera_manager_->RotateAroundTargetInY(-0.1f);
+		}
+		else if (key == sht::PublicKey::kUp)
+		{
+			camera_manager_->RotateAroundTargetInZ(0.1f);
+		}
+		else if (key == sht::PublicKey::kDown)
+		{
+			camera_manager_->RotateAroundTargetInZ(-0.1f);
+		}
+	}
+	void OnMouseDown(sht::MouseButton button, int modifiers) final
+	{
+	}
+	void OnMouseUp(sht::MouseButton button, int modifiers) final
+	{
+	}
+	void OnMouseMove() final
+	{
+	}
+	void OnSize(int w, int h) final
+	{
+		Application::OnSize(w, h);
+		// To have correct perspective when resizing
+		need_update_projection_matrix_ = true;
+	}
+	void UpdateProjectionMatrix()
+	{
+		if (need_update_projection_matrix_ || camera_manager_->animated())
+		{
+			need_update_projection_matrix_ = false;
+			renderer_->SetProjectionMatrix(sht::math::PerspectiveMatrix(45.0f, width(), height(), 0.1f, 100.0f));
+		}
+	}
+	void UpdateRays()
+	{
+		const sht::math::Matrix4& proj = renderer_->projection_matrix();
+		const sht::math::Matrix4& view = renderer_->view_matrix();
+		const sht::math::Matrix4 inverse_proj = proj.GetInverse();
+		const sht::math::Matrix4 inverse_view = view.GetInverse();
+		vec2 ndc[4] = {
+			vec2(-1.0f, -1.0f),
+			vec2( 1.0f, -1.0f),
+			vec2(-1.0f,  1.0f),
+			vec2( 1.0f,  1.0f)
+		};
+		vec3 rays[4];
+		for (int i = 0; i < 4; ++i)
+		{
+			// Step 2: 4d Homogeneous Clip Coordinates ( range [-1:1, -1:1, -1:1, -1:1] )
+			vec4 ray_clip(
+				ndc[i].x,
+				ndc[i].y,
+				-1.0, // We want our ray's z to point forwards - this is usually the negative z direction in OpenGL style.
+				1.0
+				);
+			// Step 3: 4d Eye (Camera) Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
+			vec4 ray_eye = inverse_proj * ray_clip;
+			// Now, we only needed to un-project the x,y part, so let's manually set the z,w part to mean "forwards, and not a point".
+			ray_eye.z = -1.0f;
+			ray_eye.w = 0.0f;
+			// Step 4: 4d World Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
+			//ray = (view.GetInverse() * ray_eye).xyz();
+			rays[i] = inverse_view.TransformVector(ray_eye.xyz());
+			rays[i].Normalize();
+		}
+		cast_shader_->Bind();
+		cast_shader_->Uniform3fv("u_ray00", rays[0]);
+		cast_shader_->Uniform3fv("u_ray10", rays[1]);
+		cast_shader_->Uniform3fv("u_ray01", rays[2]);
+		cast_shader_->Uniform3fv("u_ray11", rays[3]);
+		cast_shader_->Unbind();
+	}
+	
+private:
+	sht::graphics::Model * quad_;
+
+	sht::graphics::Shader * text_shader_;
+	sht::graphics::Shader * cast_shader_;
+
+	sht::graphics::Font * font_;
+	sht::graphics::DynamicText * fps_text_;
+	sht::utility::CameraManager * camera_manager_;
+	
+	sht::math::Matrix4 projection_view_matrix_;
+	
+	bool need_update_projection_matrix_;
+};
+
+DECLARE_MAIN(APP_NAME);
