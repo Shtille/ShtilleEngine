@@ -1,6 +1,8 @@
-#version 330 core
+#version 330 compatibility
 
+#ifdef GL_core_profile
 out vec4 out_color;
+#endif
 
 in DATA
 {
@@ -25,22 +27,34 @@ struct Hit {
 struct Plane {
 	vec3 normal; // (a,b,c)
     float d;	// solution to dot(n,p)+d=0
-    Material material;
 };
 struct Sphere {
 	vec3 position;
 	float radius;
-	Material material;
 };
 struct Box {
 	vec3 min;
 	vec3 max;
-	Material material;
 };
 struct DirectionalLight {
 	vec3 color;
     vec3 direction;
 };
+struct TracedRay {
+    Ray incident;
+    vec3 attenuation;
+    int depth;
+};
+
+// Defines
+#define PI 3.14159265358979
+#define MAX_DEPTH 2
+#define MAX_TRACED_RAYS 16 // 2 ^ (MAX_DEPTH + 2) - 1 <= MAX_TRACED_RAYS
+#define GAMMA 2.2
+
+#define MAX_PLANES 1
+#define MAX_SPHERES 1
+#define MAX_BOXES 1
 
 uniform vec3 u_eye;
 uniform vec3 u_ray00;
@@ -50,42 +64,28 @@ uniform vec3 u_ray11;
 
 uniform DirectionalLight u_light;
 
-// There will be the only sphere in this shader
-//uniform Sphere u_sphere;
-// Defines
-#define PI 3.14159265358979
-#define MAX_BOUNCES 2
-#define GAMMA 2.2
-
-#define MAX_PLANES 1
-#define MAX_SPHERES 1
-#define MAX_BOXES 1
-
 uniform Plane u_planes[MAX_PLANES];
 uniform Sphere u_spheres[MAX_SPHERES];
 uniform Box u_boxes[MAX_BOXES];
-uniform int num_planes;
-uniform int num_spheres;
-uniform int num_boxes;
+uniform int u_num_planes;
+uniform int u_num_spheres;
+uniform int u_num_boxes;
 
 const float kEpsilon = 0.01;
+const Material kPlaneMaterial = Material(vec3(0.5, 0.4, 0.3), 0.02, 0);
+const Material kSphereMaterial = Material(vec3(0.5), 0.02, 1);
 const Hit kNoHit = Hit(vec3(0.0), 1e5, false, Material(vec3(0.0), 0.0, 0));
 
 // Indices of refraction
 const float n_air = 1.0;
 const float n_glass = 1.51714;
-
+// Fresnel reflectance at normal incidence
 const float R0 = ((n_air - n_glass) * (n_air - n_glass)) / ((n_air + n_glass) * (n_air + n_glass));
 
 float pow5(float x)
 {
 	float x2 = x * x;
 	return x2 * x2 * x;
-}
-float seed = 0.0;
-float rand()
-{
-	return fract(sin(seed++)*43758.5453123);
 }
 // Schlick approximation
 float fresnel(vec3 h, vec3 v, float f0)
@@ -105,15 +105,15 @@ vec3 BoxNormal(const Box box, const vec3 point)
 	normal += vec3(0.0, 0.0, sign(pc.z)) * step(abs(abs(pc.z) - size.z), kEpsilon);
 	return normalize(normal);
 }
-Hit IntersectPlane(const Plane plane, const Ray ray)
+Hit IntersectPlane(const Plane plane, const Ray ray, const Material material)
 {
     float dotnd = dot(plane.normal, ray.direction);
     if (dotnd > 0.0) return kNoHit;
 
     float t = -(dot(ray.origin, plane.normal) + plane.d) / dotnd;
-    return Hit(plane.normal, t, true, plane.material);
+    return Hit(plane.normal, t, true, material);
 }
-Hit IntersectSphere(const Sphere sphere, const Ray ray)
+Hit IntersectSphere(const Sphere sphere, const Ray ray, const Material material)
 {
 	vec3 op = sphere.position - ray.origin;
     float b = dot(op, ray.direction);
@@ -126,20 +126,22 @@ Hit IntersectSphere(const Sphere sphere, const Ray ray)
     if (t < 0.) return kNoHit;
 
     vec3 hit_normal = (ray.origin + t * ray.direction - sphere.position) / sphere.radius;
-    return Hit(hit_normal, t, true, sphere.material);
+    return Hit(hit_normal, t, true, material);
 }
-Hit IntersectBox(const Box box, const Ray ray)
+Hit IntersectBox(const Box box, const Ray ray, const Material material)
 {
-	vec3 tMin = (box.min - origin) / dir;
-	vec3 tMax = (box.max - origin) / dir;
+	vec3 tMin = (box.min - ray.origin) / ray.direction;
+	vec3 tMax = (box.max - ray.origin) / ray.direction;
 	vec3 t1 = min(tMin, tMax);
 	vec3 t2 = max(tMin, tMax);
 	float tNear = max(max(t1.x, t1.y), t1.z);
 	float tFar = min(min(t2.x, t2.y), t2.z);
-	if (tNear > 0.0 && tNear < tFar)
+	if (tNear < tFar)
 	{
-		vec3 hit_normal = BoxNormal(box, ray.origin + ray.direction * hit.t);
-		return Hit(hit_normal, tNear, true, box.material);
+        float t = (tNear > 0.0) ? tNear : tFar;
+        vec3 hit_pos = ray.origin + ray.direction * t;
+		vec3 hit_normal = BoxNormal(box, hit_pos);
+		return Hit(hit_normal, t, true, material);
 	}
 	else
 		return kNoHit;
@@ -149,23 +151,23 @@ Hit IntersectScene(Ray ray)
 {
 	Hit hit = kNoHit;
 	// Intersection with planes
-	for (int i = 0; i < num_planes; ++i)
+	for (int i = 0; i < u_num_planes; ++i)
 	{
-		Hit cur_hit = IntersectPlane(u_planes[i], ray);
+		Hit cur_hit = IntersectPlane(u_planes[i], ray, kPlaneMaterial);
 		if (cur_hit.exists && cur_hit.t < hit.t)
 			hit = cur_hit;
 	}
 	// Intersection with spheres
-	for (int i = 0; i < num_spheres; ++i)
+	for (int i = 0; i < u_num_spheres; ++i)
 	{
-		Hit cur_hit = IntersectSphere(u_spheres[i], ray);
+		Hit cur_hit = IntersectSphere(u_spheres[i], ray, kSphereMaterial);
 		if (cur_hit.exists && cur_hit.t < hit.t)
 			hit = cur_hit;
 	}
 	// Intersection with boxes
-	for (int i = 0; i < num_boxes; ++i)
+	for (int i = 0; i < u_num_boxes; ++i)
 	{
-		Hit cur_hit = IntersectBox(u_boxes[i], ray);
+		Hit cur_hit = IntersectBox(u_boxes[i], ray, kSphereMaterial);
 		if (cur_hit.exists && cur_hit.t < hit.t)
 			hit = cur_hit;
 	}
@@ -192,8 +194,24 @@ vec3 Radiance(Ray ray)
     vec3 accumulation = vec3(0.0);
     vec3 attenuation = vec3(1.0);
 
-    for (int i = 0; i < MAX_BOUNCES; ++i)
+    TracedRay traced_rays[MAX_TRACED_RAYS];
+    int current_ray = 0;
+    int used_rays = 1;
+    traced_rays[0].incident = ray;
+    traced_rays[0].attenuation = attenuation;
+    traced_rays[0].depth = 0;
+
+    int depth = 0;
+    while (current_ray < used_rays)
     {
+        // Extract ray
+        ray = traced_rays[current_ray].incident;
+        attenuation = traced_rays[current_ray].attenuation;
+        depth = traced_rays[current_ray].depth;
+        ++current_ray;
+        if (depth > MAX_DEPTH)
+            break;
+
         Hit hit = IntersectScene(ray);
 
         if (hit.exists)
@@ -211,9 +229,14 @@ vec3 Radiance(Ray ray)
                 accumulation += (1.0 - f) * attenuation * hit.material.color * incoming;
 
                 // Specular: next bounce
-                attenuation *= f;
-                vec3 d = reflect(ray.direction, hit.normal);
-                r = Ray(hitPos + kEpsilon * d, d);
+                if (used_rays < MAX_TRACED_RAYS - 1)
+                {
+                    vec3 d = reflect(ray.direction, hit.normal);
+                    traced_rays[used_rays].incident = Ray(hitPos + kEpsilon * d, d);
+                    traced_rays[used_rays].attenuation = attenuation * f;
+                    traced_rays[used_rays].depth = depth + 1;
+                    ++used_rays;
+                }
             }
             else
             {
@@ -224,20 +247,32 @@ vec3 Radiance(Ray ray)
                 {
                     vec3 tdir = normalize(ray.direction * nnt + sign(a) * hit.normal * (ddn * nnt + sqrt(cos2t)));
                     float c = 1.0 - mix(ddn, dot(tdir, hit.normal), float(a>0.0));
-                    float Re = R0 + (1.0 - R0)*c*c*c*c*c,
-                    	P = 0.25 + 0.5 * Re,
-                    	RP = Re / P,
-                    	TP = (1.0 - Re) / (1.0 - P);
-                    if (rand() < P)
+                    float Re = R0 + (1.0 - R0) * pow5(c);
+
+                    // Store rays value
+                    if (used_rays < MAX_TRACED_RAYS - 2)
                     {
-                        attenuation *= RP;
                         vec3 d = reflect(ray.direction, hit.normal);
-                        ray = Ray(ray.origin + hit.t * ray.direction + kEpsilon * d, d);
+                        traced_rays[used_rays].incident = Ray(ray.origin + hit.t * ray.direction + kEpsilon * d, d);
+                        traced_rays[used_rays].attenuation = attenuation * Re;
+                        traced_rays[used_rays].depth = depth + 1;
+                        ++used_rays;
+                        traced_rays[used_rays].incident = Ray(ray.origin + (hit.t + kEpsilon) * ray.direction, tdir);
+                        traced_rays[used_rays].attenuation = attenuation * (1.0 - Re);
+                        traced_rays[used_rays].depth = depth + 1;
+                        ++used_rays;
                     }
-                    else
+                }
+                else
+                {
+                    // Total internal reflection
+                    if (used_rays < MAX_TRACED_RAYS - 1)
                     {
-                        attenuation *= hit.m.c * TP;
-                        ray = Ray(ray.origin + (hit.t + kEpsilon) * ray.direction, tdir);
+                        vec3 d = reflect(ray.direction, hit.normal);
+                        traced_rays[used_rays].incident = Ray(ray.origin + hit.t * ray.direction + kEpsilon * d, d);
+                        traced_rays[used_rays].attenuation = attenuation;
+                        traced_rays[used_rays].depth = depth + 1;
+                        ++used_rays;
                     }
                 }
             }
@@ -245,12 +280,15 @@ vec3 Radiance(Ray ray)
         else
         {
             accumulation += attenuation * SkyColor(ray.direction);
-            break;
+        }
+        if (current_ray == MAX_TRACED_RAYS)
+        {
+            // We shouldn't pass this condition. Added it to avoid memory corruption.
+            return vec3(1e5);
         }
     }
     return accumulation;
 }
-// See: http://filmicgames.com/archives/75
 vec3 Uncharted2ToneMapping(vec3 color)
 {
 	float A = 0.15;
@@ -275,9 +313,13 @@ void main()
 	vec3 direction = mix(mix(u_ray00, u_ray01, fs_in.uv.y), mix(u_ray10, u_ray11, fs_in.uv.y), fs_in.uv.x);
 	direction = normalize(direction);
 
-	// TODO: add MSAA
 	// 2. Test objects for intersection
 	Ray ray = Ray(u_eye, direction);
 	vec3 color = Radiance(ray);
-	out_color = vec4(Uncharted2ToneMapping(color), 1.0);
+#ifdef GL_core_profile
+	out_color
+#else
+    gl_FragColor
+#endif
+        = vec4(Uncharted2ToneMapping(color), 1.0);
 }

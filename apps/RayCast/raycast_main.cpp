@@ -32,17 +32,25 @@ public:
 	}
 	void BindShaderConstants()
 	{
-		//const vec3 kSpherePosition(0.0f);
+		const vec3 kSpherePosition(0.0f);
 
 		text_shader_->Bind();
 		text_shader_->Uniform1i("u_texture", 0);
 
 		cast_shader_->Bind();
-		// cast_shader_->Uniform3fv("u_sphere.position", kSpherePosition);
-		// cast_shader_->Uniform1f("u_sphere.radius", 1.0f);
-		// cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f));
-		// cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f));
-		cast_shader_->Uniform2f("iResolution", (float)width_, (float)height_);
+		// Plane
+		cast_shader_->Uniform3f("u_planes[0].normal", 0.0f, 1.0f, 0.0f);
+		cast_shader_->Uniform1f("u_planes[0].d", 1.0f); // height = -d
+		// Sphere
+		cast_shader_->Uniform3fv("u_spheres[0].position", kSpherePosition);
+		cast_shader_->Uniform1f("u_spheres[0].radius", 1.0f);
+
+		cast_shader_->Uniform1i("u_num_planes", 1);
+		cast_shader_->Uniform1i("u_num_spheres", 1);
+		cast_shader_->Uniform1i("u_num_boxes", 0);
+		// Light
+		cast_shader_->Uniform3fv("u_light.color", vec3(1e3));
+		cast_shader_->Uniform3fv("u_light.direction", vec3(1.0f, 0.5f, 0.5f).GetNormalized());
 		cast_shader_->Unbind();
 	}
 	void BindShaderVariables()
@@ -59,7 +67,7 @@ public:
 		
 		// Load shaders
 		if (!renderer_->AddShader(text_shader_, "data/shaders/text")) return false;
-		if (!renderer_->AddShader(cast_shader_, "data/shaders/apps/RayCast/cast")) return false;
+		if (!renderer_->AddShader(cast_shader_, "data/shaders/apps/RayCast/cast2")) return false;
 
 		renderer_->AddFont(font_, "data/fonts/GoodDog.otf");
 		if (font_ == nullptr)
@@ -106,7 +114,6 @@ public:
 
 		//renderer_->ChangeTexture(env_texture);
 		cast_shader_->Bind();
-		//cast_shader_->Uniform3fv("u_eye", *camera_manager_->position());
 		quad_->Render();
 		cast_shader_->Unbind();
 		//renderer_->ChangeTexture(nullptr);
@@ -220,15 +227,15 @@ public:
 			ray_eye.z = -1.0f;
 			ray_eye.w = 0.0f;
 			// Step 4: 4d World Coordinates ( range [-x:x, -y:y, -z:z, -w:w] )
-			//ray = (view.GetInverse() * ray_eye).xyz();
 			rays[i] = inverse_view.TransformVector(ray_eye.xyz());
 			rays[i].Normalize();
 		}
 		cast_shader_->Bind();
-		// cast_shader_->Uniform3fv("u_ray00", rays[0]);
-		// cast_shader_->Uniform3fv("u_ray10", rays[1]);
-		// cast_shader_->Uniform3fv("u_ray01", rays[2]);
-		// cast_shader_->Uniform3fv("u_ray11", rays[3]);
+		cast_shader_->Uniform3fv("u_eye", *camera_manager_->position());
+		cast_shader_->Uniform3fv("u_ray00", rays[0]);
+		cast_shader_->Uniform3fv("u_ray10", rays[1]);
+		cast_shader_->Uniform3fv("u_ray01", rays[2]);
+		cast_shader_->Uniform3fv("u_ray11", rays[3]);
 		cast_shader_->Unbind();
 	}
 	
