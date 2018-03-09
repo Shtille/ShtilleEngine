@@ -958,6 +958,7 @@ public:
 			0.0f, // f32 y
 			renderer_->aspect_ratio(), // f32 width
 			0.2f, // f32 height
+			0.2f, // bar_radius
 			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 			);
 		horizontal_slider_->SetPinPosition(0.5f);
@@ -970,6 +971,7 @@ public:
 			0.2f, // f32 y
 			0.2f, // f32 width
 			0.8f, // f32 height
+			0.2f, // bar_radius
 			(u32)sht::utility::ui::Flags::kRenderAlways// u32 flags
 			);
 		vertical_slider_->SetPinPosition(0.5f);
