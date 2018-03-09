@@ -42,7 +42,7 @@ public:
 		// cast_shader_->Uniform1f("u_sphere.radius", 1.0f);
 		// cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f));
 		// cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f));
-		cast_shader_->Uniform2f("iResolution", width_, height_);
+		cast_shader_->Uniform2f("iResolution", (float)width_, (float)height_);
 		cast_shader_->Unbind();
 	}
 	void BindShaderVariables()
