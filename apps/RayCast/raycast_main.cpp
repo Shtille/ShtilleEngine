@@ -40,8 +40,9 @@ public:
 		cast_shader_->Bind();
 		// cast_shader_->Uniform3fv("u_sphere.position", kSpherePosition);
 		// cast_shader_->Uniform1f("u_sphere.radius", 1.0f);
-		cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f));
-		cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f));
+		// cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f));
+		// cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f));
+		cast_shader_->Uniform2f("iResolution", width_, height_);
 		cast_shader_->Unbind();
 	}
 	void BindShaderVariables()
@@ -105,9 +106,7 @@ public:
 
 		//renderer_->ChangeTexture(env_texture);
 		cast_shader_->Bind();
-		// cast_shader_->UniformMatrix4fv("u_projection", renderer_->projection_matrix());
-		// cast_shader_->UniformMatrix4fv("u_view", renderer_->view_matrix());
-		cast_shader_->Uniform3fv("u_eye", *camera_manager_->position());
+		//cast_shader_->Uniform3fv("u_eye", *camera_manager_->position());
 		quad_->Render();
 		cast_shader_->Unbind();
 		//renderer_->ChangeTexture(nullptr);
@@ -226,10 +225,10 @@ public:
 			rays[i].Normalize();
 		}
 		cast_shader_->Bind();
-		cast_shader_->Uniform3fv("u_ray00", rays[0]);
-		cast_shader_->Uniform3fv("u_ray10", rays[1]);
-		cast_shader_->Uniform3fv("u_ray01", rays[2]);
-		cast_shader_->Uniform3fv("u_ray11", rays[3]);
+		// cast_shader_->Uniform3fv("u_ray00", rays[0]);
+		// cast_shader_->Uniform3fv("u_ray10", rays[1]);
+		// cast_shader_->Uniform3fv("u_ray01", rays[2]);
+		// cast_shader_->Uniform3fv("u_ray11", rays[3]);
 		cast_shader_->Unbind();
 	}
 	
