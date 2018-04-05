@@ -44,10 +44,13 @@ public:
 		// Sphere
 		cast_shader_->Uniform3fv("u_spheres[0].position", kSpherePosition);
 		cast_shader_->Uniform1f("u_spheres[0].radius", 1.0f);
+		// Boxes
+		cast_shader_->Uniform3fv("u_boxes[0].min", vec3(-1.0f, -1.0f, 2.5f));
+		cast_shader_->Uniform3fv("u_boxes[0].max", vec3(1.0f, 1.0f, 3.f));
 
 		cast_shader_->Uniform1i("u_num_planes", 1);
 		cast_shader_->Uniform1i("u_num_spheres", 1);
-		cast_shader_->Uniform1i("u_num_boxes", 0);
+		cast_shader_->Uniform1i("u_num_boxes", 1);
 		// Light
 		cast_shader_->Uniform3fv("u_light.color", vec3(1e3));
 		cast_shader_->Uniform3fv("u_light.direction", vec3(1.0f, 0.5f, 0.5f).GetNormalized());
