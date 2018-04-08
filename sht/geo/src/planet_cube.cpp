@@ -190,7 +190,6 @@ namespace sht {
 			while (!requests.empty())
 			{
 				RequestType request = *requests.begin();
-				requests.pop_front();
 				PlanetTreeNode* node = request.node;
 
 				// If not a root level task.
@@ -200,6 +199,8 @@ namespace sht {
 					if (limit <= 0) return;
 					limit -= weights[request.type];
 				}
+
+				requests.pop_front();
 
 				// Call handler.
 				if ((this->*handlers[request.type])(node))
