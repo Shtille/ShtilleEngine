@@ -1,4 +1,4 @@
-#version 330 compatibility
+#version 330 core
 
 #ifdef GL_core_profile
 out vec4 out_color;
